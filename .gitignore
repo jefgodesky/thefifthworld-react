@@ -1,0 +1,10 @@
+.idea
+.idea/*
+node_modules
+node_modules/*
+npm-debug.log
+npm-debug.log.*
+config/development.json
+config/production.json
+config/test.json
+public/*

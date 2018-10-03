@@ -1,0 +1,106 @@
+{
+  "name": "thefifthworld",
+  "version": "2.0.0",
+  "description": "Website for the Fifth World",
+  "homepage": "https://thefifthworld.com",
+  "author": "Jason Godesky <jason@thefifthworld.com>",
+  "license": "CC-BY-SA-4.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jefgodesky/thefifthworld.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jefgodesky/thefifthworld/issues",
+    "email": "web@thefifthworld.com"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.js",
+    "pack": "webpack --mode=production",
+    "build": "npm-run-all css:build lint test pack",
+    "css:compile": "node-sass --output-style compressed -o public/css scss",
+    "css:lint": "sass-lint scss/*.scss scss/**/*.scss",
+    "css:post": "postcss -u autoprefixer -r public/css/*",
+    "css:build": "npm-run-all css:lint css:compile css:post",
+    "dev": "nodemon server.js",
+    "dev:build": "npm-run-all css:build lint test dev:pack dev:ready",
+    "dev:pack": "webpack --mode=development",
+    "dev:ready": "echo 'Dev server ready'"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "mailgun-js": "^0.20.0",
+    "mysql": "^2.16.0",
+    "react": "^16.5.0",
+    "react-autobind": "^1.0.6",
+    "react-dom": "^16.5.0",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "route-parser": "0.0.5",
+    "serialize-javascript": "^1.5.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.1.5",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^5.5.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-config-standard-react": "^7.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "jest": "^23.5.0",
+    "node-sass": "^4.9.3",
+    "nodemon": "^1.18.4",
+    "normalize-scss": "^7.0.1",
+    "npm-run-all": "^4.1.3",
+    "onchange": "^4.1.0",
+    "postcss-cli": "^6.0.0",
+    "sass-lint": "^1.12.1",
+    "uglify-es": "^3.3.9",
+    "webpack": "^4.17.2",
+    "webpack-cli": "^3.1.0",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "standard",
+      "standard-react"
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "server.js",
+      "public",
+      "node_modules"
+    ],
+    "events": {
+      "start": "npm run dev:build"
+    }
+  },
+  "jest": {
+    "testMatch": [
+      "**/?(*.)+(spec).js?(x)"
+    ]
+  }
+}

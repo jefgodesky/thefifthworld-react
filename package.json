@@ -16,17 +16,22 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
-    "lint": "eslint src/**/*.js",
-    "pack": "webpack --mode=production",
-    "build": "npm-run-all css:build lint test pack",
-    "css:compile": "node-sass --output-style compressed -o public/css scss",
-    "css:lint": "sass-lint scss/*.scss scss/**/*.scss",
-    "css:post": "postcss -u autoprefixer -r public/css/*",
-    "css:build": "npm-run-all css:lint css:compile css:post",
-    "dev": "nodemon server.js",
-    "dev:build": "npm-run-all css:build lint test dev:pack dev:ready",
-    "dev:pack": "webpack --mode=development",
-    "dev:ready": "echo 'Dev server ready'"
+    "build": "npm-run-all js:build scss:build",
+    "lint": "npm-run-all js:lint scss:lint",
+    "js:build": "npm-run-all js:lint test js:compile js:compress",
+    "js:lint": "eslint 'src/**/*.js'",
+    "js:compile": "webpack --mode=production",
+    "js:compress": "uglifyjs --compress --output public/bundle.js -- public/bundle.js",
+    "scss:build": "npm-run-all scss:lint scss:compile scss:autoprefix",
+    "scss:lint": "sass-lint --verbose",
+    "scss:compile": "node-sass --output-style compressed -o public/css scss",
+    "scss:autoprefix": "postcss -u autoprefixer -r public/css/*",
+    "dev:js:build": "npm-run-all js:lint test dev:js:compile",
+    "dev:js:compile": "webpack --mode=development",
+    "dev:js:watch": "onchange -i 'src/**/*.js' 'src/**/*.json' -- npm run dev:js:build",
+    "dev:scss:watch": "onchange -i 'scss/*.scss' 'scss/**/*.scss' -- npm run scss:build",
+    "dev:serve": "nodemon server.js",
+    "dev": "npm-run-all --parallel dev:js:watch dev:scss:watch dev:serve"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -69,6 +74,7 @@
     "postcss-cli": "^6.0.0",
     "sass-lint": "^1.12.1",
     "uglify-es": "^3.3.9",
+    "uglifyjs": "^2.4.11",
     "webpack": "^4.17.2",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"
@@ -87,16 +93,6 @@
       "standard",
       "standard-react"
     ]
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "server.js",
-      "public",
-      "node_modules"
-    ],
-    "events": {
-      "start": "npm run dev:build"
-    }
   },
   "jest": {
     "testMatch": [

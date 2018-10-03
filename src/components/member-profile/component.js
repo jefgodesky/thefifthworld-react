@@ -1,3 +1,5 @@
+/* global __isClient__ */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'
@@ -87,7 +89,6 @@ const mapStateToProps = state => {
 }
 
 MemberProfile.propTypes = {
-  match: PropTypes.object,
   member: PropTypes.object
 }
 

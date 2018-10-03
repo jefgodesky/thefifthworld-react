@@ -1,119 +1,120 @@
-/** Fontin **/
+// sass-lint:disable no-url-domains, no-url-protocols, no-duplicate-properties
+// Fontin
 
 @font-face {
   font-family: 'Fontin';
+  font-style: normal;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/regular.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/regular.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/regular.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/regular.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/regular.svg#fontinregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
 }
 
 @font-face {
   font-family: 'Fontin';
+  font-style: italic;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/italic.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/italic.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/italic.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/italic.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/italic.svg#fontinitalic') format('svg');
-  font-weight: normal;
-  font-style: italic;
 }
 
 @font-face {
   font-family: 'Fontin';
+  font-style: normal;
+  font-weight: bold;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold.svg#fontinbold') format('svg');
-  font-weight: bold;
-  font-style: normal;
 }
 
 @font-face {
   font-family: 'Fontin';
+  font-style: italic;
+  font-weight: bold;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold-italic.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold-italic.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold-italic.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold-italic.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/bold-italic.svg#fontinbold') format('svg');
-  font-weight: bold;
-  font-style: italic;
 }
 
-/** Fontin Sans **/
+// Fontin Sans
 
 @font-face {
   font-family: 'Fontin Sans';
+  font-style: normal;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans.svg#fontin_sans_rgregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
 }
 
 @font-face {
   font-family: 'Fontin Sans';
+  font-style: italic;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-italic.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-italic.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-italic.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-italic.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-italic.svg#fontin_sans_rgitalic') format('svg');
-  font-weight: normal;
-  font-style: italic;
 }
 
 @font-face {
   font-family: 'Fontin Sans';
+  font-style: normal;
+  font-weight: bold;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold.svg#fontin_sans_rgbold') format('svg');
-  font-weight: bold;
-  font-style: normal;
 }
 
 @font-face {
   font-family: 'Fontin Sans';
+  font-style: italic;
+  font-weight: bold;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold-italic.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold-italic.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold-italic.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold-italic.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-bold-italic.svg#fontin_sans_rgbold_italic') format('svg');
-  font-weight: bold;
-  font-style: italic;
 }
 
-/** Fontin Small Caps **/
+// Fontin Small Caps
 
 @font-face {
   font-family: 'Fontin Small Caps';
+  font-style: normal;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/smallcaps.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/smallcaps.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/smallcaps.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/smallcaps.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/smallcaps.svg#fontin_smallcapssmallcaps') format('svg');
-  font-weight: normal;
-  font-style: normal;
 }
 
-/** Fontin Sans Small Caps **/
+// Fontin Sans Small Caps
 
 @font-face {
   font-family: 'Fontin Sans Small Caps';
+  font-style: normal;
+  font-weight: normal;
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-smallcaps.eot');
   src: url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-smallcaps.eot?#iefix') format('embedded-opentype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-smallcaps.woff') format('woff'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-smallcaps.ttf') format('truetype'),
   url('https://s3.amazonaws.com/thefifthworld/website/fonts/sans-smallcaps.svg#fontin_sans_scsmall_caps') format('svg');
-  font-weight: normal;
-  font-style: normal;
 }
 
 body {
@@ -131,7 +132,7 @@ h2 {
   font-family: 'Fontin Sans', 'Verdana', 'sans-serif';
   font-size: 1.618em;
   font-weight: normal;
-  margin: 1.618em 0 1em 0;
+  margin: 1.618em 0 1em;
   text-align: center;
 }
 
@@ -153,7 +154,7 @@ h4 {
 
 h3 + p,
 h4 + p {
-  margin-top: 0.25em;
+  margin-top: .25em;
 }
 
 @media all and (min-width: 400px) {

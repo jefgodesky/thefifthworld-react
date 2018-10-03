@@ -12,4 +12,3 @@ export function logout () {
     type: types.LOGOUT
   }
 }
-a

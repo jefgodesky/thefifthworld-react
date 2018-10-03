@@ -19,9 +19,10 @@ class MemberLogin extends React.Component {
    */
 
   render () {
+    const output = this.props.loggedIn ? 'Already logged in' : 'Login'
     return (
       <React.Fragment>
-        <h1>Login</h1>
+        <h1>{output}</h1>
       </React.Fragment>
     )
   }

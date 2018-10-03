@@ -28,7 +28,6 @@ class Error404 extends React.Component {
   }
 }
 
-
 /**
  * Maps Redux state to the component's props.
  * @param state - The state from Redux.

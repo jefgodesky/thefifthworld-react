@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Header from '../header/component'
 import Footer from '../footer/component'
 import autoBind from 'react-autobind'
@@ -25,7 +24,7 @@ class Error404 extends React.Component {
       <React.Fragment>
         <Header />
         <main>
-          <p>Sorry, {this.props.name}, could not find that page</p>
+          <p>Sorry, could not find that page</p>
         </main>
         <Footer />
       </React.Fragment>
@@ -40,13 +39,7 @@ class Error404 extends React.Component {
  */
 
 const mapStateToProps = state => {
-  return {
-    name: state.Home.name
-  }
-}
-
-Error404.propTypes = {
-  name: PropTypes.string
+  return {}
 }
 
 export default connect(mapStateToProps)(Error404)

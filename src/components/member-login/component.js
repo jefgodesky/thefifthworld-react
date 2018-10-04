@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Header from '../header/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -22,7 +23,10 @@ class MemberLogin extends React.Component {
     const output = this.props.loggedIn ? 'Already logged in' : 'Login'
     return (
       <React.Fragment>
-        <h1>{output}</h1>
+        <Header />
+        <main>
+          <h2>{output}</h2>
+        </main>
       </React.Fragment>
     )
   }

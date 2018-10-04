@@ -3,6 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'
+import Header from '../header/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -69,8 +70,11 @@ class MemberProfile extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <h1>{this.props.member.name}</h1>
-        <p>{this.props.member.email}</p>
+        <Header />
+        <main>
+          <h2>{this.props.member.name}</h2>
+          <p>{this.props.member.email}</p>
+        </main>
       </React.Fragment>
     )
   }

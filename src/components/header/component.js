@@ -1,13 +1,12 @@
 import React from 'react'
 import autoBind from 'react-autobind'
-import Header from '../header/component'
 import { connect } from 'react-redux'
 
 /**
  * This component handles the home page.
  */
 
-class Home extends React.Component {
+class Header extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -20,12 +19,9 @@ class Home extends React.Component {
 
   render () {
     return (
-      <React.Fragment>
-        <Header />
-        <main>
-          <p>This is the homepage.</p>
-        </main>
-      </React.Fragment>
+      <header>
+        <h1>The Fifth World</h1>
+      </header>
     )
   }
 }
@@ -39,4 +35,4 @@ const mapStateToProps = () => {
   return {}
 }
 
-export default connect(mapStateToProps)(Home)
+export default connect(mapStateToProps)(Header)

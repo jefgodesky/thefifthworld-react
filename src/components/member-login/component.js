@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Header from '../header/component'
 import Footer from '../footer/component'
 import autoBind from 'react-autobind'
@@ -21,12 +20,18 @@ class MemberLogin extends React.Component {
    */
 
   render () {
-    const output = this.props.loggedIn ? 'Already logged in' : 'Login'
     return (
       <React.Fragment>
         <Header />
         <main>
-          <h2>{output}</h2>
+          <h2>Login</h2>
+          <form action='/login' method='post'>
+            <label htmlFor='email'>Email</label>
+            <input type='text' name='email' id='email' placeholder='example@test.com' />
+            <label htmlFor='passphrase'>Passphrase</label>
+            <input type='text' name='passphrase' id='passphrase' placeholder='Whisper your secret passphrase' />
+            <button>Log in</button>
+          </form>
         </main>
         <Footer />
       </React.Fragment>
@@ -36,18 +41,11 @@ class MemberLogin extends React.Component {
 
 /**
  * Maps Redux state to the component's props.
- * @param state - The state from Redux.
  * @returns {Object} - The component's new props.
  */
 
-const mapStateToProps = state => {
-  return {
-    loggedIn: state.MemberLogin.loggedIn
-  }
-}
-
-MemberLogin.propTypes = {
-  loggedIn: PropTypes.number
+const mapStateToProps = () => {
+  return {}
 }
 
 export default connect(mapStateToProps)(MemberLogin)

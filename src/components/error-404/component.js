@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import autoBind from 'react-autobind'
 import Header from '../header/component'
+import Footer from '../footer/component'
+import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
 /**
@@ -26,6 +27,7 @@ class Error404 extends React.Component {
         <main>
           <p>Sorry, {this.props.name}, could not find that page</p>
         </main>
+        <Footer />
       </React.Fragment>
     )
   }

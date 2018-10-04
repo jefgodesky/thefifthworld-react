@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Header from '../header/component'
+import Footer from '../footer/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -27,6 +28,7 @@ class MemberLogin extends React.Component {
         <main>
           <h2>{output}</h2>
         </main>
+        <Footer />
       </React.Fragment>
     )
   }

@@ -4,6 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'
 import Header from '../header/component'
+import Footer from '../footer/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -75,6 +76,7 @@ class MemberProfile extends React.Component {
           <h2>{this.props.member.name}</h2>
           <p>{this.props.member.email}</p>
         </main>
+        <Footer />
       </React.Fragment>
     )
   }

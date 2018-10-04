@@ -1,6 +1,4 @@
 import React from 'react'
-import Header from '../header/component'
-import Footer from '../footer/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -8,7 +6,7 @@ import { connect } from 'react-redux'
  * This component handles the home page.
  */
 
-class Home extends React.Component {
+class Footer extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -21,13 +19,9 @@ class Home extends React.Component {
 
   render () {
     return (
-      <React.Fragment>
-        <Header />
-        <main>
-          <p>This is the homepage.</p>
-        </main>
-        <Footer />
-      </React.Fragment>
+      <footer>
+        <p>This is the footer</p>
+      </footer>
     )
   }
 }
@@ -41,4 +35,4 @@ const mapStateToProps = () => {
   return {}
 }
 
-export default connect(mapStateToProps)(Home)
+export default connect(mapStateToProps)(Footer)

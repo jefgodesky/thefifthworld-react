@@ -18,6 +18,18 @@ describe('Member', () => {
       })
   })
 
+  it('can find a member', () => {
+    expect.assertions(1)
+    return Member.find({ 'email': 'jason@thefifthworld.com' }, db)
+      .then(records => {
+        expect(records.constructor.name).toEqual('Member')
+      })
+      .catch(err => {
+        console.error(err)
+        expect(0).toBe(1)
+      })
+  })
+
   it('can return a member\'s ID', () => {
     expect.assertions(1)
     return Member.get(1, db)

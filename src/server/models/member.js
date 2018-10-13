@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt-nodejs'
 import uuid from 'uuid/v4'
 
 /**
@@ -8,6 +9,7 @@ class Member {
   constructor (obj) {
     this.id = obj.id
     this.name = obj.name
+    this.password = obj.password
     this.email = obj.email
     this.active = obj.active
     this.admin = obj.admin
@@ -26,6 +28,42 @@ class Member {
       db.q(`SELECT id, name, email FROM members WHERE id='${id}'`)
         .then(rows => {
           resolve(new Member(rows[0]))
+        })
+        .catch(err => {
+          reject(err)
+        })
+    })
+  }
+
+  /**
+   * Runs a query for all members matching the parameters provided.
+   * @param params {object} - An object that specifies the parameters for the
+   *   query as a series of key/value pairs.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an array of the rows
+   *   returned by the query.
+   */
+
+  static find (params, db) {
+    return new Promise((resolve, reject) => {
+      const fields = Object.keys(params)
+      const where = []
+      const valid = [ 'id', 'name', 'email', 'active', 'admin' ]
+      fields.forEach(field => {
+        if (valid.indexOf(field) > -1) where.push(`${field}='${params[field]}'`)
+      })
+
+      db.q(`SELECT * FROM members WHERE ${where.join(' AND ')}`)
+        .then(rows => {
+          if (rows.length === 1) {
+            resolve(new Member(rows[0]))
+          } else {
+            const members = []
+            rows.forEach(row => {
+              members.push(new Member(row))
+            })
+            resolve(members)
+          }
         })
         .catch(err => {
           reject(err)
@@ -56,6 +94,25 @@ class Member {
       return this.email
     } else {
       return `Member #${this.id}`
+    }
+  }
+
+  /**
+   * Checks the bcrypt hash of the given string against the stored password.
+   * @param given {string} - A string that might be the member's password, or
+   *   not. That's what we're here to find out.
+   * @returns {boolean} - True if the given string matches the member's
+   *   password, or false if it doesn't.
+   */
+
+  checkPass (given) {
+    console.log(`Is "${given}" the right password?`)
+    console.log(bcrypt.hashSync(given, bcrypt.genSaltSync(8), null))
+    console.log(this.password)
+    if (this.password) {
+      return bcrypt.compareSync(given, this.password)
+    } else {
+      return false
     }
   }
 

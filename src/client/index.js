@@ -1,3 +1,5 @@
+import '../../node_modules/regenerator-runtime/runtime'
+
 import React from 'react'
 import { hydrate } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'

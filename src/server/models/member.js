@@ -19,20 +19,15 @@ class Member {
    * Returns a member with the matching ID.
    * @param id {int} - The user's ID number.
    * @param db {Pool} - A database connection.
-   * @returns {Promise} - A promise which will return an object with the
-   *   member's name, email, and ID.
+   * @returns {mixed} - The Member object that matches the given ID if it can
+   *   be found, or `false` if it cannot.
    */
 
-  static get (id, db) {
-    return new Promise((resolve, reject) => {
-      db.q(`SELECT id, name, email FROM members WHERE id='${id}'`)
-        .then(rows => {
-          resolve(new Member(rows[0]))
-        })
-        .catch(err => {
-          reject(err)
-        })
-    })
+  static async get (id, db) {
+    const rows = await db.run(`SELECT id, name, email FROM members WHERE id='${id}'`)
+    return rows.length > 0
+      ? new Member(rows[0])
+      : false
   }
 
   /**
@@ -40,35 +35,27 @@ class Member {
    * @param params {object} - An object that specifies the parameters for the
    *   query as a series of key/value pairs.
    * @param db {Pool} - A database connection.
-   * @returns {Promise} - A promise that resolves with an array of the rows
-   *   returned by the query.
+   * @returns {mixed} - A Member object that matches the given parameters if
+   *   just one record matches, or an array of Member objects otherwise.
    */
 
-  static find (params, db) {
-    return new Promise((resolve, reject) => {
-      const fields = Object.keys(params)
-      const where = []
-      const valid = [ 'id', 'name', 'email', 'active', 'admin' ]
-      fields.forEach(field => {
-        if (valid.indexOf(field) > -1) where.push(`${field}='${params[field]}'`)
-      })
-
-      db.q(`SELECT * FROM members WHERE ${where.join(' AND ')}`)
-        .then(rows => {
-          if (rows.length === 1) {
-            resolve(new Member(rows[0]))
-          } else {
-            const members = []
-            rows.forEach(row => {
-              members.push(new Member(row))
-            })
-            resolve(members)
-          }
-        })
-        .catch(err => {
-          reject(err)
-        })
+  static async find (params, db) {
+    const fields = Object.keys(params)
+    const where = []
+    const valid = [ 'id', 'name', 'email', 'active', 'admin' ]
+    fields.forEach(field => {
+      if (valid.indexOf(field) > -1) where.push(`${field}='${params[field]}'`)
     })
+    const rows = await db.run(`SELECT * FROM members WHERE ${where.join(' AND ')}`)
+    if (rows.length === 1) {
+      return new Member(rows[0])
+    } else {
+      const members = []
+      rows.forEach(row => {
+        members.push(new Member(row))
+      })
+      return members
+    }
   }
 
   /**
@@ -162,39 +149,27 @@ class Member {
    *   email has been sent.
    */
 
-  createInvite (email, db, emailer) {
+  async createInvite (email, db, emailer) {
     let invite = {}
-    return new Promise((resolve, reject) => {
-      db.q(`INSERT INTO members (email) VALUES ('${email}')`)
-        .then(res => {
-          invite.code = uuid()
-          return db.q(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES ('${this.id}', '${res.insertId}', '${invite.code}')`)
-        })
-        .then(res => {
-          if (res.affectedRows === 1) {
-            invite.email = email
-            invite.inviteId = res.insertId
-            return emailer({
-              to: email,
-              subject: 'Welcome to the Fifth World',
-              body: `${this.getName()} has invited you to join the Fifth World community. Click below to begin:\n\nhttps://thefifthworld.com/join/${invite.code}`
-            })
-          } else {
-            const warning = (res.affectedRows === 0)
-              ? 'Invitation was not created in database'
-              : (res.affectedRows > 1)
-                ? 'More than one row was created when inserting invitation!'
-                : 'Negative rows affected when inserting invitation?'
-            reject(warning)
-          }
-        })
-        .then(() => {
-          resolve(invite)
-        })
-        .catch(err => {
-          reject(err)
-        })
-    })
+    invite.code = uuid()
+    const newMember = await db.run(`INSERT INTO members (email) VALUES ('${email}')`)
+    const createInvitation = await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES ('${this.id}', '${newMember.insertId}', '${invite.code}')`)
+    if (createInvitation.affectedRows === 1) {
+      invite.email = email
+      invite.inviteId = createInvitation.insertId
+      return emailer({
+        to: email,
+        subject: 'Welcome to the Fifth World',
+        body: `${this.getName()} has invited you to join the Fifth World community. Click below to begin:\n\nhttps://thefifthworld.com/join/${invite.code}`
+      })
+    } else {
+      const warning = (createInvitation.affectedRows === 0)
+        ? 'Invitation was not created in database'
+        : (createInvitation.affectedRows > 1)
+          ? 'More than one row was created when inserting invitation!'
+          : 'Negative rows affected when inserting invitation?'
+      throw new Error(warning)
+    }
   }
 
   /**
@@ -210,23 +185,12 @@ class Member {
    *   passed to `createInvite`.
    */
 
-  invite (email, db, emailer) {
-    return new Promise((resolve, reject) => {
-      db.q(`SELECT m.id, m.email, i.inviteCode FROM members m, invitations i WHERE m.email='${email}' AND i.inviteTo = m.id`)
-        .then(rows => {
-          if (rows.length > 0) {
-            return this.sendReminders(rows, emailer)
-          } else {
-            return this.createInvite(email, db, emailer)
-          }
-        })
-        .then(res => {
-          resolve(res)
-        })
-        .catch(err => {
-          reject(err)
-        })
-    })
+  async invite (email, db, emailer) {
+    const rows = await db.run(`SELECT m.id, m.email, i.inviteCode FROM members m, invitations i WHERE m.email='${email}' AND i.inviteTo = m.id`)
+    const val = (rows.length > 0)
+      ? await this.sendReminders(rows, emailer)
+      : await this.createInvite(email, db, emailer)
+    return val
   }
 }
 

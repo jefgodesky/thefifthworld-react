@@ -15,19 +15,14 @@ const auth = passport => {
   passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'passphrase'
-  }, (email, passphrase, done) => {
+  }, async (email, passphrase, done) => {
     const notFound = 'Email/passphrase not found'
-    Member.find({ email }, db)
-      .then(matches => {
-        if (!Array.isArray(matches) && matches.checkPass(passphrase)) {
-          done(null, matches)
-        } else {
-          done(null, false, notFound)
-        }
-      })
-      .catch(() => {
-        done(null, false, notFound)
-      })
+    const matches = await Member.find({ email }, db)
+    if (!Array.isArray(matches) && matches.checkPass(passphrase)) {
+      done(null, matches)
+    } else {
+      done(null, false, notFound)
+    }
   }))
 }
 

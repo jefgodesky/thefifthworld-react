@@ -10,7 +10,7 @@ const db = mysql.createPool(config.db)
  * @returns {Promise} - A promise that resolves with the results of the query.
  */
 
-db.q = (query) => {
+db.run = (query) => {
   return new Promise((resolve, reject) => {
     db.query(query, (err, rows, fields) => {
       if (err) {

@@ -3,16 +3,10 @@
 import db from './db'
 
 describe('Database', () => {
-  it('can execute a query', () => {
+  it('can execute a query', async () => {
     expect.assertions(1)
-    return db.q('SELECT 1 + 1 AS solution')
-      .then(rows => {
-        expect(rows[0].solution).toBe(2)
-      })
-      .catch(err => {
-        console.error(err)
-        expect(0).toBe(1)
-      })
+    const rows = await db.run('SELECT 1 + 1 AS solution')
+    expect(rows[0].solution).toBe(2)
   })
 })
 

@@ -29,38 +29,17 @@ class MemberProfile extends React.Component {
    * @param url {string} - The URL requested.
    * @param db {Pool} - A database connection to query.
    * @param dispatch {function} - The Redux store dispatch function.
-   * @returns {Promise} - A promise that will resolve (without any parameters)
-   *   when a Member record that matches the request is loaded from the
-   *   database and dispatched to the Redux store.
    */
 
-  static load (route, url, db, dispatch) {
-    return new Promise((resolve, reject) => {
-      if (!__isClient__) {
-        if (route && route.path && url) {
-          const routeParser = new RouteParser(route.path)
-          const params = routeParser.match(url)
-          if (params.id) {
-            Member.get(params.id, db)
-              .then(member => {
-                dispatch(actions.load(member))
-                resolve()
-              })
-              .catch(err => {
-                console.error(err)
-                reject(err)
-              })
-          } else {
-            reject(new Error('No ID specified in parameters'))
-          }
-        } else {
-          reject(new Error('Could not find matching route'))
-        }
-      } else {
-        // This is on the client, so just resolve.
-        resolve()
+  static async load (route, url, db, dispatch) {
+    if (!__isClient__ && route && route.path && url) {
+      const routeParser = new RouteParser(route.path)
+      const params = routeParser.match(url)
+      if (params.id) {
+        const member = await Member.get(params.id, db)
+        dispatch(actions.load(member))
       }
-    })
+    }
   }
 
   /**

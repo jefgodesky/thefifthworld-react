@@ -106,9 +106,6 @@ class Member {
    */
 
   checkPass (given) {
-    console.log(`Is "${given}" the right password?`)
-    console.log(bcrypt.hashSync(given, bcrypt.genSaltSync(8), null))
-    console.log(this.password)
     if (this.password) {
       return bcrypt.compareSync(given, this.password)
     } else {

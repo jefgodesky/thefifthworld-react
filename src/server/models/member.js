@@ -11,8 +11,8 @@ class Member {
     this.name = obj.name
     this.password = obj.password
     this.email = obj.email
-    this.active = obj.active
-    this.admin = obj.admin
+    this.active = Boolean(obj.active)
+    this.admin = Boolean(obj.admin)
   }
 
   /**
@@ -24,7 +24,7 @@ class Member {
    */
 
   static async get (id, db) {
-    const rows = await db.run(`SELECT id, name, email FROM members WHERE id='${id}'`)
+    const rows = await db.run(`SELECT * FROM members WHERE id='${id}'`)
     return rows.length > 0
       ? new Member(rows[0])
       : false
@@ -81,6 +81,16 @@ class Member {
       return this.email
     } else {
       return `Member #${this.id}`
+    }
+  }
+
+  getObject () {
+    return {
+      id: this.id,
+      name: this.getName(),
+      email: this.email,
+      active: Boolean(this.active),
+      admin: Boolean(this.admin)
     }
   }
 

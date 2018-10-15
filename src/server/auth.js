@@ -5,24 +5,24 @@ import db from './db'
 
 const auth = passport => {
   passport.serializeUser((user, done) => {
-    done(null, user)
+    done(null, user.getId())
   })
 
-  passport.deserializeUser((user, done) => {
-    done(null, user)
+  passport.deserializeUser(async (id, done) => {
+    const member = await Member.get(id, db)
+    done(null, member)
   })
 
   passport.use(new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'passphrase'
-  }, async (email, passphrase, done) => {
+    passwordField: 'passphrase',
+    passReqToCallback: true
+  }, async (req, email, passphrase, done) => {
     const notFound = 'Email/passphrase not found'
     const matches = await Member.find({ email }, db)
-    if (!Array.isArray(matches) && matches.checkPass(passphrase)) {
-      done(null, matches)
-    } else {
-      done(null, false, notFound)
-    }
+    return (!Array.isArray(matches) && matches.checkPass(passphrase))
+      ? done(null, matches)
+      : done(null, false, notFound)
   }))
 }
 

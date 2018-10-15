@@ -1,11 +1,12 @@
 import '../../node_modules/regenerator-runtime/runtime'
 
 import express from 'express'
+import compression from 'compression'
 import bodyParser from 'body-parser'
-import session from 'express-session'
-import sessionStore from 'express-mysql-session'
+import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import cors from 'cors'
+import helmet from 'helmet'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
@@ -26,17 +27,28 @@ import Router from '../components/router/component'
 
 // Initialize server
 const server = express()
+server.use(compression())
+server.use(cookieParser())
 server.use(bodyParser.urlencoded({ extended: true }))
+server.use(bodyParser.json())
 server.use(cors())
+server.use(helmet())
 server.use(express.static('public'))
 
 // Set up session store
-const MySQLStore = sessionStore(session)
-const store = new MySQLStore(config.db, db)
+const session = require('express-session')
+const MySQLStore = require('express-mysql-session')(session)
+const sessionStore = new MySQLStore({
+  host: config.db.host,
+  port: config.db.port || 3306,
+  user: config.db.user,
+  password: config.db.password,
+  database: config.db.database
+})
 server.use(session({
   key: 'thefifthworld_session',
   secret: config.sessionSecret,
-  store,
+  store: sessionStore,
   resave: true,
   saveUninitialized: true
 }))
@@ -63,6 +75,8 @@ const respond = (req, res, store) => {
 
 // GET requests
 server.get('*', (req, res) => {
+  console.log(req.user)
+  console.log(req.session)
   const store = createStore(reducers, applyMiddleware(thunk))
   const route = routes.find(route => matchPath(req.url, route))
   if (route && route.load) {

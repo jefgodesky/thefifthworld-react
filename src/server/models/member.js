@@ -59,6 +59,25 @@ class Member {
   }
 
   /**
+   * This method is used with OAuth2 authentication. Given a particular service
+   * (e.g., 'google' or 'facebook') and an ID, it returns a Member object for
+   * the matching member.
+   * @param service {string} - The service that provided the OAuth2 token. Can
+   *   be 'google', 'facebook', 'twitter', 'discord', 'patreon', or 'github'.
+   * @param id {string} - The OAuth2 ID.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A Promise that resolves either with the matching
+   *   Member or with `false` if one could not be found.
+   */
+
+  static async findAuth (service, id, db) {
+    const res = await db.run(`SELECT m.* FROM members m, authorizations a WHERE m.id=a.member AND a.provider='${service}' AND a.oauth2_id='${id}';`)
+    return (res.length === 1)
+      ? new Member(res[0])
+      : false
+  }
+
+  /**
    * Returns the member's ID.
    * @returns {int} - The member's ID.
    */
@@ -82,6 +101,16 @@ class Member {
     } else {
       return `Member #${this.id}`
     }
+  }
+
+  /**
+   * Sets the member's name to the given string.
+   * @param name {string} - The string to set the member's name to.
+   * @param db {Pool} - A database connection.
+   */
+
+  async setName (name, db) {
+    await db.run(`UPDATE members SET name='${name}' WHERE id=${this.id};`)
   }
 
   getObject () {
@@ -201,6 +230,19 @@ class Member {
       ? await this.sendReminders(rows, emailer)
       : await this.createInvite(email, db, emailer)
     return val
+  }
+
+  /**
+   * Adds an OAuth2 authentication token for a member.
+   * @param service {string} - The service that provided the OAuth2 token. Can
+   *   be 'google', 'facebook', 'twitter', 'discord', 'patreon', or 'github'.
+   * @param id {string} - The OAuth2 Id
+   * @param token {string} - The OAuth2 token.
+   * @param db {Pool} - A database connection.
+   */
+  
+  async addAuth (service, id, token, db) {
+    await db.run(`INSERT INTO authorizations (member, provider, oauth2_id, oauth2_token) VALUES (${this.id}, '${service}', '${id}', '${token}');`)
   }
 }
 

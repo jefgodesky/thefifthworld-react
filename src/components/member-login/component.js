@@ -32,6 +32,10 @@ class MemberLogin extends React.Component {
             <input type='text' name='passphrase' id='passphrase' placeholder='Whisper your secret passphrase' />
             <button>Log in</button>
           </form>
+          <p>Or login with&hellip;</p>
+          <ul>
+            <li><a href='/connect/google'>Google</a></li>
+          </ul>
         </main>
         <Footer />
       </React.Fragment>

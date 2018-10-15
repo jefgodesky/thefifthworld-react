@@ -45,6 +45,7 @@ const sessionStore = new MySQLStore({
   password: config.db.password,
   database: config.db.database
 })
+
 server.use(session({
   key: 'thefifthworld_session',
   secret: config.sessionSecret,
@@ -75,8 +76,6 @@ const respond = (req, res, store) => {
 
 // GET requests
 server.get('*', (req, res) => {
-  console.log(req.user)
-  console.log(req.session)
   const store = createStore(reducers, applyMiddleware(thunk))
   const route = routes.find(route => matchPath(req.url, route))
   if (route && route.load) {

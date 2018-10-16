@@ -1,5 +1,6 @@
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as FacebookStrategy } from 'passport-facebook'
+import { Strategy as TwitterStrategy } from 'passport-twitter'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import Member from './models/member'
 
@@ -51,22 +52,6 @@ const auth = passport => {
       : done(null, false, notFound)
   }))
 
-  passport.use(new GoogleStrategy({
-    clientID: config.google.id,
-    clientSecret: config.google.secret,
-    callbackURL: config.google.callback,
-    passReqToCallback: true
-  }, async (req, token, secret, profile, done) => {
-    return handleAuth({
-      service: 'google',
-      id: profile.id,
-      token,
-      done,
-      user: req.user,
-      name: profile.displayName
-    })
-  }))
-
   passport.use(new FacebookStrategy({
     clientID: config.facebook.id,
     clientSecret: config.facebook.secret,
@@ -75,6 +60,37 @@ const auth = passport => {
   }, async (req, token, refresh, profile, done) => {
     return handleAuth({
       service: 'facebook',
+      id: profile.id,
+      token,
+      done,
+      user: req.user,
+      name: profile.displayName
+    })
+  }))
+
+  passport.use(new TwitterStrategy({
+    consumerKey: config.twitter.key,
+    consumerSecret: config.twitter.secret,
+    callbackURL: config.twitter.callback,
+    passReqToCallback: true
+  }, async (req, token, secret, profile, done) => {
+    return handleAuth({
+      service: 'twitter',
+      id: profile.id,
+      token,
+      done,
+      user: req.user
+    })
+  }))
+
+  passport.use(new GoogleStrategy({
+    clientID: config.google.id,
+    clientSecret: config.google.secret,
+    callbackURL: config.google.callback,
+    passReqToCallback: true
+  }, async (req, token, secret, profile, done) => {
+    return handleAuth({
+      service: 'google',
       id: profile.id,
       token,
       done,

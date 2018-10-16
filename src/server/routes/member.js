@@ -23,6 +23,21 @@ MemberRouter.get(
     failureRedirect: '/login'
   }))
 
+// GET /login/twitter
+// GET /connect/twitter
+MemberRouter.get(
+  ['/login/twitter', '/connect/twitter'],
+  passport.authenticate('twitter'))
+
+// GET /login/twitter/callback
+// GET /connect/twitter/callback
+MemberRouter.get(
+  ['/login/twitter/callback', '/connect/twitter/callback'],
+  passport.authenticate('twitter', {
+    successRedirect: '/login-route',
+    failureRedirect: '/login'
+  }))
+
 // GET /login/google
 // GET /connect/google
 MemberRouter.get(

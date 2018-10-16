@@ -34,7 +34,8 @@ class MemberLogin extends React.Component {
           </form>
           <p>Or login with&hellip;</p>
           <ul>
-            <li><a href='/connect/google'>Google</a></li>
+            <li><a href='/login/google'>Google</a></li>
+            <li><a href='/login/facebook'>Facebook</a></li>
           </ul>
         </main>
         <Footer />

@@ -240,7 +240,7 @@ class Member {
    * @param token {string} - The OAuth2 token.
    * @param db {Pool} - A database connection.
    */
-  
+
   async addAuth (service, id, token, db) {
     await db.run(`INSERT INTO authorizations (member, provider, oauth2_id, oauth2_token) VALUES (${this.id}, '${service}', '${id}', '${token}');`)
   }

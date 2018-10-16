@@ -1,4 +1,5 @@
 import { Strategy as LocalStrategy } from 'passport-local'
+import { Strategy as FacebookStrategy } from 'passport-facebook'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import Member from './models/member'
 
@@ -58,6 +59,22 @@ const auth = passport => {
   }, async (req, token, secret, profile, done) => {
     return handleAuth({
       service: 'google',
+      id: profile.id,
+      token,
+      done,
+      user: req.user,
+      name: profile.displayName
+    })
+  }))
+
+  passport.use(new FacebookStrategy({
+    clientID: config.facebook.id,
+    clientSecret: config.facebook.secret,
+    callbackURL: config.facebook.callback,
+    passReqToCallback: true
+  }, async (req, token, refresh, profile, done) => {
+    return handleAuth({
+      service: 'facebook',
       id: profile.id,
       token,
       done,

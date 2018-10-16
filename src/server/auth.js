@@ -1,7 +1,9 @@
 import { Strategy as LocalStrategy } from 'passport-local'
+import { Strategy as PatreonStrategy } from 'passport-patreon'
+import { Strategy as DiscordStrategy } from 'passport-discord'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import { Strategy as FacebookStrategy } from 'passport-facebook'
 import { Strategy as TwitterStrategy } from 'passport-twitter'
-import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import Member from './models/member'
 
 import config from '../../config'
@@ -52,6 +54,52 @@ const auth = passport => {
       : done(null, false, notFound)
   }))
 
+  passport.use(new PatreonStrategy({
+    clientID: config.patreon.id,
+    clientSecret: config.patreon.secret,
+    callbackURL: config.patreon.callback,
+    passReqToCallback: true
+  }, async (req, token, secret, profile, done) => {
+    return handleAuth({
+      service: 'patreon',
+      id: profile.id,
+      token,
+      done,
+      user: req.user
+    })
+  }))
+
+  passport.use(new DiscordStrategy({
+    clientID: config.discord.id,
+    clientSecret: config.discord.secret,
+    callbackURL: config.discord.callback,
+    passReqToCallback: true
+  }, async (req, token, secret, profile, done) => {
+    return handleAuth({
+      service: 'discord',
+      id: profile.id,
+      token,
+      done,
+      user: req.user
+    })
+  }))
+
+  passport.use(new GoogleStrategy({
+    clientID: config.google.id,
+    clientSecret: config.google.secret,
+    callbackURL: config.google.callback,
+    passReqToCallback: true
+  }, async (req, token, secret, profile, done) => {
+    return handleAuth({
+      service: 'google',
+      id: profile.id,
+      token,
+      done,
+      user: req.user,
+      name: profile.displayName
+    })
+  }))
+
   passport.use(new FacebookStrategy({
     clientID: config.facebook.id,
     clientSecret: config.facebook.secret,
@@ -80,22 +128,6 @@ const auth = passport => {
       token,
       done,
       user: req.user
-    })
-  }))
-
-  passport.use(new GoogleStrategy({
-    clientID: config.google.id,
-    clientSecret: config.google.secret,
-    callbackURL: config.google.callback,
-    passReqToCallback: true
-  }, async (req, token, secret, profile, done) => {
-    return handleAuth({
-      service: 'google',
-      id: profile.id,
-      token,
-      done,
-      user: req.user,
-      name: profile.displayName
     })
   }))
 }

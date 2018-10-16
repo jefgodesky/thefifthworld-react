@@ -34,9 +34,11 @@ class MemberLogin extends React.Component {
           </form>
           <p>Or login with&hellip;</p>
           <ul>
+            <li><a href='/login/patreon'>Patreon</a></li>
+            <li><a href='/login/discord'>Discord</a></li>
+            <li><a href='/login/google'>Google</a></li>
             <li><a href='/login/facebook'>Facebook</a></li>
             <li><a href='/login/twitter'>Twitter</a></li>
-            <li><a href='/login/google'>Google</a></li>
           </ul>
         </main>
         <Footer />

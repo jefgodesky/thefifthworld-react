@@ -3,10 +3,56 @@ import express from 'express'
 const passport = require('passport')
 const MemberRouter = express.Router()
 
+// POST /login
 MemberRouter.post('/login', (passport.authenticate('local', {
   successRedirect: '/login-route',
   failureRedirect: '/login'
 })))
+
+// GET /login/patreon
+// GET /connect/patreon
+MemberRouter.get(
+  ['/login/patreon', '/connect/patreon'],
+  passport.authenticate('patreon'))
+
+// GET /login/patreon/callback
+// GET /connect/patreon/callback
+MemberRouter.get(
+  ['/login/patreon/callback', '/connect/patreon/callback'],
+  passport.authenticate('patreon', {
+    successRedirect: '/login-route',
+    failureRedirect: '/login'
+  }))
+
+// GET /login/discord
+// GET /connect/discord
+MemberRouter.get(
+  ['/login/discord', '/connect/discord'],
+  passport.authenticate('discord', { scope: [ 'identify' ] }))
+
+// GET /login/discord/callback
+// GET /connect/discord/callback
+MemberRouter.get(
+  ['/login/discord/callback', '/connect/discord/callback'],
+  passport.authenticate('discord', {
+    successRedirect: '/login-route',
+    failureRedirect: '/login'
+  }))
+
+// GET /login/google
+// GET /connect/google
+MemberRouter.get(
+  ['/login/google', '/connect/google'],
+  passport.authenticate('google', { scope: [ 'email', 'profile' ] }))
+
+// GET /login/google/callback
+// GET /connect/google/callback
+MemberRouter.get(
+  ['/login/google/callback', '/connect/google/callback'],
+  passport.authenticate('google', {
+    successRedirect: '/login-route',
+    failureRedirect: '/login'
+  }))
 
 // GET /login/facebook
 // GET /connect/facebook
@@ -34,21 +80,6 @@ MemberRouter.get(
 MemberRouter.get(
   ['/login/twitter/callback', '/connect/twitter/callback'],
   passport.authenticate('twitter', {
-    successRedirect: '/login-route',
-    failureRedirect: '/login'
-  }))
-
-// GET /login/google
-// GET /connect/google
-MemberRouter.get(
-  ['/login/google', '/connect/google'],
-  passport.authenticate('google', { scope: [ 'email', 'profile' ] }))
-
-// GET /login/google/callback
-// GET /connect/google/callback
-MemberRouter.get(
-  ['/login/google/callback', '/connect/google/callback'],
-  passport.authenticate('google', {
     successRedirect: '/login-route',
     failureRedirect: '/login'
   }))

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt-nodejs'
 import uuid from 'uuid/v4'
+import { updateVals } from '../utils'
 
 /**
  * This model handles dealing with member data in the database.
@@ -113,6 +114,11 @@ class Member {
     await db.run(`UPDATE members SET name='${name}' WHERE id=${this.id};`)
   }
 
+  /**
+   * Returns an object representation of the member.
+   * @returns {Object} - An object representation of the member.
+   */
+
   getObject () {
     return {
       id: this.id,
@@ -121,6 +127,23 @@ class Member {
       active: Boolean(this.active),
       admin: Boolean(this.admin)
     }
+  }
+
+  /**
+   * Update the member's record in the database.
+   * @param vals {Object} - An object containing key/value pairs, specifying
+   *   what to update the member record to.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves when the UPDATE statement has
+   *   been run.
+   */
+
+  async update (vals, db) {
+    const query = updateVals([
+      { name: 'name', type: 'string' },
+      { name: 'email', type: 'string' }
+    ], vals)
+    await db.run(`UPDATE members SET ${query} WHERE id=${this.id}`)
   }
 
   /**

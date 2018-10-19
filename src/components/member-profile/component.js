@@ -42,12 +42,24 @@ class MemberProfile extends React.Component {
     }
   }
 
-  /**
-   * The render function
-   * @returns {string} - The rendered output.
-   */
+  renderForm () {
+    return (
+      <React.Fragment>
+        <Header />
+        <form method='post' action='/member'>
+          <input type='hidden' name='id' value={this.props.member.id} />
+          <label htmlFor='name'>Name</label>
+          <input type='text' name='name' id='name' defaultValue={this.props.member.name} />
+          <label htmlFor='email'>Email</label>
+          <input type='text' name='email' id='email' defaultValue={this.props.member.email} />
+          <button>Save</button>
+        </form>
+        <Footer />
+      </React.Fragment>
+    )
+  }
 
-  render () {
+  renderProfile () {
     return (
       <React.Fragment>
         <Header />
@@ -58,6 +70,20 @@ class MemberProfile extends React.Component {
         <Footer />
       </React.Fragment>
     )
+  }
+
+  /**
+   * The render function
+   * @returns {string} - The rendered output.
+   */
+
+  render () {
+    switch (this.props.match.path) {
+      case '/member/:id/edit':
+        return this.renderForm()
+      default:
+        return this.renderProfile()
+    }
   }
 }
 
@@ -74,6 +100,7 @@ const mapStateToProps = state => {
 }
 
 MemberProfile.propTypes = {
+  match: PropTypes.object,
   member: PropTypes.object
 }
 

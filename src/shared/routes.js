@@ -19,6 +19,11 @@ const routes = [
     path: '/member/:id',
     exact: true,
     component: MemberProfile
+  },
+  {
+    path: '/member/:id/edit',
+    exact: true,
+    component: MemberProfile
   }
 ]
 

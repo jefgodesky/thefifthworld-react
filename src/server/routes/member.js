@@ -1,4 +1,6 @@
 import express from 'express'
+import Member from '../models/member'
+import db from '../db'
 
 const passport = require('passport')
 const MemberRouter = express.Router()
@@ -83,5 +85,20 @@ MemberRouter.get(
     successRedirect: '/login-route',
     failureRedirect: '/login'
   }))
+
+// POST /member
+MemberRouter.post('/member', async (req, res) => {
+  if (req.body.id) {
+    const member = await Member.get(req.body.id, db)
+    if (member) {
+      await member.update(req.body, db)
+      res.redirect(`/member/${req.body.id}`)
+    } else {
+      res.redirect(`/member/${req.body.id}`)
+    }
+  } else {
+    res.redirect('/member')
+  }
+})
 
 export default MemberRouter

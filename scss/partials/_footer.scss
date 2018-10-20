@@ -1,0 +1,25 @@
+#root > footer {
+  @extend %layout;
+  background-color: $red;
+  background-image: url('#{$images}/bottom.png'), url('#{$images}/footer.png');
+  background-position: top center;
+  background-repeat: repeat-x, no-repeat;
+  background-size: auto, cover;
+  color: $white;
+  padding-bottom: 3em;
+  padding-top: calc(16px + 1em);
+  position: relative;
+
+  &::after {
+    background: linear-gradient(to bottom, $transparent 0%, $red 100%);
+    bottom: 0;
+    content: '';
+    display: block;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b92e52', endColorstr='#b92e52', GradientType=0 );
+    height: 2em;
+    left: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
+}

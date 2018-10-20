@@ -20,7 +20,8 @@ import auth from './auth'
 import db from './db'
 import reducers from '../shared/reducers'
 import routes from '../shared/routes'
-import ssr from './ssr'
+import getMarkup from './ssr'
+import { login } from '../components/member-login/actions'
 
 import MemberRouter from './routes/member'
 import Router from '../components/router/component'
@@ -71,21 +72,20 @@ const respond = (req, res, store) => {
       </StaticRouter>
     </Provider>
   )
-  res.send(ssr(markup, {}, store))
+  res.send(getMarkup(markup, {}, store))
 }
 
 // GET requests
-server.get('*', (req, res) => {
+server.get('*', async (req, res) => {
   const store = createStore(reducers, applyMiddleware(thunk))
   const route = routes.find(route => matchPath(req.url, route))
+  if (req.user) {
+    store.dispatch(login(req.user))
+  }
+
   if (route && route.load) {
-    route.load(route, req.url, db, store.dispatch)
-      .then(() => {
-        respond(req, res, store)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    await route.load(route, req.url, db, store.dispatch)
+    respond(req, res, store)
   } else {
     respond(req, res, store)
   }

@@ -1,9 +1,9 @@
 import * as types from './action-types'
 
-export function login (id) {
+export function login (user) {
   return {
     type: types.LOGIN,
-    payload: id
+    payload: user
   }
 }
 

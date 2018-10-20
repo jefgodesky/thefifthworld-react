@@ -1,6 +1,6 @@
 import * as types from './action-types'
 
-const init = { loggedIn: null }
+const init = null
 
 /**
  * The Redux reducer function for state data related to the member login.
@@ -14,10 +14,10 @@ export default function MemberLogin (state = init, action = {}) {
   switch (action.type) {
     case types.LOGIN:
       // User is being logged in
-      return { loggedIn: action.payload }
+      return action.payload
     case types.LOGOUT:
       // User is being logged out
-      return { loggedIn: null }
+      return null
     default:
       return state
   }

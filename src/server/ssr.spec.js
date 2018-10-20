@@ -41,7 +41,7 @@ describe('Server-side rendering', () => {
     <meta property="fb:app_id" content="241682169673933" />
   </head>
   <body>
-    <main><p>Hello world</p></main>
+    <div id="root"><p>Hello world</p></div>
     <script>window.__INITIAL_STATE__ = "debug"</script>
     <script src="/bundle.js" defer="defer"></script>
   </body>
@@ -96,7 +96,7 @@ describe('Server-side rendering', () => {
     <meta property="fb:app_id" content="241682169673933" />
   </head>
   <body>
-    <main><p>Hello world</p></main>
+    <div id="root"><p>Hello world</p></div>
     <script>window.__INITIAL_STATE__ = "debug"</script>
     <script src="/bundle.js" defer="defer"></script>
   </body>
@@ -146,7 +146,7 @@ describe('Server-side rendering', () => {
     <meta name="test" content="pass" />
   </head>
   <body>
-    <main><p>Hello world</p></main>
+    <div id="root"><p>Hello world</p></div>
     <script>window.__INITIAL_STATE__ = "debug"</script>
     <script src="/bundle.js" defer="defer"></script>
   </body>
@@ -188,7 +188,7 @@ describe('Server-side rendering', () => {
     <meta property="fb:app_id" content="241682169673933" />
   </head>
   <body>
-    <main><p>Hello world</p></main>
+    <div id="root"><p>Hello world</p></div>
     <script>window.__INITIAL_STATE__ = "debug"</script>
     <script src="/bundle.js" defer="defer"></script>
   </body>

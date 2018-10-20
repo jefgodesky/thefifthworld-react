@@ -1,0 +1,19 @@
+%layout {
+  padding: 1em;
+
+  @media (min-width: 40em) {
+    padding: 1em 5%;
+  }
+
+  @media (min-width: 50em) {
+    padding: 1em 10%;
+  }
+
+  @media (min-width: 60em) {
+    padding: 1em 15%;
+  }
+
+  @media (min-width: 80em) {
+    padding: 1em calc(50% - 25em);
+  }
+}

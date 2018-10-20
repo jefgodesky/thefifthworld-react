@@ -1,2 +1,23 @@
+@import 'modules/colors';
+@import 'modules/variables';
+@import 'modules/placeholders';
+@import 'modules/layout';
+
 @import 'partials/normalize';
 @import 'partials/typography';
+
+body {
+  background: $red;
+}
+
+#root > main {
+  background: $white;
+  overflow: auto;
+}
+
+main {
+  @extend %layout;
+}
+
+@import 'partials/header';
+@import 'partials/footer';

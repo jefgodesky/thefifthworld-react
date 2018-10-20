@@ -24,6 +24,6 @@ if (window.__INITIAL_STATE__) {
         <Router />
       </BrowserRouter>
     </Provider>,
-    document.querySelector('body > main')
+    document.getElementById('root')
   )
 }

@@ -158,7 +158,7 @@ const getMarkup = (markup, meta, store) => {
     ${head(meta)}
   </head>
   <body>
-    <main>${markup}</main>
+    <div id="root">${markup}</div>
     <script>window.__INITIAL_STATE__ = ${init}</script>
     <script src="/bundle.js" defer="defer"></script>
   </body>

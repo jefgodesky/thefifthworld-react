@@ -9,6 +9,47 @@
   padding-bottom: 3em;
   padding-top: calc(16px + 1em);
   position: relative;
+  text-align: center;
+
+  nav {
+    margin-bottom: 3em;
+
+    ul {
+      @extend %unformatted-list;
+    }
+
+    li {
+      display: inline-block;
+      margin: 0 1em;
+    }
+
+    a {
+      border-bottom: 2px solid transparent;
+      font-family: 'Fontin Sans Small Caps';
+      padding-bottom: 0.5em;
+      text-decoration: none;
+
+      &:hover {
+        border-bottom-color: $white;
+      }
+    }
+  }
+
+  a {
+    color: $white;
+  }
+
+  .copyleft {
+    font-size: 0.618em;
+
+    .icons {
+      margin-right: 0.5em;
+      img {
+        height: 1em;
+        margin-right: 0.1em;
+      }
+    }
+  }
 
   &::after {
     background: linear-gradient(to bottom, $transparent 0%, $red 100%);

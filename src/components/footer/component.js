@@ -20,7 +20,22 @@ class Footer extends React.Component {
   render () {
     return (
       <footer>
-        <p>This is the footer</p>
+        <nav>
+          <ul>
+            <li><a href='/explore'>Explore</a></li>
+            <li><a href='/stories'>Read</a></li>
+            <li><a href='/rpg'>Play</a></li>
+          </ul>
+        </nav>
+
+        <p className='copyleft'>
+          <span className='icons'>
+            <img src='https://s3.amazonaws.com/thefifthworld/website/images/cc.svg' alt='Creative Commons' />
+            <img src='https://s3.amazonaws.com/thefifthworld/website/images/by.svg' alt='Attribution' />
+            <img src='https://s3.amazonaws.com/thefifthworld/website/images/sa.svg' alt='Share-Alike' />
+          </span>
+          <em>The Fifth World</em> is licensed under a <a href='http://creativecommons.org/licenses/by-sa/4.0/deed.en_US'>Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+        </p>
       </footer>
     )
   }

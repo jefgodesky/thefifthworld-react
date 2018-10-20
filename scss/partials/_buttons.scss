@@ -16,13 +16,30 @@ input[type='submit'],
 input[type='button'],
 a.button {
   @include button-color($red, $white);
+  appearance: none;
+  border: 0;
   box-shadow: 0 0 .25em $black13;
   display: inline-block;
+  margin: 0 0.5em;
   padding: .5em 1em;
   text-decoration: none;
 
   &:active {
     box-shadow: 0 0 .15em $black23;
+  }
+
+  &.secondary {
+    background: $white;
+    border: .2em solid $red;
+    box-shadow: none;
+    color: $red;
+    opacity: 0.5;
+    padding: .3em .8em;
+    transition: 0.25s ease-in-out opacity;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 

@@ -1,0 +1,20 @@
+label {
+  display: block;
+  font-family: 'Fontin Sans Small Caps';
+  font-weight: bold;
+  margin: 2em 0 .25em;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'] {
+  border: 0;
+  border-bottom: 2px solid $brown13;
+  display: block;
+  outline: none;
+  width: 100%;
+
+  &:focus {
+    border-bottom: 2px solid $brown;
+  }
+}

@@ -46,14 +46,19 @@ class MemberProfile extends React.Component {
     return (
       <React.Fragment>
         <Header />
-        <form method='post' action='/member'>
-          <input type='hidden' name='id' value={this.props.member.id} />
-          <label htmlFor='name'>Name</label>
-          <input type='text' name='name' id='name' defaultValue={this.props.member.name} />
-          <label htmlFor='email'>Email</label>
-          <input type='text' name='email' id='email' defaultValue={this.props.member.email} />
-          <button>Save</button>
-        </form>
+        <main>
+          <form method='post' action='/member'>
+            <input type='hidden' name='id' value={this.props.member.id} />
+            <label htmlFor='name'>Name</label>
+            <input type='text' name='name' id='name' defaultValue={this.props.member.name} />
+            <label htmlFor='email'>Email</label>
+            <input type='text' name='email' id='email' defaultValue={this.props.member.email} />
+            <p className='actions'>
+              <button>Save</button>
+              <a href={`/member/${this.props.member.id}`} className='button secondary'>Cancel</a>
+            </p>
+          </form>
+        </main>
         <Footer />
       </React.Fragment>
     )

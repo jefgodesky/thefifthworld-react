@@ -20,7 +20,7 @@ a.button {
   border: 0;
   box-shadow: 0 0 .25em $black13;
   display: inline-block;
-  margin: 0 0.5em;
+  margin: 0 .5em;
   padding: .5em 1em;
   text-decoration: none;
 
@@ -33,9 +33,9 @@ a.button {
     border: .2em solid $red;
     box-shadow: none;
     color: $red;
-    opacity: 0.5;
+    opacity: .5;
     padding: .3em .8em;
-    transition: 0.25s ease-in-out opacity;
+    transition: .25s ease-in-out opacity;
 
     &:hover {
       opacity: 1;

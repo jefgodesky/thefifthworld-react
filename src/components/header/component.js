@@ -39,7 +39,7 @@ class Header extends React.Component {
         </h1>
         <nav>
           <ul>
-            <li className='active'><a href='/'>Explore</a></li>
+            <li><a href='/explore'>Explore</a></li>
             <li><a href='/stories'>Read</a></li>
             <li><a href='/rpg'>Play</a></li>
           </ul>

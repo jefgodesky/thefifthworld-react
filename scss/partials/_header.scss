@@ -1,28 +1,16 @@
-@mixin header ($dir) {
+@mixin header () {
   @extend %layout;
   background-attachment: scroll, fixed;
-  background-image: url('#{$images}/top.png'), url('#{$images}/headers/#{$dir}/0600.jpg');
+  background-image: url('#{$images}/top.png'), url('#{$images}/headers/standard.jpg');
   background-position: bottom center, center;
   background-repeat: repeat-x, no-repeat;
   background-size: auto, cover;
   padding-bottom: 0;
   padding-top: 0;
-
-  @media (min-width: 600px) {
-    background-image: url('#{$images}/top.png'), url('#{$images}/headers/#{$dir}/0800.jpg');
-  }
-
-  @media (min-width: 800px) {
-    background-image: url('#{$images}/top.png'), url('#{$images}/headers/#{$dir}/1200.jpg');
-  }
-
-  @media (min-width: 1200px) {
-    background-image: url('#{$images}/top.png'), url('#{$images}/headers/#{$dir}/2000.jpg');
-  }
 }
 
 #root > header {
-  @include header('home');
+  @include header();
   overflow: auto;
 
   & > h1 {

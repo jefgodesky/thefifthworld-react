@@ -26,7 +26,7 @@
     a {
       border-bottom: 2px solid transparent;
       font-family: 'Fontin Sans Small Caps';
-      padding-bottom: 0.5em;
+      padding-bottom: .5em;
       text-decoration: none;
 
       &:hover {
@@ -40,13 +40,14 @@
   }
 
   .copyleft {
-    font-size: 0.618em;
+    font-size: .618em;
 
     .icons {
-      margin-right: 0.5em;
+      margin-right: .5em;
+
       img {
         height: 1em;
-        margin-right: 0.1em;
+        margin-right: .1em;
       }
     }
   }

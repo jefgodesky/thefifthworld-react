@@ -1,0 +1,31 @@
+@mixin button-color ($bg, $fg) {
+  background: $bg;
+  color: $fg;
+
+  &:hover {
+    background: lighten($bg, 5%);
+  }
+
+  &:active {
+    background: darken($bg, 5%);
+  }
+}
+
+button,
+input[type='submit'],
+input[type='button'],
+a.button {
+  @include button-color($red, $white);
+  box-shadow: 0 0 .25em $black13;
+  display: inline-block;
+  padding: .5em 1em;
+  text-decoration: none;
+
+  &:active {
+    box-shadow: 0 0 .15em $black23;
+  }
+}
+
+.actions {
+  text-align: center;
+}

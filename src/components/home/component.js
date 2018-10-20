@@ -1,6 +1,7 @@
 import React from 'react'
 import Header from '../header/component'
 import Footer from '../footer/component'
+import PatreonLink from '../patreon-link/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -25,6 +26,8 @@ class Home extends React.Component {
         <Header />
         <main>
           <p>This is the homepage.</p>
+          <hr />
+          <PatreonLink />
         </main>
         <Footer />
       </React.Fragment>

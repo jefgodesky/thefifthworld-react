@@ -6,18 +6,12 @@
 @import 'partials/normalize';
 @import 'partials/typography';
 
-body {
-  background: $red;
-}
-
 #root > main {
   background: $white;
   overflow: auto;
 }
 
-main {
-  @extend %layout;
-}
-
+@import 'partials/buttons';
+@import 'partials/atoms';
 @import 'partials/header';
 @import 'partials/footer';

@@ -10,8 +10,11 @@
     ]
   },
   "rules": {
+    "force-attribute-nesting": 0,
+    "force-element-nesting": 0,
     "nesting-depth": 0,
     "no-ids": 0,
+    "no-qualifying-elements": 0,
     "no-url-domains": 0,
     "no-url-protocols": 0
   }

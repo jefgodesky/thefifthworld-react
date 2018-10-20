@@ -68,9 +68,8 @@ class MemberProfile extends React.Component {
     return (
       <React.Fragment>
         <Header />
-        <main>
-          <h2>{this.props.member.name}</h2>
-          <p>{this.props.member.email}</p>
+        <main className='profile'>
+          <h1>{this.props.member.name}</h1>
         </main>
         <Footer />
       </React.Fragment>

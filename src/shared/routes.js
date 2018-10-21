@@ -1,5 +1,6 @@
 /* global __isClient__ */
 
+import Dashboard from '../components/dashboard/component'
 import Home from '../components/home/component'
 import MemberLogin from '../components/member-login/component'
 import MemberProfile from '../components/member-profile/component'
@@ -14,6 +15,11 @@ const routes = [
     path: '/login',
     exact: true,
     component: MemberLogin
+  },
+  {
+    path: '/dashboard',
+    exact: true,
+    component: Dashboard
   },
   {
     path: '/member/:id',

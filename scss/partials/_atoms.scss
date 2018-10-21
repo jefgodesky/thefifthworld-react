@@ -8,13 +8,13 @@ main {
 }
 
 aside {
-  background: $blue13;
+  background: $brown16;
   margin: 2em 0;
   padding: 1em 2em;
   position: relative;
 
   .button {
-    @include button-color($blue, $white);
+    @include button-color($brown, $white);
   }
 
   @media (min-width: 50em) {
@@ -52,6 +52,5 @@ hr {
   border: 0;
   height: 25px;
   margin: 2em auto;
-  opacity: .3333;
-  width: 225px;
+  width: 255px;
 }

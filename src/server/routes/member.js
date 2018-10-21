@@ -91,7 +91,7 @@ MemberRouter.post('/member', async (req, res) => {
   if (req.body.id) {
     const member = await Member.get(req.body.id, db)
     if (member) {
-      await member.update(req.body, db)
+      await member.update(req.body, req.user, db)
       res.redirect(`/member/${req.body.id}`)
     } else {
       res.redirect(`/member/${req.body.id}`)

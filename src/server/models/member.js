@@ -146,17 +146,21 @@ class Member {
    * Update the member's record in the database.
    * @param vals {Object} - An object containing key/value pairs, specifying
    *   what to update the member record to.
+   * @params editor {Object} - An object representation of the member trying to
+   *   make this update.
    * @param db {Pool} - A database connection.
    * @returns {Promise} - A promise that resolves when the UPDATE statement has
    *   been run.
    */
 
-  async update (vals, db) {
-    const query = updateVals([
-      { name: 'name', type: 'string' },
-      { name: 'email', type: 'string' }
-    ], vals)
-    await db.run(`UPDATE members SET ${query} WHERE id=${this.id}`)
+  async update (vals, editor, db) {
+    if (Member.canEdit(this.getObject(), editor)) {
+      const query = updateVals([
+        { name: 'name', type: 'string' },
+        { name: 'email', type: 'string' }
+      ], vals)
+      await db.run(`UPDATE members SET ${query} WHERE id=${this.id}`)
+    }
   }
 
   /**

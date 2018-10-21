@@ -9,3 +9,5 @@ config/production.json
 config/test.json
 public/*
 server.js
+coverage
+coverage/*

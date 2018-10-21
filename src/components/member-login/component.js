@@ -23,23 +23,27 @@ class MemberLogin extends React.Component {
     return (
       <React.Fragment>
         <Header />
-        <main>
-          <h2>Login</h2>
+        <main className='login'>
+          <h1>Login</h1>
           <form action='/login' method='post'>
             <label htmlFor='email'>Email</label>
             <input type='text' name='email' id='email' placeholder='example@test.com' />
             <label htmlFor='passphrase'>Passphrase</label>
             <input type='text' name='passphrase' id='passphrase' placeholder='Whisper your secret passphrase' />
-            <button>Log in</button>
+            <p className='actions'>
+              <button>Log in</button>
+            </p>
           </form>
-          <p>Or login with&hellip;</p>
-          <ul>
-            <li><a href='/login/patreon'>Patreon</a></li>
-            <li><a href='/login/discord'>Discord</a></li>
-            <li><a href='/login/google'>Google</a></li>
-            <li><a href='/login/facebook'>Facebook</a></li>
-            <li><a href='/login/twitter'>Twitter</a></li>
-          </ul>
+          <div className='oauth2-login'>
+            <p>Or login with&hellip;</p>
+            <ul>
+              <li><a href='/login/patreon' className='button patreon'>Patreon</a></li>
+              <li><a href='/login/discord' className='button discord'>Discord</a></li>
+              <li><a href='/login/google' className='button googlee'>Google</a></li>
+              <li><a href='/login/facebook' className='button facebook'>Facebook</a></li>
+              <li><a href='/login/twitter' className='button twitter'>Twitter</a></li>
+            </ul>
+          </div>
         </main>
         <Footer />
       </React.Fragment>

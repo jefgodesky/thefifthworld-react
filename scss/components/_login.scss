@@ -1,0 +1,57 @@
+.login {
+  .oauth2-login {
+    text-align: center;
+
+    p {
+      font-style: italic;
+    }
+
+    ul {
+      @extend %unformatted-list;
+    }
+
+    li {
+      margin-bottom: .25em;
+    }
+
+    a {
+      display: block;
+    }
+
+    .patreon {
+      @include button-color($patreon, $white);
+    }
+
+    .discord {
+      @include button-color($discord, $white);
+    }
+
+    .google {
+      @include button-color($google, $white);
+    }
+
+    .facebook {
+      @include button-color($facebook, $white);
+    }
+
+    .twitter {
+      @include button-color($twitter, $white);
+    }
+  }
+
+  @media (min-width: 50em) {
+    form,
+    .oauth2-login {
+      float: left;
+      width: 50%;
+    }
+
+    form {
+      padding-right: 1em;
+    }
+
+    .oauth2-login {
+      padding-left: 1em;
+    }
+  }
+}

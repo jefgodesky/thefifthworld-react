@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'
 import Header from '../header/component'
 import Footer from '../footer/component'
+import Error401 from '../error-401/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -65,11 +66,15 @@ class MemberProfile extends React.Component {
   }
 
   renderProfile () {
+    const actions = Member.canEdit(this.props.member, this.props.loggedInMember)
+      ? (<p className='actions'><a href={`/member/${this.props.member.id}/edit`} className='button'>Edit Profile</a></p>)
+      : (<React.Fragment />)
     return (
       <React.Fragment>
         <Header />
         <main className='profile'>
           <h1>{this.props.member.name}</h1>
+          {actions}
         </main>
         <Footer />
       </React.Fragment>
@@ -84,7 +89,11 @@ class MemberProfile extends React.Component {
   render () {
     switch (this.props.match.path) {
       case '/member/:id/edit':
-        return this.renderForm()
+        if (Member.canEdit(this.props.member, this.props.loggedInMember)) {
+          return this.renderForm()
+        } else {
+          return (<Error401 />)
+        }
       default:
         return this.renderProfile()
     }
@@ -99,11 +108,13 @@ class MemberProfile extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    loggedInMember: state.MemberLogin,
     member: state.MemberProfile
   }
 }
 
 MemberProfile.propTypes = {
+  loggedInMember: PropTypes.object,
   match: PropTypes.object,
   member: PropTypes.object
 }

@@ -79,6 +79,19 @@ class Member {
   }
 
   /**
+   * Returns true if `editor` is authorized to edit the profile of `subject`.
+   * @param subject {object} - An object representation of a member.
+   * @param editor {object} - An object representation of a member.
+   * @returns {boolean} - `true` if the `editor` is authorized to edit the
+   *   profile of `subject`, or `false` otherwise.
+   */
+
+  static canEdit (subject, editor) {
+    return (subject && editor && (subject.id === editor.id)) ||
+      (editor && editor.admin)
+  }
+
+  /**
    * Returns the member's ID.
    * @returns {int} - The member's ID.
    */

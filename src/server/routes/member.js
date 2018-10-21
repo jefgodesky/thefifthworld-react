@@ -101,4 +101,17 @@ MemberRouter.post('/member', async (req, res) => {
   }
 })
 
+// GET /logout
+MemberRouter.get('/logout', (req, res) => {
+  req.logout()
+  res.redirect('/login')
+})
+
+// GET /login-route
+MemberRouter.get('/login-route', (req, res) => {
+  let url = '/dashboard'
+  // If this is the user's first time logging in, go to the welcome page
+  res.redirect(url)
+})
+
 export default MemberRouter

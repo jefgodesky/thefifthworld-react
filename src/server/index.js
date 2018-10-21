@@ -75,8 +75,18 @@ const respond = (req, res, store) => {
   res.send(getMarkup(markup, {}, store))
 }
 
+const redirector = (req, res, next) => {
+  if (req.user && req.originalUrl === '/login') {
+    res.redirect('/dashboard')
+  } else if (!req.user && req.originalUrl === '/dashboard') {
+    res.redirect('/login')
+  } else {
+    next()
+  }
+}
+
 // GET requests
-server.get('*', async (req, res) => {
+server.get('*', redirector, async (req, res) => {
   const store = createStore(reducers, applyMiddleware(thunk))
   const route = routes.find(route => matchPath(req.url, route))
   if (req.user) {

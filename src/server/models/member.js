@@ -1,6 +1,14 @@
 import bcrypt from 'bcrypt-nodejs'
 import uuid from 'uuid/v4'
 import { updateVals } from '../utils'
+import parse from '../../shared/parse'
+
+const msgTypes = {
+  confirm: 'confirmation',
+  error: 'error',
+  warning: 'warning',
+  info: 'info'
+}
 
 /**
  * This model handles dealing with member data in the database.
@@ -14,6 +22,7 @@ class Member {
     this.email = obj.email
     this.active = Boolean(obj.active)
     this.admin = Boolean(obj.admin)
+    this.invitations = obj.invitations
   }
 
   /**
@@ -37,13 +46,14 @@ class Member {
    *   query as a series of key/value pairs.
    * @param db {Pool} - A database connection.
    * @returns {mixed} - A Member object that matches the given parameters if
-   *   just one record matches, or an array of Member objects otherwise.
+   *   just one record matches, an array of Member objects if several match, or
+   *   `null` if no records match.
    */
 
   static async find (params, db) {
     const fields = Object.keys(params)
     const where = []
-    const valid = [ 'id', 'name', 'email', 'active', 'admin' ]
+    const valid = [ 'id', 'name', 'email', 'active', 'admin', 'invitations' ]
     fields.forEach(field => {
       if (valid.indexOf(field) > -1) where.push(`${field}='${params[field]}'`)
     })
@@ -55,7 +65,7 @@ class Member {
       rows.forEach(row => {
         members.push(new Member(row))
       })
-      return members
+      return members.length > 0 ? members : null
     }
   }
 
@@ -180,99 +190,6 @@ class Member {
   }
 
   /**
-   * Sends a reminder email for an invitation.
-   * @param invited {Object} - An object including an `email` field (a string
-   *   that is the email address that the reminder should be sent to) and an
-   *   `inviteCode` field (a string that is the unique invitation code for that
-   *   person).
-   * @param emailer {function} - A function that can send an email.
-   * @returns {Promise} - A promise that resolves when the email has been sent.
-   */
-
-  sendReminder (invited, emailer) {
-    return emailer({
-      to: invited.email,
-      subject: 'Welcome to the Fifth World',
-      body: `${this.getName()} has invited you to join the Fifth World community. Click below to begin:\n\nhttps://thefifthworld.com/join/${invited.inviteCode}`
-    })
-  }
-
-  /**
-   * Iterates over a set of rows and calls the `sendReminder` method for each.
-   * @param rows {Array.<Object>} - An array of objects, each one including an
-   *   `email` field (a string that is the email address that the reminder
-   *   should be sent to) and an `inviteCode` field (a string that is the
-   *   unique invitation code for that person).
-   * @param emailer {function} - A function that can send an email.
-   * @returns {Promise} - A promise that resolves when the promises for each of
-   *   the individual `sendReminder` method calls for each row have resolved.
-   */
-
-  sendReminders (rows, emailer) {
-    const reminders = []
-    rows.forEach(row => {
-      reminders.push(this.sendReminder(row, emailer))
-    })
-    return Promise.all(reminders)
-  }
-
-  /**
-   * Creates a new member entry in the database, creates a new invitation entry
-   * for that member, and sends an invitation email to the new member so she
-   * can access her new account.
-   * @param email {string} - The new member's email address.
-   * @param db {Pool} - A database connection.
-   * @param emailer {function} - A function that can send an email.
-   * @returns {Promise} - A promise that resolves when the new member entry and
-   *   invitation entries have been created in the database and the invitation
-   *   email has been sent.
-   */
-
-  async createInvite (email, db, emailer) {
-    let invite = {}
-    invite.code = uuid()
-    const newMember = await db.run(`INSERT INTO members (email) VALUES ('${email}')`)
-    const createInvitation = await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES ('${this.id}', '${newMember.insertId}', '${invite.code}')`)
-    if (createInvitation.affectedRows === 1) {
-      invite.email = email
-      invite.inviteId = createInvitation.insertId
-      return emailer({
-        to: email,
-        subject: 'Welcome to the Fifth World',
-        body: `${this.getName()} has invited you to join the Fifth World community. Click below to begin:\n\nhttps://thefifthworld.com/join/${invite.code}`
-      })
-    } else {
-      const warning = (createInvitation.affectedRows === 0)
-        ? 'Invitation was not created in database'
-        : (createInvitation.affectedRows > 1)
-          ? 'More than one row was created when inserting invitation!'
-          : 'Negative rows affected when inserting invitation?'
-      throw new Error(warning)
-    }
-  }
-
-  /**
-   * If the email is already in the members table, the array of matching rows
-   * is passed to `sendReminders`. If no record is found with the given email
-   * address, it is passed to `createInvite`.
-   * @param email {string} - An email address to send an invitation to.
-   * @param db {Pool} - A database connection.
-   * @param emailer {function} - A function that can send an email.
-   * @returns {Promise} - A Promise that queries the MySQL members table for
-   *   any members with the given email address. If found, the matching rows
-   *   are passed to `sendReminders`. If no records are found, the email is
-   *   passed to `createInvite`.
-   */
-
-  async invite (email, db, emailer) {
-    const rows = await db.run(`SELECT m.id, m.email, i.inviteCode FROM members m, invitations i WHERE m.email='${email}' AND i.inviteTo = m.id`)
-    const val = (rows.length > 0)
-      ? await this.sendReminders(rows, emailer)
-      : await this.createInvite(email, db, emailer)
-    return val
-  }
-
-  /**
    * Adds an OAuth2 authentication token for a member.
    * @param service {string} - The service that provided the OAuth2 token. Can
    *   be 'google', 'facebook', 'twitter', 'discord', 'patreon', or 'github'.
@@ -283,6 +200,103 @@ class Member {
 
   async addAuth (service, id, token, db) {
     await db.run(`INSERT INTO authorizations (member, provider, oauth2_id, oauth2_token) VALUES (${this.id}, '${service}', '${id}', '${token}');`)
+  }
+
+  static async getMessages (id, db) {
+    const messages = await db.run(`SELECT * FROM messages WHERE member=${id}`)
+    if (messages.length > 0) {
+      const res = {}
+      messages.forEach(msg => {
+        const message = parse(msg.message)
+        if (res[msg.type]) {
+          res[msg.type] = [...res[msg.type], message]
+        } else {
+          res[msg.type] = [message]
+        }
+        db.run(`DELETE FROM messages WHERE id=${msg.id};`)
+      })
+      return res
+    } else {
+      return {}
+    }
+  }
+
+  async logMessage (type, msg, db) {
+    const validTypes = Object.keys(msgTypes).map(type => msgTypes[type])
+    const checkedType = validTypes.indexOf(type) > -1 ? type : msgTypes.info
+    await db.run(`INSERT INTO messages (member, type, message) VALUES (${this.id}, '${checkedType}', '${msg}');`)
+  }
+
+  async hasInvitations (db) {
+    const res = await db.run(`SELECT admin, invitations FROM members WHERE id='${this.id}';`)
+    return res[0].admin || res[0].invitations > 0
+  }
+
+  async createInvitation (email, emailer, db) {
+    const code = uuid()
+    const account = await db.run(`INSERT INTO members (email) VALUES ('${email}');`)
+    await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES (${this.id}, ${account.insertId}, '${code}');`)
+    if (!this.admin) {
+      await db.run(`UPDATE members SET invitations=${this.invitations - 1} WHERE id=${this.id}`)
+    }
+    await emailer({
+      to: email,
+      subject: 'Welcome to the Fifth World',
+      body: `${this.getName()} has invited you to join the Fifth World. Click here to begin:\n\nhttps://thefifthworld.com/join/${code}`
+    })
+    await this.logMessage(msgTypes.confirm, `Invitation sent to '''${email}'''.`, db)
+  }
+
+  async sendReminder (member, emailer, db) {
+    const invitation = await db.run(`SELECT inviteCode FROM invitations WHERE inviteTo=${member.id} AND accepted=0;`)
+    if (invitation.length > 0) {
+      await emailer({
+        to: member.email,
+        subject: 'Your invitation to the Fifth World is waiting',
+        body: `${this.getName()} wants to remind you that you’ve been invited to join the Fifth World. Click here to begin:\n\nhttps://thefifthworld.com/join/${invitation[0].inviteCode}`
+      })
+      await this.logMessage(msgTypes.confirm, `'''${member.email}''' already had an invitation, so we sent a reminder.`, db)
+    } else {
+      await this.logMessage(msgTypes.info, `[/member/${member.id} ${member.getName()}] already has an account.`, db)
+    }
+  }
+
+  async sendInvitation (email, emailer, db) {
+    const hasInvitations = await this.hasInvitations(db)
+    if (hasInvitations) {
+      const existing = await Member.find({ email }, db)
+      if (existing) {
+        await this.sendReminder(existing, emailer, db)
+      } else {
+        await this.createInvitation(email, emailer, db)
+      }
+    }
+  }
+
+  static async sendInvitations (inviterId, emails, emailer, db) {
+    const inviter = await Member.get(inviterId, db)
+    const invited = (inviter.admin || (inviter.invitations > emails.length))
+      ? emails
+      : emails.slice(0, inviter.invitations)
+    invited.forEach(async email => {
+      await inviter.sendInvitation(email, emailer, db)
+    })
+    if (invited.length < emails.length) {
+      await this.logMessage(msgTypes.error, `Sorry — you wanted to invite ${emails.length} people, but you only had ${inviter.invitations} invitations.`, db)
+    }
+  }
+
+  static async getInvited (inviterId, db) {
+    const res = await db.run(`SELECT m.id, m.name, m.email, i.accepted FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteFrom=${inviterId};`)
+    const invited = []
+    res.forEach(record => {
+      invited.push({
+        id: record.id,
+        name: record.name ? record.name : record.email,
+        accepted: Boolean(record.accepted)
+      })
+    })
+    return invited
   }
 }
 

@@ -26,19 +26,18 @@ class MemberProfile extends React.Component {
    * This is a static function used on the server to load data from the
    * database through the Member model. If a record is found, then an action is
    * dispatched that adds that record to the Redux state.
-   * @param route {Object} - The route object that matched the request.
-   * @param url {string} - The URL requested.
+   * @param req {Object} - The request object from Express.
    * @param db {Pool} - A database connection to query.
-   * @param dispatch {function} - The Redux store dispatch function.
+   * @param store {Object} - A Redux store object.
    */
 
-  static async load (route, url, db, dispatch) {
-    if (!__isClient__ && route && route.path && url) {
-      const routeParser = new RouteParser(route.path)
-      const params = routeParser.match(url)
+  static async load (req, db, store) {
+    if (!__isClient__ && this.path && req.originalUrl && store.dispatch && (typeof store.dispatch === 'function')) {
+      const routeParser = new RouteParser(this.path)
+      const params = routeParser.match(req.originalUrl)
       if (params.id) {
         const member = await Member.get(params.id, db)
-        dispatch(actions.load(member))
+        store.dispatch(actions.load(member))
       }
     }
   }

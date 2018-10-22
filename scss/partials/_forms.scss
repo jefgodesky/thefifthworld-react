@@ -18,3 +18,18 @@ input[type='password'] {
     border-bottom: 2px solid $brown;
   }
 }
+
+textarea {
+  border: 0;
+  box-shadow: 0 0 .5em $black13;
+  display: block;
+  height: 10em;
+  margin: 1em 0;
+  padding: 1em;
+  width: 100%;
+
+  @media (min-width: 50em) {
+    margin: 1em -1em;
+    width: calc(100% + 2em);
+  }
+}

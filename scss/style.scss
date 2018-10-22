@@ -1,5 +1,6 @@
 @import 'modules/colors';
 @import 'modules/variables';
+@import 'modules/mixins';
 @import 'modules/placeholders';
 @import 'modules/layout';
 
@@ -18,4 +19,5 @@
 @import 'partials/footer';
 
 @import 'components/login';
+@import 'components/messsages';
 @import 'components/profile';

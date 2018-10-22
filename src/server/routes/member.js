@@ -1,6 +1,7 @@
 import express from 'express'
 import Member from '../models/member'
 import db from '../db'
+import sendEmail from '../email'
 
 const passport = require('passport')
 const MemberRouter = express.Router()
@@ -112,6 +113,17 @@ MemberRouter.get('/login-route', (req, res) => {
   let url = '/dashboard'
   // If this is the user's first time logging in, go to the welcome page
   res.redirect(url)
+})
+
+// POST /invite
+MemberRouter.post('/invite', async (req, res) => {
+  if (req.user) {
+    const emails = req.body.invitations.split('\n').map(addr => addr.trim()).filter(addr => addr.length > 0)
+    await Member.sendInvitations(req.user.id, emails, sendEmail, db)
+    res.redirect('/dashboard')
+  } else {
+    res.redirect('/login')
+  }
 })
 
 export default MemberRouter

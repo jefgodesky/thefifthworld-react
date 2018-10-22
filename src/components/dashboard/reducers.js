@@ -8,14 +8,10 @@ import * as types from './action-types'
  * @constructor
  */
 
-export default function MemberLogin (state = null, action = {}) {
+export default function Dashboard (state = null, action = {}) {
   switch (action.type) {
-    case types.LOGIN:
-      // User is being logged in
+    case types.DASHBOARD_LOAD:
       return action.payload
-    case types.LOGOUT:
-      // User is being logged out
-      return null
     default:
       return state
   }

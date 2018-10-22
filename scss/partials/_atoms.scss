@@ -8,43 +8,7 @@ main {
 }
 
 aside {
-  background: $brown16;
-  margin: 2em 0;
-  padding: 1em 2em;
-  position: relative;
-
-  .button {
-    @include button-color($brown, $white);
-  }
-
-  @media (min-width: 50em) {
-    margin: 2em -2em;
-  }
-
-  &::before,
-  &::after {
-    content: '';
-    display: block;
-    height: 0;
-    position: absolute;
-    width: 0;
-  }
-
-  &::before {
-    border: 1em solid $white;
-    border-bottom-color: transparent;
-    border-right-color: transparent;
-    left: 0;
-    top: 0;
-  }
-
-  &::after {
-    border: 1em solid $white;
-    border-left-color: transparent;
-    border-top-color: transparent;
-    bottom: 0;
-    right: 0;
-  }
+  @extend %sidebar;
 }
 
 hr {

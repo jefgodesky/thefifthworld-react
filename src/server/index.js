@@ -22,7 +22,9 @@ import reducers from '../shared/reducers'
 import routes from '../shared/routes'
 import getMarkup from './ssr'
 import { login } from '../components/member-login/actions'
+import { load } from '../components/messages/actions'
 
+import Member from './models/member'
 import MemberRouter from './routes/member'
 import Router from '../components/router/component'
 
@@ -91,10 +93,12 @@ server.get('*', redirector, async (req, res) => {
   const route = routes.find(route => matchPath(req.url, route))
   if (req.user) {
     store.dispatch(login(req.user))
+    const messages = await Member.getMessages(req.user.id, db)
+    if (messages) store.dispatch(load(messages))
   }
 
   if (route && route.load) {
-    await route.load(route, req.url, db, store.dispatch)
+    await route.load(req, db, store)
     respond(req, res, store)
   } else {
     respond(req, res, store)

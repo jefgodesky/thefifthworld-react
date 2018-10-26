@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt-nodejs'
-import uuid from 'uuid/v4'
-import { updateVals } from '../utils'
+import { updateVals, generateInvitationCode } from '../utils'
+import { escape as SQLEscape } from 'sqlstring'
 import parse from '../../shared/parse'
 
 const msgTypes = {
@@ -224,7 +224,7 @@ class Member {
   async logMessage (type, msg, db) {
     const validTypes = Object.keys(msgTypes).map(type => msgTypes[type])
     const checkedType = validTypes.indexOf(type) > -1 ? type : msgTypes.info
-    await db.run(`INSERT INTO messages (member, type, message) VALUES (${this.id}, '${checkedType}', '${msg}');`)
+    await db.run(`INSERT INTO messages (member, type, message) VALUES (${this.id}, '${checkedType}', ${SQLEscape(msg)});`)
   }
 
   async hasInvitations (db) {
@@ -233,7 +233,7 @@ class Member {
   }
 
   async createInvitation (email, emailer, db) {
-    const code = uuid()
+    const code = await generateInvitationCode(db)
     const account = await db.run(`INSERT INTO members (email) VALUES ('${email}');`)
     await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES (${this.id}, ${account.insertId}, '${code}');`)
     if (!this.admin) {
@@ -297,6 +297,17 @@ class Member {
       })
     })
     return invited
+  }
+
+  static async acceptInvitation (code, db) {
+    const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode=${code};`)
+    if (check.length === 1) {
+      const id = check[0].id
+      await db.run(`UPDATE invitations SET accepted=1 WHERE inviteTo=${id}`)
+      return this.get(id, db)
+    } else {
+      return null
+    }
   }
 }
 

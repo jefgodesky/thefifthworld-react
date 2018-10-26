@@ -31,6 +31,26 @@ const updateVals = (cols, vals) => {
   return query.join(', ')
 }
 
+/**
+ * This method generates a random string to serve as an invitation code. It
+ * checks the database to make sure that it's unique, and no other invitation
+ * has ever been sent before with that code.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise} - A promise that resolves with a unique, random string
+ *   that can be used as an invitation code.
+ */
+
+const generateInvitationCode = async db => {
+  let code = ''
+  while (code === '') {
+    code = Math.random().toString(36).replace('0.', '')
+    const check = await db.run(`SELECT id FROM invitations WHERE inviteCode='${code}';`)
+    if (check.length > 0) code = ''
+  }
+  return code
+}
+
 export {
-  updateVals
+  updateVals,
+  generateInvitationCode
 }

@@ -1,4 +1,5 @@
 import express from 'express'
+import { escape as SQLEscape } from 'sqlstring'
 import Member from '../models/member'
 import db from '../db'
 import sendEmail from '../email'
@@ -123,6 +124,28 @@ MemberRouter.post('/invite', async (req, res) => {
     res.redirect('/dashboard')
   } else {
     res.redirect('/login')
+  }
+})
+
+// POST /join
+MemberRouter.post('/join', (req, res) => {
+  if (req.body.code) {
+    res.redirect(`/join/${req.body.code}`)
+  } else {
+    res.redirect('/join')
+  }
+})
+
+// GET /join/:code
+MemberRouter.get('/join/:code', async (req, res, next) => {
+  const member = await Member.acceptInvitation(SQLEscape(req.params.code), db)
+  if (member) {
+    req.login(member, err => {
+      if (err) return next({ error: err, status: 500 })
+      res.redirect(`/member/${member.getId()}/edit`)
+    })
+  } else {
+    res.redirect('/join')
   }
 })
 

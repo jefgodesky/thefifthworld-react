@@ -43,6 +43,8 @@ class MemberProfile extends React.Component {
   }
 
   renderForm () {
+    const name = this.props.member.getName ? this.props.member.getName() : this.props.member.name
+
     return (
       <React.Fragment>
         <Header />
@@ -50,7 +52,7 @@ class MemberProfile extends React.Component {
           <form method='post' action='/member'>
             <input type='hidden' name='id' value={this.props.member.id} />
             <label htmlFor='name'>Name</label>
-            <input type='text' name='name' id='name' defaultValue={this.props.member.name} />
+            <input type='text' name='name' id='name' defaultValue={name} />
             <label htmlFor='email'>Email</label>
             <input type='text' name='email' id='email' defaultValue={this.props.member.email} />
             <p className='actions'>

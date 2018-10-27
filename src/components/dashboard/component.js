@@ -78,7 +78,9 @@ class Dashboard extends React.Component {
    */
 
   render () {
+    const invitationCount = this.props.loggedInMember.admin ? '∞' : this.props.loggedInMember.invitations
     const invitations = this.getInvitations()
+
     return (
       <React.Fragment>
         <Header />
@@ -95,7 +97,7 @@ class Dashboard extends React.Component {
             <h1>Invitations</h1>
             {invitations}
             <h2>Send Invitations</h2>
-            <p>You can send invitations to up to <strong>∞</strong> more people. Enter each email address on a separate line.</p>
+            <p>You can send invitations to up to <strong>{invitationCount}</strong> more people. Enter each email address on a separate line.</p>
             <form action='/invite' method='post'>
               <textarea name='invitations' placeholder='someone@example.com' />
               <p className='actions'>

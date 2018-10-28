@@ -18,3 +18,20 @@ hr {
   margin: 2em auto;
   width: 255px;
 }
+
+a {
+  color: $red;
+  font-weight: bold;
+
+  &:visited {
+    color: desaturate($red, 25%);
+  }
+
+  &:hover {
+    color: lighten($red, 10%);
+  }
+
+  &:active {
+    color: darken($red, 10%);
+  }
+}

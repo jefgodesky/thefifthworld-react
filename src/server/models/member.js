@@ -262,8 +262,8 @@ class Member {
     const account = await db.run(`INSERT INTO members (email) VALUES ('${email}');`)
     await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES (${this.id}, ${account.insertId}, '${code}');`)
     if (!this.admin) {
-      this.invitations--
-      await db.run(`UPDATE members SET invitations=${this.invitations - 1} WHERE id=${this.id}`)
+      this.invitations = Math.max(this.invitations - 1, 0)
+      await db.run(`UPDATE members SET invitations=${this.invitations} WHERE id=${this.id}`)
     }
     await emailer({
       to: email,

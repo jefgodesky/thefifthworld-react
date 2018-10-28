@@ -1,0 +1,33 @@
+table {
+  font-family: 'Fontin Sans';
+  margin: 1em 0;
+  text-align: left;
+  width: 100%;
+
+  th,
+  td {
+    padding: .5em 1em;
+  }
+
+  th {
+    border-bottom: 1px solid $brown;
+    color: $brown;
+  }
+
+  tbody > tr:nth-child(odd) > td {
+    background: $brown112;
+  }
+
+  .short,
+  .num {
+    text-align: center;
+  }
+
+  .status {
+    text-align: right;
+  }
+
+  @media (min-width: 50em) {
+    margin: 1em -1em;
+  }
+}

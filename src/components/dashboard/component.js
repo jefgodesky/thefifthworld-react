@@ -96,14 +96,18 @@ class Dashboard extends React.Component {
           <section id='invitations'>
             <h1>Invitations</h1>
             {invitations}
-            <h2>Send Invitations</h2>
-            <p>You can send invitations to up to <strong>{invitationCount}</strong> more people. Enter each email address on a separate line.</p>
-            <form action='/invite' method='post'>
-              <textarea name='invitations' placeholder='someone@example.com' />
-              <p className='actions'>
-                <button>Send Invitations</button>
-              </p>
-            </form>
+            {invitationCount > 0 &&
+              <React.Fragment>
+                <h2>Send Invitations</h2>
+                <p>You can send invitations to up to <strong>{invitationCount}</strong> more people. Enter each email address on a separate line.</p>
+                <form action='/invite' method='post'>
+                  <textarea name='invitations' placeholder='someone@example.com' />
+                  <p className='actions'>
+                    <button>Send Invitations</button>
+                  </p>
+                </form>
+              </React.Fragment>
+            }
           </section>
         </main>
         <Footer />

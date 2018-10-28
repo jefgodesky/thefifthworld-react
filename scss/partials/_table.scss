@@ -29,5 +29,6 @@ table {
 
   @media (min-width: 50em) {
     margin: 1em -1em;
+    width: calc(100% + 2em);
   }
 }

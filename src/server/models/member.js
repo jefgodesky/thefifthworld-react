@@ -134,6 +134,7 @@ class Member {
    */
 
   async setName (name, db) {
+    this.name = name
     await db.run(`UPDATE members SET name='${name}' WHERE id=${this.id};`)
   }
 
@@ -315,17 +316,17 @@ class Member {
     if (this.invitations > 0) {
       const existing = await Member.find({ email }, db)
       if (existing) {
-        const hasPendingInvitation = await db.run(`SELECT id FROM invitations WHERE inviteTo=${exissting.id} AND accepted=0;`)
+        const hasPendingInvitation = await db.run(`SELECT id FROM invitations WHERE inviteTo=${existing.id} AND accepted=0;`)
         if (hasPendingInvitation.length > 0) {
           await this.sendReminder(existing, emailer, db)
         } else {
-          await this.logMessage(msgTypes.info, `<a href="/member/${existing.id}">${existing.getName()}</a> is already a member.`)
+          await this.logMessage(msgTypes.info, `[/member/${existing.id} ${existing.getName()}] is already a member.`, db)
         }
       } else {
         await this.createInvitation(email, emailer, db)
       }
     } else {
-      await this.logMessage(msgTypes.warning, `Sorry, you’ve run out of invitations. No invitation sent to ${email}.`, db)
+      await this.logMessage(msgTypes.warning, `Sorry, you’ve run out of invitations. No invitation sent to '''${email}'''.`, db)
     }
   }
 
@@ -347,9 +348,8 @@ class Member {
 
   static async sendInvitations (inviterId, emails, emailer, db) {
     const inviter = await Member.get(inviterId, db)
-    for (let i = 0; i < emails.length; i++) {
-      console.log(`inviting ${emails[i]}`)
-      await inviter.sendInvitation(emails[i], emailer, db)
+    for (const email of emails) {
+      await inviter.sendInvitation(email, emailer, db)
     }
   }
 
@@ -384,7 +384,7 @@ class Member {
    */
 
   static async acceptInvitation (code, db) {
-    const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode=${code};`)
+    const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode='${code}';`)
     if (check.length === 1) {
       const id = check[0].id
       await db.run(`UPDATE invitations SET accepted=1 WHERE inviteTo=${id}`)

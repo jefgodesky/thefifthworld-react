@@ -1,4 +1,4 @@
-/* global describe, it, expect, afterAll */
+/* global describe, it, expect, beforeEach, afterEach, afterAll */
 
 import Member from './member'
 import db from '../db'
@@ -49,7 +49,7 @@ describe('Member', () => {
     const memberEditsAdmin = Member.canEdit(admin, member)
     const adminEditsSelf = Member.canEdit(admin, admin)
     const adminEditsMember = Member.canEdit(member, admin)
-    const expected = [ true, false ,true, true ]
+    const expected = [ true, false, true, true ]
     const actual = [ memberEditsSelf, memberEditsAdmin, adminEditsSelf, adminEditsMember ]
     expect(actual).toEqual(expected)
   })

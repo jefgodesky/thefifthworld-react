@@ -202,6 +202,17 @@ class Member {
     await db.run(`INSERT INTO authorizations (member, provider, oauth2_id, oauth2_token) VALUES (${this.id}, '${service}', '${id}', '${token}');`)
   }
 
+  /**
+   * Returns the messages left for a member in the database, and then deletes
+   * them.
+   * @param id {int} - The ID of the member.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an object. Each of the
+   *   properties in the object defines a type of message (see `msgTypes` for a
+   *   complete list of valid types), and provides an array of messages of that
+   *   type.
+   */
+
   static async getMessages (id, db) {
     const messages = await db.run(`SELECT * FROM messages WHERE member=${id}`)
     if (messages.length > 0) {
@@ -221,22 +232,36 @@ class Member {
     }
   }
 
+  /**
+   * Saves a message for a user.
+   * @param type {string} - The type of message being left. See `msgTypes` for
+   *   a complete list of valid types.
+   * @param msg {string} - The text of the message.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves when the message has been
+   *   saved to the database.
+   */
+
   async logMessage (type, msg, db) {
     const validTypes = Object.keys(msgTypes).map(type => msgTypes[type])
     const checkedType = validTypes.indexOf(type) > -1 ? type : msgTypes.info
     await db.run(`INSERT INTO messages (member, type, message) VALUES (${this.id}, '${checkedType}', ${SQLEscape(msg)});`)
   }
 
-  async hasInvitations (db) {
-    const res = await db.run(`SELECT admin, invitations FROM members WHERE id='${this.id}';`)
-    return res[0].admin || res[0].invitations > 0
-  }
+  /**
+   * Creates a new invitation.
+   * @param email {string} - The email address to invite.
+   * @param emailer {function} - A function that can send an email.
+   * @param db {Pool} - A database connectionn.
+   * @returns {Promise} - A promise that resolves when the invitation is snet.
+   */
 
   async createInvitation (email, emailer, db) {
     const code = await generateInvitationCode(db)
     const account = await db.run(`INSERT INTO members (email) VALUES ('${email}');`)
     await db.run(`INSERT INTO invitations (inviteFrom, inviteTo, inviteCode) VALUES (${this.id}, ${account.insertId}, '${code}');`)
     if (!this.admin) {
+      this.invitations--
       await db.run(`UPDATE members SET invitations=${this.invitations - 1} WHERE id=${this.id}`)
     }
     await emailer({
@@ -246,6 +271,17 @@ class Member {
     })
     await this.logMessage(msgTypes.confirm, `Invitation sent to '''${email}'''.`, db)
   }
+
+  /**
+   * Sends a reminder email to someone who has received an invitation but has
+   * not yet acccepted it.
+   * @param member {Member} - The member who has not yet accepted her
+   *   invitation.
+   * @param emailer {function} - A function that can send an email.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves when the reminder email has
+   *   been sent.
+   */
 
   async sendReminder (member, emailer, db) {
     const invitation = await db.run(`SELECT inviteCode FROM invitations WHERE inviteTo=${member.id} AND accepted=0;`)
@@ -261,30 +297,70 @@ class Member {
     }
   }
 
+  /**
+   * This method evaluates how to handle the request to send an invitation. If
+   * someone with the given email address is already a member, a message is
+   * logged for the member who tried to invite her. If someone with that email
+   * address has already been invited but not yet accepted, a reminder is sent.
+   * If no one with that address has yet been invited, a new invitation is
+   * created.
+   * @param email {string} - The email address to send an invitation to.
+   * @param emailer {function} - A function that can send an email.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves once the request has been
+   *   evaluated and handled.
+   */
+
   async sendInvitation (email, emailer, db) {
-    const hasInvitations = await this.hasInvitations(db)
-    if (hasInvitations) {
+    if (this.invitations > 0) {
       const existing = await Member.find({ email }, db)
       if (existing) {
-        await this.sendReminder(existing, emailer, db)
+        const hasPendingInvitation = await db.run(`SELECT id FROM invitations WHERE inviteTo=${exissting.id} AND accepted=0;`)
+        if (hasPendingInvitation.length > 0) {
+          await this.sendReminder(existing, emailer, db)
+        } else {
+          await this.logMessage(msgTypes.info, `<a href="/member/${existing.id}">${existing.getName()}</a> is already a member.`)
+        }
       } else {
         await this.createInvitation(email, emailer, db)
       }
+    } else {
+      await this.logMessage(msgTypes.warning, `Sorry, you’ve run out of invitations. No invitation sent to ${email}.`, db)
     }
   }
 
+  /**
+   * This method iterates over a list of emails in order and, for each one,
+   * evaluates how to handle the request to send an invitation. If someone with
+   * that email address is already a member, a message is logged for the member
+   * who tried to invite her. If someone with that email address has already
+   * been invited but not yet accepted, a reminder is sent. If no one with that
+   * address has yet been invited, a new invitation is created.
+   * @param inviterId {int} - The ID of the member sending these invitations.
+   * @param emails {Array} - An array of strings, where each string is an
+   *   email address to send an invitation to.
+   * @param emailer {function} - A function that can send an email.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves once each of the email
+   *   addresses provided have been evaluated.
+   */
+
   static async sendInvitations (inviterId, emails, emailer, db) {
     const inviter = await Member.get(inviterId, db)
-    const invited = (inviter.admin || (inviter.invitations > emails.length))
-      ? emails
-      : emails.slice(0, inviter.invitations)
-    invited.forEach(async email => {
-      await inviter.sendInvitation(email, emailer, db)
-    })
-    if (invited.length < emails.length) {
-      await this.logMessage(msgTypes.error, `Sorry — you wanted to invite ${emails.length} people, but you only had ${inviter.invitations} invitations.`, db)
+    for (let i = 0; i < emails.length; i++) {
+      console.log(`inviting ${emails[i]}`)
+      await inviter.sendInvitation(emails[i], emailer, db)
     }
   }
+
+  /**
+   * Returns an array of objects representing the invitations that the member
+   * has sent. Each object includes the `id`, `name`, and `accepted` properties
+   * for each invitation sent.
+   * @param inviterId {int} - The ID of the member who sent the invitations.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an array of objects.
+   */
 
   static async getInvited (inviterId, db) {
     const res = await db.run(`SELECT m.id, m.name, m.email, i.accepted FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteFrom=${inviterId};`)
@@ -298,6 +374,14 @@ class Member {
     })
     return invited
   }
+
+  /**
+   * This method accepts an invitation.
+   * @param code {string} - The invitation code provided.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves when the invitation has been
+   *   accepted.
+   */
 
   static async acceptInvitation (code, db) {
     const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode=${code};`)

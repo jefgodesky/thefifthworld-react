@@ -66,13 +66,26 @@ class Page {
 
   static async get (id, db) {
     const pages = await db.run(`SELECT * FROM pages WHERE id=${id};`)
-    const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.id=${id};`)
+    const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.id=${id} ORDER BY c.timestamp DESC;`)
     if (pages.length === 1) {
       return new Page(pages[0], changes)
     } else {
       return null
     }
   }
+
+  /**
+   * Update a page.
+   * @param data {Object} - An object defining the data for the page. Expected
+   *   properties include `path` (for the page's path), `type` (for the type of
+   *   the page), `title` (for the page's title), and `body` (for the wikitext
+   *   of the page's main content).
+   * @param editor {Member} - The member creating the page.
+   * @param msg {string} - A commit message.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves once the page has been
+   *   updated.
+   */
 
   async update (data, editor, msg, db) {
     const timestamp = Math.floor(Date.now()/1000)
@@ -87,6 +100,16 @@ class Page {
         id: editor.id
       }
     })
+  }
+
+  /**
+   * Returns the page content as of the latest version.
+   * @returns {Object} - The data object saved with the latest version of the
+   *   page.
+   */
+
+  getContent () {
+    return this.changes[0].content
   }
 }
 

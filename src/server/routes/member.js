@@ -103,6 +103,21 @@ MemberRouter.post('/member', async (req, res) => {
   }
 })
 
+// POST /welcome
+MemberRouter.post('/welcome', async (req, res) => {
+  if (req.body.id) {
+    const member = await Member.get(req.body.id, db)
+    if (member) {
+      await member.update(req.body, req.user, db)
+      res.redirect('/dashboard')
+    } else {
+      res.redirect(`/welcome/${req.body.id}`)
+    }
+  } else {
+    res.redirect('/dashboard')
+  }
+})
+
 // GET /logout
 MemberRouter.get('/logout', (req, res) => {
   req.logout()
@@ -114,10 +129,11 @@ MemberRouter.get('/login-route', async (req, res) => {
   if (req.user) {
     const member = await Member.get(req.user.id, db)
     const reset = await db.run(`SELECT reset FROM members WHERE id=${member.id};`)
-    if (reset.length > 0 && reset[0].reset === 1) {
-      console.log('log message')
+    if (member.password === '') {
+      res.redirect(`/welcome/${member.id}`)
+    } else if (reset.length > 0 && reset[0].reset === 1) {
       await member.logMessage('warning', 'Please update your passphrase below.', db)
-      res.redirect(`/member/${req.user.id}/edit`)
+      res.redirect(`/member/${member.id}/edit`)
     } else {
       res.redirect('/dashboard')
     }
@@ -152,7 +168,7 @@ MemberRouter.get('/join/:code', async (req, res, next) => {
   if (member) {
     req.login(member, err => {
       if (err) return next({ error: err, status: 500 })
-      res.redirect(`/member/${member.getId()}/edit`)
+      res.redirect(`/welcome/${member.getId()}`)
     })
   } else {
     res.redirect('/join')

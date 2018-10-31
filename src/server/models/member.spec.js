@@ -1,5 +1,6 @@
 /* global describe, it, expect, beforeEach, afterEach, afterAll */
 
+import { escape as SQLEscape } from 'sqlstring'
 import Member from './member'
 import db from '../db'
 
@@ -329,7 +330,7 @@ describe('Member', () => {
     await member.sendInvitation('test@thefifthworld.com', () => false, db)
     const invite = await db.run('SELECT i.inviteCode, i.id FROM invitations i, members m WHERE i.inviteTo=m.id AND m.email=\'test@thefifthworld.com\';')
     if (invite.length === 1) {
-      await Member.acceptInvitation(invite[0].inviteCode, db)
+      await Member.acceptInvitation(SQLEscape(invite[0].inviteCode), db)
       const check = await db.run(`SELECT accepted FROM invitations WHERE id=${invite[0].id} AND accepted=1;`)
       expect(check.length).toEqual(1)
     } else {
@@ -346,7 +347,7 @@ describe('Member', () => {
     await Member.sendInvitations(2, invitations, () => false, db)
     const invite = await db.run('SELECT i.inviteCode, i.id FROM invitations i, members m WHERE i.inviteTo=m.id AND m.email=\'test1@thefifthworld.com\';')
     if (invite.length === 1) {
-      await Member.acceptInvitation(invite[0].inviteCode, db)
+      await Member.acceptInvitation(SQLEscape(invite[0].inviteCode), db)
       const actual = await Member.getInvited(2, db)
       const expected = [
         { id: 3, name: 'test1@thefifthworld.com', accepted: true },

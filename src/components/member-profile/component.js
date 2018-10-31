@@ -43,15 +43,19 @@ class MemberProfile extends React.Component {
     }
   }
 
-  renderForm () {
-    const name = this.props.member.getName ? this.props.member.getName() : this.props.member.name
+  renderForm (firstTime = false) {
+    const name = firstTime ? '' : this.props.member.getName ? this.props.member.getName() : this.props.member.name
+    const front = firstTime
+      ? (<p><strong>Welcome to the Fifth World!</strong> First tell us a little bit about yourself. Then add a <em>passphrase</em> so you can log back in later.</p>)
+      : (<Messages />)
+    const action = firstTime ? '/welcome' : '/member'
 
     return (
       <React.Fragment>
         <Header />
         <main>
-          <Messages />
-          <form method='post' action='/member'>
+          {front}
+          <form method='post' action={action}>
             <input type='hidden' name='id' value={this.props.member.id} />
             <label htmlFor='name'>Name</label>
             <input type='text' name='name' id='name' defaultValue={name} placeholder='What would you like us to call you?' />
@@ -98,13 +102,19 @@ class MemberProfile extends React.Component {
    */
 
   render () {
+    const canEdit = func => {
+      if (Member.canEdit(this.props.member, this.props.loggedInMember)) {
+        return func()
+      } else {
+        return (<Error401 />)
+      }
+    }
+
     switch (this.props.match.path) {
       case '/member/:id/edit':
-        if (Member.canEdit(this.props.member, this.props.loggedInMember)) {
-          return this.renderForm()
-        } else {
-          return (<Error401 />)
-        }
+        return canEdit(() => this.renderForm())
+      case '/welcome/:id':
+        return canEdit(() => this.renderForm(true))
       default:
         return this.renderProfile()
     }

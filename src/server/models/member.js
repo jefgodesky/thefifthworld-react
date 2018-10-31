@@ -423,10 +423,10 @@ class Member {
    */
 
   static async acceptInvitation (code, db) {
-    const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode='${code}';`)
+    const check = await db.run(`SELECT m.id FROM members m, invitations i WHERE m.id=i.inviteTo AND i.inviteCode=${code};`)
     if (check.length === 1) {
       const id = check[0].id
-      await db.run(`UPDATE invitations SET accepted=1 WHERE inviteTo=${id}`)
+      await db.run(`UPDATE invitations SET accepted=1 WHERE inviteTo=${id};`)
       return this.get(id, db)
     } else {
       return null

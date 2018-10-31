@@ -6,12 +6,17 @@
 
 %sidebar {
   background: $brown16;
+  font-family: 'Fontin Sans';
   margin: 2em 0;
   padding: 1em 2em;
   position: relative;
 
   .button {
     @include button-color($brown, $white);
+  }
+
+  .form-field {
+    margin: 0 0 1.618em;
   }
 
   @media (min-width: 50em) {

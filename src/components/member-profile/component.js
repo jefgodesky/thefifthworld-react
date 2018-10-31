@@ -52,9 +52,17 @@ class MemberProfile extends React.Component {
           <form method='post' action='/member'>
             <input type='hidden' name='id' value={this.props.member.id} />
             <label htmlFor='name'>Name</label>
-            <input type='text' name='name' id='name' defaultValue={name} />
+            <input type='text' name='name' id='name' defaultValue={name} placeholder='What would you like us to call you?' />
             <label htmlFor='email'>Email</label>
-            <input type='text' name='email' id='email' defaultValue={this.props.member.email} />
+            <input type='text' name='email' id='email' defaultValue={this.props.member.email} placeholder='you@example.com' />
+            <aside>
+              <p>A long, memorable phrase, like a sentence, can provide more security than an arcane string of random letters and numbers that you&rsquo;ll have a hard time remembering. That&rsquo;s why we ask for a pass <em>phrase</em>. We also leave it open in plain text to make it easier for you to come up with and use a stronger one. You can probably check for someone looking over your shoulder more easily than you can check for hackers.</p>
+              <p>If you submit this form without providing anything here, your old pass phrase will remain unchanged.</p>
+              <div className='form-field'>
+                <label htmlFor='password'>Passphrase</label>
+                <input type='text' name='password' id='password' placeholder='Enter a secret pass phrase' />
+              </div>
+            </aside>
             <p className='actions'>
               <button>Save</button>
               <a href={`/member/${this.props.member.id}`} className='button secondary'>Cancel</a>

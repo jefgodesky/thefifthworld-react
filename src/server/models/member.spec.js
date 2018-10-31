@@ -99,29 +99,36 @@ describe('Member', () => {
     expect.assertions(1)
     const admin = await Member.get(1, db)
     const member = await Member.get(2, db)
+    const checks = []
     let update
 
     // Admin can update herself
     await admin.update({ name: 'Checkpoint A' }, admin.getObject(), db)
     update = await Member.get(1, db)
-    const checkA = (update.name === 'Checkpoint A')
+    checks.push(update.name === 'Checkpoint A')
 
     // Admin can update a member
     await member.update({ name: 'Checkpoint B' }, admin.getObject(), db)
     update = await Member.get(2, db)
-    const checkB = (update.name === 'Checkpoint B')
+    checks.push(update.name === 'Checkpoint B')
 
     // Member can update herself
     await member.update({ name: 'Checkpoint C' }, member.getObject(), db)
     update = await Member.get(2, db)
-    const checkC = (update.name === 'Checkpoint C')
+    checks.push(update.name === 'Checkpoint C')
 
     // Member CANNOT update an admin
     await admin.update({ name: 'Checkpoint D' }, member.getObject(), db)
     update = await Member.get(1, db)
-    const checkD = (update.name === 'Checkpoint A')
+    checks.push(update.name === 'Checkpoint A')
 
-    expect(checkA && checkB && checkC && checkD).toEqual(true)
+    // Can set a passphrase
+    const password = 'New passphrase'
+    await member.update({ password }, member.getObject(), db)
+    const checkPassword = await member.checkPass(password)
+    checks.push(checkPassword)
+
+    expect(checks.reduce((res, check) => res && check)).toEqual(true)
   })
 
   it('can add an OAuth token', async () => {

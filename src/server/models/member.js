@@ -102,6 +102,16 @@ class Member {
   }
 
   /**
+   * Returns an encrypted hash of a string.
+   * @param orig {string} - The string to hash.
+   * @returns {string} - The encrypted hash of the original string.
+   */
+
+  static hash (orig) {
+    return bcrypt.hashSync(orig, bcrypt.genSaltSync(8), null)
+  }
+
+  /**
    * Returns the member's ID.
    * @returns {int} - The member's ID.
    */
@@ -166,11 +176,21 @@ class Member {
 
   async update (vals, editor, db) {
     if (Member.canEdit(this.getObject(), editor)) {
-      const query = updateVals([
+      const fields = [
         { name: 'name', type: 'string' },
         { name: 'email', type: 'string' }
-      ], vals)
-      await db.run(`UPDATE members SET ${query} WHERE id=${this.id}`)
+      ]
+
+      if (vals.password) {
+        vals.password = Member.hash(vals.password)
+        fields.push({ name: 'password', type: 'string' })
+        this.password = vals.password
+      }
+
+      const query = updateVals(fields, vals)
+      await db.run(`UPDATE members SET ${query} WHERE id=${this.id};`)
+      this.name = vals.name
+      this.email = vals.email
     }
   }
 

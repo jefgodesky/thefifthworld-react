@@ -3,11 +3,22 @@ label {
   font-family: 'Fontin Sans';
   font-weight: bold;
   margin: 2em 0 .25em;
+
+  .note {
+    font-size: .618em;
+    font-weight: normal;
+    margin: 0;
+
+    & + .note {
+      margin-top: .618em;
+    }
+  }
 }
 
 input[type='text'],
 input[type='email'],
 input[type='password'] {
+  background: transparent;
   border: 0;
   border-bottom: 2px solid $brown13;
   display: block;

@@ -125,8 +125,32 @@ describe('Member', () => {
     // Can set a passphrase
     const password = 'New passphrase'
     await member.update({ password }, member.getObject(), db)
-    const checkPassword = await member.checkPass(password)
-    checks.push(checkPassword)
+    checks.push(await member.checkPass(password))
+
+    expect(checks.reduce((res, check) => res && check)).toEqual(true)
+  })
+
+  it('can generate a random password', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const checks = []
+
+    // Generate random password
+    const random = await member.generateRandomPassword(db)
+    checks.push(await member.checkPass(random))
+
+    // Is member now flagged as needing to reset her password?
+    const afterRandom = await db.run(`SELECT reset FROM members WHERE id=${member.id};`)
+    checks.push(afterRandom.length > 0 && afterRandom[0].reset === 1)
+
+    // Update with a new password
+    const password = 'New passphrase'
+    await member.update({ password }, member.getObject(), db)
+    checks.push(await member.checkPass(password))
+
+    // And is that reset flag cleared now?
+    const afterUpdate = await db.run(`SELECT reset FROM members WHERE id=${member.id};`)
+    checks.push(afterUpdate.length > 0 && afterUpdate[0].reset === 0)
 
     expect(checks.reduce((res, check) => res && check)).toEqual(true)
   })

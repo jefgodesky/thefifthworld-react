@@ -183,7 +183,9 @@ class Member {
 
       if (vals.password) {
         vals.password = Member.hash(vals.password)
+        vals.reset = 0
         fields.push({ name: 'password', type: 'string' })
+        fields.push({ name: 'reset', type: 'number' })
         this.password = vals.password
       }
 
@@ -208,6 +210,23 @@ class Member {
     } else {
       return false
     }
+  }
+
+  /**
+   * Generates a random password, hashes it, saves the hash to the database,
+   * flags the user as needing to reset her password, and then returns the
+   * random password that it generated.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with the generated password
+   *   once the database has been updated.
+   */
+
+  async generateRandomPassword (db) {
+    const password = Math.random().toString(36).replace('0.', '')
+    const hash = Member.hash(password)
+    await db.run(`UPDATE members SET password='${hash}', reset=1 WHERE id=${this.id};`)
+    this.password = hash
+    return password
   }
 
   /**

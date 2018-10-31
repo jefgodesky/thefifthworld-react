@@ -110,10 +110,20 @@ MemberRouter.get('/logout', (req, res) => {
 })
 
 // GET /login-route
-MemberRouter.get('/login-route', (req, res) => {
-  let url = '/dashboard'
-  // If this is the user's first time logging in, go to the welcome page
-  res.redirect(url)
+MemberRouter.get('/login-route', async (req, res) => {
+  if (req.user) {
+    const member = await Member.get(req.user.id, db)
+    const reset = await db.run(`SELECT reset FROM members WHERE id=${member.id};`)
+    if (reset.length > 0 && reset[0].reset === 1) {
+      console.log('log message')
+      await member.logMessage('warning', 'Please update your passphrase below.', db)
+      res.redirect(`/member/${req.user.id}/edit`)
+    } else {
+      res.redirect('/dashboard')
+    }
+  } else {
+    res.redirect('/login')
+  }
 })
 
 // POST /invite

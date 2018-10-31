@@ -27,11 +27,14 @@ class MemberLogin extends React.Component {
           <h1>Login</h1>
           <form action='/login' method='post'>
             <label htmlFor='email'>Email</label>
-            <input type='text' name='email' id='email' placeholder='example@test.com' />
+            <input type='text' name='email' id='email' placeholder='you@example.com' />
             <label htmlFor='passphrase'>Passphrase</label>
             <input type='text' name='passphrase' id='passphrase' placeholder='Whisper your secret passphrase' />
             <p className='actions'>
               <button>Log in</button>
+            </p>
+            <p className='actions'>
+              <a href='/forgot-passphrase'>Forgot your passphrase?</a>
             </p>
           </form>
           <div className='oauth2-login'>

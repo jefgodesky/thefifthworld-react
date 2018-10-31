@@ -1,6 +1,7 @@
 /* global __isClient__ */
 
 import Dashboard from '../components/dashboard/component'
+import ForgotPassphrase from '../components/forgot-passphrase/component'
 import Home from '../components/home/component'
 import Join from '../components/join/component'
 import MemberLogin from '../components/member-login/component'
@@ -26,6 +27,11 @@ const routes = [
     path: '/join',
     exact: true,
     component: Join
+  },
+  {
+    path: '/forgot-passphrase',
+    exact: true,
+    component: ForgotPassphrase
   },
   {
     path: '/member/:id',

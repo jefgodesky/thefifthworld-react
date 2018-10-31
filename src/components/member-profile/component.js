@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'
 import Header from '../header/component'
 import Footer from '../footer/component'
+import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
@@ -49,6 +50,7 @@ class MemberProfile extends React.Component {
       <React.Fragment>
         <Header />
         <main>
+          <Messages />
           <form method='post' action='/member'>
             <input type='hidden' name='id' value={this.props.member.id} />
             <label htmlFor='name'>Name</label>

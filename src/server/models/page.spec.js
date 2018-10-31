@@ -34,6 +34,24 @@ describe('Page', () => {
     checks.push(page.changes[0].editor.id === 2)
     expect(checks.reduce((res, check) => res && check)).toEqual(true)
   })
+
+  it('can update a page', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const data = {
+      title: 'New Page',
+      body: 'This is a new page.'
+    }
+    let msg = 'Initial text'
+    const page = await Page.create(data, member, msg, db)
+    const update = {
+      title: 'New Page',
+      body: 'New content'
+    }
+    msg = 'Testing update'
+    await page.update(update, member, msg, db)
+    expect(page.changes[0].content.body).toEqual(update.body)
+  })
 })
 
 afterEach(async () => {

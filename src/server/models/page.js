@@ -16,7 +16,7 @@ class Page {
     this.changes = []
 
     changes.forEach(change => {
-      this.changes.push({
+      this.changes.unshift({
         id: change.id,
         timestamp: new Date(change.timestamp * 1000),
         msg: change.msg,
@@ -72,6 +72,21 @@ class Page {
     } else {
       return null
     }
+  }
+
+  async update (data, editor, msg, db) {
+    const timestamp = Math.floor(Date.now()/1000)
+    const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+    this.changes.unshift({
+      id: res.insertId,
+      timestamp,
+      msg,
+      content: data,
+      editor: {
+        name: editor.getName(),
+        id: editor.id
+      }
+    })
   }
 }
 

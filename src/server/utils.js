@@ -19,7 +19,7 @@ const updateVals = (cols, vals) => {
   const types = {}
   cols.forEach(col => {
     validKeys.push(col.name)
-    types[col.key] = col.type
+    types[col.name] = col.type
   })
 
   Object.keys(vals).forEach(key => {

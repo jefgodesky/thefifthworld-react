@@ -11,6 +11,7 @@ class Page {
   constructor (page, changes) {
     this.id = page.id
     this.title = page.title
+    this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
     this.type = page.type
@@ -36,6 +37,18 @@ class Page {
     })
   }
 
+  static async getPath (data, parent, db) {
+    const par = await Page.get(parent, db)
+    const slug = data.slug ? data.slug : data.title ? slugify(data.title) : null
+    if (slug) {
+      return par && par.path
+        ? `${par.path}/${slug}`
+        : `/${slug}`
+    } else {
+      return false
+    }
+  }
+
   /**
    * Creates a new page.
    * @param data {Object} - An object defining the data for the page. Expected
@@ -51,10 +64,13 @@ class Page {
    */
 
   static async create (data, editor, msg, db) {
-    const path = data.path ? data.path : `/${slugify(data.title)}`
+    const slug = data.slug ? data.slug : slugify(data.title)
+    const parent = data.parent ? await Page.get(data.parent, db) : null
+    const pid = parent ? parent.id : 0
+    const path = await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
-    const res = await db.run(`INSERT INTO pages (path, title, type) VALUES ('${path}', '${title}', '${type}');`)
+    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}');`)
     const page = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${page}, ${editor.id}, ${Math.floor(Date.now()/1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
     return Page.get(page, db)
@@ -62,19 +78,28 @@ class Page {
 
   /**
    * Returns a page from the database.
-   * @param id {int|string} - Either the ID or the path of a page.
+   * @param id {int|string|Page} - The ID or the path of a page, or a Page
+   *   instance (in which case, it simply returns the page). This allows the
+   *   method to take a wide range of identifiers and reliably return the
+   *   correct object.
    * @param db {Pool} - A database connection.
    * @returns {Promise} - A promise that resolves with the Page object if it
    *   can be found, or a `null` if it could not be found.
    */
 
   static async get (id, db) {
-    const pages = (typeof id === 'string')
-      ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
-      : await db.run(`SELECT * FROM pages WHERE id=${id};`)
-    if (pages.length === 1) {
-      const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
-      return new Page(pages[0], changes)
+    if (id && id.constructor && id.constructor.name === 'Page') {
+      return id
+    } else if (id) {
+      const pages = (typeof id === 'string')
+        ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
+        : await db.run(`SELECT * FROM pages WHERE id=${id};`)
+      if (pages.length === 1) {
+        const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
+        return new Page(pages[0], changes)
+      } else {
+        return null
+      }
     } else {
       return null
     }

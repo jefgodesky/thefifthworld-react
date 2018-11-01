@@ -71,6 +71,21 @@ describe('Page', () => {
     const content = page.getContent()
     expect(content.body).toEqual(update.body)
   })
+
+  it('can fetch a page by path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const data = {
+      title: 'New Page',
+      body: 'This is a new page.'
+    }
+    const msg = 'Initial text'
+    await Page.create(data, member, msg, db)
+
+    const page = await Page.get('/new-page', db)
+    const content = page.getContent()
+    expect(content.body).toEqual(data.body)
+  })
 })
 
 afterEach(async () => {

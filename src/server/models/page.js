@@ -58,16 +58,18 @@ class Page {
 
   /**
    * Returns a page from the database.
-   * @param id {int} - The ID of the page.
+   * @param id {int|string} - Either the ID or the path of a page.
    * @param db {Pool} - A database connection.
    * @returns {Promise} - A promise that resolves with the Page object if it
    *   can be found, or a `null` if it could not be found.
    */
 
   static async get (id, db) {
-    const pages = await db.run(`SELECT * FROM pages WHERE id=${id};`)
-    const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.id=${id} ORDER BY c.timestamp DESC;`)
+    const pages = (typeof id === 'string')
+      ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
+      : await db.run(`SELECT * FROM pages WHERE id=${id};`)
     if (pages.length === 1) {
+      const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.id=${pages[0].id} ORDER BY c.timestamp DESC;`)
       return new Page(pages[0], changes)
     } else {
       return null

@@ -67,12 +67,15 @@ describe('Page', () => {
 
     const update = {
       title: 'New Page Title',
+      path: '/updated',
       body: 'New content'
     }
     msg = 'Testing update'
     await page.update(update, member, msg, db)
-    const content = page.getContent()
-    const actual = { title: page.title, body: content.body }
+
+    const updated = await Page.get('/updated', db)
+    const content = updated.getContent()
+    const actual = { title: updated.title, path: '/updated', body: content.body }
     expect(actual).toEqual(update)
   })
 

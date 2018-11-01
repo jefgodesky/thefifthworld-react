@@ -10,9 +10,12 @@ const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
 class Page {
   constructor (page, changes) {
     this.id = page.id
+    this.title = page.title
     this.path = page.path
     this.parent = page.parent
     this.type = page.type
+    this.active = Boolean(page.active)
+    this.locked = Boolean(page.locked)
     this.changes = []
 
     changes.forEach(change => {
@@ -70,7 +73,7 @@ class Page {
       ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
       : await db.run(`SELECT * FROM pages WHERE id=${id};`)
     if (pages.length === 1) {
-      const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.id=${pages[0].id} ORDER BY c.timestamp DESC;`)
+      const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
       return new Page(pages[0], changes)
     } else {
       return null

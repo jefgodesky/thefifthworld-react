@@ -83,7 +83,7 @@ class Page {
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}');`)
     const page = res.insertId
-    await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${page}, ${editor.id}, ${Math.floor(Date.now()/1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+    await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${page}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
     return Page.get(page, db)
   }
 
@@ -154,7 +154,7 @@ class Page {
     const vals = updateVals(fields, update)
     if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
 
-    const timestamp = Math.floor(Date.now()/1000)
+    const timestamp = Math.floor(Date.now() / 1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
     this.changes.unshift({
       id: res.insertId,

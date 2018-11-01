@@ -109,6 +109,38 @@ describe('Page', () => {
     expect(page.changes[0].content.body).toEqual('New content')
   })
 
+  it('can update a page to a new parent', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const actual = []
+    const origParent = await Page.create({
+      title: 'Original Parent Page',
+      body: 'This is the original parent page.'
+    }, member, 'Initial text', db)
+
+    const newParent = await Page.create({
+      title: 'New Parent Page',
+      body: 'This is the new parent page.'
+    }, member, 'Initial text', db)
+
+    const child = await Page.create({
+      parent: origParent,
+      title: 'Child Page',
+      body: 'This is the child page.'
+    }, member, 'Initial text', db)
+    actual.push(child.parent)
+
+    await child.update({
+      parent: newParent,
+      title: 'Child Page',
+      body: 'This is the child page.'
+    }, member, 'Change parent', db)
+    actual.push(child.parent)
+
+    const expected = [ origParent.id, newParent.id ]
+    expect(actual).toEqual(expected)
+  })
+
   it('can return its current data', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

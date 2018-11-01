@@ -119,15 +119,29 @@ class Page {
    */
 
   async update (data, editor, msg, db) {
-    if (data.title || data.path) {
-      const fields = [
-        { name: 'title', type: 'string' },
-        { name: 'path', type: 'path' }
-      ]
-      await db.run(`UPDATE pages SET ${updateVals(fields, data)} WHERE id=${this.id};`)
-      if (data.title) this.title = data.title
-      if (data.path) this.path = data.path
+    const inPage = ['title', 'path', 'parent']
+    const update = {}
+    for (const key of inPage) {
+      if (data[key] && this[key] !== data[key]) {
+        if (key === 'parent') {
+          const parent = await Page.get(data.parent)
+          const pid = parent && parent.id ? parent.id : 0
+          update.parent = pid
+          this.parent = pid
+        } else {
+          update[key] = data[key]
+          this[key] = data[key]
+        }
+      }
     }
+
+    const fields = [
+      { name: 'title', type: 'string' },
+      { name: 'path', type: 'string' },
+      { name: 'parent', type: 'number' }
+    ]
+    const vals = updateVals(fields, update)
+    if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
 
     const timestamp = Math.floor(Date.now()/1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)

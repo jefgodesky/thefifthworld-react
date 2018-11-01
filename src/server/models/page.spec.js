@@ -22,6 +22,7 @@ describe('Page', () => {
     }
     const msg = 'Initial text'
     const page = await Page.create(data, member, msg, db)
+
     const checks = []
     checks.push(page.path === '/new-page')
     checks.push(page.parent === 0)
@@ -44,6 +45,7 @@ describe('Page', () => {
     }
     let msg = 'Initial text'
     const page = await Page.create(data, member, msg, db)
+
     const update = {
       title: 'New Page',
       body: 'New content'
@@ -62,14 +64,16 @@ describe('Page', () => {
     }
     let msg = 'Initial text'
     const page = await Page.create(data, member, msg, db)
+
     const update = {
-      title: 'New Page',
+      title: 'New Page Title',
       body: 'New content'
     }
     msg = 'Testing update'
     await page.update(update, member, msg, db)
     const content = page.getContent()
-    expect(content.body).toEqual(update.body)
+    const actual = { title: page.title, body: content.body }
+    expect(actual).toEqual(update)
   })
 
   it('can fetch a page by path', async () => {

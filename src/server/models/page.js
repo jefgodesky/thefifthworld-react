@@ -1,4 +1,4 @@
-import { slugify } from '../utils'
+import { slugify, updateVals } from '../utils'
 import { escape as SQLEscape } from 'sqlstring'
 
 /**
@@ -49,8 +49,9 @@ class Page {
 
   static async create (data, editor, msg, db) {
     const path = data.path ? data.path : `/${slugify(data.title)}`
+    const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
-    const res = await db.run(`INSERT INTO pages (path, type) VALUES ('${path}', '${type}');`)
+    const res = await db.run(`INSERT INTO pages (path, title, type) VALUES ('${path}', '${title}', '${type}');`)
     const page = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${page}, ${editor.id}, ${Math.floor(Date.now()/1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
     return Page.get(page, db)
@@ -90,6 +91,16 @@ class Page {
    */
 
   async update (data, editor, msg, db) {
+    if (data.title || data.path) {
+      const fields = [
+        { name: 'title', type: 'string' },
+        { name: 'path', type: 'path' }
+      ]
+      await db.run(`UPDATE pages SET ${updateVals(fields, data)} WHERE id=${this.id};`)
+      if (data.title) this.title = data.title
+      if (data.path) this.path = data.path
+    }
+
     const timestamp = Math.floor(Date.now()/1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
     this.changes.unshift({

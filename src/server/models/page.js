@@ -37,6 +37,17 @@ class Page {
     })
   }
 
+  /**
+   * Returns a path for a page by combining the path of its parent
+   * concatenated with its own slug.
+   * @param data {Object} - An object that should include a `slug` property
+   *   (preferred), or else a `title` property that can be slugified.
+   * @param parent {Page|int} - Either a Page object for the parent page, or
+   *   the ID of the parent page.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with a path for the page.
+   */
+
   static async getPath (data, parent, db) {
     const par = await Page.get(parent, db)
     const slug = data.slug ? data.slug : data.title ? slugify(data.title) : null

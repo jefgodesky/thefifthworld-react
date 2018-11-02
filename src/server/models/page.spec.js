@@ -171,12 +171,10 @@ describe('Page', () => {
       path: '/updated',
       body: 'New content'
     }
-    await page.update(update, member, 'Testing update', db, es)
 
-    const updated = await Page.get('/updated', db)
-    const content = updated.getContent()
-    const actual = { title: updated.title, path: updated.path, body: content.body }
-    expect(actual).toEqual(update)
+    await page.update(update, member, 'Testing update', db, es)
+    const content = page.getContent()
+    expect(content).toEqual(update)
   })
 
   it('can fetch a page by path', async () => {

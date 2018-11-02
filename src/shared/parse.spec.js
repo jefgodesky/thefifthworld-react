@@ -30,4 +30,14 @@ describe('Wikitext parser', () => {
     const expected = 'This contains a <a href="https://thefifthworld.com">link</a>.'
     expect(actual).toEqual(expected)
   })
+
+  it('handles paragraph breaks', () => {
+    const wikitext = `This is a paragraph.
+    
+This is a second paragraph.`
+    const actual = parse(wikitext)
+    const expected = `<p>This is a paragraph.</p>
+<p>This is a second paragraph.</p>`
+    expect(actual).toEqual(expected)
+  })
 })

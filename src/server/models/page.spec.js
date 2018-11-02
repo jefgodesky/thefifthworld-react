@@ -226,6 +226,22 @@ describe('Page', () => {
       expect('Number of changes').toEqual(2)
     }
   })
+
+  it('can be created with permissions', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      type: 'group',
+      title: 'New Group',
+      body: 'This is a new group.',
+      permissions: 740
+    }, admin, 'Initial text', db, es)
+
+    const actual = [ page.canRead(member), page.canWrite(member), page.canRead(), page.canWrite() ]
+    const expected = [ true, false, false, false ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

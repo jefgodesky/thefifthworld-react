@@ -16,8 +16,8 @@ class Page {
     this.path = page.path
     this.parent = page.parent
     this.type = page.type
-    this.active = Boolean(page.active)
-    this.locked = Boolean(page.locked)
+    this.permissions = page.permissions.toString()
+    this.owner = page.owner
     this.changes = []
 
     changes.forEach(change => {
@@ -94,9 +94,10 @@ class Page {
     const path = await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
+    const permissions = type === 'wiki' ? 777 : data.permissions ? data.permissions : 744
 
     // Add to database
-    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}');`)
+    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}', ${permissions}, ${editor.id});`)
     const id = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
@@ -105,7 +106,7 @@ class Page {
       index: `${type}_${env}`,
       type: '_doc',
       id,
-      body: Object.assign({}, data, { slug, path })
+      body: Object.assign({}, data, { slug, path, permissions, owner: editor.id })
     })
 
     // Return the page
@@ -144,6 +145,60 @@ class Page {
       // We weren't given an ID to look for, so null
       return null
     }
+  }
+
+  /**
+   * This method returns whether or not the person provided has a given type of
+   * permissions for this page.
+   * @param person {Member|null} - This parameter expects a Member object, or
+   *   at least an object with the same properties. If given something else, it
+   *   will evaluate permissions based on other (world) permissions.
+   * @param level {int} - This parameter defines the type of permission
+   *   requested: 4 to read or 6 to read and write.
+   * @returns {boolean} - Returns `true` if the person given has the type of
+   *   permissions requested, or `false` if she does not.
+   */
+
+  checkPermissions (person, level) {
+    if (person && person.admin) {
+      return true
+    } else if (person && person.id === this.owner) {
+      return true
+    } else if (person && parseInt(this.permissions.charAt(1)) >= level) {
+      return true
+    } else if (parseInt(this.permissions.charAt(2) >= level)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  /**
+   * This is a convenience method that can check if a person has read
+   *   permissions for the page specifically.
+   * @param person {Member|null} - This parameter expects a Member object, or
+   *   at least an object with the same properties. If given something else, it
+   *   will evaluate permissions based on other (world) permissions.
+   * @returns {boolean} - Returns `true` if the person given has read
+   *   permissions, or `false` if she does not.
+   */
+
+  canRead (person) {
+    return this.checkPermissions(person, 4)
+  }
+
+  /**
+   * This is a convenience method that can check if a person has read and write
+   *   permissions for the page specifically.
+   * @param person {Member|null} - This parameter expects a Member object, or
+   *   at least an object with the same properties. If given something else, it
+   *   will evaluate permissions based on other (world) permissions.
+   * @returns {boolean} - Returns `true` if the person given has read and write
+   *   permissions, or `false` if she does not.
+   */
+
+  canWrite(person) {
+    return this.checkPermissions(person, 6)
   }
 
   /**

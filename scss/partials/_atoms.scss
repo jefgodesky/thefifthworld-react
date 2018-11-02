@@ -9,6 +9,13 @@ main {
 
 aside {
   @extend %sidebar;
+
+  &.note {
+    background: $brown112;
+    font-family: 'Fontin Sans';
+    font-size: .618em;
+    text-align: center;
+  }
 }
 
 hr {

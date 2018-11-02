@@ -1,5 +1,6 @@
 /* global __isClient__ */
 
+import CreateWiki from '../components/wiki/create'
 import Dashboard from '../components/dashboard/component'
 import ForgotPassphrase from '../components/forgot-passphrase/component'
 import Home from '../components/home/component'
@@ -52,6 +53,11 @@ const routes = [
     path: '/welcome/:id',
     exact: true,
     component: MemberProfile
+  },
+  {
+    path: '/new-wiki',
+    exact: true,
+    component: CreateWiki
   }
 ]
 

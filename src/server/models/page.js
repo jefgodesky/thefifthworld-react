@@ -1,5 +1,6 @@
 import { slugify, updateVals } from '../utils'
 import { escape as SQLEscape } from 'sqlstring'
+import { checkPermissions, canRead, canWrite } from '../../shared/permissions'
 
 const env = process.env.NODE_ENV || 'development'
 const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
@@ -102,12 +103,23 @@ class Page {
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
     // Add to elasticsearch index
-    await es.create({
-      index: `${type}_${env}`,
-      type: '_doc',
-      id,
-      body: Object.assign({}, data, { slug, path, permissions, owner: editor.id })
-    })
+    const indexData = JSON.parse(JSON.stringify(data))
+    delete indexData.path
+    try {
+      await es.create({
+        index: `${type}_${env}`,
+        type: '_doc',
+        id,
+        body: Object.assign({}, indexData, {
+          slug,
+          permissions,
+          sitePath: path,
+          owner: editor.id
+        })
+      })
+    } catch (err) {
+      console.error(err.body.error)
+    }
 
     // Return the page
     return Page.get(id, db)
@@ -160,24 +172,7 @@ class Page {
    */
 
   checkPermissions (person, level) {
-    const p = typeof this.permissions === 'string'
-      ? this.permissions
-      : this.permissions.toString()
-    const owner = parseInt(p.charAt(0))
-    const group = parseInt(p.charAt(1))
-    const world = parseInt(p.charAt(2))
-
-    if (person && person.admin) {
-      return true
-    } else if (person && person.id === this.owner && owner >= level) {
-      return true
-    } else if (person && group >= level) {
-      return true
-    } else if (world >= level) {
-      return true
-    } else {
-      return false
-    }
+    return checkPermissions(person, this, level)
   }
 
   /**
@@ -191,7 +186,7 @@ class Page {
    */
 
   canRead (person) {
-    return this.checkPermissions(person, 4)
+    return canRead(person, this)
   }
 
   /**
@@ -205,7 +200,7 @@ class Page {
    */
 
   canWrite (person) {
-    return person ? this.checkPermissions(person, 6) : false
+    return canWrite(person, this)
   }
 
   /**

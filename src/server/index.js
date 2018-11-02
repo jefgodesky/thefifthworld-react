@@ -22,10 +22,13 @@ import reducers from '../shared/reducers'
 import routes from '../shared/routes'
 import getMarkup from './ssr'
 import { login } from '../components/member-login/actions'
+import { load as loadPage } from '../components/page/actions'
 import { load } from '../components/messages/actions'
 
 import Member from './models/member'
+import Page from './models/page'
 import MemberRouter from './routes/member'
+import PageRouter from './routes/page'
 import Router from '../components/router/component'
 
 // Initialize server
@@ -64,6 +67,7 @@ auth(passport)
 
 // Other-than-GET responses
 server.use('/', MemberRouter)
+server.use('/', PageRouter)
 
 // Sends the response
 const respond = (req, res, store) => {
@@ -101,6 +105,8 @@ server.get('*', redirector, async (req, res) => {
     await route.load(req, db, store)
     respond(req, res, store)
   } else {
+    const page = await Page.get(req.originalUrl, db)
+    if (page) store.dispatch(loadPage(page))
     respond(req, res, store)
   }
 })

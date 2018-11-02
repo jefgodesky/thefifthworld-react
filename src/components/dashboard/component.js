@@ -84,7 +84,7 @@ class Dashboard extends React.Component {
     return (
       <React.Fragment>
         <Header />
-        <main>
+        <main className='dashboard'>
           <Messages />
           <aside>
             <p>Hello, {this.props.loggedInMember.name}. Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
@@ -93,10 +93,22 @@ class Dashboard extends React.Component {
             <a href={`/member/${this.props.loggedInMember.id}`} className='button'>View Your Profile</a>
             <a href={`/member/${this.props.loggedInMember.id}/edit`} className='button'>Change Your Profile</a>
           </p>
+          <aside className='create'>
+            <h3>Create Something</h3>
+            <p>Add something new to the Fifth World.</p>
+            <ul>
+              <li><a href='/new-wiki' className='button'>Write a Wiki Entry</a></li>
+              <li><a href='/new-family' className='button'>Add a Family</a></li>
+              <li><a href='/new-person' className='button'>Add a Character</a></li>
+              <li><a href='/new-place' className='button'>Add a Place</a></li>
+              <li><a href='/new-story' className='button'>Write a Story</a></li>
+              <li><a href='/new-art' className='button'>Upload Art</a></li>
+            </ul>
+          </aside>
           <section id='invitations'>
             <h1>Invitations</h1>
             {invitations}
-            {invitationCount > 0 &&
+            {(invitationCount === '∞' || invitationCount > 0) &&
               <React.Fragment>
                 <h2>Send Invitations</h2>
                 <p>You can send invitations to up to <strong>{invitationCount}</strong> more people. Enter each email address on a separate line.</p>

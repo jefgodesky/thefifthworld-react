@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import routes from '../../shared/routes'
 
-import Error404 from '../error-404/component'
+import Page from '../page/component'
 
 class Router extends React.Component {
   componentDidCatch (err) {
@@ -19,7 +19,7 @@ class Router extends React.Component {
             exact={exact}
             component={component} />
         ))}
-        <Route component={Error404} />
+        <Route component={Page} />
       </Switch>
     )
   }

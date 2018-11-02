@@ -1,12 +1,12 @@
 import { slugify, updateVals } from '../utils'
 import { escape as SQLEscape } from 'sqlstring'
 
+const env = process.env.NODE_ENV || 'development'
+const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
+
 /**
  * This model handles dealing with pages in the database.
  */
-
-const env = process.env.NODE_ENV || 'development'
-const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
 
 class Page {
   constructor (page, changes) {
@@ -87,6 +87,7 @@ class Page {
    */
 
   static async create (data, editor, msg, db, es) {
+    // Figure out values
     const slug = data.slug ? data.slug : slugify(data.title)
     const parent = data.parent ? await Page.get(data.parent, db) : null
     const pid = parent ? parent.id : 0
@@ -94,10 +95,12 @@ class Page {
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
 
+    // Add to database
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}');`)
     const id = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
+    // Add to elasticsearch index
     await es.create({
       index: `${type}_${env}`,
       type: '_doc',
@@ -105,6 +108,7 @@ class Page {
       body: Object.assign({}, data, { slug, path })
     })
 
+    // Return the page
     return Page.get(id, db)
   }
 
@@ -121,18 +125,23 @@ class Page {
 
   static async get (id, db) {
     if (id && id.constructor && id.constructor.name === 'Page') {
+      // You were passed a page already; just return it
       return id
     } else if (id) {
+      // Query db with either an ID or a path (string)
       const pages = (typeof id === 'string')
         ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
         : await db.run(`SELECT * FROM pages WHERE id=${id};`)
       if (pages.length === 1) {
+        // We found a page, so get its changes and send the whole thing back
         const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
         return new Page(pages[0], changes)
       } else {
+        // Either no pages found, or too many (which should never happen).
         return null
       }
     } else {
+      // We weren't given an ID to look for, so null
       return null
     }
   }
@@ -152,6 +161,7 @@ class Page {
    */
 
   async update (data, editor, msg, db, es) {
+    // What updates do we need to make to the page itself?
     const inPage = ['title', 'slug', 'path', 'parent']
     const update = {}
     for (const key of inPage) {
@@ -168,6 +178,7 @@ class Page {
       }
     }
 
+    // Update the pages table in the database
     const fields = [
       { name: 'title', type: 'string' },
       { name: 'path', type: 'string' },
@@ -176,9 +187,11 @@ class Page {
     const vals = updateVals(fields, update)
     if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
 
+    // Track changes
     const timestamp = Math.floor(Date.now() / 1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
+    // Update the elasticsearch index
     await es.update({
       index: `${this.type}_${env}`,
       type: '_doc',
@@ -191,6 +204,7 @@ class Page {
       }
     })
 
+    // Add change to this instance
     this.changes.unshift({
       id: res.insertId,
       timestamp,

@@ -242,6 +242,54 @@ describe('Page', () => {
     const expected = [ true, false, false, false ]
     expect(actual).toEqual(expected)
   })
+
+  it('can update permissions', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      type: 'group',
+      title: 'New Group',
+      body: 'This is a new group.',
+      permissions: 740
+    }, member, 'Initial text', db, es)
+
+    page.update({
+      type: 'group',
+      title: 'New Group',
+      body: 'This is a new group.',
+      permissions: 440
+    }, admin, 'Locking page', db, es)
+
+    const actual = [
+      page.canRead(admin), page.canWrite(admin),
+      page.canRead(member), page.canWrite(member),
+      page.canRead(), page.canWrite(),
+      page.owner
+    ]
+    const expected = [ true, true, true, false, false, false, 2 ]
+    expect(actual).toEqual(expected)
+  })
+
+  it('can update the owner', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      type: 'group',
+      title: 'New Group',
+      body: 'This is a new group.'
+    }, member, 'Initial text', db, es)
+
+    page.update({
+      type: 'group',
+      title: 'New Group',
+      body: 'This is a new group.',
+      owner: 1
+    }, admin, 'Changing owner', db, es)
+
+    expect(page.owner).toEqual(1)
+  })
 })
 
 afterEach(async () => {

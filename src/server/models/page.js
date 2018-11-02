@@ -160,13 +160,20 @@ class Page {
    */
 
   checkPermissions (person, level) {
+    const p = typeof this.permissions === 'string'
+      ? this.permissions
+      : this.permissions.toString()
+    const owner = parseInt(p.charAt(0))
+    const group = parseInt(p.charAt(1))
+    const world = parseInt(p.charAt(2))
+
     if (person && person.admin) {
       return true
-    } else if (person && person.id === this.owner) {
+    } else if (person && person.id === this.owner && owner >= level) {
       return true
-    } else if (person && parseInt(this.permissions.charAt(1)) >= level) {
+    } else if (person && group >= level) {
       return true
-    } else if (parseInt(this.permissions.charAt(2) >= level)) {
+    } else if (world >= level) {
       return true
     } else {
       return false
@@ -217,7 +224,7 @@ class Page {
 
   async update (data, editor, msg, db, es) {
     // What updates do we need to make to the page itself?
-    const inPage = ['title', 'slug', 'path', 'parent']
+    const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner']
     const update = {}
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
@@ -228,7 +235,7 @@ class Page {
           this.parent = pid
         } else {
           update[key] = data[key]
-          this[key] = data[key]
+          this[key] = key === 'permissions' ? data.permissions.toString() : data[key]
         }
       }
     }
@@ -236,8 +243,11 @@ class Page {
     // Update the pages table in the database
     const fields = [
       { name: 'title', type: 'string' },
+      { name: 'slug', type: 'string '},
       { name: 'path', type: 'string' },
-      { name: 'parent', type: 'number' }
+      { name: 'parent', type: 'number' },
+      { name: 'permissions', type: 'number' },
+      { name: 'owner', type: 'number' }
     ]
     const vals = updateVals(fields, update)
     if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)

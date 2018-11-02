@@ -1,5 +1,5 @@
 import Mailgun from 'mailgun-js'
-import config from '../../config/index'
+import config from '../../config'
 
 /**
  * This method sends an email through Mailgun.

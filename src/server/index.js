@@ -15,7 +15,7 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 
-import config from '../../config/index'
+import config from '../../config'
 import auth from './auth'
 import db from './db'
 import reducers from '../shared/reducers'

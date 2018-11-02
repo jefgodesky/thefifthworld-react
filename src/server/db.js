@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import config from '../../config/index'
+import config from '../../config'
 
 const db = mysql.createPool(config.db)
 

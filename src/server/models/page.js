@@ -217,7 +217,7 @@ class Page {
   async rollbackTo (id, editor, db, es) {
     const target = this.changes.filter(r => r.id === id)
     if (target.length === 1) {
-      const msg = `Rollback to revision ${id} by ${editor.getName()}`
+      const msg = `Rollback to change #${id}`
       await this.update(target[0].content, editor, msg, db, es)
     }
   }

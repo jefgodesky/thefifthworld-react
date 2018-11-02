@@ -12,13 +12,20 @@
       @extend %unformatted-list;
 
       li {
-        display: inline-block;
-        padding: .618em;
+        margin: .618em;
       }
 
       .button {
         margin: 0;
+        max-width: 20em;
+        width: 100%;
       }
+    }
+
+    @media (min-width: 60em) {
+      background: $brown112 url('#{$images}/create.png') no-repeat bottom right;
+      background-size: contain;
+      padding-right: 25%;
     }
   }
 }

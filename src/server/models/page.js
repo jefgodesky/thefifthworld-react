@@ -203,6 +203,17 @@ class Page {
     })
   }
 
+  /**
+   * Rollback a page to a previous version.
+   * @param id {int} - The ID of the version to roll back to.
+   * @param editor {Member} - The Member instance of the person rolling back
+   *   the page.
+   * @param db {Pool} - A database connection.
+   * @param es {function} - An Elasticsearch client.
+   * @returns {Promise} - A promise that resolves when the page has been rolled
+   *   back.
+   */
+
   async rollbackTo (id, editor, db, es) {
     const target = this.changes.filter(r => r.id === id)
     if (target.length === 1) {

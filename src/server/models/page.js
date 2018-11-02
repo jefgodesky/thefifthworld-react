@@ -5,6 +5,7 @@ import { escape as SQLEscape } from 'sqlstring'
  * This model handles dealing with pages in the database.
  */
 
+const env = process.env.NODE_ENV || 'development'
 const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
 
 class Page {
@@ -35,6 +36,16 @@ class Page {
         }
       })
     })
+  }
+
+  /**
+   * Returns an array of the valid page types.
+   * @returns {string[]} - An array of strings, each one providing the name of
+   *   a valid page type.
+   */
+
+  static getTypes () {
+    return types
   }
 
   /**
@@ -70,21 +81,31 @@ class Page {
    *   least include an `id` property specifying the editor's member ID.
    * @param msg {string} - A commit message.
    * @param db {Pool} - A database connection.
+   * @param es {function} - An Elasticsearch client.
    * @returns {Promise} - A promise that resolves with the newly created Page
    *   instance once it has been added to the database.
    */
 
-  static async create (data, editor, msg, db) {
+  static async create (data, editor, msg, db, es) {
     const slug = data.slug ? data.slug : slugify(data.title)
     const parent = data.parent ? await Page.get(data.parent, db) : null
     const pid = parent ? parent.id : 0
     const path = await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
+
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}');`)
-    const page = res.insertId
-    await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${page}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-    return Page.get(page, db)
+    const id = res.insertId
+    await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+
+    await es.create({
+      index: `${type}_${env}`,
+      type: '_doc',
+      id,
+      body: Object.assign({}, data, { slug, path })
+    })
+
+    return Page.get(id, db)
   }
 
   /**
@@ -125,12 +146,13 @@ class Page {
    * @param editor {Member} - The member creating the page.
    * @param msg {string} - A commit message.
    * @param db {Pool} - A database connection.
+   * @param es {function} - An Elasticsearch client.
    * @returns {Promise} - A promise that resolves once the page has been
    *   updated.
    */
 
-  async update (data, editor, msg, db) {
-    const inPage = ['title', 'path', 'parent']
+  async update (data, editor, msg, db, es) {
+    const inPage = ['title', 'slug', 'path', 'parent']
     const update = {}
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
@@ -156,6 +178,19 @@ class Page {
 
     const timestamp = Math.floor(Date.now() / 1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+
+    await es.update({
+      index: `${this.type}_${env}`,
+      type: '_doc',
+      id: this.id,
+      body: {
+        doc: Object.assign({}, data, {
+          slug: this.slug,
+          path: this.path
+        })
+      }
+    })
+
     this.changes.unshift({
       id: res.insertId,
       timestamp,

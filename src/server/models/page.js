@@ -205,7 +205,7 @@ class Page {
    */
 
   canWrite (person) {
-    return this.checkPermissions(person, 6)
+    return person ? this.checkPermissions(person, 6) : false
   }
 
   /**

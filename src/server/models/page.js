@@ -94,7 +94,7 @@ class Page {
     const path = await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
-    const permissions = type === 'wiki' ? 777 : data.permissions ? data.permissions : 744
+    const permissions = data.permissions ? data.permissions : 744
 
     // Add to database
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}', ${permissions}, ${editor.id});`)
@@ -204,7 +204,7 @@ class Page {
    *   permissions, or `false` if she does not.
    */
 
-  canWrite(person) {
+  canWrite (person) {
     return this.checkPermissions(person, 6)
   }
 
@@ -243,7 +243,7 @@ class Page {
     // Update the pages table in the database
     const fields = [
       { name: 'title', type: 'string' },
-      { name: 'slug', type: 'string '},
+      { name: 'slug', type: 'string' },
       { name: 'path', type: 'string' },
       { name: 'parent', type: 'number' },
       { name: 'permissions', type: 'number' },

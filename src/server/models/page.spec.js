@@ -203,6 +203,29 @@ describe('Page', () => {
     const fetched = await Page.get(page, db)
     expect(page).toEqual(fetched)
   })
+
+  it('can roll back changes', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const orig = {
+      title: 'New Page',
+      body: 'This is a new page.'
+    }
+    const page = await Page.create(orig, member, 'Initial text', db, es)
+
+    await page.update({
+      title: 'New Page Title',
+      path: '/updated',
+      body: 'Not such a great update'
+    }, member, 'Testing update', db, es)
+
+    if (page.changes && page.changes.length === 2) {
+      await page.rollbackTo(page.changes[1].id, member, db, es)
+      expect(page.getContent()).toEqual(orig)
+    } else {
+      expect('Number of changes').toEqual(2)
+    }
+  })
 })
 
 afterEach(async () => {

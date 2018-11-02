@@ -203,6 +203,14 @@ class Page {
     })
   }
 
+  async rollbackTo (id, editor, db, es) {
+    const target = this.changes.filter(r => r.id === id)
+    if (target.length === 1) {
+      const msg = `Rollback to revision ${id} by ${editor.getName()}`
+      await this.update(target[0].content, editor, msg, db, es)
+    }
+  }
+
   /**
    * Returns the page content as of the latest version.
    * @returns {Object} - The data object saved with the latest version of the

@@ -11,7 +11,7 @@ const parse = wikitext => {
   text = text.replace(/''(.*?)''/g, '<em>$1</em>')
   text = text.replace(/\[(.*?) (.*?)\]/g, '<a href="$1">$2</a>')
 
-  const paragraphs = text.match(/(.+?)(\n|$)+/g).map(p => `<p>${p.trim()}</p>`).filter(p => p !== '<p></p>')
+  const paragraphs = text.match(/(.+?)(\r|\n|$)+/g).map(p => `<p>${p.trim()}</p>`).filter(p => p !== '<p></p>')
   return paragraphs.length > 1 ? paragraphs.join('\n') : text
 }
 

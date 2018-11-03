@@ -3,7 +3,6 @@ import { updateVals } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
 import { checkPermissions, canRead, canWrite } from '../permissions'
 
-const env = process.env.NODE_ENV || 'development'
 const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
 
 /**
@@ -83,12 +82,11 @@ class Page {
    *   least include an `id` property specifying the editor's member ID.
    * @param msg {string} - A commit message.
    * @param db {Pool} - A database connection.
-   * @param es {function} - An Elasticsearch client.
    * @returns {Promise} - A promise that resolves with the newly created Page
    *   instance once it has been added to the database.
    */
 
-  static async create (data, editor, msg, db, es) {
+  static async create (data, editor, msg, db) {
     // Figure out values
     const slug = data.slug ? data.slug : slugify(data.title)
     const parent = data.parent ? await Page.get(data.parent, db) : null
@@ -102,25 +100,6 @@ class Page {
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}', ${permissions}, ${editor.id});`)
     const id = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-
-    // Add to elasticsearch index
-    const indexData = JSON.parse(JSON.stringify(data))
-    delete indexData.path
-    try {
-      await es.index({
-        index: `${type}_${env}`,
-        type: '_doc',
-        id,
-        body: Object.assign({}, indexData, {
-          slug,
-          permissions,
-          sitePath: path,
-          owner: editor.id
-        })
-      })
-    } catch (err) {
-      console.error(err.body.error)
-    }
 
     // Return the page
     return Page.get(id, db)
@@ -213,12 +192,11 @@ class Page {
    * @param editor {Member} - The member creating the page.
    * @param msg {string} - A commit message.
    * @param db {Pool} - A database connection.
-   * @param es {function} - An Elasticsearch client.
    * @returns {Promise} - A promise that resolves once the page has been
    *   updated.
    */
 
-  async update (data, editor, msg, db, es) {
+  async update (data, editor, msg, db) {
     // What updates do we need to make to the page itself?
     const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner']
     const update = {}
@@ -251,19 +229,6 @@ class Page {
     // Track changes
     const timestamp = Math.floor(Date.now() / 1000)
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-
-    // Update the elasticsearch index
-    await es.index({
-      index: `${this.type}_${env}`,
-      type: '_doc',
-      id: this.id,
-      body: {
-        doc: Object.assign({}, data, {
-          slug: this.slug,
-          path: this.path
-        })
-      }
-    })
 
     // Add change to this instance
     this.changes.unshift({
@@ -305,6 +270,12 @@ class Page {
 
   getContent () {
     return this.changes[0].content
+  }
+
+  static async autocomplete (str, db) {
+    const escaped = SQLEscape(str)
+    const like = escaped.substr(1, escaped.length - 2)
+    return db.run(`SELECT * FROM pages WHERE title LIKE '%${like}%' LIMIT 5;`)
   }
 }
 

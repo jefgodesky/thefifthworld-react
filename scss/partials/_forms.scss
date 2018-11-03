@@ -45,3 +45,26 @@ textarea {
     width: calc(100% + 2em);
   }
 }
+
+.autocomplete {
+  @extend %unformatted-list;
+
+  li {
+    border: 1px solid $brown112;
+    cursor: pointer;
+    padding: .618em;
+
+    p {
+      margin: 0;
+    }
+
+    .note {
+      color: $brown;
+      font-size: .618em;
+    }
+
+    &:hover {
+      background: $brown112;
+    }
+  }
+}

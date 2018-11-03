@@ -1,8 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
+import axios from 'axios'
 import slugify from '../../shared/slugify'
 import { connect } from 'react-redux'
+import config from '../../../config'
+import { get } from '../../shared/utils'
+
+// const env = process.env.NODE_ENV || 'development'
 
 /**
  * This component handles the create/update form for wiki pages.
@@ -12,8 +17,12 @@ class WikiForm extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
+
+    this.parentField = React.createRef()
     this.state = {
+      isClient: false,
       showPath: true,
+      suggestedParents: [],
       title: ''
     }
   }
@@ -25,7 +34,44 @@ class WikiForm extends React.Component {
    */
 
   componentDidMount () {
-    this.setState({ showPath: false })
+    this.setState({
+      isClient: true,
+      showPath: false
+    })
+  }
+
+  async autocomplete (value) {
+    if (value.length > 2) {
+      const results = await axios.post(`${config.root}/autocomplete/title`, {
+        str: value
+      })
+      this.setState({ suggestedParents: results.data })
+    }
+  }
+
+  selectSuggestion (suggestion) {
+    this.parentField.current.value = suggestion.path
+    this.setState({ suggestedParents: [] })
+  }
+
+  renderSuggestions () {
+    if (this.state.suggestedParents.length > 0) {
+      const suggestions = this.state.suggestedParents.map(suggestion => {
+        return (
+          <li key={suggestion.path} onClick={() => this.selectSuggestion(suggestion)}>
+            <p>{suggestion.title}</p>
+            <p className='note'><code>{config.root}{suggestion.path}</code></p>
+          </li>
+        )
+      })
+      return (
+        <ul className='autocomplete'>
+          {suggestions}
+        </ul>
+      )
+    } else {
+      return null
+    }
   }
 
   /**
@@ -37,7 +83,13 @@ class WikiForm extends React.Component {
     const action = this.props.page ? this.props.page.path : '/new-wiki'
     const buttonText = this.props.page ? 'Save' : 'Create New Wiki Page'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
-    const slug = `/${slugify(this.state.title)}`
+    const parent = get(this.parentField, 'current.value')
+    const own = slugify(this.state.title)
+    const slug = parent ? `${parent}/${own}` : `/${own}`
+    const suggestions = this.renderSuggestions()
+    const parentInstructions = this.state.isClient
+      ? 'If so, provide the path for that page here, and we&rsquo;ll create this page as a child of that one.'
+      : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
     const hidden = [
       <input type='hidden' name='type' value='wiki' key='type' />
     ]
@@ -54,8 +106,7 @@ class WikiForm extends React.Component {
           placeholder='What do you want to write about?' />
         {!this.state.showPath &&
         <p className='note'>
-          <strong>Path:</strong>
-          <code>{slug}</code>
+          <strong>Path:</strong> <code>{slug}</code>
           <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
         </p>
         }
@@ -75,6 +126,17 @@ class WikiForm extends React.Component {
             defaultValue={slug} />
         </React.Fragment>
         }
+        <label htmlFor='parent'>
+          Parent
+          <p className='note'>Should this page belong to a different page? {parentInstructions}</p>
+        </label>
+        <input
+          type='text'
+          name='parent'
+          id='parent'
+          ref={this.parentField}
+          onChange={event => this.autocomplete(event.target.value)} />
+        {suggestions}
         <label htmlFor='body'>Body</label>
         <textarea name='body' id='body' />
         <aside className='note'>

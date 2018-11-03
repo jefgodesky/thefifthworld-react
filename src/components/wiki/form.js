@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
+import slugify from '../../shared/slugify'
 import { connect } from 'react-redux'
 
 /**
@@ -11,6 +12,20 @@ class WikiForm extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
+    this.state = {
+      showPath: true,
+      title: ''
+    }
+  }
+
+  /**
+   * This method is called once the component is mounted. This only happens in
+   * the browser, so this is where we set any state that applies just to
+   * in-browser behavior.
+   */
+
+  componentDidMount () {
+    this.setState({ showPath: false })
   }
 
   /**
@@ -22,6 +37,7 @@ class WikiForm extends React.Component {
     const action = this.props.page ? this.props.page.path : '/new-wiki'
     const buttonText = this.props.page ? 'Save' : 'Create New Wiki Page'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
+    const slug = `/${slugify(this.state.title)}`
     const hidden = [
       <input type='hidden' name='type' value='wiki' key='type' />
     ]
@@ -30,7 +46,35 @@ class WikiForm extends React.Component {
       <form action={action} method='post' className='wiki'>
         {hidden}
         <label htmlFor='title'>Title</label>
-        <input type='text' name='title' id='title' placeholder='What do you want to write about?' />
+        <input
+          type='text'
+          name='title'
+          id='title'
+          onChange={event => this.setState({ title: event.target.value })}
+          placeholder='What do you want to write about?' />
+        {!this.state.showPath &&
+        <p className='note'>
+          <strong>Path:</strong>
+          <code>{slug}</code>
+          <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
+        </p>
+        }
+        {this.state.showPath &&
+        <React.Fragment>
+          <label htmlFor='path'>
+            Path
+            <p className='note'>This sets the page&rsquo;s URL. If left blank, it will default to
+              a &ldquo;slugified&rdquo; version of the title (e.g., &rdquo;New Page&rdquo; will
+              become <code>/new-page</code>)</p>
+          </label>
+          <input
+            type='text'
+            name='path'
+            id='path'
+            placeholder='/example'
+            defaultValue={slug} />
+        </React.Fragment>
+        }
         <label htmlFor='body'>Body</label>
         <textarea name='body' id='body' />
         <aside className='note'>

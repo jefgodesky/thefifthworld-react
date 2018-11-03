@@ -13,21 +13,25 @@
  */
 
 const checkPermissions = (person, resource, level) => {
-  const p = typeof resource.permissions === 'string'
-    ? resource.permissions
-    : resource.permissions.toString()
-  const owner = parseInt(p.charAt(0))
-  const group = parseInt(p.charAt(1))
-  const world = parseInt(p.charAt(2))
+  if (resource && resource.permissions) {
+    const p = typeof resource.permissions === 'string'
+      ? resource.permissions
+      : resource.permissions.toString()
+    const owner = parseInt(p.charAt(0))
+    const group = parseInt(p.charAt(1))
+    const world = parseInt(p.charAt(2))
 
-  if (person && person.admin) {
-    return true
-  } else if (person && person.id === resource.owner && owner >= level) {
-    return true
-  } else if (person && group >= level) {
-    return true
-  } else if (world >= level) {
-    return true
+    if (person && person.admin) {
+      return true
+    } else if (person && person.id === resource.owner && owner >= level) {
+      return true
+    } else if (person && group >= level) {
+      return true
+    } else if (world >= level) {
+      return true
+    } else {
+      return false
+    }
   } else {
     return false
   }

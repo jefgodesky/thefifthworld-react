@@ -1,4 +1,5 @@
-import { slugify, updateVals } from '../utils'
+import slugify from '../../shared/slugify'
+import { updateVals } from '../utils'
 import { escape as SQLEscape } from 'sqlstring'
 import { checkPermissions, canRead, canWrite } from '../../shared/permissions'
 

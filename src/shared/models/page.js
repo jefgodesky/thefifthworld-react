@@ -272,6 +272,16 @@ class Page {
     return this.changes[0].content
   }
 
+  /**
+   * Returns an array of results with titles that the provided string appears
+   * in.
+   * @param str {string} - The string to search for.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with the results of a
+   *   database query for all pages with titles that the `str` string appears
+   *   in.
+   */
+
   static async autocomplete (str, db) {
     const escaped = SQLEscape(str)
     const like = escaped.substr(1, escaped.length - 2)

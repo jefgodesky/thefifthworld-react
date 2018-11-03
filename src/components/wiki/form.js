@@ -40,6 +40,15 @@ class WikiForm extends React.Component {
     })
   }
 
+  /**
+   * This method is called each time the parent field changes. It dispatches a
+   * request to the `/autocomplete/title` endpoint to get a list of suggestions
+   * for the current state of that field's value.
+   * @param value {string} - The value to check.
+   * @returns {Promise} - A promise that resolves with the results from the
+   *   `/autocomplete/title` endpoint.
+   */
+
   async autocomplete (value) {
     if (value.length > 2) {
       const results = await axios.post(`${config.root}/autocomplete/title`, {
@@ -49,10 +58,23 @@ class WikiForm extends React.Component {
     }
   }
 
+  /**
+   * This method is called when a user clicks on a suggestedd parent. It sets
+   * the parent field value equal to the suggestion's path.
+   * @param suggestion {Object} - The suggestion object. It must, at a minimum,
+   *   include a `path` property. The parent field value will be set to the
+   *   value of that property.
+   */
+
   selectSuggestion (suggestion) {
     this.parentField.current.value = suggestion.path
     this.setState({ suggestedParents: [] })
   }
+
+  /**
+   * Renders the suggestions offered for the parent.
+   * @returns {*} - JSX for the rendered parent suggestions.
+   */
 
   renderSuggestions () {
     if (this.state.suggestedParents.length > 0) {

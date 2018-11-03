@@ -121,7 +121,7 @@ describe('Page', () => {
       id: page.id
     })
 
-    const actual = `${page.changes[0].content.body} (${indexed._source.body})`
+    const actual = `${page.changes[0].content.body} (${indexed._source.doc.body})`
     const expected = 'New content (New content)'
     expect(actual).toEqual(expected)
   })

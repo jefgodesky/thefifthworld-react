@@ -107,7 +107,7 @@ class Page {
     const indexData = JSON.parse(JSON.stringify(data))
     delete indexData.path
     try {
-      await es.create({
+      await es.index({
         index: `${type}_${env}`,
         type: '_doc',
         id,
@@ -253,7 +253,7 @@ class Page {
     const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
     // Update the elasticsearch index
-    await es.update({
+    await es.index({
       index: `${this.type}_${env}`,
       type: '_doc',
       id: this.id,

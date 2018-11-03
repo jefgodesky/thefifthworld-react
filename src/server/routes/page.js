@@ -1,5 +1,5 @@
 import express from 'express'
-import Page from '../models/page'
+import Page from '../../shared/models/page'
 import db from '../db'
 import es from '../../shared/es'
 

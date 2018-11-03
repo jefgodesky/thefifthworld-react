@@ -1,7 +1,7 @@
-import slugify from '../../shared/slugify'
-import { updateVals } from '../utils'
+import slugify from '../slugify'
+import { updateVals } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
-import { checkPermissions, canRead, canWrite } from '../../shared/permissions'
+import { checkPermissions, canRead, canWrite } from '../permissions'
 
 const env = process.env.NODE_ENV || 'development'
 const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]

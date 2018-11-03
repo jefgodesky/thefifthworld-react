@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt-nodejs'
-import { updateVals, generateInvitationCode } from '../utils'
+import { updateVals, generateInvitationCode } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
-import parse from '../../shared/parse'
+import parse from '../parse'
 
 const msgTypes = {
   confirm: 'confirmation',

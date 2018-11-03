@@ -1,6 +1,6 @@
 import express from 'express'
 import { escape as SQLEscape } from 'sqlstring'
-import Member from '../models/member'
+import Member from '../../shared/models/member'
 import db from '../db'
 import sendEmail from '../email'
 

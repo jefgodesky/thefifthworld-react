@@ -2,7 +2,7 @@
 
 import { escape as SQLEscape } from 'sqlstring'
 import Member from './member'
-import db from '../db'
+import db from '../../server/db'
 
 beforeEach(async () => {
   await db.run('ALTER TABLE members AUTO_INCREMENT=1;')

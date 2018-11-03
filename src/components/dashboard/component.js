@@ -8,7 +8,7 @@ import Messages from '../messages/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
-import Member from '../../server/models/member'
+import Member from '../../shared/models/member'
 import * as actions from './actions'
 
 /**

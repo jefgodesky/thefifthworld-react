@@ -2,8 +2,8 @@
 
 import Member from './member'
 import Page from './page'
-import db from '../db'
-import es from '../../shared/es'
+import db from '../../server/db'
+import es from '../es'
 
 beforeEach(async () => {
   await db.run('ALTER TABLE members AUTO_INCREMENT=1;')

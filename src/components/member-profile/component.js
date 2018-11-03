@@ -11,7 +11,7 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
 import * as actions from './actions'
-import Member from '../../server/models/member'
+import Member from '../../shared/models/member'
 
 /**
  * This component handles the member profile page.

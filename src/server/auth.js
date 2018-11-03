@@ -4,7 +4,7 @@ import { Strategy as DiscordStrategy } from 'passport-discord'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2'
 import { Strategy as FacebookStrategy } from 'passport-facebook'
 import { Strategy as TwitterStrategy } from 'passport-twitter'
-import Member from './models/member'
+import Member from '../shared/models/member'
 
 import config from '../../config'
 import db from './db'

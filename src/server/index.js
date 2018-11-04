@@ -107,9 +107,9 @@ server.get('*', redirector, async (req, res) => {
     await route.load(req, db, store)
     respond(req, res, store)
   } else {
-    const page = await Page.get(req.originalUrl, db)
-    const curr = page.getContent()
-    console.log(get(curr, 'body'))
+    const query = req.originalUrl.split('?')
+    const page = await Page.get(query[0], db)
+    const curr = page ? page.getContent() : null
     page.wikitext = await parse(get(curr, 'body'), db)
     if (page) store.dispatch(loadPage(page))
     respond(req, res, store)

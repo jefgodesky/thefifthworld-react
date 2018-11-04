@@ -32,7 +32,7 @@ const parse = async (wikitext, db) => {
       const linkData = await Page.getPathsByTitle(links.map(link => link.title), db)
       linkData.forEach(link => {
         links.forEach(match => {
-          if (link.title === match.title) {
+          if (link.title.toLowerCase() === match.title.toLowerCase()) {
             match.path = link.path
           }
         })

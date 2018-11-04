@@ -18,8 +18,10 @@ import thunk from 'redux-thunk'
 import config from '../../config'
 import auth from './auth'
 import db from './db'
+import parse from './parse'
 import reducers from '../shared/reducers'
 import routes from '../shared/routes'
+import { get } from '../shared/utils'
 import getMarkup from './ssr'
 import { login } from '../components/member-login/actions'
 import { load as loadPage } from '../components/page/actions'
@@ -106,6 +108,9 @@ server.get('*', redirector, async (req, res) => {
     respond(req, res, store)
   } else {
     const page = await Page.get(req.originalUrl, db)
+    const curr = page.getContent()
+    console.log(get(curr, 'body'))
+    page.wikitext = await parse(get(curr, 'body'), db)
     if (page) store.dispatch(loadPage(page))
     respond(req, res, store)
   }

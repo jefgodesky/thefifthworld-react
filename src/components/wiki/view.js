@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
-import parse from '../../shared/parse'
 import { connect } from 'react-redux'
 
 /**
@@ -20,7 +19,7 @@ class Wiki extends React.Component {
    */
 
   render () {
-    const __html = parse(this.props.page.changes[0].content.body)
+    const __html = this.props.page.wikitext
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>

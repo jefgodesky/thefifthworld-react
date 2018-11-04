@@ -20,4 +20,12 @@ PageRouter.post('/autocomplete/title', async (req, res) => {
   res.json(results)
 })
 
+// POST /get-paths
+PageRouter.post('/get-paths', async (req, res) => {
+  const titles = Array.isArray(req.body.titles) ? req.body.titles : [req.body.titles]
+  console.log(titles)
+  const results = await Page.getPathsByTitle(titles, db)
+  res.json(results)
+})
+
 export default PageRouter

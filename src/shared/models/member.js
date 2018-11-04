@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt-nodejs'
 import { updateVals, generateInvitationCode } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
-import parse from '../parse'
+import parse from '../../server/parse'
 
 const msgTypes = {
   confirm: 'confirmation',
@@ -257,15 +257,15 @@ class Member {
     const messages = await db.run(`SELECT * FROM messages WHERE member=${id}`)
     if (messages.length > 0) {
       const res = {}
-      messages.forEach(msg => {
-        const message = parse(msg.message)
+      for (const msg of messages) {
+        const message = await parse(msg.message, db)
         if (res[msg.type]) {
           res[msg.type] = [...res[msg.type], message]
         } else {
           res[msg.type] = [message]
         }
         db.run(`DELETE FROM messages WHERE id=${msg.id};`)
-      })
+      }
       return res
     } else {
       return {}

@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "jest --runInBand",
+    "test": "jest --forceExit --detectOpenHandles --runInBand",
     "build": "npm-run-all js:build scss:build",
     "lint": "npm-run-all js:lint scss:lint",
     "js:build": "npm-run-all js:lint test js:compile js:compress",

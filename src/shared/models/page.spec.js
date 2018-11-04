@@ -294,6 +294,29 @@ describe('Page', () => {
     const expected = [ 2, 1 ]
     expect(actual).toEqual(expected)
   })
+
+  it('can return paths for a list of titles', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Page 1',
+      body: 'This is a page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Page 2',
+      body: 'This is a page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Page 3',
+      path: '/cool-new-path',
+      body: 'This is a page.'
+    }, member, 'Initial text', db)
+
+    const paths = await Page.getPathsByTitle([ 'Page 1', 'Page 2', 'Page 3' ], db)
+    const actual = paths.map(res => res.path)
+    const expected = [ '/page-1', '/page-2', '/cool-new-path' ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

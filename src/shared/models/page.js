@@ -40,16 +40,6 @@ class Page {
   }
 
   /**
-   * Returns an array of the valid page types.
-   * @returns {string[]} - An array of strings, each one providing the name of
-   *   a valid page type.
-   */
-
-  static getTypes () {
-    return types
-  }
-
-  /**
    * Returns a path for a page by combining the path of its parent
    * concatenated with its own slug.
    * @param data {Object} - An object that should include a `slug` property
@@ -91,7 +81,7 @@ class Page {
     const slug = data.slug ? data.slug : slugify(data.title)
     const parent = data.parent ? await Page.get(data.parent, db) : null
     const pid = parent ? parent.id : 0
-    const path = await Page.getPath(data, parent, db)
+    const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
     const permissions = data.permissions ? data.permissions : 744
@@ -286,6 +276,21 @@ class Page {
     const escaped = SQLEscape(str)
     const like = escaped.substr(1, escaped.length - 2)
     return db.run(`SELECT * FROM pages WHERE title LIKE '%${like}%' LIMIT 5;`)
+  }
+
+  /**
+   * This method takes an array of strings, `titles`, and searches the database
+   * for pages with titles matching those strings. It returns an array that
+   * includes an object for each page found. Each object includes a `title` and
+   * a `path` property.
+   * @param titles {Array} - An array of strings specifying the titles of the
+   *   pages you'd like to return.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an array of objects.
+   */
+
+  static async getPathsByTitle (titles, db) {
+    return db.run(`SELECT title, path FROM pages WHERE title IN (${titles.map(title => `'${title}'`).join(', ')});`)
   }
 }
 

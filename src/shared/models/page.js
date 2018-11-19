@@ -263,6 +263,24 @@ class Page {
   }
 
   /**
+   * Recursively loads all of the pages in the page's lineage.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an array of all of the
+   *   page's ancestors (the first element is the page's parent; the second is
+   *   that page's parent, and so on).
+   */
+
+  async getLineage (db) {
+    if (this.parent === 0) {
+      return []
+    } else {
+      const parent = await Page.get(this.parent, db)
+      const ancestors = await parent.getLineage(db)
+      return [parent, ...ancestors]
+    }
+  }
+
+  /**
    * Returns an array of results with titles that the provided string appears
    * in.
    * @param str {string} - The string to search for.

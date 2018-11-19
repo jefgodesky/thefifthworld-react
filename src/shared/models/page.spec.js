@@ -188,6 +188,32 @@ describe('Page', () => {
     expect(page).toEqual(fetched)
   })
 
+  it('can return a page lineage', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent Page',
+      body: 'This is the parent page.'
+    }, member, 'Initial text', db)
+
+    const child = await Page.create({
+      parent,
+      title: 'Child Page',
+      body: 'This is the parent page.'
+    }, member, 'Initial text', db)
+
+    const grandchild = await Page.create({
+      parent: child,
+      title: 'Grandchild Page',
+      body: 'This is the grandchild page.'
+    }, member, 'Initial text', db)
+
+    const lineage = await grandchild.getLineage(db)
+    const actual = lineage.map(page => page.title)
+    const expected = [ 'Child Page', 'Parent Page' ]
+    expect(actual).toEqual(expected)
+  })
+
   it('can roll back changes', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

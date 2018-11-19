@@ -38,6 +38,12 @@ class Invitations extends React.Component {
     }
   }
 
+  /**
+   * Returns a table of the people that the member has invited.
+   * @returns {Object|null} - JSX for a table displaying the people that the
+   *   member has invited, or `null` if the member has not invited anyone.
+   */
+
   getInvitations () {
     const invitations = []
     if (this.props.invitations) {

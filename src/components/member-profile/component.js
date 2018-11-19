@@ -43,11 +43,26 @@ class MemberProfile extends React.Component {
     }
   }
 
+  /**
+   * Renders the form for a member to change her profile.
+   * @param firstTime {boolean} - `true` if this is the member's first time
+   *   logging in (in which case we want to render a little extra information).
+   *   Defaults to `false`.
+   * @returns {*} - JSX to render the form.
+   */
+
   renderForm (firstTime = false) {
     const name = firstTime ? '' : this.props.member.getName ? this.props.member.getName() : this.props.member.name
     const front = firstTime
       ? (<p><strong>Welcome to the Fifth World!</strong> First tell us a little bit about yourself. Then add a <em>passphrase</em> so you can log back in later.</p>)
-      : (<Messages />)
+      : [
+        <nav className='breadcrumbs' key='breadcrumbs'>
+          <ul>
+            <li><a href='/dashboard'>Dashboard</a></li>
+          </ul>
+        </nav>,
+        <Messages key='messages' />
+      ]
     const action = firstTime ? '/welcome' : '/member'
 
     return (
@@ -79,6 +94,11 @@ class MemberProfile extends React.Component {
       </React.Fragment>
     )
   }
+
+  /**
+   * Renders the profile page.
+   * @returns {*} - JSX for the profile page.
+   */
 
   renderProfile () {
     const actions = Member.canEdit(this.props.member, this.props.loggedInMember)

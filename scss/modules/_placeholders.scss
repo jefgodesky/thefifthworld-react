@@ -11,12 +11,12 @@
   padding: ms(-1) ms(1);
   position: relative;
 
-  .button {
-    @include button-color($brown, $white);
-  }
-
   .form-field {
     margin: 0 0 ms(1);
+  }
+
+  .actions {
+    text-align: center;
   }
 
   @media (min-width: 50em) {

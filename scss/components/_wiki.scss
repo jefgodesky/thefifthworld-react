@@ -7,3 +7,20 @@ form.wiki {
     margin-top: 0;
   }
 }
+
+.wiki-options {
+  font-size: ms(-1);
+  margin-top: ms(2);
+
+  ul {
+    @extend %unformatted-list;
+  }
+
+  li {
+    display: inline;
+  }
+
+  .active a {
+    @include button-color($red, $white);
+  }
+}

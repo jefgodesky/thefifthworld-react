@@ -9,7 +9,6 @@
   padding-bottom: ms(4);
   padding-top: calc(16px + 1em);
   position: relative;
-  text-align: center;
 
   nav {
     margin-bottom: ms(3);
@@ -21,6 +20,10 @@
     li {
       display: inline-block;
       margin: 0 ms(0);
+    }
+
+    li:first-child {
+      margin: 0 ms(0) 0 0;
     }
 
     a {

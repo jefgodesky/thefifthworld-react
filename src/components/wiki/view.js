@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import { canWrite } from '../../shared/permissions'
+import renderOptions from './options'
 
 /**
  * This component handles the member profile page.
@@ -20,10 +22,15 @@ class Wiki extends React.Component {
 
   render () {
     const __html = this.props.page.wikitext
+    const permissions = {
+      edit: canWrite(this.props.loggedInMember, this.props.page)
+    }
+    const options = renderOptions(this.props.page.path, permissions, 'view')
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
+        {options}
       </React.Fragment>
     )
   }
@@ -37,11 +44,13 @@ class Wiki extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    loggedInMember: state.MemberLogin,
     page: state.Page
   }
 }
 
 Wiki.propTypes = {
+  loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 

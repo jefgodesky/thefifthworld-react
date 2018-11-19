@@ -5,6 +5,7 @@ import Footer from '../footer/component'
 import Messages from '../messages/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import config from '../../../config'
 
 /**
  * This component handles the dashboard.
@@ -55,6 +56,10 @@ class Dashboard extends React.Component {
               <li>
                 <a href={`/invite`} className='button'>Invitations</a>
                 <p>Invite your friends to join the Fifth World, and see a list of all the members that you invited.</p>
+              </li>
+              <li>
+                <a href={`https://discord.gg/${config.discord.code}`} className='button'>Chat</a>
+                <p>Join the Fifth World Discord server to chat with other members.</p>
               </li>
             </ul>
           </section>

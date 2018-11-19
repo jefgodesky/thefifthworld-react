@@ -9,7 +9,7 @@ import * as types from './action-types'
  * @constructor
  */
 
-export default function Messages (state = [], action = {}) {
+export default function Messages (state = {}, action = {}) {
   switch (action.type) {
     case types.MESSAGES_LOAD:
       return action.payload

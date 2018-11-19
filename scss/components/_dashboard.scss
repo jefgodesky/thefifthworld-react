@@ -5,19 +5,19 @@
     h3 {
       font-family: 'Fontin Sans Small Caps';
       font-weight: normal;
-      margin: .618em 0;
+      margin: ms(-1) 0;
     }
 
     ul {
       @extend %unformatted-list;
 
       li {
-        margin: .618em;
+        margin: ms(-1);
       }
 
       .button {
         margin: 0;
-        max-width: 20em;
+        max-width: ms(7);
         width: 100%;
       }
     }
@@ -31,7 +31,7 @@
 
   #invitations {
     textarea {
-      height: 8em;
+      height: ms(6);
     }
   }
 }

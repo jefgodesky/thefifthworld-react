@@ -11,7 +11,7 @@
     }
 
     li {
-      margin-bottom: .25em;
+      margin-bottom: ms(-4);
     }
 
     a {
@@ -47,11 +47,11 @@
     }
 
     form {
-      padding-right: 1em;
+      padding-right: ms(0);
     }
 
     .oauth2-login {
-      padding-left: 1em;
+      padding-left: ms(0);
     }
   }
 }

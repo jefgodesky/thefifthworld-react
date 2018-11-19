@@ -119,12 +119,13 @@
 
 body {
   font-family: 'Fontin', 'Georgia', 'serif';
+  font-size: ms(1);
   hyphens: auto;
 }
 
 h1 {
   font-family: 'Fontin Sans Small Caps', 'Verdana', 'sans-serif';
-  font-size: 2.618em;
+  font-size: ms(3);
   font-weight: normal;
   margin-bottom: 1em;
   text-align: center;
@@ -132,7 +133,7 @@ h1 {
 
 h2 {
   font-family: 'Fontin Sans', 'Verdana', 'sans-serif';
-  font-size: 2em;
+  font-size: ms(2);
   font-weight: normal;
   margin: 1.618em 0 1em;
   text-align: center;
@@ -140,7 +141,7 @@ h2 {
 
 h3 {
   font-family: 'Fontin', 'Georgia', 'serif';
-  font-size: 1.618em;
+  font-size: ms(1);
   font-weight: bold;
   margin-bottom: 0;
   text-align: center;
@@ -148,37 +149,12 @@ h3 {
 
 h4 {
   font-family: 'Fontin Sans Small Caps', 'Georgia', 'serif';
-  font-size: 1em;
+  font-size: ms(1);
   font-weight: normal;
   margin-bottom: 0;
   text-align: center;
 }
 
-h3 + p,
-h4 + p {
-  margin-top: .25em;
-}
-
-@media all and (min-width: 400px) {
-
-  body {
-    font-size: 1.187em;
-  }
-
-}
-
-@media all and (min-width: 600px) {
-
-  h1 {
-    font-size: 2.618em;
-  }
-
-}
-
-@media all and (min-width: 800px) {
-
-  body {
-    font-size: 1.375em;
-  }
-
+p {
+  margin: ms(0) 0;
 }

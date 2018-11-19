@@ -110,7 +110,7 @@ class WikiForm extends React.Component {
     const slug = parent ? `${parent}/${own}` : `/${own}`
     const suggestions = this.renderSuggestions()
     const parentInstructions = this.state.isClient
-      ? 'If so, provide the path for that page here, and we&rsquo;ll create this page as a child of that one.'
+      ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
     const hidden = [
       <input type='hidden' name='type' value='wiki' key='type' />

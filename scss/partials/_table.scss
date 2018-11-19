@@ -1,12 +1,12 @@
 table {
   font-family: 'Fontin Sans';
-  margin: 1em 0;
+  margin: ms(0) 0;
   text-align: left;
   width: 100%;
 
   th,
   td {
-    padding: .5em 1em;
+    padding: ms(-1) ms(0);
   }
 
   th {

@@ -2,12 +2,12 @@ label {
   display: block;
   font-family: 'Fontin Sans';
   font-weight: bold;
-  margin: 2em 0 .25em;
+  margin: ms(2) 0 ms(-4);
 
   .note {
-    font-size: .618em;
+    font-size: ms(-1);
     font-weight: normal;
-    margin: 0 0 .618em;
+    margin: 0 0 ms(-1);
   }
 }
 
@@ -26,16 +26,16 @@ input[type='password'] {
   }
 
   & + .note {
-    font-size: .618em;
-    margin-top: .618em;
+    font-size: ms(-1);
+    margin-top: ms(-1);
   }
 }
 
 textarea {
   border: 0;
-  box-shadow: 0 0 .5em $black13;
+  box-shadow: 0 0 ms(-2) $black13;
   display: block;
-  height: 10em;
+  height: ms(7);
   margin: 1em 0;
   padding: 1em;
   width: 100%;
@@ -52,7 +52,7 @@ textarea {
   li {
     border: 1px solid $brown112;
     cursor: pointer;
-    padding: .618em;
+    padding: ms(-1);
 
     p {
       margin: 0;
@@ -60,7 +60,7 @@ textarea {
 
     .note {
       color: $brown;
-      font-size: .618em;
+      font-size: ms(-1);
     }
 
     &:hover {

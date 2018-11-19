@@ -1,3 +1,10 @@
+@import '../node_modules/modularscale-sass/stylesheets/modularscale';
+
+$modularscale: (
+  base: 1em,
+  ratio: 1.42857142857
+);
+
 @import 'modules/colors';
 @import 'modules/variables';
 @import 'modules/mixins';

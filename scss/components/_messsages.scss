@@ -5,14 +5,10 @@
     @extend %sidebar;
     background: $blue16;
     display: block;
-    margin: .5em 0;
+    margin: ms(-2) 0;
 
     &.confirmation { background: $green16; }
     &.warning { background: $yellow16; }
     &.error { background: $red16; }
-
-    @media (min-width: 50em) {
-      margin: .5em -2em;
-    }
   }
 }

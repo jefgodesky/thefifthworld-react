@@ -4,7 +4,7 @@ body {
 
 main {
   @extend %layout;
-  padding-bottom: 4em;
+  padding-bottom: ms(4);
 }
 
 aside {
@@ -13,17 +13,23 @@ aside {
   &.note {
     background: $brown112;
     font-family: 'Fontin Sans';
-    font-size: .618em;
+    font-size: ms(-1);
     text-align: center;
   }
 }
 
 hr {
   background: url('#{$images}/divider.png') no-repeat center;
+  background-size: contain;
   border: 0;
-  height: 20px;
-  margin: 2em auto;
-  width: 170px;
+  height: 13px;
+  margin: ms(2) auto;
+  width: 250px;
+
+  @media (min-width: 50em) {
+    height: 25px;
+    width: 500px;
+  }
 }
 
 a {

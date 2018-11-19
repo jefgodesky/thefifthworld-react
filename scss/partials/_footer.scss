@@ -6,13 +6,13 @@
   background-repeat: repeat-x, no-repeat;
   background-size: auto, cover;
   color: $white;
-  padding-bottom: 3em;
+  padding-bottom: ms(4);
   padding-top: calc(16px + 1em);
   position: relative;
   text-align: center;
 
   nav {
-    margin-bottom: 3em;
+    margin-bottom: ms(3);
 
     ul {
       @extend %unformatted-list;
@@ -20,13 +20,13 @@
 
     li {
       display: inline-block;
-      margin: 0 1em;
+      margin: 0 ms(0);
     }
 
     a {
       border-bottom: 2px solid transparent;
       font-family: 'Fontin Sans Small Caps';
-      padding-bottom: .5em;
+      padding-bottom: ms(-2);
       text-decoration: none;
 
       &:hover {
@@ -40,14 +40,14 @@
   }
 
   .copyleft {
-    font-size: .618em;
+    font-size: ms(-1);
 
     .icons {
-      margin-right: .5em;
+      margin-right: ms(-2);
 
       img {
-        height: 1em;
-        margin-right: .1em;
+        height: ms(0);
+        margin-right: ms(-6);
       }
     }
   }
@@ -58,7 +58,7 @@
     content: '';
     display: block;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b92e52', endColorstr='#b92e52', GradientType=0 );
-    height: 2em;
+    height: ms(2);
     left: 0;
     position: absolute;
     right: 0;

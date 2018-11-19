@@ -7,8 +7,8 @@
 %sidebar {
   background: $brown16;
   font-family: 'Fontin Sans';
-  margin: 2em 0;
-  padding: 1em 2em;
+  margin: ms(3) 0;
+  padding: ms(-1) ms(1);
   position: relative;
 
   .button {
@@ -16,11 +16,11 @@
   }
 
   .form-field {
-    margin: 0 0 1.618em;
+    margin: 0 0 ms(1);
   }
 
   @media (min-width: 50em) {
-    margin: 2em -2em;
+    margin: ms(1) ms(1) * -1;
   }
 
   &::before,
@@ -33,17 +33,17 @@
   }
 
   &::before {
-    border: 1em solid $white;
-    border-bottom-color: transparent;
-    border-right-color: transparent;
+    border-color: $white transparent transparent $white;
+    border-style: solid;
+    border-width: 2.041em .509em 0 0;
     left: 0;
     top: 0;
   }
 
   &::after {
-    border: 1em solid $white;
-    border-left-color: transparent;
-    border-top-color: transparent;
+    border-color: transparent $white $white transparent;
+    border-style: solid;
+    border-width: 0 0 2.041em .509em;
     bottom: 0;
     right: 0;
   }

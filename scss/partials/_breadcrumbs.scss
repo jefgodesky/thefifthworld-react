@@ -5,7 +5,7 @@
     @extend %unformatted-list;
   }
 
-  li:after {
+  li::after {
     color: $brown13;
     content: '\00bb';
     margin: 0 ms(-1);

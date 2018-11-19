@@ -88,6 +88,20 @@ MemberRouter.get(
     failureRedirect: '/login'
   }))
 
+// GET /disconnect/:service
+MemberRouter.get('/disconnect/:service', async (req, res) => {
+  const services = Member.getAllAuth()
+  if (!req.user) {
+    res.redirect('/login')
+  } else {
+    if (services.indexOf(req.params.service) > -1) {
+      const member = await Member.get(req.user.id, db)
+      await member.removeAuth(req.params.service, db)
+    }
+    res.redirect('/connect')
+  }
+})
+
 // POST /member
 MemberRouter.post('/member', async (req, res) => {
   if (req.body.id) {

@@ -243,6 +243,42 @@ class Member {
   }
 
   /**
+   * Removes an OAuth2 authentication token for a member.
+   * @param service {string} - The service to remove. Can be 'google',
+   *   'facebook', 'twitter', 'discord', 'patreon', or 'github'.
+   * @param db {Pool} - A database connection.
+   */
+
+  async removeAuth (service, db) {
+    await db.run(`DELETE FROM authorizations WHERE member=${this.id} AND provider='${service}';`)
+  }
+
+  /**
+   * Returns an array of the OAuth2 services that the member has an active
+   * authentication for in the database.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise} - A promise that resolves with an array of strings,
+   *   each specifying an OAuth2 service that the member has an active
+   *   authentication for in the database.
+   */
+
+  async getAuth (db) {
+    const res = await db.run(`SELECT provider FROM authorizations WHERE member=${this.id};`)
+    return res.map(row => row.provider)
+  }
+
+  /**
+   * Returns a list of all of the OAuth2 services that a member can use to
+   * authenticate.
+   * @returns {string[]} - An array of strings, each one specifying an OAuth2
+   *   service that a member could authenticate with.
+   */
+
+  static getAllAuth () {
+    return [ 'patreon', 'discord', 'google', 'facebook', 'twitter' ]
+  }
+
+  /**
    * Returns the messages left for a member in the database, and then deletes
    * them.
    * @param id {int} - The ID of the member.

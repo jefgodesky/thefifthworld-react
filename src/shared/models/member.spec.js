@@ -164,6 +164,15 @@ describe('Member', () => {
     expect(check.getObject()).toEqual(admin.getObject())
   })
 
+  it('can remove an OAuth token', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    await admin.addAuth('new-service', 'id', 'token', db)
+    await admin.removeAuth('new-service', db)
+    const actual = await admin.getAuth(db)
+    expect(actual.indexOf('new-service')).toEqual(-1)
+  })
+
   it('can log and retrieve messages', async () => {
     expect.assertions(1)
     const confirmation = 'confirmation message confirmed'
@@ -357,6 +366,20 @@ describe('Member', () => {
     } else {
       expect(invite.length).toEqual(1)
     }
+  })
+
+  it('can return a list of all OAuth services possible', () => {
+    const expected = [ 'patreon', 'discord', 'google', 'facebook', 'twitter' ]
+    const actual = Member.getAllAuth()
+    expect(actual).toEqual(expected)
+  })
+
+  it('can return the OAuth services that the member has authenticated with', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const actual = await admin.getAuth(db)
+    const expected = [ 'test' ]
+    expect(actual).toEqual(expected)
   })
 })
 

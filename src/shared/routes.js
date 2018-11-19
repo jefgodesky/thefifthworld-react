@@ -8,6 +8,7 @@ import Invitations from '../components/invitations/component'
 import Join from '../components/join/component'
 import MemberLogin from '../components/member-login/component'
 import MemberProfile from '../components/member-profile/component'
+import OAuth2Connect from '../components/oauth-connect/component'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     path: '/invite',
     exact: true,
     component: Invitations
+  },
+  {
+    path: '/connect',
+    exact: true,
+    component: OAuth2Connect
   },
   {
     path: '/join',

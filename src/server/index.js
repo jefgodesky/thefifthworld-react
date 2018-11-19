@@ -110,6 +110,7 @@ server.get('*', redirector, async (req, res) => {
     const query = req.originalUrl.split('?')
     const page = await Page.get(query[0], db)
     const curr = page ? page.getContent() : null
+    page.lineage = await page.getLineage(db)
     page.wikitext = await parse(get(curr, 'body'), db)
     if (page) store.dispatch(loadPage(page))
     respond(req, res, store)

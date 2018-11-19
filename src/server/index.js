@@ -103,8 +103,8 @@ server.get('*', redirector, async (req, res) => {
     if (messages) store.dispatch(load(messages))
   }
 
-  if (route && route.load) {
-    await route.load(req, db, store)
+  if (route) {
+    if (route.load) await route.load(req, db, store)
     respond(req, res, store)
   } else {
     const query = req.originalUrl.split('?')

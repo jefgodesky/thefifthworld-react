@@ -5,10 +5,14 @@
     @extend %unformatted-list;
   }
 
-  li::after {
-    color: $brown13;
-    content: '\00bb';
-    margin: 0 ms(-1);
+  li {
+    display: inline;
+
+    &::after {
+      color: $brown13;
+      content: '\00bb';
+      margin: 0 ms(-1);
+    }
   }
 
   a {

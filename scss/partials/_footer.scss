@@ -50,6 +50,10 @@
         margin-right: ms(-6);
       }
     }
+
+    a {
+      white-space: nowrap;
+    }
   }
 
   &::after {

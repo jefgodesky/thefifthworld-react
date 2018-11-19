@@ -1,0 +1,26 @@
+.breadcrumbs {
+  font-family: 'Fontin Sans Small Caps';
+
+  ul {
+    @extend %unformatted-list;
+  }
+
+  li:after {
+    color: $brown13;
+    content: '\00bb';
+    margin: 0 ms(-1);
+  }
+
+  a {
+    color: $brown23;
+    text-decoration: none;
+
+    &:hover {
+      color: brighten($brown23, 25%);
+    }
+
+    &:active {
+      color: darken($brown23, 25%);
+    }
+  }
+}

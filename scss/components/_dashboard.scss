@@ -1,5 +1,6 @@
 .dashboard {
-  .create {
+  .choices {
+    @extend %sidebar;
     text-align: center;
 
     h3 {
@@ -15,7 +16,14 @@
         margin: ms(-1);
       }
 
+      p {
+        font-size: ms(-1);
+        margin: ms(0) auto ms(1);
+        max-width: ms(9);
+      }
+
       .button {
+        @include button-color($red, $white);
         margin: 0;
         max-width: ms(7);
         width: 100%;
@@ -23,15 +31,11 @@
     }
 
     @media (min-width: 60em) {
-      background: $brown112 url('#{$images}/create.png') no-repeat bottom right;
-      background-size: contain;
-      padding-right: 25%;
-    }
-  }
-
-  #invitations {
-    textarea {
-      height: ms(6);
+      &.create {
+        background: $brown112 url('#{$images}/create.png') no-repeat bottom right;
+        background-size: contain;
+        padding-right: 25%;
+      }
     }
   }
 }

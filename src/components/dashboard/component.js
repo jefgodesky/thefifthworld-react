@@ -1,5 +1,3 @@
-/* global __isClient__ */
-
 import React from 'react'
 import PropTypes from 'prop-types'
 import Header from '../header/component'
@@ -7,9 +5,6 @@ import Footer from '../footer/component'
 import Messages from '../messages/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
-
-import Member from '../../shared/models/member'
-import * as actions from './actions'
 
 /**
  * This component handles the dashboard.
@@ -22,78 +17,19 @@ class Dashboard extends React.Component {
   }
 
   /**
-   * This is a static function used on the server to load data from the
-   * database for the dashboard.
-   * @param req {Object} - The request object from Express.
-   * @param db {Pool} - A database connection to query.
-   * @param store {Object} - A Redux store object.
-   */
-
-  static async load (req, db, store) {
-    if (!__isClient__ && req.user && store.dispatch && (typeof store.dispatch === 'function')) {
-      const invited = await Member.getInvited(req.user.id, db)
-      if (invited.length > 0) {
-        store.dispatch(actions.load({ invited }))
-      }
-    }
-  }
-
-  getInvitations () {
-    const invitations = []
-    if (this.props.dashboard && this.props.dashboard.invited && Array.isArray(this.props.dashboard.invited)) {
-      this.props.dashboard.invited.forEach((invitation, i) => {
-        const name = invitation.accepted
-          ? (<a href={`/member/${invitation.id}`}>{invitation.name}</a>)
-          : invitation.name
-        const status = invitation.accepted ? 'Member' : 'Invited'
-        invitations.push(
-          <tr key={i}>
-            <td>{name}</td>
-            <td className='status'>{status}</td>
-          </tr>
-        )
-      })
-    }
-
-    return invitations.length > 0
-      ? (
-        <table className='invitations'>
-          <thead>
-            <tr>
-              <th>You invited&hellip;</th>
-              <th className='status'>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invitations}
-          </tbody>
-        </table>
-      )
-      : null
-  }
-
-  /**
    * The render function
    * @returns {string} - The rendered output.
    */
 
   render () {
-    const invitationCount = this.props.loggedInMember.admin ? '∞' : this.props.loggedInMember.invitations
-    const invitations = this.getInvitations()
-
     return (
       <React.Fragment>
         <Header />
         <main className='dashboard'>
           <Messages />
-          <aside>
-            <p>Hello, {this.props.loggedInMember.name}. Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
-          </aside>
-          <p className='actions'>
-            <a href={`/member/${this.props.loggedInMember.id}`} className='button'>View Your Profile</a>
-            <a href={`/member/${this.props.loggedInMember.id}/edit`} className='button'>Change Your Profile</a>
-          </p>
-          <aside className='create'>
+          <p><strong>Hello, {this.props.loggedInMember.name}.</strong> Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
+          <hr />
+          <section className='choices create'>
             <h3>Create Something</h3>
             <p>Add something new to the Fifth World.</p>
             <ul>
@@ -104,22 +40,23 @@ class Dashboard extends React.Component {
               <li><a href='/new-story' className='button'>Write a Story</a></li>
               <li><a href='/new-art' className='button'>Upload Art</a></li>
             </ul>
-          </aside>
-          <section id='invitations'>
-            <h1>Invitations</h1>
-            {invitations}
-            {(invitationCount === '∞' || invitationCount > 0) &&
-              <React.Fragment>
-                <h2>Send Invitations</h2>
-                <p>You can send invitations to up to <strong>{invitationCount}</strong> more people. Enter each email address on a separate line.</p>
-                <form action='/invite' method='post'>
-                  <textarea name='invitations' placeholder='someone@example.com' />
-                  <p className='actions'>
-                    <button>Send Invitations</button>
-                  </p>
-                </form>
-              </React.Fragment>
-            }
+          </section>
+          <section className='choices'>
+            <h3>Your Membership</h3>
+            <ul>
+              <li>
+                <a href={`/member/${this.props.loggedInMember.id}/edit`} className='button'>Your Profile</a>
+                <p>Update your name, email, and password, and decide what you want to share about your activity on the Fifth World.</p>
+              </li>
+              <li>
+                <a href={`/connect`} className='button'>Connect</a>
+                <p>Connect other services like Facebook, Twitter, Patreon, Google, or Github, so you can use them to log in.</p>
+              </li>
+              <li>
+                <a href={`/invite`} className='button'>Invitations</a>
+                <p>Invite your friends to join the Fifth World, and see a list of all the members that you invited.</p>
+              </li>
+            </ul>
           </section>
         </main>
         <Footer />
@@ -136,13 +73,11 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    dashboard: state.Dashboard,
     loggedInMember: state.MemberLogin
   }
 }
 
 Dashboard.propTypes = {
-  dashboard: PropTypes.object,
   loggedInMember: PropTypes.object
 }
 

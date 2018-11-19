@@ -21,6 +21,35 @@ class Page extends React.Component {
   }
 
   /**
+   * Renders the page breadcrumbs.
+   * @returns {*} - JSX for the breadcrumbs for the page.
+   */
+
+  renderBreadcrumbs () {
+    if (this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) && this.props.page.lineage.length > 0) {
+      const lineage = this.props.page.lineage.slice(0).reverse()
+      const crumbs = []
+      lineage.forEach(page => {
+        crumbs.push(
+          <li key={page.path}>
+            <a href={page.path}>{page.title}</a>
+          </li>
+        )
+      })
+
+      return (
+        <nav className='breadcrumbs'>
+          <ul>
+            {crumbs}
+          </ul>
+        </nav>
+      )
+    } else {
+      return null
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -33,11 +62,14 @@ class Page extends React.Component {
           default: component = (<Wiki />); break
         }
 
+        const breadcrumbs = this.renderBreadcrumbs()
+
         return (
           <React.Fragment>
             <Header />
             <main>
               <Messages />
+              {breadcrumbs}
               {component}
             </main>
             <Footer />

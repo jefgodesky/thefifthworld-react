@@ -55,7 +55,7 @@ class Page extends React.Component {
    */
 
   render () {
-    if (this.props.page) {
+    if (this.props.page && Object.keys(this.props.page).length > 0) {
       if (canRead(this.props.loggedInMember, this.props.page)) {
         let component
         switch (this.props.page.type) {

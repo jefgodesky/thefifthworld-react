@@ -55,6 +55,8 @@ class WikiForm extends React.Component {
         str: value
       })
       this.setState({ suggestedParents: results.data })
+    } else {
+      this.setState({ suggestedParents: [] })
     }
   }
 
@@ -102,13 +104,17 @@ class WikiForm extends React.Component {
    */
 
   render () {
-    const action = this.props.page ? this.props.page.path : '/new-wiki'
-    const buttonText = this.props.page ? 'Save' : 'Create New Wiki Page'
+    const action = this.props.page && this.props.page.path ? this.props.page.path : '/new-wiki'
+    const buttonText = action === '/new-wiki' ? 'Create New Wiki Page' : 'Save'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
     const parent = get(this.parentField, 'current.value')
     const own = slugify(this.state.title)
-    const slug = parent ? `${parent}/${own}` : `/${own}`
+    const slug = this.props.page && this.props.page.path ? this.props.page.path : parent ? `${parent}/${own}` : `/${own}`
     const suggestions = this.renderSuggestions()
+    const body = get(this.props.page, 'curr.body')
+    const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
+    const parentObject = lineage.length > 0 ? lineage[0] : null
+    const parentPath = parentObject ? parentObject.path : ''
     const parentInstructions = this.state.isClient
       ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
@@ -124,6 +130,7 @@ class WikiForm extends React.Component {
           type='text'
           name='title'
           id='title'
+          defaultValue={this.props.page.title}
           onChange={event => this.setState({ title: event.target.value })}
           placeholder='What do you want to write about?' />
         {!this.state.showPath &&
@@ -157,10 +164,14 @@ class WikiForm extends React.Component {
           name='parent'
           id='parent'
           ref={this.parentField}
+          defaultValue={parentPath}
           onChange={event => this.autocomplete(event.target.value)} />
         {suggestions}
         <label htmlFor='body'>Body</label>
-        <textarea name='body' id='body' />
+        <textarea
+          name='body'
+          id='body'
+          defaultValue={body} />
         <aside className='note'>
           <p>You can format your page using <a href='/wikitext'>wikitext</a>.</p>
         </aside>

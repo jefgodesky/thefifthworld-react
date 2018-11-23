@@ -21,7 +21,7 @@ class Wiki extends React.Component {
    */
 
   render () {
-    const __html = this.props.page.wikitext
+    const __html = this.props.page.html
     const permissions = {
       edit: canWrite(this.props.loggedInMember, this.props.page)
     }

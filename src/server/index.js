@@ -107,12 +107,22 @@ server.get('*', redirector, async (req, res) => {
     if (route.load) await route.load(req, db, store)
     respond(req, res, store)
   } else {
+    const commands = ['edit', 'history']
     const query = req.originalUrl.split('?')
-    const page = await Page.get(query[0], db)
+    let path = query[0]
+    const parts = path.split('/')
+    let command = null
+    if (commands.indexOf(parts[parts.length - 1]) > -1) {
+      command = parts.pop()
+      path = parts.join('/')
+    }
+    const page = await Page.get(path, db)
     if (page) {
       const curr = page.getContent()
-      page.wikitext = await parse(get(curr, 'body'), db)
+      page.curr = curr
+      page.html = await parse(get(curr, 'body'), db)
       page.lineage = await page.getLineage(db)
+      page.command = command
       store.dispatch(loadPage(page))
     }
     respond(req, res, store)

@@ -5,7 +5,10 @@ import Footer from '../footer/component'
 import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import Error404 from '../error-404/component'
+
+import WikiForm from '../wiki/form'
 import Wiki from '../wiki/view'
+
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canRead } from '../../shared/permissions'
@@ -58,8 +61,10 @@ class Page extends React.Component {
     if (this.props.page && Object.keys(this.props.page).length > 0) {
       if (canRead(this.props.loggedInMember, this.props.page)) {
         let component
-        switch (this.props.page.type) {
-          default: component = (<Wiki />); break
+        if (this.props.page.command === 'edit') {
+          component = (<WikiForm />)
+        } else {
+          component = (<Wiki />)
         }
 
         const breadcrumbs = this.renderBreadcrumbs()

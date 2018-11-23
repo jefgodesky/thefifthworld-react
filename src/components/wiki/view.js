@@ -6,7 +6,7 @@ import { canWrite } from '../../shared/permissions'
 import renderOptions from './options'
 
 /**
- * This component handles the member profile page.
+ * This component handles wiki pages.
  */
 
 class Wiki extends React.Component {

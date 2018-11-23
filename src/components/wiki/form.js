@@ -135,16 +135,31 @@ class WikiForm extends React.Component {
     const slug = this.props.page && this.props.page.path ? this.props.page.path : parent ? `${parent}/${own}` : `/${own}`
     const suggestions = this.renderSuggestions()
     const body = get(this.props.page, 'curr.body')
+
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
     const parentObject = lineage.length > 0 ? lineage[0] : null
     const parentPath = parentObject ? parentObject.path : ''
     const parentInstructions = this.state.isClient
       ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
+
     const hidden = [
       <input type='hidden' name='type' value='wiki' key='type' />
     ]
     const message = this.renderMessageField()
+
+    const permissions = parseInt(this.props.page.permissions)
+    const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
+    const lock = canAdmin && permissions > 744
+      ? (<input type='submit' name='lock' value='Lock' className='secondary' />)
+      : permissions <= 744
+        ? (<input type='submit' name='unlock' value='Unlock' className='secondary' />)
+        : null
+    const hide = canAdmin && permissions > 400
+      ? (<input type='submit' name='hide' value='Hide' className='secondary' />)
+      : permissions <= 400
+        ? (<input type='submit' name='unhide' value='Unhide' className='secondary' />)
+        : null
 
     return (
       <form action={action} method='post' className='wiki'>
@@ -202,6 +217,8 @@ class WikiForm extends React.Component {
         {message}
         <p className='actions'>
           <button>{buttonText}</button>
+          {lock}
+          {hide}
           <a href={cancel} className='button secondary'>Cancel</a>
         </p>
       </form>
@@ -217,11 +234,13 @@ class WikiForm extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    loggedInMember: state.MemberLogin,
     page: state.Page
   }
 }
 
 WikiForm.propTypes = {
+  loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 

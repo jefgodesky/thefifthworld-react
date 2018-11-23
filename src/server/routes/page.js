@@ -27,12 +27,22 @@ PageRouter.post('*', async (req, res) => {
   const path = query[0]
   const page = await Page.get(path, db)
   const editor = req.user ? await Member.get(req.user.id, db) : null
+
   if (page && editor) {
     const msg = req.body.message
     delete req.body.message
-    console.log(req.body)
+
+    const lock = req.body.lock !== undefined
+    const unlock = req.body.unlock !== undefined
+    const hide = req.body.hide !== undefined
+    const unhide = req.body.unhide !== undefined
+    if (unlock) req.body.permissions = 774
+    if (lock || unhide) req.body.permissions = 744
+    if (hide) req.body.permissions = 400
+
     await page.update(req.body, editor, msg, db)
   }
+
   res.redirect(path)
 })
 

@@ -84,7 +84,7 @@ class Page {
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
-    const permissions = data.permissions ? data.permissions : 744
+    const permissions = data.permissions ? data.permissions : 774
 
     // Add to database
     const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}', ${permissions}, ${editor.id});`)

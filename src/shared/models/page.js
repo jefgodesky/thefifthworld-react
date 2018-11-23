@@ -118,6 +118,7 @@ class Page {
       if (pages.length === 1) {
         // We found a page, so get its changes and send the whole thing back
         const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
+        changes.reverse()
         return new Page(pages[0], changes)
       } else {
         // Either no pages found, or too many (which should never happen).

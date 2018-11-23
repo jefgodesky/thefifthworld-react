@@ -99,6 +99,29 @@ class WikiForm extends React.Component {
   }
 
   /**
+   * Renders the commit message field.
+   * @returns {Object} - JSX to render the commit message field.
+   */
+
+  renderMessageField () {
+    if (this.props.page && this.props.page.path) {
+      return (
+        <React.Fragment>
+          <label htmlFor='message'>
+            Message
+            <p className='note'>Briefly describe the change you’ve made.</p>
+          </label>
+          <input type='text' name='message' id='message' />
+        </React.Fragment>
+      )
+    } else {
+      return (
+        <input type='hidden' name='msg' value='Initial text' />
+      )
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -121,6 +144,7 @@ class WikiForm extends React.Component {
     const hidden = [
       <input type='hidden' name='type' value='wiki' key='type' />
     ]
+    const message = this.renderMessageField()
 
     return (
       <form action={action} method='post' className='wiki'>
@@ -175,6 +199,7 @@ class WikiForm extends React.Component {
         <aside className='note'>
           <p>You can format your page using <a href='/wikitext'>wikitext</a>.</p>
         </aside>
+        {message}
         <p className='actions'>
           <button>{buttonText}</button>
           <a href={cancel} className='button secondary'>Cancel</a>

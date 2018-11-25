@@ -97,6 +97,7 @@ class WikiHistory extends React.Component {
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
+        <p><a href={this.props.page.path}>&laquo; Back to current page</a></p>
         {wrapping}
       </React.Fragment>
     )

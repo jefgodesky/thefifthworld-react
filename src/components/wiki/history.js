@@ -37,7 +37,11 @@ class WikiHistory extends React.Component {
           <td>{a}</td>
           <td>{b}</td>
           <td>{change.msg}</td>
-          <td dangerouslySetInnerHTML={{ __html: formatDate(change.timestamp) }} />
+          <td>
+            <a
+              href={`${this.props.page.path}/v/${change.id}`}
+              dangerouslySetInnerHTML={{ __html: formatDate(change.timestamp) }} />
+          </td>
           <td>
             <a href={`/member/${change.editor.id}`}>{change.editor.name}</a>
           </td>

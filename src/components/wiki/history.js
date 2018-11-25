@@ -80,6 +80,7 @@ class WikiHistory extends React.Component {
             {header}
             {body}
           </table>
+          <button>Compare</button>
         </form>
       )
       : (

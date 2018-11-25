@@ -7,6 +7,7 @@ import Error401 from '../error-401/component'
 import Error404 from '../error-404/component'
 
 import WikiForm from '../wiki/form'
+import WikiHistory from '../wiki/history'
 import Wiki from '../wiki/view'
 
 import autoBind from 'react-autobind'
@@ -63,6 +64,8 @@ class Page extends React.Component {
         let component
         if (this.props.page.command === 'edit') {
           component = (<WikiForm />)
+        } else if (this.props.page.command === 'history') {
+          component = (<WikiHistory />)
         } else {
           component = (<Wiki />)
         }

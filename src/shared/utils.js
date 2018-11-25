@@ -39,7 +39,27 @@ const get = (val, props) => {
   return val
 }
 
+/**
+ * Formats a date object in the format used in page history tables.
+ * @param date {Date} - A Date object.
+ * @returns {string} - The data object represented in the format used in page
+ *   history tables.
+ */
+
+const formatDate = date => {
+  const months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ]
+  const d = date.getDate()
+  const m = months[date.getMonth()]
+  const y = date.getFullYear()
+  const H = date.getHours()
+  const hr = H > 12 ? H - 12 : H === 0 ? 12 : H
+  const min = date.getMinutes().toString().padStart(2, '0')
+  const ampm = H >= 12 ? 'PM' : 'AM'
+  return `${d}&nbsp;${m}&nbsp;${y} ${hr}:${min}&nbsp;${ampm}`
+}
+
 export {
   checkExists,
-  get
+  get,
+  formatDate
 }

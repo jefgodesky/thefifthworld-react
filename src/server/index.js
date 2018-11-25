@@ -112,17 +112,39 @@ server.get('*', redirector, async (req, res) => {
     let path = query[0]
     const parts = path.split('/')
     let command = null
-    if (commands.indexOf(parts[parts.length - 1]) > -1) {
+    let version = null
+    if (parts[parts.length - 2] === 'v') {
+      version = parseInt(parts.pop())
+      command = parts.pop()
+      path = parts.join('/')
+    } else if (commands.indexOf(parts[parts.length - 1]) > -1) {
       command = parts.pop()
       path = parts.join('/')
     }
+
     const page = await Page.get(path, db)
     if (page) {
-      const curr = page.getContent()
+      let curr = page.getContent()
+      if (command === 'v' && version) {
+        const match = page.changes.filter(v => v.id === version)
+        if (match.length > 0) {
+          if (match[0].id === curr.id) {
+            command = null
+            version = null
+          } else {
+            version = match[0]
+            curr = version.content
+          }
+        }
+      }
+
       page.curr = curr
       page.html = await parse(get(curr, 'body'), db)
       page.lineage = await page.getLineage(db)
       page.command = command
+      if (command === 'v' && version) {
+        page.version = version
+      }
       store.dispatch(loadPage(page))
     }
     respond(req, res, store)

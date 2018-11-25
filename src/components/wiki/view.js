@@ -4,6 +4,7 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canWrite } from '../../shared/permissions'
 import renderOptions from './options'
+import { formatDate } from '../../shared/utils'
 
 /**
  * This component handles wiki pages.
@@ -26,9 +27,26 @@ class Wiki extends React.Component {
       edit: canWrite(this.props.loggedInMember, this.props.page)
     }
     const options = renderOptions(this.props.page.path, permissions, 'view')
+
+    const rollback = this.props.page.version && permissions.edit
+      ? (<a href={`${this.props.page.path}/rollback/${this.props.page.version.id}`} className='button'>Roll back to this version</a>)
+      : null
+    const old = this.props.page.version
+      ? (
+        <aside>
+          <p>This shows an older version of this page, last edited by <a href={this.props.page.version.editor.id}>{this.props.page.version.editor.name}</a> on <span dangerouslySetInnerHTML={{ __html: formatDate(this.props.page.version.timestamp) }} />.</p>
+          <p className='actions'>
+            {rollback}
+            <a href={this.props.page.path} className='button secondary'>See current version</a>
+          </p>
+        </aside>
+      )
+      : null
+
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
+        {old}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
         {options}
       </React.Fragment>

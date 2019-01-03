@@ -128,7 +128,7 @@ server.get('*', redirector, async (req, res) => {
       if (command === 'v' && version) {
         const match = page.changes.filter(v => v.id === version)
         if (match.length > 0) {
-          if (match[0].id === curr.id) {
+          if (match[0].id === page.changes[0].id) {
             command = null
             version = null
           } else {

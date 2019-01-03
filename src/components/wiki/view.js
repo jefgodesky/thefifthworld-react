@@ -34,7 +34,7 @@ class Wiki extends React.Component {
     const old = this.props.page.version
       ? (
         <aside>
-          <p>This shows an older version of this page, last edited by <a href={this.props.page.version.editor.id}>{this.props.page.version.editor.name}</a> on <span dangerouslySetInnerHTML={{ __html: formatDate(this.props.page.version.timestamp) }} />.</p>
+          <p>This shows an older version of this page, last edited by <a href={`/member/${this.props.page.version.editor.id}`}>{this.props.page.version.editor.name}</a> on <span dangerouslySetInnerHTML={{ __html: formatDate(this.props.page.version.timestamp) }} />.</p>
           <p className='actions'>
             {rollback}
             <a href={this.props.page.path} className='button secondary'>See current version</a>

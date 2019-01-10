@@ -10,7 +10,7 @@ import { formatDate } from '../../shared/utils'
  * This component handles wiki pages.
  */
 
-class Wiki extends React.Component {
+export class Wiki extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

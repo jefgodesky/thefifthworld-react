@@ -9,7 +9,7 @@ import { formatDate } from '../../shared/utils'
  * This component handles wiki history pages.
  */
 
-class WikiHistory extends React.Component {
+export class WikiHistory extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -97,7 +97,7 @@ class WikiHistory extends React.Component {
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
-        <p><a href={this.props.page.path}>&laquo; Back to current page</a></p>
+        <p className='back'><a href={this.props.page.path} className='button'>&laquo; Back to current page</a></p>
         {wrapping}
       </React.Fragment>
     )

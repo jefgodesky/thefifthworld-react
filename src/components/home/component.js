@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
  * This component handles the home page.
  */
 
-class Home extends React.Component {
+export class Home extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

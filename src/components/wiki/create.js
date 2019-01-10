@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
  * This component handles wiki pages.
  */
 
-class CreateWiki extends React.Component {
+export class CreateWiki extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

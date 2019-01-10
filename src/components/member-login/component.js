@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
  * This component handles the login form.
  */
 
-class MemberLogin extends React.Component {
+export class MemberLogin extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -42,7 +42,7 @@ class MemberLogin extends React.Component {
             <ul>
               <li><a href='/login/patreon' className='button patreon'>Patreon</a></li>
               <li><a href='/login/discord' className='button discord'>Discord</a></li>
-              <li><a href='/login/google' className='button googlee'>Google</a></li>
+              <li><a href='/login/google' className='button google'>Google</a></li>
               <li><a href='/login/facebook' className='button facebook'>Facebook</a></li>
               <li><a href='/login/twitter' className='button twitter'>Twitter</a></li>
             </ul>

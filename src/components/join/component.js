@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
  * and become a member of the website.
  */
 
-class Join extends React.Component {
+export class Join extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

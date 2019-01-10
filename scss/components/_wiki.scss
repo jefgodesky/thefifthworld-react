@@ -24,3 +24,12 @@ form.wiki {
     @include button-color($red, $white);
   }
 }
+
+.history {
+  font-size: ms(-1);
+}
+
+.back {
+  font-size: ms(-1);
+  margin-top: -3.5em;
+}

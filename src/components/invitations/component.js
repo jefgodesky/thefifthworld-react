@@ -15,7 +15,7 @@ import * as actions from './actions'
  * This component handles the invitations page.
  */
 
-class Invitations extends React.Component {
+export class Invitations extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

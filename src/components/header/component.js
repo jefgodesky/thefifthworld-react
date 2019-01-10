@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
  * This component handles the home page.
  */
 
-class Header extends React.Component {
+export class Header extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

@@ -18,7 +18,7 @@ import { canRead } from '../../shared/permissions'
  * This component handles the member profile page.
  */
 
-class Page extends React.Component {
+export class Page extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

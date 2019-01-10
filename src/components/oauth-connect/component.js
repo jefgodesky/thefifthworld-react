@@ -15,7 +15,7 @@ import * as actions from './actions'
  * This component handles the OAuth2 connections page.
  */
 
-class OAuth2Connect extends React.Component {
+export class OAuth2Connect extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

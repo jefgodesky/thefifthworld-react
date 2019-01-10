@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
  * This component handles the forgot passphrase form.
  */
 
-class ForgotPassphrase extends React.Component {
+export class ForgotPassphrase extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

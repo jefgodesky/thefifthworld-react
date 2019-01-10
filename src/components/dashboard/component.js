@@ -11,7 +11,7 @@ import config from '../../../config'
  * This component handles the dashboard.
  */
 
-class Dashboard extends React.Component {
+export class Dashboard extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

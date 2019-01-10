@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
  * This component handles messages from the server for a logged-in member.
  */
 
-class Messages extends React.Component {
+export class Messages extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
  * This component handles the home page.
  */
 
-class Footer extends React.Component {
+export class Footer extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

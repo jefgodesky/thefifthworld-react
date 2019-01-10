@@ -17,7 +17,7 @@ import Member from '../../shared/models/member'
  * This component handles the member profile page.
  */
 
-class MemberProfile extends React.Component {
+export class MemberProfile extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)

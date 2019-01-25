@@ -33,3 +33,53 @@ form.wiki {
   font-size: ms(-1);
   margin-top: -3.5em;
 }
+
+.diff {
+  thead {
+    border-bottom: 1px solid $brown;
+
+    th {
+      border: 0;
+      font-family: 'Fontin Sans';
+      font-size: ms(-1);
+      text-align: top;
+    }
+
+    .commit-messages th {
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    .current-version {
+      color: $brown13;
+    }
+  }
+
+  tbody th {
+    background: $brown112;
+    border: 0;
+    font-size: ms(-1);
+    padding: ms(0) ms(1);
+  }
+
+  .before,
+  .after {
+    font-family: monospace;
+    vertical-align: top;
+    white-space: pre-wrap;
+    width: 50%;
+
+    ins {
+      background: $ins;
+    }
+
+    del {
+      background: $del;
+    }
+
+    ins,
+    del {
+      text-decoration: none;
+    }
+  }
+}

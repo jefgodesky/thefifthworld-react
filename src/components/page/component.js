@@ -6,6 +6,7 @@ import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import Error404 from '../error-404/component'
 
+import CompareWiki from '../wiki/compare'
 import WikiForm from '../wiki/form'
 import WikiHistory from '../wiki/history'
 import Wiki from '../wiki/view'
@@ -66,6 +67,8 @@ export class Page extends React.Component {
           component = (<WikiForm />)
         } else if (this.props.page.command === 'history') {
           component = (<WikiHistory />)
+        } else if (this.props.page.command === 'compare') {
+          component = (<CompareWiki />)
         } else {
           component = (<Wiki />)
         }

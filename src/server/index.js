@@ -107,7 +107,7 @@ server.get('*', redirector, async (req, res) => {
     if (route.load) await route.load(req, db, store)
     respond(req, res, store)
   } else {
-    const commands = ['edit', 'history']
+    const commands = ['edit', 'history', 'compare']
     const query = req.originalUrl.split('?')
     let path = query[0]
     const parts = path.split('/')
@@ -120,6 +120,14 @@ server.get('*', redirector, async (req, res) => {
     } else if (commands.indexOf(parts[parts.length - 1]) > -1) {
       command = parts.pop()
       path = parts.join('/')
+    }
+
+    const params = {}
+    if (query[1]) {
+      query[1].split('&').forEach(pair => {
+        const param = pair.split('=')
+        params[param[0]] = param[1]
+      })
     }
 
     const page = await Page.get(path, db)
@@ -142,6 +150,7 @@ server.get('*', redirector, async (req, res) => {
       page.html = await parse(get(curr, 'body'), db)
       page.lineage = await page.getLineage(db)
       page.command = command
+      page.params = params
       if (command === 'v' && version) {
         page.version = version
       }

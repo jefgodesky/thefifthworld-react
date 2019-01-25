@@ -47,7 +47,7 @@ describe('dedupe', () => {
   it('can deduplicate an arry', () => {
     const orig = [ 1, 1, 2, 3 ]
     const actual = dedupe(orig)
-    expect(actual).toEqual([1, 2, 3 ])
+    expect(actual).toEqual([ 1, 2, 3 ])
   })
 
   it('does not mutate the array', () => {

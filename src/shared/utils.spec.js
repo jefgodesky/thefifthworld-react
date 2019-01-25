@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { checkExists, get, formatDate } from './utils'
+import { checkExists, get, formatDate, dedupe } from './utils'
 
 describe('checkExists', () => {
   it('can tell if a chain of properties exist', () => {
@@ -39,6 +39,25 @@ describe('formatDate', () => {
     const date = new Date('July 14, 1789 00:15:00')
     const actual = formatDate(date)
     const expected = '14&nbsp;Jul&nbsp;1789 12:15&nbsp;AM'
+    expect(actual).toEqual(expected)
+  })
+})
+
+describe('dedupe', () => {
+  it('can deduplicate an arry', () => {
+    const orig = [ 1, 1, 2, 3 ]
+    const actual = dedupe(orig)
+    expect(actual).toEqual([1, 2, 3 ])
+  })
+
+  it('does not mutate the array', () => {
+    const orig = [ 1, 1, 2, 3 ]
+    const deduped = dedupe(orig)
+    const expected = {
+      orig: [ 1, 1, 2, 3 ],
+      deduped: [ 1, 2, 3 ]
+    }
+    const actual = { orig, deduped }
     expect(actual).toEqual(expected)
   })
 })

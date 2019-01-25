@@ -58,8 +58,19 @@ const formatDate = date => {
   return `${d}&nbsp;${m}&nbsp;${y} ${hr}:${min}&nbsp;${ampm}`
 }
 
+/**
+ * Returns a deduplicated version of the array.
+ * @param arr {Array} - An array to deduplicate.
+ * @returns {any[]} - A deduplicated copy of the array.
+ */
+
+const dedupe = arr => {
+  return [ ...new Set(arr) ]
+}
+
 export {
   checkExists,
   get,
-  formatDate
+  formatDate,
+  dedupe
 }

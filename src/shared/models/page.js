@@ -240,16 +240,15 @@ class Page {
    * @param editor {Member} - The Member instance of the person rolling back
    *   the page.
    * @param db {Pool} - A database connection.
-   * @param es {function} - An Elasticsearch client.
    * @returns {Promise} - A promise that resolves when the page has been rolled
    *   back.
    */
 
-  async rollbackTo (id, editor, db, es) {
+  async rollbackTo (id, editor, db) {
     const target = this.changes.filter(r => r.id === id)
     if (target.length === 1) {
       const msg = `Rollback to change #${id}`
-      await this.update(target[0].content, editor, msg, db, es)
+      await this.update(target[0].content, editor, msg, db)
     }
   }
 

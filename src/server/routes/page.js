@@ -21,6 +21,18 @@ PageRouter.post('/autocomplete/title', async (req, res) => {
   res.json(results)
 })
 
+// GET /*?/rollback/:id
+PageRouter.get('/*?/rollback/:id', async (req, res) => {
+  const path = `/${req.params[0]}`
+  const page = await Page.get(path, db)
+  if (page && req.user) {
+    await page.rollbackTo(parseInt(req.params.id), req.user, db)
+    res.redirect(path)
+  } else {
+    res.redirect('/')
+  }
+})
+
 // POST *
 PageRouter.post('*', async (req, res) => {
   const query = req.originalUrl.split('?')

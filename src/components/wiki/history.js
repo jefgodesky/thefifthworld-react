@@ -36,6 +36,7 @@ export class WikiHistory extends React.Component {
         <tr key={change.id}>
           <td>{a}</td>
           <td>{b}</td>
+          <td className='num'>{change.id}</td>
           <td>{change.msg}</td>
           <td>
             <a
@@ -64,6 +65,7 @@ export class WikiHistory extends React.Component {
         <tr>
           <th />
           <th />
+          <th className='num'>#</th>
           <th>Summary</th>
           <th>Time</th>
           <th>By</th>

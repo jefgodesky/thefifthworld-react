@@ -7,8 +7,6 @@ import { connect } from 'react-redux'
 import config from '../../../config'
 import { get } from '../../shared/utils'
 
-// const env = process.env.NODE_ENV || 'development'
-
 /**
  * This component handles the create/update form for wiki pages.
  */

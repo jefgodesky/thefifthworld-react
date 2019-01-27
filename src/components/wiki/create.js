@@ -9,7 +9,7 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
 /**
- * This component handles wiki pages.
+ * This component handles creating new wiki pages.
  */
 
 export class CreateWiki extends React.Component {

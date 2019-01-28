@@ -1,6 +1,6 @@
 /* global __isClient__ */
 
-import CreateWiki from '../components/wiki/create'
+import Create from '../components/create/component'
 import Dashboard from '../components/dashboard/component'
 import ForgotPassphrase from '../components/forgot-passphrase/component'
 import Home from '../components/home/component'
@@ -67,9 +67,9 @@ const routes = [
     component: MemberProfile
   },
   {
-    path: '/new-wiki',
+    path: '/new',
     exact: true,
-    component: CreateWiki
+    component: Create
   }
 ]
 

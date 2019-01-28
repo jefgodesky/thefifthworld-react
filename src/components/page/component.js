@@ -6,10 +6,10 @@ import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import Error404 from '../error-404/component'
 
-import CompareWiki from '../wiki/compare'
-import WikiForm from '../wiki/form'
-import WikiHistory from '../wiki/history'
-import Wiki from '../wiki/view'
+import Compare from '../compare/component'
+import Form from '../form/component'
+import History from '../history/component'
+import View from '../view/component'
 
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
@@ -64,13 +64,13 @@ export class Page extends React.Component {
       if (canRead(this.props.loggedInMember, this.props.page)) {
         let component
         if (this.props.page.command === 'edit') {
-          component = (<WikiForm />)
+          component = (<Form />)
         } else if (this.props.page.command === 'history') {
-          component = (<WikiHistory />)
+          component = (<History />)
         } else if (this.props.page.command === 'compare') {
-          component = (<CompareWiki />)
+          component = (<Compare />)
         } else {
-          component = (<Wiki />)
+          component = (<View />)
         }
 
         const breadcrumbs = this.renderBreadcrumbs()

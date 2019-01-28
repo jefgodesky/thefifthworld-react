@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canWrite } from '../../shared/permissions'
-import renderOptions from './options'
+import renderOptions from '../../shared/options'
 import { formatDate } from '../../shared/utils'
 
 /**
- * This component handles wiki pages.
+ * This component handles viewing a page.
  */
 
-export class Wiki extends React.Component {
+export class View extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -67,9 +67,9 @@ const mapStateToProps = state => {
   }
 }
 
-Wiki.propTypes = {
+View.propTypes = {
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 
-export default connect(mapStateToProps)(Wiki)
+export default connect(mapStateToProps)(View)

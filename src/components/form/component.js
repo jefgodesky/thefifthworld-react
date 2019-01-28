@@ -11,7 +11,7 @@ import { get } from '../../shared/utils'
  * This component handles the create/update form for wiki pages.
  */
 
-export class WikiForm extends React.Component {
+export class Form extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -237,9 +237,9 @@ const mapStateToProps = state => {
   }
 }
 
-WikiForm.propTypes = {
+Form.propTypes = {
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 
-export default connect(mapStateToProps)(WikiForm)
+export default connect(mapStateToProps)(Form)

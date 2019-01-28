@@ -3,17 +3,17 @@
 import React from 'react'
 import { shallow, configure } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import { WikiForm } from './form'
+import { Form } from './component'
 
 configure({ adapter: new Adapter() })
 
 it('should render a form', () => {
-  const wrapper = shallow(<WikiForm loggedInMember={{}} page={{}} />)
+  const wrapper = shallow(<Form loggedInMember={{}} page={{}} />)
   expect(wrapper.find('form.wiki').length).toEqual(1)
 })
 
 it('should provide a new form if no page is given', () => {
-  const wrapper = shallow(<WikiForm loggedInMember={{}} page={{}} />)
+  const wrapper = shallow(<Form loggedInMember={{}} page={{}} />)
 
   const expected = {
     title: undefined,
@@ -37,7 +37,7 @@ it('should provide an edit form if a page is given', () => {
     curr: { body: 'Lorem ipsum nova sit amet' }
   }
 
-  const wrapper = shallow(<WikiForm loggedInMember={{}} page={page} />)
+  const wrapper = shallow(<Form loggedInMember={{}} page={page} />)
 
   const expected = {
     title: page.title,
@@ -60,7 +60,7 @@ it('should offer an admin lock and hide buttons on a 777 page', () => {
     path: '/test',
     permissions: 777
   }
-  const wrapper = shallow(<WikiForm loggedInMember={admin} page={page} />)
+  const wrapper = shallow(<Form loggedInMember={admin} page={page} />)
 
   const actual = {
     lock: wrapper.find('input[name="lock"]').length,
@@ -85,7 +85,7 @@ it('should offer an admin unlock and hide buttons on a 744 page', () => {
     path: '/test',
     permissions: 744
   }
-  const wrapper = shallow(<WikiForm loggedInMember={admin} page={page} />)
+  const wrapper = shallow(<Form loggedInMember={admin} page={page} />)
 
   const actual = {
     lock: wrapper.find('input[name="lock"]').length,
@@ -110,7 +110,7 @@ it('should offer an admin unhide button on a 400 page', () => {
     path: '/test',
     permissions: 400
   }
-  const wrapper = shallow(<WikiForm loggedInMember={admin} page={page} />)
+  const wrapper = shallow(<Form loggedInMember={admin} page={page} />)
 
   const actual = {
     lock: wrapper.find('input[name="lock"]').length,
@@ -134,7 +134,7 @@ it('should not offer a lock, unlock, hide, or unhide button when the user isn\'t
     path: '/test',
     permissions: 777
   }
-  const wrapper = shallow(<WikiForm loggedInMember={{}} page={page} />)
+  const wrapper = shallow(<Form loggedInMember={{}} page={page} />)
 
   const actual = {
     lock: wrapper.find('input[name="lock"]').length,

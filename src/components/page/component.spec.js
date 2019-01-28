@@ -10,7 +10,7 @@ configure({ adapter: new Adapter() })
 it('should render a wiki page by default', () => {
   const page = { permissions: 777 }
   const wrapper = shallow(<Page loggedInMember={null} page={page} />)
-  expect(wrapper.find('Connect(Wiki)').length).toEqual(1)
+  expect(wrapper.find('Connect(View)').length).toEqual(1)
 })
 
 it('should display a 404 error if there is no page', () => {
@@ -28,7 +28,7 @@ it('should render for admin regardless of permissions', () => {
   const page = { permissions: 100 }
   const admin = { name: 'Admin', id: 'admin', admin: true }
   const wrapper = shallow(<Page loggedInMember={admin} page={page} />)
-  expect(wrapper.find('Connect(Wiki)').length).toEqual(1)
+  expect(wrapper.find('Connect(View)').length).toEqual(1)
 })
 
 it('should render for owner based on owner permission', () => {
@@ -44,10 +44,10 @@ it('should render for owner based on owner permission', () => {
   const nullWrapper = shallow(<Page loggedInMember={null} page={page} />)
 
   const actual = [
-    adWrapper.find('Connect(Wiki)').length,
-    dqWrapper.find('Connect(Wiki)').length,
-    randWrapper.find('Connect(Wiki)').length,
-    nullWrapper.find('Connect(Wiki)').length
+    adWrapper.find('Connect(View)').length,
+    dqWrapper.find('Connect(View)').length,
+    randWrapper.find('Connect(View)').length,
+    nullWrapper.find('Connect(View)').length
   ]
   expect(actual).toEqual([ 1, 1, 0, 0 ])
 })
@@ -65,10 +65,10 @@ it('should render for members based on member permission', () => {
   const nullWrapper = shallow(<Page loggedInMember={null} page={page} />)
 
   const actual = [
-    adWrapper.find('Connect(Wiki)').length,
-    dqWrapper.find('Connect(Wiki)').length,
-    randWrapper.find('Connect(Wiki)').length,
-    nullWrapper.find('Connect(Wiki)').length
+    adWrapper.find('Connect(View)').length,
+    dqWrapper.find('Connect(View)').length,
+    randWrapper.find('Connect(View)').length,
+    nullWrapper.find('Connect(View)').length
   ]
   expect(actual).toEqual([ 1, 1, 1, 0 ])
 })
@@ -86,10 +86,10 @@ it('should render for anyone if it\'s publicly readable', () => {
   const nullWrapper = shallow(<Page loggedInMember={null} page={page} />)
 
   const actual = [
-    adWrapper.find('Connect(Wiki)').length,
-    dqWrapper.find('Connect(Wiki)').length,
-    randWrapper.find('Connect(Wiki)').length,
-    nullWrapper.find('Connect(Wiki)').length
+    adWrapper.find('Connect(View)').length,
+    dqWrapper.find('Connect(View)').length,
+    randWrapper.find('Connect(View)').length,
+    nullWrapper.find('Connect(View)').length
   ]
   expect(actual).toEqual([ 1, 1, 1, 1 ])
 })

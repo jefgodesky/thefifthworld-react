@@ -4,14 +4,14 @@ import autoBind from 'react-autobind'
 import { diffWordsWithSpace } from 'diff'
 import { connect } from 'react-redux'
 import { get, dedupe, formatDate } from '../../shared/utils'
-import renderOptions from './options'
+import renderOptions from '../../shared/options'
 import { canWrite } from '../../shared/permissions'
 
 /**
- * This component handles comparing two versions of a wiki page.
+ * This component handles comparing two versions of a page.
  */
 
-export class CompareWiki extends React.Component {
+export class Compare extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -191,9 +191,9 @@ const mapStateToProps = state => {
   }
 }
 
-CompareWiki.propTypes = {
+Compare.propTypes = {
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 
-export default connect(mapStateToProps)(CompareWiki)
+export default connect(mapStateToProps)(Compare)

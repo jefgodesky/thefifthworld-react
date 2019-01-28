@@ -6,10 +6,10 @@ import { canWrite } from '../../shared/permissions'
 import { formatDate } from '../../shared/utils'
 
 /**
- * This component handles wiki history pages.
+ * This component handles history pages.
  */
 
-export class WikiHistory extends React.Component {
+export class History extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -119,9 +119,9 @@ const mapStateToProps = state => {
   }
 }
 
-WikiHistory.propTypes = {
+History.propTypes = {
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 
-export default connect(mapStateToProps)(WikiHistory)
+export default connect(mapStateToProps)(History)

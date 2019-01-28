@@ -6,7 +6,7 @@ import Adapter from 'enzyme-adapter-react-16'
 import db from '../../server/db'
 import Page from '../../shared/models/page'
 import Member from '../../shared/models/member'
-import { CompareWiki } from './compare'
+import { Compare } from './component'
 
 configure({ adapter: new Adapter() })
 
@@ -34,7 +34,7 @@ it('should render a page', async () => {
 
   page.params = { a: page.changes[1].id.toString(), b: page.changes[0].id.toString() }
 
-  const wrapper = shallow(<CompareWiki page={page} loggedInMember={member} />)
+  const wrapper = shallow(<Compare page={page} loggedInMember={member} />)
   expect(wrapper.find('table').length).toEqual(1)
 })
 
@@ -55,7 +55,7 @@ it('can handle null values', async () => {
 
   page.params = { a: page.changes[1].id.toString(), b: page.changes[0].id.toString() }
 
-  const wrapper = shallow(<CompareWiki page={page} loggedInMember={member} />)
+  const wrapper = shallow(<Compare page={page} loggedInMember={member} />)
   expect(wrapper.find('table').length).toEqual(1)
 })
 
@@ -76,7 +76,7 @@ it('doesn\'t provide rollback buttons to users who don\'t have access to use the
 
   page.params = { a: page.changes[1].id.toString(), b: page.changes[0].id.toString() }
 
-  const wrapper = shallow(<CompareWiki page={page} loggedInMember={null} />)
+  const wrapper = shallow(<Compare page={page} loggedInMember={null} />)
   expect(wrapper.find('thead tr + tr th a').length).toEqual(0)
 })
 

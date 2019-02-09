@@ -337,7 +337,7 @@ describe('Page', () => {
       body: 'This is a page.'
     }, member, 'Initial text', db)
 
-    const paths = await Page.getPathsByTitle([ 'Page 1', 'Page 2', 'Page 3' ], db)
+    const paths = await Page.getPaths([ 'Page 1', 'Page 2', '/cool-new-path' ], db)
     const actual = paths.map(res => res.path)
     const expected = [ '/page-1', '/page-2', '/cool-new-path' ]
     expect(actual).toEqual(expected)

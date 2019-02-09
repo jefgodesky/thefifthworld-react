@@ -291,18 +291,19 @@ class Page {
   }
 
   /**
-   * This method takes an array of strings, `titles`, and searches the database
-   * for pages with titles matching those strings. It returns an array that
-   * includes an object for each page found. Each object includes a `title` and
-   * a `path` property.
-   * @param titles {Array} - An array of strings specifying the titles of the
-   *   pages you'd like to return.
+   * This method takes an array of strings, `arr`, and searches the database
+   * for pages with titles or paths that match those strings. It returns an
+   * array that includes an object for each page found. Each object includes a
+   * `title` and a `path` property.
+   * @param arr {Array} - An array of strings specifying the titles or paths of
+   *   the pages you'd like to return.
    * @param db {Pool} - A database connection.
    * @returns {Promise} - A promise that resolves with an array of objects.
    */
 
-  static async getPathsByTitle (titles, db) {
-    return db.run(`SELECT title, path FROM pages WHERE title IN (${titles.map(title => `'${title}'`).join(', ')});`)
+  static async getPaths (arr, db) {
+    const map = arr.map(s => `'${s}'`).join(', ')
+    return db.run(`SELECT title, path FROM pages WHERE title IN (${map}) OR path IN (${map});`)
   }
 }
 

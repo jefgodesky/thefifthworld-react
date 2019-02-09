@@ -21,18 +21,25 @@ const parse = async (wikitext, db) => {
       linkMatches.forEach(link => {
         const text = link.substr(2, link.length - 4).trim()
         const parts = text.split('|')
-        links.push({
-          orig: link,
-          title: parts[0],
-          display: parts.length > 1 ? parts[1] : parts[0]
-        })
+        const usesPath = parts[0][0] === '/'
+        const title = usesPath ? parts[0].substr(0, parts[0].indexOf(' ')) : parts[0]
+        const display = usesPath
+          ? parts[0].substr(parts[0].indexOf(' ') + 1)
+          : parts.length > 1 ? parts[1] : parts[0]
+        links.push({ orig: link, title, display })
       })
 
       // Get paths from database and merge them into objects
-      const linkData = await Page.getPathsByTitle(links.map(link => link.title), db)
+      const linkData = await Page.getPaths(links.map(link => link.title), db)
       linkData.forEach(link => {
         links.forEach(match => {
+          // Match on title
           if (link.title.toLowerCase() === match.title.toLowerCase()) {
+            match.path = link.path
+          }
+
+          // Match on path
+          if (link.path === match.title) {
             match.path = link.path
           }
         })

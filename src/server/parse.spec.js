@@ -74,6 +74,20 @@ This is a second paragraph.`
     const expected = '<p>This includes links to <a href="/page-1">Page 1</a>, <a href="/page-2">a second page</a>, and <a href="/page-3?create" class="new">one that does not exist yet</a>.</p>'
     expect(actual).toEqual(expected)
   })
+
+  it('handles paths', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    await Page.create({
+      title: 'Page 1',
+      body: 'This is a page.'
+    }, member, 'Initial text', db)
+
+    const actual = await parse('[[/page-1 Page]]', db)
+    const expected = '<p><a href="/page-1">Page</a></p>'
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

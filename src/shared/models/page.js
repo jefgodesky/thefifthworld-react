@@ -190,11 +190,12 @@ class Page {
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
         if (key === 'parent') {
-          const parent = await Page.get(data.parent)
+          const parent = await Page.get(data.parent, db)
           const pid = parent && parent.id ? parent.id : 0
+          update.depth = parent && !isNaN(parent.depth) ? parent.depth + 1 : this.depth
           update.parent = pid
+          this.depth = update.depth
           this.parent = pid
-          this.depth = parent ? parent.depth + 1 : this.depth
         } else {
           update[key] = data[key]
           this[key] = key === 'permissions' ? data.permissions.toString() : data[key]
@@ -209,7 +210,8 @@ class Page {
       { name: 'path', type: 'string' },
       { name: 'parent', type: 'number' },
       { name: 'permissions', type: 'number' },
-      { name: 'owner', type: 'number' }
+      { name: 'owner', type: 'number' },
+      { name: 'depth', type: 'number' }
     ]
     const vals = updateVals(fields, update)
     if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)

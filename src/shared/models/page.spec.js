@@ -143,6 +143,39 @@ describe('Page', () => {
     expect(actual).toEqual(expected)
   })
 
+  it('updates depth when it updates parent', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Parent 1',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Parent 2',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child',
+      body: 'This is a child page.',
+      parent: '/parent-2'
+    }, member, 'Initial text', db)
+    const page = await Page.create({
+      title: 'Test Page',
+      body: 'This is the page that we will move.',
+      parent: '/parent-2/child'
+    }, member, 'Initial text', db)
+
+    const before = [ page.depth, page.path ]
+
+    await page.update({
+      parent: '/parent-1',
+      path: '/parent-1/test-page'
+    }, member, 'Change parent', db)
+
+    const actual = [ ...before, page.depth, page.path ]
+    expect(actual).toEqual([ 2, '/parent-2/child/test-page', 1, '/parent-1/test-page' ])
+  })
+
   it('can return its current data', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

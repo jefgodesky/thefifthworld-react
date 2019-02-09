@@ -1,9 +1,17 @@
-/* global describe, it, expect */
+/* global describe, it, expect, beforeEach, afterEach, afterAll */
 
 import Member from '../shared/models/member'
 import Page from '../shared/models/page'
 import parse from './parse'
 import db from './db'
+
+beforeEach(async () => {
+  await db.run('ALTER TABLE members AUTO_INCREMENT=1;')
+  await db.run('ALTER TABLE pages AUTO_INCREMENT=1;')
+  await db.run('ALTER TABLE changes AUTO_INCREMENT=1;')
+  await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
+  await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
+})
 
 describe('Wikitext parser', () => {
   it('handles bolding', async () => {
@@ -52,9 +60,6 @@ This is a second paragraph.`
   it('handles internal links', async () => {
     expect.assertions(1)
 
-    await db.run(`DELETE FROM members;`)
-    await db.run('ALTER TABLE members AUTO_INCREMENT=1;')
-    await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
     const member = await Member.get(1, db)
     await Page.create({
       title: 'Page 1',
@@ -67,10 +72,18 @@ This is a second paragraph.`
 
     const actual = await parse('This includes links to [[Page 1]], [[Page 2|a second page]], and [[Page 3|one that does not exist yet]].', db)
     const expected = '<p>This includes links to <a href="/page-1">Page 1</a>, <a href="/page-2">a second page</a>, and <a href="/page-3?create" class="new">one that does not exist yet</a>.</p>'
-
-    await db.run(`DELETE FROM members;`)
-    await db.run(`ALTER TABLE members AUTO_INCREMENT=1;`)
-
     expect(actual).toEqual(expected)
   })
+})
+
+afterEach(async () => {
+  const tables = [ 'members', 'pages', 'changes' ]
+  for (const table of tables) {
+    await db.run(`DELETE FROM ${table};`)
+    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
+  }
+})
+
+afterAll(() => {
+  db.end()
 })

@@ -36,8 +36,7 @@ PageRouter.get('/*?/rollback/:id', async (req, res) => {
 // POST *
 PageRouter.post('*', async (req, res) => {
   const query = req.originalUrl.split('?')
-  const path = query[0]
-  const page = await Page.get(path, db)
+  const page = await Page.get(query[0], db)
   const editor = req.user ? await Member.get(req.user.id, db) : null
 
   if (page && editor) {
@@ -67,7 +66,7 @@ PageRouter.post('*', async (req, res) => {
     await page.update(req.body, editor, msg, db)
   }
 
-  res.redirect(path)
+  res.redirect(page.path)
 })
 
 export default PageRouter

@@ -34,7 +34,7 @@ const parse = async (wikitext, db) => {
       linkData.forEach(link => {
         links.forEach(match => {
           // Match on title
-          if (link.title.toLowerCase() === match.title.toLowerCase()) {
+          if (!match.path && link.title.toLowerCase() === match.title.toLowerCase()) {
             match.path = link.path
           }
 

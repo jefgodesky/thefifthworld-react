@@ -16,6 +16,7 @@ class Page {
     this.parent = page.parent
     this.permissions = page.permissions.toString()
     this.owner = page.owner
+    this.depth = page.depth
     this.changes = []
 
     changes.forEach(change => {
@@ -80,9 +81,10 @@ class Page {
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const permissions = data.permissions ? data.permissions : 774
+    const depth = parent ? parent.depth + 1 : 0
 
     // Add to database
-    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id});`)
+    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id}, ${depth});`)
     const id = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
@@ -192,6 +194,7 @@ class Page {
           const pid = parent && parent.id ? parent.id : 0
           update.parent = pid
           this.parent = pid
+          this.depth = parent ? parent.depth + 1 : this.depth
         } else {
           update[key] = data[key]
           this[key] = key === 'permissions' ? data.permissions.toString() : data[key]
@@ -303,7 +306,7 @@ class Page {
 
   static async getPaths (arr, db) {
     const map = arr.map(s => `'${s}'`).join(', ')
-    return db.run(`SELECT title, path FROM pages WHERE title IN (${map}) OR path IN (${map});`)
+    return db.run(`SELECT title, path FROM pages WHERE title IN (${map}) OR path IN (${map}) ORDER BY depth, id;`)
   }
 }
 

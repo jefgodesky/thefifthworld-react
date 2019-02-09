@@ -88,6 +88,29 @@ This is a second paragraph.`
     const expected = '<p><a href="/page-1">Page</a></p>'
     expect(actual).toEqual(expected)
   })
+
+  it('links to the lowest-level matching page', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    await Page.create({
+      title: 'Page',
+      body: 'This is a page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Page',
+      body: 'This is also a page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parse('[[Page]]', db)
+    const expected = '<p><a href="/page">Page</a></p>'
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

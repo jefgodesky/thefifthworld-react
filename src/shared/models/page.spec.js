@@ -176,6 +176,21 @@ describe('Page', () => {
     expect(actual).toEqual([ 2, '/parent-2/child/test-page', 1, '/parent-1/test-page' ])
   })
 
+  it('updates the slug if you update the path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'Page',
+      body: 'This is a test page.'
+    }, member, 'Initial text', db)
+
+    await page.update({
+      path: '/something/something/new-path'
+    }, member, 'Changing path', db)
+
+    expect([ page.path, page.slug ]).toEqual([ '/something/something/new-path', 'new-path' ])
+  })
+
   it('can return its current data', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

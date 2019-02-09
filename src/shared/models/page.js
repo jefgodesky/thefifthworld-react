@@ -191,17 +191,22 @@ class Page {
       if (data[key] && this[key] !== data[key]) {
         if (key === 'parent') {
           const parent = await Page.get(data.parent, db)
-          const pid = parent && parent.id ? parent.id : 0
+          update.parent = parent && parent.id ? parent.id : 0
           update.depth = parent && !isNaN(parent.depth) ? parent.depth + 1 : this.depth
-          update.parent = pid
-          this.depth = update.depth
-          this.parent = pid
+        } else if (key === 'path') {
+          const path = data.path.split('/')
+          update.slug = (path.length > 0) ? path.pop() : this.slug
+          update.path = data.path
+        } else if (key === 'permissions') {
+          update.permissions = data.permissions.toString()
         } else {
           update[key] = data[key]
-          this[key] = key === 'permissions' ? data.permissions.toString() : data[key]
         }
       }
     }
+
+    // Update this object
+    Object.keys(update).forEach(key => { this[key] = update[key] })
 
     // Update the pages table in the database
     const fields = [

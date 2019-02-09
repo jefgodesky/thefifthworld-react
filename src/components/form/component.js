@@ -125,8 +125,8 @@ export class Form extends React.Component {
    */
 
   render () {
-    const action = this.props.page && this.props.page.path ? this.props.page.path : '/new-wiki'
-    const buttonText = action === '/new-wiki' ? 'Create New Wiki Page' : 'Save'
+    const action = this.props.page && this.props.page.path ? this.props.page.path : '/new'
+    const buttonText = action === '/new' ? 'Create New Wiki Page' : 'Save'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
     const parent = get(this.parentField, 'current.value')
     const own = slugify(this.state.title)
@@ -140,10 +140,6 @@ export class Form extends React.Component {
     const parentInstructions = this.state.isClient
       ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
-
-    const hidden = [
-      <input type='hidden' name='type' value='wiki' key='type' />
-    ]
     const message = this.renderMessageField()
 
     const permissions = parseInt(this.props.page.permissions)
@@ -161,7 +157,6 @@ export class Form extends React.Component {
 
     return (
       <form action={action} method='post' className='wiki'>
-        {hidden}
         <label htmlFor='title'>Title</label>
         <input
           type='text'

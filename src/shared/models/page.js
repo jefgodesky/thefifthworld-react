@@ -3,8 +3,6 @@ import { updateVals } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
 import { checkPermissions, canRead, canWrite } from '../permissions'
 
-const types = [ 'wiki', 'group', 'person', 'place', 'art', 'story' ]
-
 /**
  * This model handles dealing with pages in the database.
  */
@@ -16,7 +14,6 @@ class Page {
     this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
-    this.type = page.type
     this.permissions = page.permissions.toString()
     this.owner = page.owner
     this.changes = []
@@ -65,9 +62,8 @@ class Page {
   /**
    * Creates a new page.
    * @param data {Object} - An object defining the data for the page. Expected
-   *   properties include `path` (for the page's path), `type` (for the type of
-   *   the page), `title` (for the page's title), and `body` (for the wikitext
-   *   of the page's main content).
+   *   properties include `path` (for the page's path), `title` (for the page's
+   *   title), and `body` (for the wikitext of the page's main content).
    * @param editor {Member} - The member creating the page. This object must at
    *   least include an `id` property specifying the editor's member ID.
    * @param msg {string} - A commit message.
@@ -83,11 +79,10 @@ class Page {
     const pid = parent ? parent.id : 0
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
-    const type = data.type && types.indexOf(data.type) > -1 ? data.type : 'wiki'
     const permissions = data.permissions ? data.permissions : 774
 
     // Add to database
-    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, type, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', '${type}', ${permissions}, ${editor.id});`)
+    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id});`)
     const id = res.insertId
     await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
@@ -177,9 +172,8 @@ class Page {
   /**
    * Update a page.
    * @param data {Object} - An object defining the data for the page. Expected
-   *   properties include `path` (for the page's path), `type` (for the type of
-   *   the page), `title` (for the page's title), and `body` (for the wikitext
-   *   of the page's main content).
+   *   properties include `path` (for the page's path), `title` (for the page's
+   *   title), and `body` (for the wikitext of the page's main content).
    * @param editor {Member} - The member creating the page.
    * @param msg {string} - A commit message.
    * @param db {Pool} - A database connection.

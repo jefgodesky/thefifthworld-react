@@ -26,7 +26,6 @@ describe('Page', () => {
     checks.push(page.slug === 'new-page')
     checks.push(page.path === '/new-page')
     checks.push(page.parent === 0)
-    checks.push(page.type === 'wiki')
     checks.push(page.changes[0].timestamp > Date.now() - 60000)
     checks.push(page.changes[0].msg === 'Initial text')
     checks.push(page.changes[0].content.title === 'New Page')

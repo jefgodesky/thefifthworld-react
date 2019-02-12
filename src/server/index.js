@@ -26,6 +26,7 @@ import getMarkup from './ssr'
 import { login } from '../components/member-login/actions'
 import { load as loadPage } from '../components/page/actions'
 import { load } from '../components/messages/actions'
+import { throwError } from '../components/error/actions'
 
 import Member from '../shared/models/member'
 import Page from '../shared/models/page'
@@ -101,6 +102,13 @@ server.get('*', redirector, async (req, res) => {
     store.dispatch(login(req.user))
     const messages = await Member.getMessages(req.user.id, db)
     if (messages) store.dispatch(load(messages))
+  }
+
+  if (req.session.error) {
+    const page = req.session.error.content
+    page.curr = { body: page.body }
+    store.dispatch(loadPage(page))
+    store.dispatch(throwError(req.session.error))
   }
 
   if (route) {

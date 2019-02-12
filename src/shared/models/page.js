@@ -84,12 +84,14 @@ class Page {
     const depth = parent ? parent.depth + 1 : 0
 
     // Add to database
-    const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id}, ${depth});`)
-    const id = res.insertId
-    await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-
-    // Return the page
-    return Page.get(id, db)
+    try {
+      const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id}, ${depth});`)
+      const id = res.insertId
+      await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+      return Page.get(id, db)
+    } catch (err) {
+      throw err
+    }
   }
 
   /**

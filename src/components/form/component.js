@@ -130,7 +130,11 @@ export class Form extends React.Component {
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
     const parent = get(this.parentField, 'current.value')
     const own = slugify(this.state.title)
-    const slug = this.props.page && this.props.page.path ? this.props.page.path : parent ? `${parent}/${own}` : `/${own}`
+    const slug = this.props.error && this.props.error.key === 'path'
+      ? this.props.error.val
+      : this.props.page && this.props.page.path
+        ? this.props.page.path
+        : parent ? `${parent}/${own}` : `/${own}`
     const suggestions = this.renderSuggestions()
     const body = get(this.props.page, 'curr.body')
 
@@ -141,6 +145,12 @@ export class Form extends React.Component {
       ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
     const message = this.renderMessageField()
+
+    const error = this.props.error && this.props.error.key === 'path'
+      ? (
+        <p className='error'><a href={this.props.error.val} className='path' target='_blank'>{this.props.error.val}</a> already exists. Please choose a different path to make this page unique.</p>
+      )
+      : null
 
     const permissions = parseInt(this.props.page.permissions)
     const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
@@ -165,15 +175,15 @@ export class Form extends React.Component {
           defaultValue={this.props.page.title}
           onChange={event => this.setState({ title: event.target.value })}
           placeholder='What do you want to write about?' />
-        {!this.state.showPath &&
+        {!error && !this.state.showPath &&
         <p className='note'>
           <strong>Path:</strong> <code>{slug}</code>
           <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
         </p>
         }
-        {this.state.showPath &&
+        {(error || this.state.showPath) &&
         <React.Fragment>
-          <label htmlFor='path'>
+          <label htmlFor='path' className={error ? 'error' : null}>
             Path
             <p className='note'>This sets the page&rsquo;s URL. If left blank, it will default to
               a &ldquo;slugified&rdquo; version of the title (e.g., &rdquo;New Page&rdquo; will
@@ -185,6 +195,7 @@ export class Form extends React.Component {
             id='path'
             placeholder='/example'
             defaultValue={slug} />
+          {error}
         </React.Fragment>
         }
         <label htmlFor='parent'>
@@ -227,12 +238,14 @@ export class Form extends React.Component {
 
 const mapStateToProps = state => {
   return {
+    error: state.Error,
     loggedInMember: state.MemberLogin,
     page: state.Page
   }
 }
 
 Form.propTypes = {
+  error: PropTypes.object,
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }

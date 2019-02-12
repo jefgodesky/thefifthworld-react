@@ -8,8 +8,16 @@ const PageRouter = express.Router()
 // POST /new-wiki
 PageRouter.post('/new', async (req, res) => {
   if (req.user) {
-    const page = await Page.create(req.body, req.user, 'Initial text', db)
-    res.redirect(page.path)
+    try {
+      const page = await Page.create(req.body, req.user, 'Initial text', db)
+      res.redirect(page.path)
+    } catch (err) {
+      const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
+      const key = extract.length === 3 ? extract[2] : null
+      const val = extract.length === 3 ? extract[1] : null
+      req.session.error = Object.assign({}, err, { content: req.body, key, val })
+      res.redirect('/new')
+    }
   } else {
     res.redirect('/login')
   }

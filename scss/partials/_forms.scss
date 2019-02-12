@@ -9,6 +9,19 @@ label {
     font-weight: normal;
     margin: 0 0 ms(-1);
   }
+
+  &.error {
+    color: $red;
+
+    .note {
+      color: $black;
+    }
+
+    + input {
+      border-bottom-color: $red;
+      color: $red;
+    }
+  }
 }
 
 input[type='text'],
@@ -67,4 +80,8 @@ textarea {
       background: $brown112;
     }
   }
+}
+
+p.error {
+  color: $red;
 }

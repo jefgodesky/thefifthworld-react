@@ -36,6 +36,12 @@ a {
   color: $red;
   font-weight: bold;
 
+  &.path {
+    color: inherit;
+    font-family: monospace;
+    text-decoration: none;
+  }
+
   &:visited {
     color: desaturate($red, 25%);
   }

@@ -35,6 +35,26 @@ describe('Page', () => {
     expect(checks.reduce((res, check) => res && check)).toEqual(true)
   })
 
+  it('returns an error when a new page uses an existing path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      path: '/new-page'
+    }, member, 'Initial text', db)
+    try {
+      await Page.create({
+        title: 'New Page',
+        body: 'This is a new page.',
+        path: '/new-page'
+      }, member, 'Initial text', db)
+      expect(false).toEqual(true)
+    } catch (err) {
+      expect(err.code).toEqual('ER_DUP_ENTRY')
+    }
+  })
+
   it('can figure out a path', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

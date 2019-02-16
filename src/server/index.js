@@ -155,6 +155,8 @@ server.get('*', redirector, async (req, res) => {
         }
       }
 
+      if (!page.canRead(req.user)) res.status(401)
+
       page.curr = curr
       page.html = await parse(get(curr, 'body'), db)
       page.lineage = await page.getLineage(db)
@@ -164,6 +166,8 @@ server.get('*', redirector, async (req, res) => {
         page.version = version
       }
       store.dispatch(loadPage(page))
+    } else {
+      res.status(404)
     }
     respond(req, res, store)
   }

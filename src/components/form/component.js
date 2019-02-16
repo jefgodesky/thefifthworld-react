@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
 import axios from 'axios'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import slugify from '../../shared/slugify'
 import { connect } from 'react-redux'
 import config from '../../../config'
@@ -21,8 +22,17 @@ export class Form extends React.Component {
       isClient: false,
       showPath: true,
       suggestedParents: [],
-      title: ''
+      path: this.props.page.path,
+      title: this.props.page.title,
+      error: false
     }
+
+    if (this.props.error && this.props.error.key === 'path') {
+      this.state.path = this.props.error.val
+      this.state.error = true
+    }
+
+    this.debouncedCheckPath = AwesomeDebouncePromise(this.checkPath, 1000)
   }
 
   /**
@@ -36,6 +46,38 @@ export class Form extends React.Component {
       isClient: true,
       showPath: false
     })
+  }
+
+  async checkPath (path) {
+    const { protocol, hostname, port } = window.location
+    const host = port === undefined ? hostname : `${hostname}:${port}`
+
+    try {
+      await axios.get(`${protocol}//${host}${path}`)
+      const error = {
+        problem: 'dupe',
+        path
+      }
+      if (this.state.path && this.state.path !== '/') this.setState({ error })
+    } catch (err) {
+      const error = (err.response && err.response.status === 404)
+        ? false
+        : {
+          problem: (err.response === undefined) ? 'invalid' : 'dupe',
+          path
+        }
+      this.setState({ error })
+    }
+  }
+
+  /**
+   * Sets the path on the form.
+   * @param path {string} - The path to set.
+   */
+
+  setPath (path) {
+    this.debouncedCheckPath(path)
+    this.setState({ path })
   }
 
   /**
@@ -69,6 +111,11 @@ export class Form extends React.Component {
   selectSuggestion (suggestion) {
     this.parentField.current.value = suggestion.path
     this.setState({ suggestedParents: [] })
+
+    const path = this.state.showPath
+      ? this.state.path
+      : `${suggestion.path}/${slugify(this.state.title)}`
+    this.setPath(path)
   }
 
   /**
@@ -120,6 +167,35 @@ export class Form extends React.Component {
   }
 
   /**
+   * This method is called whenever a user changes the title in the form.
+   * @param title {string} - The new title.
+   */
+
+  changeTitle (title) {
+    const parent = get(this.parentField, 'current.value')
+    this.setState({ title })
+
+    const path = this.state.showPath
+      ? this.state.path
+      : `${parent}/${slugify(title)}`
+    this.setPath(path)
+  }
+
+  /**
+   * This method is called whenever a user changes the parent field in the
+   * form.
+   * @param parent {string} - The new parent value.
+   */
+
+  changeParent (parent) {
+    const path = this.state.showPath
+      ? this.state.path
+      : `${parent}/${slugify(this.state.title)}`
+    this.autocomplete(parent)
+    this.setPath(path)
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -128,13 +204,6 @@ export class Form extends React.Component {
     const action = this.props.page && this.props.page.path ? this.props.page.path : '/new'
     const buttonText = action === '/new' ? 'Create New Wiki Page' : 'Save'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
-    const parent = get(this.parentField, 'current.value')
-    const own = slugify(this.state.title)
-    const slug = this.props.error && this.props.error.key === 'path'
-      ? this.props.error.val
-      : this.props.page && this.props.page.path
-        ? this.props.page.path
-        : parent ? `${parent}/${own}` : `/${own}`
     const suggestions = this.renderSuggestions()
     const body = get(this.props.page, 'curr.body')
 
@@ -146,10 +215,17 @@ export class Form extends React.Component {
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
     const message = this.renderMessageField()
 
-    const error = this.props.error && this.props.error.key === 'path'
-      ? (
-        <p className='error'><a href={this.props.error.val} className='path' target='_blank'>{this.props.error.val}</a> already exists. Please choose a different path to make this page unique.</p>
+    const errorMessages = {
+      dupe: (
+        <p className='error'><a href={this.state.error.path} className='path' target='_blank'>{this.state.error.path}</a> already exists. Please choose a different path to make this page unique.</p>
+      ),
+      invalid: (
+        <p className='error'><span className='path'>{this.state.error.path}</span> won&rsquo;t work. Please provide a valid path.</p>
       )
+    }
+
+    const error = this.state.error
+      ? errorMessages[this.state.error.problem]
       : null
 
     const permissions = parseInt(this.props.page.permissions)
@@ -173,11 +249,11 @@ export class Form extends React.Component {
           name='title'
           id='title'
           defaultValue={this.props.page.title}
-          onChange={event => this.setState({ title: event.target.value })}
+          onChange={event => this.changeTitle(event.target.value)}
           placeholder='What do you want to write about?' />
         {!error && !this.state.showPath &&
         <p className='note'>
-          <strong>Path:</strong> <code>{slug}</code>
+          <strong>Path:</strong> <code>{this.state.path}</code>
           <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
         </p>
         }
@@ -193,8 +269,9 @@ export class Form extends React.Component {
             type='text'
             name='path'
             id='path'
+            onChange={event => this.setPath(event.target.value)}
             placeholder='/example'
-            defaultValue={slug} />
+            defaultValue={this.state.path} />
           {error}
         </React.Fragment>
         }
@@ -208,7 +285,7 @@ export class Form extends React.Component {
           id='parent'
           ref={this.parentField}
           defaultValue={parentPath}
-          onChange={event => this.autocomplete(event.target.value)} />
+          onChange={event => this.changeParent(event.target.value)} />
         {suggestions}
         <label htmlFor='body'>Body</label>
         <textarea

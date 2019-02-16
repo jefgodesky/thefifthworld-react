@@ -85,3 +85,9 @@ textarea {
 p.error {
   color: $red;
 }
+
+.path {
+  color: inherit;
+  font-family: monospace;
+  text-decoration: none;
+}

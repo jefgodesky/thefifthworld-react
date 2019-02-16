@@ -221,23 +221,28 @@ class Page {
       { name: 'depth', type: 'number' }
     ]
     const vals = updateVals(fields, update)
-    if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
 
-    // Track changes
-    const timestamp = Math.floor(Date.now() / 1000)
-    const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+    try {
+      if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
 
-    // Add change to this instance
-    this.changes.unshift({
-      id: res.insertId,
-      timestamp,
-      msg,
-      content: data,
-      editor: {
-        name: editor.getName(),
-        id: editor.id
-      }
-    })
+      // Track changes
+      const timestamp = Math.floor(Date.now() / 1000)
+      const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+
+      // Add change to this instance
+      this.changes.unshift({
+        id: res.insertId,
+        timestamp,
+        msg,
+        content: data,
+        editor: {
+          name: editor.getName(),
+          id: editor.id
+        }
+      })
+    } catch (err) {
+      throw err
+    }
   }
 
   /**

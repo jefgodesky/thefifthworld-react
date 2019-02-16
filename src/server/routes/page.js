@@ -71,10 +71,17 @@ PageRouter.post('*', async (req, res) => {
       if (msg === '') msg = 'Hiding page'
     }
 
-    await page.update(req.body, editor, msg, db)
+    try {
+      await page.update(req.body, editor, msg, db)
+      res.redirect(page.path)
+    } catch (err) {
+      const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
+      const key = extract.length === 3 ? extract[2] : null
+      const val = extract.length === 3 ? extract[1] : null
+      req.session.error = Object.assign({}, err, { content: req.body, key, val })
+      res.redirect(`${query[0]}/edit`)
+    }
   }
-
-  res.redirect(page.path)
 })
 
 export default PageRouter

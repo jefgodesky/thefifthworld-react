@@ -29,7 +29,10 @@ export class Form extends React.Component {
 
     if (this.props.error && this.props.error.key === 'path') {
       this.state.path = this.props.error.val
-      this.state.error = true
+      this.state.error = {
+        problem: 'dupe',
+        path: this.props.error.val
+      }
     }
 
     this.debouncedCheckPath = AwesomeDebouncePromise(this.checkPath, 1000)

@@ -152,3 +152,14 @@ it('should not offer a lock, unlock, hide, or unhide button when the user isn\'t
 
   expect(actual).toEqual(expected)
 })
+
+it('should display a duplicate path error', () => {
+  const error = {
+    key: 'path',
+    val: '/error/path'
+  }
+  const wrapper = shallow(<Form loggedInMember={{}} page={{}} error={error} />)
+  const actual = wrapper.find('p.error').html()
+  const expected = `<p class="error"><a href="/error/path" class="path" target="_blank">/error/path</a> already exists. Please choose a different path to make this page unique.</p>`
+  expect(actual).toEqual(expected)
+})

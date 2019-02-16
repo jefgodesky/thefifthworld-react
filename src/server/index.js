@@ -109,6 +109,7 @@ server.get('*', redirector, async (req, res) => {
     page.curr = { body: page.body }
     store.dispatch(loadPage(page))
     store.dispatch(throwError(req.session.error))
+    req.session.error = null
   }
 
   if (route) {

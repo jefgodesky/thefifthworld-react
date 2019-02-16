@@ -51,6 +51,14 @@ export class Form extends React.Component {
     })
   }
 
+  /**
+   * Checks if a path exists, and sets an error if the path is already in nuse
+   * or if the path is invalid.
+   * @param path {string} - The path to check
+   * @returns {Promise<void>} - A promise that resolves once the path has been
+   *   checked and an error has been recorded, if necessary.
+   */
+
   async checkPath (path) {
     const { protocol, hostname, port } = window.location
     const host = port === undefined ? hostname : `${hostname}:${port}`

@@ -410,6 +410,34 @@ describe('Page', () => {
     const expected = [ '/page-1', '/page-2', '/cool-new-path' ]
     expect(actual).toEqual(expected)
   })
+
+  it('extracts types', () => {
+    const type = Page.getType('[[Type:Page]] [[Type:Something Else]]')
+    expect(type).toEqual('Page')
+  })
+
+  it('tags a page\'s type', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'Page 1',
+      body: 'This is a page. [[Type:Page]]'
+    }, member, 'Initial text', db)
+    expect(page.type).toEqual('Page')
+  })
+
+  it('updates a page\'s type', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'Page 1',
+      body: 'This is a page. [[Type:Page]]'
+    }, member, 'Initial text', db)
+    page.update({
+      body: 'This is a page. [[Type:Other]]'
+    }, member, 'Changing type', db)
+    expect(page.type).toEqual('Other')
+  })
 })
 
 afterEach(async () => {

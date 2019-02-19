@@ -14,6 +14,7 @@ class Page {
     this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
+    this.type = page.type
     this.permissions = page.permissions.toString()
     this.owner = page.owner
     this.depth = page.depth
@@ -35,6 +36,25 @@ class Page {
         }
       })
     })
+  }
+
+  /**
+   * Returns the value of the first [[Type:X]] tag in the string provided, or
+   * null if no such tag is found.
+   * @param str {string} - The string to find the type tags in.
+   * @returns {*} - If the given string str includes one or more tags formatted
+   *   as [[Type:X]], it returns the string "X" for the first such tag. If such
+   *   a tag could not be found, returns a null.
+   */
+
+  static getType (str) {
+    const matches = str.match(/\[\[Type:(.+?)\]\]/g)
+    if (matches && matches.length > 0) {
+      const first = matches[0].substr(2, matches[0].length - 4).split(':')
+      return first[0] === 'Type' ? first[1] : null
+    } else {
+      return null
+    }
   }
 
   /**
@@ -82,10 +102,11 @@ class Page {
     const title = data.title ? data.title : ''
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
+    const type = Page.getType(data.body)
 
     // Add to database
     try {
-      const res = await db.run(`INSERT INTO pages (slug, path, parent, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${title}', ${permissions}, ${editor.id}, ${depth});`)
+      const res = await db.run(`INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`)
       const id = res.insertId
       await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
       return Page.get(id, db)
@@ -207,6 +228,11 @@ class Page {
       }
     }
 
+    if (data.body) {
+      const type = Page.getType(data.body)
+      if (type && this.type !== type) update.type = type
+    }
+
     // Update this object
     Object.keys(update).forEach(key => { this[key] = update[key] })
 
@@ -216,6 +242,7 @@ class Page {
       { name: 'slug', type: 'string' },
       { name: 'path', type: 'string' },
       { name: 'parent', type: 'number' },
+      { name: 'type', type: 'string' },
       { name: 'permissions', type: 'number' },
       { name: 'owner', type: 'number' },
       { name: 'depth', type: 'number' }

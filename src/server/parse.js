@@ -3,6 +3,12 @@ import Page from '../shared/models/page'
 import slugify from '../shared/slugify'
 
 marked.setOptions({
+  sanitize: true,
+  sanitizer: markup => {
+    const allowedHTML = 'strong em ul ol li a pre code img div ins del sup sub table thead tbody tfoot blockquote dl dt dd tr td th span strike'.split(' ')
+    const inside = markup.replace(/<\/?(.*?)>/g, '$1').split(' ')
+    return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
+  },
   smartLists: true,
   smartypants: true,
   xhtml: true

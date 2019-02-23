@@ -14,7 +14,7 @@ beforeEach(async () => {
 })
 
 describe('Wikitext parser', () => {
-  it('handles bolding', async () => {
+  it('handles bolding with single quotes', async () => {
     expect.assertions(1)
     const wikitext = `'''This''' has a few '''bolded''' words.`
     const actual = await parse(wikitext, db)
@@ -22,7 +22,15 @@ describe('Wikitext parser', () => {
     expect(actual).toEqual(expected)
   })
 
-  it('handles italics', async () => {
+  it('handles bolding with asterisks', async () => {
+    expect.assertions(1)
+    const wikitext = `**This** has a few **bolded** words.`
+    const actual = await parse(wikitext, db)
+    const expected = '<p><strong>This</strong> has a few <strong>bolded</strong> words.</p>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('handles italics with single quotes', async () => {
     expect.assertions(1)
     const wikitext = `''This'' has a few ''italicized'' words.`
     const actual = await parse(wikitext, db)
@@ -30,9 +38,25 @@ describe('Wikitext parser', () => {
     expect(actual).toEqual(expected)
   })
 
-  it('handles bolding and italics', async () => {
+  it('handles italics with asterisks', async () => {
+    expect.assertions(1)
+    const wikitext = `*This* has a few *italicized* words.`
+    const actual = await parse(wikitext, db)
+    const expected = '<p><em>This</em> has a few <em>italicized</em> words.</p>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('handles bolding and italics with single quotes', async () => {
     expect.assertions(1)
     const wikitext = `''This'' has a few ''words'' that are both '''bolded''' '''''and''''' ''italicized''.`
+    const actual = await parse(wikitext, db)
+    const expected = '<p><em>This</em> has a few <em>words</em> that are both <strong>bolded</strong> <strong><em>and</em></strong> <em>italicized</em>.</p>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('handles bolding and italics with asterisks', async () => {
+    expect.assertions(1)
+    const wikitext = `*This* has a few *words* that are both **bolded** ***and*** *italicized*.`
     const actual = await parse(wikitext, db)
     const expected = '<p><em>This</em> has a few <em>words</em> that are both <strong>bolded</strong> <strong><em>and</em></strong> <em>italicized</em>.</p>'
     expect(actual).toEqual(expected)
@@ -118,11 +142,18 @@ This is a second paragraph.`
     const member = await Member.get(1, db)
     await Page.create({
       title: 'Template',
-      body: 'This is a template. [[Type:Template]]'
+      body: '<tpl>This is a template.</tpl> [[Type:Template]]'
     }, member, 'Initial text', db)
 
     const actual = await parse('{{Template}} This is a page.', db)
     const expected = '<p>This is a template. This is a page.</p>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('doesn\'t render templates on their own pages', async () => {
+    expect.assertions(1)
+    const actual = await parse('<tpl>This is a template.</tpl> This is documentation. [[Type:Template]]', db)
+    const expected = '<p>This is documentation.</p>'
     expect(actual).toEqual(expected)
   })
 })

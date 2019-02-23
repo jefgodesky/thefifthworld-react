@@ -19,8 +19,12 @@ const addTemplates = async (matches, db) => {
     const name = match.substr(2, match.length - 4)
     const res = await db.run(`SELECT c.json AS json FROM changes c, pages p WHERE p.id=c.page AND p.type='Template' AND p.title='${name}' ORDER BY p.depth ASC, c.timestamp DESC;`)
     if (res.length > 0) {
-      const wikitext = JSON.parse(res[0].json).body.replace(/\[\[Type:(.*?)\]\]/g, '').trim()
-      templates.push({ match, wikitext })
+      const full = JSON.parse(res[0].json).body.replace(/\[\[Type:(.*?)\]\]/g, '').trim()
+      const tagged = full.match(/<tpl>(.+?)<\/tpl>/g)
+      if (tagged) {
+        const wikitext = tagged[0].substr(5, tagged[0].length - 11)
+        templates.push({ match, wikitext })
+      }
     }
   }
   return templates
@@ -165,15 +169,26 @@ const parseLinks = async (wikitext, db) => {
 
 const parse = async (wikitext, db) => {
   if (wikitext) {
+    // Removing stuff that shouldn't be rendered...
+    wikitext = wikitext.replace(/<tpl>(.*?)<\/tpl>/g, '') // Remove templates
+    wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
+
+    // Stuff that we need to check with the database on...
     wikitext = await parseTemplates(wikitext, db)
     wikitext = await parseLinks(wikitext, db)
-    wikitext = wikitext.replace(/'''''(.*?)'''''/g, '<strong><em>$1</em></strong>')
-    wikitext = wikitext.replace(/'''(.*?)'''/g, '<strong>$1</strong>')
-    wikitext = wikitext.replace(/''(.*?)''/g, '<em>$1</em>')
-    wikitext = wikitext.replace(/\[(.*?) (.*?)\]/g, '<a href="$1">$2</a>')
 
+    // Formatting stuff...
+    wikitext = wikitext.replace(/'''''(.*?)'''''/g, '<strong><em>$1</em></strong>') // Bold and italics with single quotes
+    wikitext = wikitext.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>') // Bold and italics with asterisks
+    wikitext = wikitext.replace(/'''(.*?)'''/g, '<strong>$1</strong>') // Bold with single quotes
+    wikitext = wikitext.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold with asterisks
+    wikitext = wikitext.replace(/''(.*?)''/g, '<em>$1</em>') // Italics with single quotes
+    wikitext = wikitext.replace(/\*(.*?)\*/g, '<em>$1</em>') // Italics with asterisks
+    wikitext = wikitext.replace(/\[(.*?) (.*?)\]/g, '<a href="$1">$2</a>') // External links
+
+    // Wrap some paragraphs and return the rendered markup...
     const paragraphs = wikitext.match(/(.+?)(\r|\n|$)+/g).map(p => `<p>${p.trim()}</p>`).filter(p => p !== '<p></p>')
-    return paragraphs.length > 1 ? paragraphs.join('\n') : `<p>${wikitext}</p>`
+    return paragraphs.length > 1 ? paragraphs.join('\n') : `<p>${wikitext.trim()}</p>`
   } else {
     return false
   }

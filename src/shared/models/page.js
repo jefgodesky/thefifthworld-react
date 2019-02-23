@@ -319,14 +319,20 @@ class Page {
   }
 
   /**
-   * Returns all of the page's direct child pages.
+   * Returns the page's direct child pages.
    * @param db {Pool} - A database connection.
+   * @param type {string} - If provided, only child pages of this type will
+   *   be returned.
    * @returns {Promise<*>} - A promise that resolves with an array of all of
    *   the page's direct child pages.
    */
 
-  async getChildren (db) {
-    return db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
+  async getChildren (db, type = null) {
+    if (type) {
+      return db.run(`SELECT title, path FROM pages WHERE parent=${this.id} AND type='${type}';`)
+    } else {
+      return db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
+    }
   }
 
   /**

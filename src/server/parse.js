@@ -184,16 +184,18 @@ const listChildren = async (wikitext, path, db) => {
   const matches = wikitext.match(/<children(.*?)\/>/g)
   if (matches) {
     for (let match of matches) {
+      let type = null
       const props = match.match(/\s(.*?)="(.*?)"\/?/g)
       if (props) {
         for (let prop of props) {
           const pair = prop.trim().split('=')
           if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'of') path = pair[1].substr(1, pair[1].length - 2)
+          if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'type') type = pair[1].substr(1, pair[1].length - 2)
         }
       }
 
       const parent = await Page.get(path, db)
-      const children = parent ? await parent.getChildren(db) : false
+      const children = parent ? await parent.getChildren(db, type) : false
       const items = children
         ? children.map(child => `\n* [[${child.path} ${child.title}]]`)
         : false

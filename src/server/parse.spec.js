@@ -121,7 +121,7 @@ describe('Wikitext parser', () => {
     const member = await Member.get(1, db)
     await Page.create({
       title: 'Parent',
-      body: 'This is a parent page.\n\n<children />'
+      body: 'This is a parent page.'
     }, member, 'Initial text', db)
     const page = await Page.create({
       title: 'Child 1',
@@ -137,6 +137,31 @@ describe('Wikitext parser', () => {
     const content = page.getContent()
     const actual = content ? await parse(content.body, db, '/parent/child-1') : false
     const expected = '<p>This is a child page. </p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
+    expect(actual.trim()).toEqual(expected.trim())
+  })
+
+  it('lists children of a specific type', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    const page = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.\n\n<children type="Match" />'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page. [[Type:Not a match]]',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page. [[Type:Match]]',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const content = page.getContent()
+    const actual = content ? await parse(content.body, db, '/parent') : false
+    const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
     expect(actual.trim()).toEqual(expected.trim())
   })
 

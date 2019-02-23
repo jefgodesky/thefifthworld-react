@@ -16,5 +16,5 @@ it('should know my name', () => {
 it('should link to my profile', () => {
   const member = { name: 'Daniel', id: 'dq' }
   const wrapper = shallow(<Dashboard loggedInMember={member} />)
-  expect(wrapper.find('.dashboard .choices').at(1).find('ul li a').first().html()).toEqual('<a href="/member/dq/edit" class="button">Your Profile</a>')
+  expect(wrapper.find('.dashboard .member').find('ul li a').first().html()).toEqual('<a href="/member/dq/edit" class="button">Your Profile</a>')
 })

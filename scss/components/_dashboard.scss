@@ -1,13 +1,14 @@
 .dashboard {
+  .choices h3,
+  .member h3 {
+    font-family: 'Fontin Sans Small Caps';
+    font-weight: normal;
+    margin: ms(-1) 0;
+  }
+
   .choices {
     @extend %sidebar;
     text-align: center;
-
-    h3 {
-      font-family: 'Fontin Sans Small Caps';
-      font-weight: normal;
-      margin: ms(-1) 0;
-    }
 
     ul {
       @extend %unformatted-list;
@@ -35,6 +36,36 @@
         background: $brown112 url('#{$images}/create.png') no-repeat bottom right;
         background-size: contain;
         padding-right: 25%;
+      }
+    }
+  }
+
+  .member {
+    overflow: auto;
+    text-align: center;
+
+    & > ul {
+      @extend %unformatted-list;
+    }
+
+    a {
+      margin: 0;
+      width: 100%;
+    }
+
+    @media (min-width: 50em) {
+      li {
+        display: inline-block;
+        margin: 1em 1%;
+        vertical-align: top;
+        width: 48%;
+      }
+    }
+
+    @media (min-width: 80em) {
+      li {
+        font-size: ms(-1);
+        width: 22%;
       }
     }
   }

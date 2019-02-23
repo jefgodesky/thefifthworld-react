@@ -42,7 +42,7 @@ export class Dashboard extends React.Component {
               <li><a href='/new-art' className='button'>Upload Art</a></li>
             </ul>
           </section>
-          <section className='choices'>
+          <section className='member'>
             <h3>Your Membership</h3>
             <ul>
               <li>

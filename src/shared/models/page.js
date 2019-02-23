@@ -363,7 +363,7 @@ class Page {
    */
 
   static async getPaths (arr, db) {
-    const map = arr.map(s => `'${s}'`).join(', ')
+    const map = arr.map(s => SQLEscape(s)).join(', ')
     return db.run(`SELECT title, path FROM pages WHERE title IN (${map}) OR path IN (${map}) ORDER BY depth, id;`)
   }
 }

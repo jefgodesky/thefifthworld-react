@@ -29,13 +29,31 @@ marked.setOptions({
 const addTemplates = async (matches, db) => {
   const templates = []
   for (const match of matches) {
-    const name = match.substr(2, match.length - 4)
+    const tpl = match.replace(/\n/g, '')
+    const name = tpl.substr(2, tpl.length - 4).replace(/\s(.*?)="(.*?)"/g, '')
+
+    // What are the parameters?
+    const paramStrings = tpl.match(/\s(.*?)="(.*?)"/g)
+    const params = {}
+    if (paramStrings) {
+      paramStrings.forEach(str => {
+        const pair = str.trim().split('=')
+        if (Array.isArray(pair) && pair.length > 0) {
+          params[pair[0].trim()] = pair[1].substr(1, pair[1].length - 2).trim()
+        }
+      })
+    }
+
     const res = await db.run(`SELECT c.json AS json FROM changes c, pages p WHERE p.id=c.page AND p.type='Template' AND p.title='${name}' ORDER BY p.depth ASC, c.timestamp DESC;`)
     if (res.length > 0) {
       const full = JSON.parse(res[0].json).body.replace(/\[\[Type:(.*?)\]\]/g, '').trim()
       const tagged = full.match(/<tpl>(.+?)<\/tpl>/g)
       if (tagged) {
-        const wikitext = tagged[0].substr(5, tagged[0].length - 11)
+        let wikitext = tagged[0].substr(5, tagged[0].length - 11)
+        Object.keys(params).forEach(param => {
+          const re = new RegExp(`{{{${param}}}}`, 'g')
+          wikitext = wikitext.replace(re, params[param])
+        })
         templates.push({ match, wikitext })
       }
     }
@@ -55,7 +73,7 @@ const addTemplates = async (matches, db) => {
  */
 
 const parseTemplates = async (wikitext, db) => {
-  let templates = wikitext.match(/{{(.*?)}}/g)
+  let templates = wikitext.match(/{{((.*?)\n?)*?}}/g)
   if (templates) {
     templates = await addTemplates(templates, db)
     templates.forEach(template => {

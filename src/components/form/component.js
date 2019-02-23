@@ -304,7 +304,7 @@ export class Form extends React.Component {
           id='body'
           defaultValue={body} />
         <aside className='note'>
-          <p>You can format your page using <a href='/wikitext'>wikitext</a>.</p>
+          <p>You can format your page using <a href='/markown'>markdown</a>.</p>
         </aside>
         {message}
         <p className='actions'>

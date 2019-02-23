@@ -181,17 +181,27 @@ const parseLinks = async (wikitext, db) => {
  */
 
 const listChildren = async (wikitext, path, db) => {
-  const matches = wikitext.match(/<children(.*?)/g)
+  const matches = wikitext.match(/<children(.*?)\/>/g)
   if (matches) {
-    const parent = await Page.get(path, db)
-    const children = parent ? await parent.getChildren(db) : false
-    const items = children
-      ? children.map(child => `<li><a href="${child.path}">${child.title}</a></li>`)
-      : false
-    const markup = items
-      ? `<ul>\n${items.join('\n')}\n</ul>`
-      : false
-    wikitext = markup ? wikitext.replace(/<children(.*?)\/>/g, markup) : wikitext
+    for (let match of matches) {
+      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
+      if (props) {
+        for (let prop of props) {
+          const pair = prop.trim().split('=')
+          if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'of') path = pair[1].substr(1, pair[1].length - 2)
+        }
+      }
+
+      const parent = await Page.get(path, db)
+      const children = parent ? await parent.getChildren(db) : false
+      const items = children
+        ? children.map(child => `\n* [[${child.path} ${child.title}]]`)
+        : false
+      const markup = items
+        ? items.join('')
+        : false
+      wikitext = markup ? wikitext.replace(/<children(.*?)\/>/g, markup) : wikitext
+    }
   }
   return wikitext
 }
@@ -230,8 +240,8 @@ const parse = async (wikitext, db, path = null) => {
 
     // Stuff that we need to check with the database on...
     wikitext = await parseTemplates(wikitext, db)
-    wikitext = await parseLinks(wikitext, db)
     wikitext = await listChildren(wikitext, path, db)
+    wikitext = await parseLinks(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())

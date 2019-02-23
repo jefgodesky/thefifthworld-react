@@ -34,7 +34,7 @@
     "dev:open": "sleep 1 && opn 'http://localhost:3000/'",
     "dev:launch": "npm-run-all --parallel dev:serve dev:open",
     "dev:watch": "npm-run-all --parallel dev:js:watch dev:scss:watch",
-    "dev": "npm-run-all dev:js:build scss:build dev:launch dev:watch"
+    "dev": "npm-run-all dev:js:build scss:build --parallel dev:launch dev:watch"
   },
   "dependencies": {
     "awesome-debounce-promise": "^1.0.0",

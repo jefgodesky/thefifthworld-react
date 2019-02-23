@@ -54,8 +54,10 @@
       }
     }
 
-    a {
-      white-space: nowrap;
+    @media (min-width: 80em) {
+      a {
+        white-space: nowrap;
+      }
     }
   }
 

@@ -11,7 +11,7 @@
 
   & > h1 {
     border-bottom: 0;
-    margin-top: ms(2);
+    margin-top: ms(1);
 
     & > a > img {
       width: 90%;
@@ -39,7 +39,7 @@
     li {
       background: $white13;
       display: inline-block;
-      font-size: ms(0);
+      font-size: ms(-1);
       margin-right: ms(-4);
 
       &.active {
@@ -84,10 +84,6 @@
     &.account {
       background: $black23;
       float: right;
-
-      @media (min-width: 50em) {
-        font-size: ms(-1);
-      }
 
       ul {
         margin: 0;

@@ -48,3 +48,31 @@ a {
     color: darken($red, 10%);
   }
 }
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 50em) {
+    &.column2,
+    &.column3,
+    &.column4 {
+      column-count: 2;
+      column-gap: 2em;
+    }
+  }
+
+  @media (min-width: 65em) {
+    &.column3,
+    &.column4 {
+      column-count: 3;
+    }
+  }
+
+  @media (min-width: 80em) {
+    &.column4 {
+      column-count: 4;
+    }
+  }
+}

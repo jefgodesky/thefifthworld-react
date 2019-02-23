@@ -111,6 +111,20 @@ This is a second paragraph.`
     const expected = '<p><a href="/page">Page</a></p>'
     expect(actual).toEqual(expected)
   })
+
+  it('supports templates', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    await Page.create({
+      title: 'Template',
+      body: 'This is a template. [[Type:Template]]'
+    }, member, 'Initial text', db)
+
+    const actual = await parse('{{Template}} This is a page.', db)
+    const expected = '<p>This is a template. This is a page.</p>'
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

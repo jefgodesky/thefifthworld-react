@@ -158,16 +158,45 @@ const parseLinks = async (wikitext, db) => {
 }
 
 /**
+ * Replaces <children /> in wikitext with a list of child pages.
+ * @param wikitext {string} - The wikitext to parse.
+ * @param path {string} - The path of the page to that we will be looking for
+ *   child pages relative to.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<*>} - A promise that resolves with the transformed
+ *   wikitext, with <children /> replaced with a list of children.
+ */
+
+const listChildren = async (wikitext, path, db) => {
+  const matches = wikitext.match(/<children(.*?)/g)
+  if (matches) {
+    const parent = await Page.get(path, db)
+    const children = parent ? await parent.getChildren(db) : false
+    const items = children
+      ? children.map(child => `<li><a href="${child.path}">${child.title}</a></li>`)
+      : false
+    const markup = items
+      ? `<ul>\n${items.join('\n')}\n</ul>`
+      : false
+    wikitext = markup ? wikitext.replace(/<children(.*?)\/>/g, markup) : wikitext
+  }
+  return wikitext
+}
+
+/**
  * This method parses wikitext into HTML.
  * @param wikitext {string} - A string of wikitext.
  * @param db {Pool} - A database connection. If none is provided, the method
  *   makes a request to the `/get-paths` endpoint. The `db` parameter is
  *   mostly for testing -- in production, this should generally use the
  *   endpoint, as this method is used on both the client and the server.
+ * @param path {string} - The path of the page for which we're parsing this
+ *   wikitext. This is used as the default reference point should the
+ *   wikitext request a list of child pages. Defaults to null.
  * @returns {string} - The HTML string defined by the given wikitext.
  */
 
-const parse = async (wikitext, db) => {
+const parse = async (wikitext, db, path = null) => {
   if (wikitext) {
     // Removing stuff that shouldn't be rendered...
     wikitext = wikitext.replace(/<tpl>(.*?)<\/tpl>/g, '') // Remove templates
@@ -176,6 +205,7 @@ const parse = async (wikitext, db) => {
     // Stuff that we need to check with the database on...
     wikitext = await parseTemplates(wikitext, db)
     wikitext = await parseLinks(wikitext, db)
+    wikitext = await listChildren(wikitext, path, db)
 
     // Formatting stuff...
     wikitext = wikitext.replace(/'''''(.*?)'''''/g, '<strong><em>$1</em></strong>') // Bold and italics with single quotes
@@ -187,7 +217,15 @@ const parse = async (wikitext, db) => {
     wikitext = wikitext.replace(/\[(.*?) (.*?)\]/g, '<a href="$1">$2</a>') // External links
 
     // Wrap some paragraphs and return the rendered markup...
-    const paragraphs = wikitext.match(/(.+?)(\r|\n|$)+/g).map(p => `<p>${p.trim()}</p>`).filter(p => p !== '<p></p>')
+    const paragraphs = wikitext.match(/(.+?)(\r|\n|$)+/g)
+      .map(p => {
+        const passThru = [ 'ol', 'ul', 'li' ]
+        const tags = passThru.map(t => `<${t}`).concat(passThru.map(t => `</${t}`))
+        const pass = tags.every(tag => !p.startsWith(tag))
+        if (!pass) return p.trim()
+        else return `<p>${p.trim()}</p>`
+      })
+      .filter(p => p !== '<p></p>')
     return paragraphs.length > 1 ? paragraphs.join('\n') : `<p>${wikitext.trim()}</p>`
   } else {
     return false

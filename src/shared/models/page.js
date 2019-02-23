@@ -319,6 +319,17 @@ class Page {
   }
 
   /**
+   * Returns all of the page's direct child pages.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<*>} - A promise that resolves with an array of all of
+   *   the page's direct child pages.
+   */
+
+  async getChildren (db) {
+    return await db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
+  }
+
+  /**
    * Returns an array of results with titles that the provided string appears
    * in.
    * @param str {string} - The string to search for.

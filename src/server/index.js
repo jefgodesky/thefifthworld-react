@@ -158,7 +158,7 @@ server.get('*', redirector, async (req, res) => {
       if (!page.canRead(req.user)) res.status(401)
 
       page.curr = curr
-      page.html = await parse(get(curr, 'body'), db)
+      page.html = await parse(get(curr, 'body'), db, path)
       page.lineage = await page.getLineage(db)
       page.command = command
       page.params = params

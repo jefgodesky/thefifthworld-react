@@ -438,6 +438,32 @@ describe('Page', () => {
     }, member, 'Changing type', db)
     expect(page.type).toEqual('Other')
   })
+
+  it('lists a page\'s children', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parent.getChildren(db)
+    const expected = [
+      { path: '/parent/child-1', title: 'Child 1' },
+      { path: '/parent/child-2', title: 'Child 2' }
+    ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

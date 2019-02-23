@@ -345,7 +345,7 @@ class Member {
       subject: 'Welcome to the Fifth World',
       body: `${this.getName()} has invited you to join the Fifth World. Click here to begin:\n\nhttps://thefifthworld.com/join/${code}`
     })
-    await this.logMessage(msgTypes.confirm, `Invitation sent to '''${email}'''.`, db)
+    await this.logMessage(msgTypes.confirm, `Invitation sent to **${email}**.`, db)
   }
 
   /**
@@ -367,7 +367,7 @@ class Member {
         subject: 'Your invitation to the Fifth World is waiting',
         body: `${this.getName()} wants to remind you that you’ve been invited to join the Fifth World. Click here to begin:\n\nhttps://thefifthworld.com/join/${invitation[0].inviteCode}`
       })
-      await this.logMessage(msgTypes.confirm, `'''${member.email}''' already had an invitation, so we sent a reminder.`, db)
+      await this.logMessage(msgTypes.confirm, `**${member.email}** already had an invitation, so we sent a reminder.`, db)
     } else {
       await this.logMessage(msgTypes.info, `[/member/${member.id} ${member.getName()}] already has an account.`, db)
     }
@@ -395,13 +395,13 @@ class Member {
         if (hasPendingInvitation.length > 0) {
           await this.sendReminder(existing, emailer, db)
         } else {
-          await this.logMessage(msgTypes.info, `[/member/${existing.id} ${existing.getName()}] is already a member.`, db)
+          await this.logMessage(msgTypes.info, `[${existing.getName()}](/member/${existing.id}) is already a member.`, db)
         }
       } else {
         await this.createInvitation(email, emailer, db)
       }
     } else {
-      await this.logMessage(msgTypes.warning, `Sorry, you’ve run out of invitations. No invitation sent to '''${email}'''.`, db)
+      await this.logMessage(msgTypes.warning, `Sorry, you’ve run out of invitations. No invitation sent to **${email}**.`, db)
     }
   }
 

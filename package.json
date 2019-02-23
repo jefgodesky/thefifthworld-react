@@ -52,6 +52,7 @@
     "express-session": "^1.15.6",
     "helmet": "^3.14.0",
     "mailgun-js": "^0.20.0",
+    "marked": "^0.6.1",
     "mysql": "^2.16.0",
     "opn": "^5.4.0",
     "passport": "^0.4.0",

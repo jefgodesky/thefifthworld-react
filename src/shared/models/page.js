@@ -326,7 +326,7 @@ class Page {
    */
 
   async getChildren (db) {
-    return await db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
+    return db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
   }
 
   /**

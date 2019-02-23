@@ -14,73 +14,6 @@ beforeEach(async () => {
 })
 
 describe('Wikitext parser', () => {
-  it('handles bolding with single quotes', async () => {
-    expect.assertions(1)
-    const wikitext = `'''This''' has a few '''bolded''' words.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><strong>This</strong> has a few <strong>bolded</strong> words.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles bolding with asterisks', async () => {
-    expect.assertions(1)
-    const wikitext = `**This** has a few **bolded** words.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><strong>This</strong> has a few <strong>bolded</strong> words.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles italics with single quotes', async () => {
-    expect.assertions(1)
-    const wikitext = `''This'' has a few ''italicized'' words.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><em>This</em> has a few <em>italicized</em> words.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles italics with asterisks', async () => {
-    expect.assertions(1)
-    const wikitext = `*This* has a few *italicized* words.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><em>This</em> has a few <em>italicized</em> words.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles bolding and italics with single quotes', async () => {
-    expect.assertions(1)
-    const wikitext = `''This'' has a few ''words'' that are both '''bolded''' '''''and''''' ''italicized''.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><em>This</em> has a few <em>words</em> that are both <strong>bolded</strong> <strong><em>and</em></strong> <em>italicized</em>.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles bolding and italics with asterisks', async () => {
-    expect.assertions(1)
-    const wikitext = `*This* has a few *words* that are both **bolded** ***and*** *italicized*.`
-    const actual = await parse(wikitext, db)
-    const expected = '<p><em>This</em> has a few <em>words</em> that are both <strong>bolded</strong> <strong><em>and</em></strong> <em>italicized</em>.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles external links', async () => {
-    expect.assertions(1)
-    const wikitext = `This contains a [https://thefifthworld.com link].`
-    const actual = await parse(wikitext, db)
-    const expected = '<p>This contains a <a href="https://thefifthworld.com">link</a>.</p>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('handles paragraph breaks', async () => {
-    expect.assertions(1)
-    const wikitext = `This is a paragraph.
-    
-This is a second paragraph.`
-    const actual = await parse(wikitext, db)
-    const expected = `<p>This is a paragraph.</p>
-<p>This is a second paragraph.</p>`
-    expect(actual).toEqual(expected)
-  })
-
   it('handles internal links', async () => {
     expect.assertions(1)
 
@@ -96,7 +29,7 @@ This is a second paragraph.`
 
     const actual = await parse('This includes links to [[Page 1]], [[Page 2|a second page]], and [[Page 3|one that does not exist yet]].', db)
     const expected = '<p>This includes links to <a href="/page-1">Page 1</a>, <a href="/page-2">a second page</a>, and <a href="/page-3?create" class="new">one that does not exist yet</a>.</p>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 
   it('handles paths', async () => {
@@ -110,7 +43,7 @@ This is a second paragraph.`
 
     const actual = await parse('[[/page-1 Page]]', db)
     const expected = '<p><a href="/page-1">Page</a></p>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 
   it('links to the lowest-level matching page', async () => {
@@ -133,7 +66,7 @@ This is a second paragraph.`
 
     const actual = await parse('[[Page]]', db)
     const expected = '<p><a href="/page">Page</a></p>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 
   it('supports templates', async () => {
@@ -147,14 +80,14 @@ This is a second paragraph.`
 
     const actual = await parse('{{Template}} This is a page.', db)
     const expected = '<p>This is a template. This is a page.</p>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 
   it('doesn\'t render templates on their own pages', async () => {
     expect.assertions(1)
     const actual = await parse('<tpl>This is a template.</tpl> This is documentation. [[Type:Template]]', db)
     const expected = '<p>This is documentation.</p>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 
   it('lists children', async () => {
@@ -179,7 +112,7 @@ This is a second paragraph.`
     const content = parent.getContent()
     const actual = content ? await parse(content.body, db, '/parent') : false
     const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
-    expect(actual).toEqual(expected)
+    expect(actual.trim()).toEqual(expected.trim())
   })
 })
 

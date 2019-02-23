@@ -1,5 +1,12 @@
+import marked from 'marked'
 import Page from '../shared/models/page'
 import slugify from '../shared/slugify'
+
+marked.setOptions({
+  smartLists: true,
+  smartypants: true,
+  xhtml: true
+})
 
 /**
  * Fetches templates from the database and returns an array of objects.
@@ -184,6 +191,19 @@ const listChildren = async (wikitext, path, db) => {
 }
 
 /**
+ * Removes all mailto: links from a string of markup, replacing each with the
+ * text of the link.
+ * @param markup {string} - A string of markup.
+ * @returns {*} - The same string of markup given, but with any mailto: links
+ *   replaced with just the text inside the link, with the link itself
+ *   removed.
+ */
+
+const doNotEmail = markup => {
+  return markup.replace(/<a href=\"mailto:(.*?)\">(.*?)<\/a>/g, '$2')
+}
+
+/**
  * This method parses wikitext into HTML.
  * @param wikitext {string} - A string of wikitext.
  * @param db {Pool} - A database connection. If none is provided, the method
@@ -207,26 +227,10 @@ const parse = async (wikitext, db, path = null) => {
     wikitext = await parseLinks(wikitext, db)
     wikitext = await listChildren(wikitext, path, db)
 
-    // Formatting stuff...
-    wikitext = wikitext.replace(/'''''(.*?)'''''/g, '<strong><em>$1</em></strong>') // Bold and italics with single quotes
-    wikitext = wikitext.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>') // Bold and italics with asterisks
-    wikitext = wikitext.replace(/'''(.*?)'''/g, '<strong>$1</strong>') // Bold with single quotes
-    wikitext = wikitext.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold with asterisks
-    wikitext = wikitext.replace(/''(.*?)''/g, '<em>$1</em>') // Italics with single quotes
-    wikitext = wikitext.replace(/\*(.*?)\*/g, '<em>$1</em>') // Italics with asterisks
-    wikitext = wikitext.replace(/\[(.*?) (.*?)\]/g, '<a href="$1">$2</a>') // External links
-
-    // Wrap some paragraphs and return the rendered markup...
-    const paragraphs = wikitext.match(/(.+?)(\r|\n|$)+/g)
-      .map(p => {
-        const passThru = [ 'ol', 'ul', 'li' ]
-        const tags = passThru.map(t => `<${t}`).concat(passThru.map(t => `</${t}`))
-        const pass = tags.every(tag => !p.startsWith(tag))
-        if (!pass) return p.trim()
-        else return `<p>${p.trim()}</p>`
-      })
-      .filter(p => p !== '<p></p>')
-    return paragraphs.length > 1 ? paragraphs.join('\n') : `<p>${wikitext.trim()}</p>`
+    // Render Markdown...
+    wikitext = marked(wikitext.trim())
+    wikitext = doNotEmail(wikitext)
+    return wikitext
   } else {
     return false
   }

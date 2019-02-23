@@ -29,8 +29,7 @@ export class Create extends React.Component {
           <Header />
           <main className='wiki'>
             <Messages />
-            <h1>Create a New Wiki Page</h1>
-            <p>We use <strong>wiki pages</strong> to describe general parts of the Fifth World, like <a href='/orality'>orality</a> and <a href='/animism'>animism</a>. We also use wiki pages to create books and guides like the <a href='/rpg'>tabletop roleplaying game</a>. If you&rsquo;d like to add a <a href='/new-character'>character</a>, <a href='/new-place'>place</a>, <a href='/new-family'>family</a>, or <a href='/new-story'>story</a> (whether short stories or longer stories that might have multiple chapters), or if you&rsquo;d like to share your <a href='/new-art'>art</a>, we have more specific forms for those things.</p>
+            <h1>Create a New Page</h1>
             <Form />
           </main>
           <Footer />

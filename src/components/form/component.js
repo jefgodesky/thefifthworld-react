@@ -207,6 +207,26 @@ export class Form extends React.Component {
   }
 
   /**
+   * Renders the file upload portion of the form.
+   * @returns {*} - JSX for the file input.
+   */
+
+  renderFileUpload () {
+    return (
+      <React.Fragment>
+        <label htmlFor='file'>
+          File
+          <p className='note'>If you upload a file, this page will describe that file and allow other pages to make use of it.</p>
+        </label>
+        <input
+          type='file'
+          name='file'
+          id='file' />
+      </React.Fragment>
+    )
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -238,6 +258,10 @@ export class Form extends React.Component {
     const error = this.state.error
       ? errorMessages[this.state.error.problem]
       : null
+
+    const fileUpload = Object.keys(this.props.page).length && this.props.page.type !== 'File'
+      ? null
+      : this.renderFileUpload()
 
     const permissions = parseInt(this.props.page.permissions)
     const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
@@ -298,6 +322,7 @@ export class Form extends React.Component {
           defaultValue={parentPath}
           onChange={event => this.changeParent(event.target.value)} />
         {suggestions}
+        {fileUpload}
         <label htmlFor='body'>Body</label>
         <textarea
           name='body'

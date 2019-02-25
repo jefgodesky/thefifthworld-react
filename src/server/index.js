@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import cors from 'cors'
 import helmet from 'helmet'
+import fileUpload from 'express-fileupload'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
@@ -42,6 +43,7 @@ server.use(bodyParser.urlencoded({ extended: true }))
 server.use(bodyParser.json())
 server.use(cors())
 server.use(helmet())
+server.use(fileUpload())
 server.use(express.static('public'))
 
 // Set up session store

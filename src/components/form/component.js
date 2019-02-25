@@ -277,7 +277,7 @@ export class Form extends React.Component {
         : null
 
     return (
-      <form action={action} method='post' className='wiki'>
+      <form action={action} method='post' className='wiki' encType='multipart/form-data'>
         <label htmlFor='title'>Title</label>
         <input
           type='text'

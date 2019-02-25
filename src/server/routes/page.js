@@ -5,8 +5,9 @@ import db from '../db'
 
 const PageRouter = express.Router()
 
-// POST /new-wiki
+// POST /new
 PageRouter.post('/new', async (req, res) => {
+  console.log(req.files)
   if (req.user) {
     try {
       const page = await Page.create(req.body, req.user, 'Initial text', db)

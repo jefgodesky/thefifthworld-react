@@ -1,18 +1,21 @@
 import express from 'express'
 import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
+import upload from '../upload'
 import db from '../db'
 
 const PageRouter = express.Router()
 
 // POST /new
 PageRouter.post('/new', async (req, res) => {
-  console.log(req.files)
   if (req.user) {
     try {
+      const fileRes = await upload(req.files.file)
       const page = await Page.create(req.body, req.user, 'Initial text', db)
+      await db.run(`INSERT INTO uploads (name, mime, size, page, timestamp, uploader) VALUES ('${fileRes.key}', '${req.files.file.mimetype}', ${req.files.file.size}, ${page.id}, ${Math.floor(Date.now() / 1000)}, ${req.user.id});`)
       res.redirect(page.path)
     } catch (err) {
+      console.error(err)
       const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
       const key = extract.length === 3 ? extract[2] : null
       const val = extract.length === 3 ? extract[1] : null

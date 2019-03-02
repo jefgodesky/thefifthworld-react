@@ -1,4 +1,4 @@
-/* global describe, it, expect, beforeEach, afterEach, afterAll */
+/* global describe, it, expect, beforeEach, afterEach */
 
 import axios from 'axios'
 import File from './file'
@@ -6,6 +6,14 @@ import Member from './member'
 import Page from './page'
 import db from '../../server/db'
 import config from '../../../config'
+import aws from "aws-sdk";
+
+aws.config.update({
+  accessKeyId: config.aws.key,
+  secretAccessKey: config.aws.secret,
+  region: config.aws.region
+})
+const bucket = new aws.S3({ params: { Bucket: config.aws.bucket } })
 
 beforeEach(async () => {
   const tables = [ 'members', 'files', 'pages', 'changes' ]
@@ -39,6 +47,7 @@ describe('File', () => {
       actual.push(check)
       actual.push(res.page === page.id)
       actual.push(res.uploader === member.id)
+      await bucket.deleteObject({ Key: res.name }).promise()
       expect(actual.every(val => val)).toEqual(true)
     } catch (err) {
       expect(err).toEqual(null)

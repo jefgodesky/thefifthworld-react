@@ -1,12 +1,12 @@
 /* global describe, it, expect, beforeEach, afterEach */
 
+import aws from 'aws-sdk'
 import axios from 'axios'
 import File from './file'
 import Member from './member'
 import Page from './page'
 import db from '../../server/db'
 import config from '../../../config'
-import aws from "aws-sdk";
 
 aws.config.update({
   accessKeyId: config.aws.key,

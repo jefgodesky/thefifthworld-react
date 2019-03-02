@@ -1,12 +1,15 @@
 import aws from 'aws-sdk'
 import config from '../../../config'
 
+/**
+ * Set up AWS S3 connection.
+ */
+
 aws.config.update({
   accessKeyId: config.aws.key,
   secretAccessKey: config.aws.secret,
   region: config.aws.region
 })
-
 const bucket = new aws.S3({ params: { Bucket: config.aws.bucket } })
 
 /**
@@ -25,6 +28,16 @@ class File {
     this.uploader = row.uploader
   }
 
+  /**
+   * Returns a file's record from the database.
+   * @param id {string|number} - If given a number, returns the file record
+   *   with that ID number. If given a string, returns the file record with
+   *   that name.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<*>} - A promise that resolves with the matching file
+   *   record or null if none could be found.
+   */
+
   static async get (id, db) {
     const q = isNaN(id)
       ? `SELECT * FROM files WHERE name='${id}';`
@@ -37,11 +50,38 @@ class File {
     }
   }
 
+  /**
+   * Create a new file record in the database.
+   * @param file {Object} - An object that defines the data for a new file
+   *   record. Expects properties `name` (string; the path of the file on
+   *   AWS S3), `mime` (string; the MIME type of the file), and `size`
+   *   (int; the size of the file in bytes).
+   * @param page {Page} - The file's page.
+   * @param member {Member} - The member who uploaded the file.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<*>} - A promise that resolves with a new File object
+   *   once the record has been added to the database.
+   */
+
   static async create (file, page, member, db) {
     const timestamp = Math.floor(Date.now() / 1000)
     const r = await db.run(`INSERT INTO files (name, mime, size, page, timestamp, uploader) VALUES ('${file.name}', '${file.mime}', ${file.size}, ${page.id}, ${timestamp}, ${member.id});`)
     return File.get(r.insertId, db)
   }
+
+  /**
+   * Uploads a file to Amazon AWS S3 and adds a record to the database.
+   * @param file {Object} - An object providing the file to be uploaded.
+   *   Expects properties `name` (string; the file name of the file being
+   *   uploaded), `mimetype` (string; the MIME type of the file), `data` (the
+   *   actual file to be uploaded), and `size` (integer; the size of the file
+   *   in bytes).
+   * @param page {Page} - The file's page.
+   * @param member {Member} - The member uploading the file.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<*>} - A promise that resolves with a new File object
+   *   once the file has been uploaded and added to the database.
+   */
 
   static async upload(file, page, member, db) {
     return new Promise((resolve, reject) => {

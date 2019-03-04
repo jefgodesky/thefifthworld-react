@@ -95,8 +95,6 @@ class File {
       const hr = `${stamp.getHours()}`.padStart(2, '0')
       const mn = `${stamp.getMinutes()}`.padStart(2, '0')
       const sc = `${stamp.getSeconds()}`.padStart(2, '0')
-      console.log(stamp)
-      console.log(`${yr}-${mo}-${da} ${hr}:${mn}:${sc}`)
       const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
 
       bucket.upload({

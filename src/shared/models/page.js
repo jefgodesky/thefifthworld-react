@@ -15,6 +15,7 @@ class Page {
     this.path = page.path
     this.parent = page.parent
     this.type = page.type
+    this.file = page.file
     this.permissions = page.permissions.toString()
     this.owner = page.owner
     this.depth = page.depth
@@ -136,9 +137,12 @@ class Page {
         ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
         : await db.run(`SELECT * FROM pages WHERE id=${id};`)
       if (pages.length === 1) {
-        // We found a page, so get its changes and send the whole thing back
+        // We found a page, so get its changes...
         const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
         changes.reverse()
+        // And see if it has any files...
+        const files = await db.run(`SELECT * FROM files WHERE page=${pages[0].id} ORDER BY timestamp DESC;`)
+        if (files) pages[0].file = files[0]
         return new Page(pages[0], changes)
       } else {
         // Either no pages found, or too many (which should never happen).

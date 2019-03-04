@@ -1,0 +1,16 @@
+.download {
+  @extend aside;
+  display: block;
+  text-decoration: none;
+
+  span {
+    display: block;
+  }
+
+  .details {
+    border-bottom: 0;
+    color: $black;
+    font-size: ms(-1);
+    font-weight: normal;
+  }
+}

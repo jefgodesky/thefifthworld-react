@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import config from '../../../config'
 import { canWrite } from '../../shared/permissions'
 import renderOptions from '../../shared/options'
 import { formatDate } from '../../shared/utils'
@@ -43,10 +44,34 @@ export class View extends React.Component {
       )
       : null
 
+    let filesize = '0 B'
+    if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000) {
+      filesize = `${this.props.page.file.size} B`
+    } else if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000000) {
+      const kb = this.props.page.file.size / 1000
+      filesize = `${Math.round(kb * 10) / 10} kB`
+    } else if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000000000) {
+      const mb = this.props.page.file.size / 1000000
+      filesize = `${Math.round(mb * 10) / 10} MB`
+    } else if (this.props.page && this.props.page.file && this.props.page.file.size) {
+      const gb = this.props.page.file.size / 1000000000
+      filesize = `${Math.round(gb * 10) / 10} GB`
+    }
+
+    const file = this.props.page.file && this.props.page.type && (this.props.page.type === 'File')
+      ? (
+        <a href={`https://s3.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`} className='download'>
+          <span className='label'>{this.props.page.file.name}</span>
+          <span className='details'>{this.props.page.file.mime}; {filesize}</span>
+        </a>
+      )
+      : null
+
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
         {old}
+        {file}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
         {options}
       </React.Fragment>

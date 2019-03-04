@@ -18,7 +18,7 @@ const bucket = new aws.S3({ params: { Bucket: config.aws.bucket } })
  */
 
 class File {
-  constructor(row) {
+  constructor (row) {
     this.id = row.id
     this.name = row.name
     this.mime = row.mime
@@ -83,7 +83,7 @@ class File {
    *   once the file has been uploaded and added to the database.
    */
 
-  static async upload(file, page, member, db) {
+  static async upload (file, page, member, db) {
     return new Promise((resolve, reject) => {
       const parts = file.name.split('.')
       const nameParts = parts.slice(0, parts.length - 1)
@@ -91,10 +91,12 @@ class File {
       const stamp = new Date()
       const yr = stamp.getFullYear()
       const mo = `${stamp.getMonth() + 1}`.padStart(2, '0')
-      const da = `${stamp.getDay()}`.padStart(2, '0')
+      const da = `${stamp.getDate()}`.padStart(2, '0')
       const hr = `${stamp.getHours()}`.padStart(2, '0')
       const mn = `${stamp.getMinutes()}`.padStart(2, '0')
       const sc = `${stamp.getSeconds()}`.padStart(2, '0')
+      console.log(stamp)
+      console.log(`${yr}-${mo}-${da} ${hr}:${mn}:${sc}`)
       const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
 
       bucket.upload({

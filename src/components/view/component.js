@@ -60,7 +60,7 @@ export class View extends React.Component {
 
     const file = this.props.page.file && this.props.page.type && (this.props.page.type === 'File')
       ? (
-        <a href={`https://s3.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`} className='download'>
+        <a href={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`} className='download'>
           <span className='label'>{this.props.page.file.name}</span>
           <span className='details'>{this.props.page.file.mime}; {filesize}</span>
         </a>

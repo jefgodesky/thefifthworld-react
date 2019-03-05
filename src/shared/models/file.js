@@ -121,6 +121,49 @@ class File {
       })
     })
   }
+
+  /**
+   * Delete a file.
+   * @param name {string} - The file's name. This is the string used both in
+   *   AWS S3 and in the database's `name` column.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<boolean>} - A promise that resolves once the file has
+   *   been deleted from both AWS S3 and the database.
+   */
+
+  static async delete (name, db) {
+    try {
+      const res1 = await bucket.deleteObject({ Key: name }).promise()
+      const res2 = await db.run(`DELETE FROM files WHERE name='${name}';`)
+      return res2.affectedRows > 0 && Object.keys(res1).length === 0
+    } catch (err) {
+      console.error(err)
+      return false
+    }
+  }
+
+  /**
+   * Deletes all of a page's previous files, and then uploads the given file.
+   * @param file {Object} - An object providing the file to be uploaded.
+   *   Expects properties `name` (string; the file name of the file being
+   *   uploaded), `mimetype` (string; the MIME type of the file), `data` (the
+   *   actual file to be uploaded), and `size` (integer; the size of the file
+   *   in bytes).
+   * @param page {Page} - The file's page.
+   * @param member {Member} - The member uploading the file.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<*>} - A promise that resolves with a new File object
+   *   once all files previously associated with the page have been deleted and
+   *   the new file has been uploaded to AWS S3 and added to the database.
+   */
+
+  static async update (file, page, member, db) {
+    const old = await db.run(`SELECT name FROM files WHERE page=${page.id};`)
+    for (let i = 0; i < old.length; i++) {
+      await File.delete(old[i].name, db)
+    }
+    return File.upload(file, page, member, db)
+  }
 }
 
 export default File

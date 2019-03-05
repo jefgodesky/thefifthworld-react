@@ -1,19 +1,11 @@
 /* global describe, it, expect, beforeEach, afterEach */
 
-import aws from 'aws-sdk'
 import axios from 'axios'
 import File from './file'
 import Member from './member'
 import Page from './page'
 import db from '../../server/db'
 import config from '../../../config'
-
-aws.config.update({
-  accessKeyId: config.aws.key,
-  secretAccessKey: config.aws.secret,
-  region: config.aws.region
-})
-const bucket = new aws.S3({ params: { Bucket: config.aws.bucket } })
 
 beforeEach(async () => {
   const tables = [ 'members', 'files', 'pages', 'changes' ]
@@ -26,7 +18,7 @@ beforeEach(async () => {
 })
 
 describe('File', () => {
-  it('can upload a file', async () => {
+  it('can upload, update, and delete a file', async () => {
     expect.assertions(1)
     try {
       const member = await Member.get(1, db)
@@ -34,7 +26,7 @@ describe('File', () => {
         title: 'New Page',
         body: 'This is a new page.'
       }, member, 'Initial text', db)
-      const file = {
+      const file1 = {
         name: 'test.txt',
         data: `${Date.now()}`,
         mimetype: 'text/plain',
@@ -42,14 +34,40 @@ describe('File', () => {
       }
 
       const actual = []
-      const res = await File.upload(file, page, member, db)
-      const check = await axios.get(`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${res.name}`)
-      actual.push(check)
+      const res = await File.upload(file1, page, member, db)
+      let url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${res.name}`
+      const check1 = await axios.get(url)
+      actual.push(check1)
       actual.push(res.page === page.id)
       actual.push(res.uploader === member.id)
-      await bucket.deleteObject({ Key: res.name }).promise()
-      expect(actual.every(val => val)).toEqual(true)
+
+      const file2 = {
+        name: 'test.txt',
+        data: `${Date.now()}`,
+        mimetype: 'text/plain',
+        size: `${Date.now()}`.length
+      }
+      const update = await File.update(file2, page, member, db)
+      const check2 = await db.run(`SELECT id FROM files WHERE page=${page.id};`)
+      actual.push(check2.length === 1)
+      url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${update.name}`
+      const check3 = await axios.get(url)
+      actual.push(check3)
+
+      const check4 = await File.delete(update.name, db)
+      actual.push(check4)
+      try {
+        const r = await axios.get(url)
+        console.log(r)
+        expect(true).toEqual(false)
+      } catch (err) {
+        actual.push(err && err.response && err.response.status && err.response.status === 403)
+        const check5 = await File.get(res.name, db)
+        actual.push(check5 === null)
+        expect(actual.every(val => val)).toEqual(true)
+      }
     } catch (err) {
+      console.error(err)
       expect(err).toEqual(null)
     }
   })

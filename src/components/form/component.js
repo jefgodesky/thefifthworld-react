@@ -22,8 +22,8 @@ export class Form extends React.Component {
       isClient: false,
       showPath: true,
       suggestedParents: [],
-      path: this.props.page.path,
-      title: this.props.page.title,
+      path: get(this.props, 'page.path'),
+      title: get(this.props, 'page.title'),
       error: false
     }
 
@@ -259,11 +259,13 @@ export class Form extends React.Component {
       ? errorMessages[this.state.error.problem]
       : null
 
-    const fileUpload = Object.keys(this.props.page).length && this.props.page.type !== 'File'
-      ? null
-      : this.renderFileUpload()
+    const type = get(this.props, 'page.type')
+    const fileUpload = this.props.upload || (type === 'File')
+      ? this.renderFileUpload()
+      : null
 
-    const permissions = parseInt(this.props.page.permissions)
+    const permissionsVal = get(this.props, 'page.permissions')
+    const permissions = permissionsVal ? parseInt(permissionsVal) : 777
     const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
     const lock = canAdmin && permissions > 744
       ? (<input type='submit' name='lock' value='Lock' className='secondary' />)
@@ -283,7 +285,7 @@ export class Form extends React.Component {
           type='text'
           name='title'
           id='title'
-          defaultValue={this.props.page.title}
+          defaultValue={get(this.props, 'page.title')}
           onChange={event => this.changeTitle(event.target.value)}
           placeholder='What do you want to write about?' />
         {!error && !this.state.showPath &&
@@ -345,22 +347,25 @@ export class Form extends React.Component {
 
 /**
  * Maps Redux state to the component's props.
- * @param state - The state from Redux.
+ * @param state {Object} - The state from Redux.
+ * @param own {Object} - The component's own props.
  * @returns {Object} - The component's new props.
  */
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, own) => {
   return {
     error: state.Error,
     loggedInMember: state.MemberLogin,
-    page: state.Page
+    page: state.Page,
+    upload: own.upload || false
   }
 }
 
 Form.propTypes = {
   error: PropTypes.object,
   loggedInMember: PropTypes.object,
-  page: PropTypes.object
+  page: PropTypes.object,
+  upload: PropTypes.bool
 }
 
 export default connect(mapStateToProps)(Form)

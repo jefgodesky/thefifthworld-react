@@ -9,6 +9,7 @@ import Join from '../components/join/component'
 import MemberLogin from '../components/member-login/component'
 import MemberProfile from '../components/member-profile/component'
 import OAuth2Connect from '../components/oauth-connect/component'
+import Upload from '../components/upload/component'
 
 const routes = [
   {
@@ -70,6 +71,11 @@ const routes = [
     path: '/new',
     exact: true,
     component: Create
+  },
+  {
+    path: '/upload',
+    exact: true,
+    component: Upload
   }
 ]
 

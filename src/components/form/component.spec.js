@@ -165,8 +165,13 @@ describe('Form', () => {
     expect(actual).toEqual(expected)
   })
 
-  it('should let you upload a file on a new form', () => {
-    const wrapper = shallow(<Form loggedInMember={{}} page={{}} />)
+  it('should not show a file input when creating a page', () => {
+    const wrapper = shallow(<Form loggedInMember={{}} />)
+    expect(wrapper.find('input[type="file"]').length).toEqual(0)
+  })
+
+  it('should not show a file input when creating a page if it\'s told to', () => {
+    const wrapper = shallow(<Form loggedInMember={{}} upload />)
     expect(wrapper.find('input[type="file"]').length).toEqual(1)
   })
 
@@ -175,7 +180,7 @@ describe('Form', () => {
     expect(wrapper.find('input[type="file"]').length).toEqual(0)
   })
 
-  it('should a file input when editing a page with [[Type:File]]', () => {
+  it('should show a file input when editing a page with [[Type:File]]', () => {
     const wrapper = shallow(<Form loggedInMember={{}} page={{ path: '/test', permissions: 777, type: 'File' }} />)
     expect(wrapper.find('input[type="file"]').length).toEqual(1)
   })

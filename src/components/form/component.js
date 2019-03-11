@@ -260,8 +260,30 @@ export class Form extends React.Component {
       : null
 
     const type = get(this.props, 'page.type')
-    const fileUpload = this.props.upload || (type === 'File')
+    const fileUpload = this.props.upload || (type === 'File') || (type === 'Art')
       ? this.renderFileUpload()
+      : null
+    const typeRadioFile = fileUpload && (type !== 'Art')
+      ? (<input type='radio' id='type-file' name='type' value='File' defaultChecked />)
+      : (<input type='radio' id='type-file' name='type' value='File' />)
+    const typeRadioArt = (type === 'Art')
+      ? (<input type='radio' id='type-art' name='type' value='Art' defaultChecked />)
+      : (<input type='radio' id='type-art' name='type' value='Art' />)
+    const typeRadio = fileUpload
+      ? (
+        <React.Fragment>
+          <ul className='radio short'>
+            <li>
+              {typeRadioFile}
+              <label htmlFor='type-file'>File</label>
+            </li>
+            <li>
+              {typeRadioArt}
+              <label htmlFor='type-art'>Art</label>
+            </li>
+          </ul>
+        </React.Fragment>
+      )
       : null
 
     const permissionsVal = get(this.props, 'page.permissions')
@@ -325,6 +347,7 @@ export class Form extends React.Component {
           onChange={event => this.changeParent(event.target.value)} />
         {suggestions}
         {fileUpload}
+        {typeRadio}
         <label htmlFor='body'>Body</label>
         <textarea
           name='body'

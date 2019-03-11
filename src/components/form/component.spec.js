@@ -184,4 +184,9 @@ describe('Form', () => {
     const wrapper = shallow(<Form loggedInMember={{}} page={{ path: '/test', permissions: 777, type: 'File' }} />)
     expect(wrapper.find('input[type="file"]').length).toEqual(1)
   })
+
+  it('shows radio buttons for file or art if it has a file input', () => {
+    const wrapper = shallow(<Form loggedInMember={{}} upload />)
+    expect(wrapper.find('input[type="radio"]').length).toEqual(2)
+  })
 })

@@ -429,6 +429,30 @@ describe('Page', () => {
     expect(page.type).toEqual('Page')
   })
 
+  it('overrides a page\'s type on creation', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'Page 1',
+      body: 'This is a page. [[Type:Page]]',
+      type: 'Other'
+    }, member, 'Initial text', db)
+    expect(page.type).toEqual('Other')
+  })
+
+  it('overrides a page\'s type on update', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'Page 1',
+      body: 'This is a page. [[Type:Page]]'
+    }, member, 'Initial text', db)
+    page.update({
+      type: 'Other'
+    }, member, 'Changing type', db)
+    expect(page.type).toEqual('Other')
+  })
+
   it('updates a page\'s type', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

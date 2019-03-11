@@ -103,7 +103,7 @@ class Page {
     const title = data.title ? data.title : ''
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
-    const type = Page.getType(data.body)
+    const type = data.type ? data.type : Page.getType(data.body)
 
     // Add to database
     try {
@@ -212,7 +212,7 @@ class Page {
 
   async update (data, editor, msg, db) {
     // What updates do we need to make to the page itself?
-    const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner']
+    const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner', 'type']
     const update = {}
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
@@ -233,7 +233,7 @@ class Page {
     }
 
     if (data.body) {
-      const type = Page.getType(data.body)
+      const type = data.type ? data.type : Page.getType(data.body)
       if (type && this.type !== type) update.type = type
     }
 

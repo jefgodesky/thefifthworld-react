@@ -75,9 +75,10 @@ PageRouter.post('*', async (req, res) => {
 
     try {
       await page.update(req.body, editor, msg, db)
-      await File.update(req.files.file, page, req.user, db)
+      if (req.files.file) await File.update(req.files.file, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
+      console.error(err)
       const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
       const key = extract.length === 3 ? extract[2] : null
       const val = extract.length === 3 ? extract[1] : null

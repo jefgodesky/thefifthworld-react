@@ -44,6 +44,25 @@ input[type='password'] {
   }
 }
 
+input[type='radio'] + label {
+  display: inline;
+  font-weight: normal;
+  margin: 0 1em 0 .5em;
+  vertical-align: middle;
+}
+
+ul.radio {
+  @extend %unformatted-list;
+  margin: 1em 0;
+
+  &.short {
+    li {
+      display: inline-block;
+      margin: 0 1em 0 0;
+    }
+  }
+}
+
 textarea {
   border: 0;
   box-shadow: 0 0 ms(-2) $black13;

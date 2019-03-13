@@ -54,7 +54,7 @@ describe('File', () => {
       const check3 = await axios.get(url)
       actual.push(check3)
 
-      const check4 = await File.delete(update.name, db)
+      const check4 = await File.delete(update, db)
       actual.push(check4)
       try {
         const r = await axios.get(url)

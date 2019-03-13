@@ -1,4 +1,5 @@
 import aws from 'aws-sdk'
+import sharp from 'sharp'
 import config from '../../../config'
 
 /**
@@ -65,7 +66,8 @@ class File {
 
   static async create (file, page, member, db) {
     const timestamp = Math.floor(Date.now() / 1000)
-    const r = await db.run(`INSERT INTO files (name, mime, size, page, timestamp, uploader) VALUES ('${file.name}', '${file.mime}', ${file.size}, ${page.id}, ${timestamp}, ${member.id});`)
+    const thumbnail = file.thumbnail ? file.thumbnail : ''
+    const r = await db.run(`INSERT INTO files (name, thumbnail, mime, size, page, timestamp, uploader) VALUES ('${file.name}', '${thumbnail}', '${file.mime}', ${file.size}, ${page.id}, ${timestamp}, ${member.id});`)
     return File.get(r.insertId, db)
   }
 
@@ -97,6 +99,10 @@ class File {
       const sc = `${stamp.getSeconds()}`.padStart(2, '0')
       const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
 
+      // Welcome to callback hell going on here. This is a great opportunity
+      // for someone more comfortable with the AWS SDK than me to clean up a
+      // nasty mess. Which could well just be future me. (JG, 2019-03-12)
+
       bucket.upload({
         Key: name,
         ContentType: file.mimetype,
@@ -106,17 +112,53 @@ class File {
         if (err) {
           reject(err)
         } else {
-          File.create({
-            name: data.key,
-            mime: file.mimetype,
-            size: file.size
-          }, page, member, db)
-            .then(data => {
-              resolve(data)
-            })
-            .catch(err => {
-              reject(err)
-            })
+          const imgTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
+          if (imgTypes.indexOf(file.mimetype) > -1) {
+            sharp(file.data)
+              .resize(256, 256)
+              .toBuffer()
+              .then(thumb => {
+                const thumbnail = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.256x256.${ext}`
+                bucket.upload({
+                  Key: thumbnail,
+                  ContentType: file.mimetype,
+                  Body: thumb,
+                  ACL: 'public-read'
+                }, err => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    File.create({
+                      name: data.key,
+                      thumbnail,
+                      mime: file.mimetype,
+                      size: file.size
+                    }, page, member, db)
+                      .then(data => {
+                        resolve(data)
+                      })
+                      .catch(err => {
+                        reject(err)
+                      })
+                  }
+                })
+              })
+              .catch(err => {
+                reject(err)
+              })
+          } else {
+            File.create({
+              name: data.key,
+              mime: file.mimetype,
+              size: file.size
+            }, page, member, db)
+              .then(data => {
+                resolve(data)
+              })
+              .catch(err => {
+                reject(err)
+              })
+          }
         }
       })
     })
@@ -124,18 +166,24 @@ class File {
 
   /**
    * Delete a file.
-   * @param name {string} - The file's name. This is the string used both in
-   *   AWS S3 and in the database's `name` column.
+   * @param record {Object} - An object that must include a `name` property
+   *   specifying the file's name. This is the string used both in AWS S3 and
+   *   in the database's `name` column. It may also include a `thumbnail`
+   *   property, which is the string used to identify the thumbnail in AWS S3
+   *   and is listed in the database's `thumbnail` column.
    * @param db {Pool} - A database connection.
    * @returns {Promise<boolean>} - A promise that resolves once the file has
    *   been deleted from both AWS S3 and the database.
    */
 
-  static async delete (name, db) {
+  static async delete (record, db) {
     try {
-      const res1 = await bucket.deleteObject({ Key: name }).promise()
-      const res2 = await db.run(`DELETE FROM files WHERE name='${name}';`)
-      return res2.affectedRows > 0 && Object.keys(res1).length === 0
+      const res1 = await bucket.deleteObject({ Key: record.name }).promise()
+      const res2 = (record.thumbnail && record.thumbnail !== '')
+        ? await bucket.deleteObject({ Key: record.thumbnail }).promise()
+        : {}
+      const res3 = await db.run(`DELETE FROM files WHERE name='${record.name}';`)
+      return res3.affectedRows > 0 && Object.keys(res1).length === 0 && Object.keys(res2).length === 0
     } catch (err) {
       console.error(err)
       return false
@@ -158,9 +206,9 @@ class File {
    */
 
   static async update (file, page, member, db) {
-    const old = await db.run(`SELECT name FROM files WHERE page=${page.id};`)
+    const old = await db.run(`SELECT name, thumbnail FROM files WHERE page=${page.id};`)
     for (let i = 0; i < old.length; i++) {
-      await File.delete(old[i].name, db)
+      await File.delete(old[i], db)
     }
     return File.upload(file, page, member, db)
   }

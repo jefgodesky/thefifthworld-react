@@ -101,7 +101,9 @@ server.get('*', redirector, async (req, res) => {
   const store = createStore(reducers, applyMiddleware(thunk))
   const route = routes.find(route => matchPath(req.url, route))
   if (req.user) {
-    store.dispatch(login(req.user))
+    const loginObj = Object.assign({}, req.user)
+    delete loginObj.password
+    store.dispatch(login(loginObj))
     const messages = await Member.getMessages(req.user.id, db)
     if (messages) store.dispatch(load(messages))
   }

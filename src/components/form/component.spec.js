@@ -66,36 +66,28 @@ describe('Form', () => {
     expect(actual).toEqual(expected)
   })
 
-  it('should not show a file input when creating a page', () => {
+  it('should not show a FormUpload component when creating a page', () => {
     const wrapper = shallow(<Form loggedInMember={{}} />)
-    const inputs = wrapper.find('input[type="file"]').length
-    const dragdrops = wrapper.find('DragDrop').length
-    expect(inputs + dragdrops).toEqual(0)
+    expect(wrapper.find('FormUpload').length).toEqual(0)
   })
 
-  it('should show a file input when creating a page if it\'s told to', () => {
+  it('should show a FormUpload component when creating a page if it\'s told to', () => {
     const wrapper = shallow(<Form loggedInMember={{}} upload />)
-    const inputs = wrapper.find('input[type="file"]').length
-    const dragdrops = wrapper.find('DragDrop').length
-    expect(inputs + dragdrops).toEqual(1)
+    expect(wrapper.find('FormUpload').length).toEqual(1)
   })
 
-  it('should not show a file input when editing a page', () => {
+  it('should not show a FormUpload component when editing a page', () => {
     const wrapper = shallow(<Form loggedInMember={{}} page={{ path: '/test', permissions: 777 }} />)
-    const inputs = wrapper.find('input[type="file"]').length
-    const dragdrops = wrapper.find('DragDrop').length
-    expect(inputs + dragdrops).toEqual(0)
+    expect(wrapper.find('FormUpload').length).toEqual(0)
   })
 
-  it('should show a file input when editing a page with [[Type:File]]', () => {
+  it('should show a FormUpload component when editing a page with [[Type:File]]', () => {
     const wrapper = shallow(<Form loggedInMember={{}} page={{ path: '/test', permissions: 777, type: 'File' }} />)
-    const inputs = wrapper.find('input[type="file"]').length
-    const dragdrops = wrapper.find('DragDrop').length
-    expect(inputs + dragdrops).toEqual(1)
+    expect(wrapper.find('FormUpload').length).toEqual(1)
   })
 
-  it('shows radio buttons for file or art if it has a file input', () => {
-    const wrapper = shallow(<Form loggedInMember={{}} upload />)
-    expect(wrapper.find('input[type="radio"]').length).toEqual(2)
+  it('should show a FormUpload component when editing a page with [[Type:Art]]', () => {
+    const wrapper = shallow(<Form loggedInMember={{}} page={{ path: '/test', permissions: 777, type: 'Art' }} />)
+    expect(wrapper.find('FormUpload').length).toEqual(1)
   })
 })

@@ -1,5 +1,3 @@
-/* global FileReader */
-
 import React from 'react'
 import PropTypes from 'prop-types'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
@@ -8,9 +6,8 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 
 import Autosuggest from '../autosuggest/component'
-import DragDrop from '../drag-and-drop-upload/component'
 import FormActions from '../form-actions/component'
-import Thumbnailer from '../thumbnailer/component'
+import FormUpload from '../form-upload/component'
 
 import config from '../../../config'
 import { get } from '../../shared/utils'
@@ -176,40 +173,6 @@ export class Form extends React.Component {
   }
 
   /**
-   * Renders the file upload portion of the form.
-   * @returns {*} - JSX for the file input.
-   */
-
-  renderFileUpload () {
-    return (
-      <React.Fragment>
-        <label htmlFor='file'>
-          File
-          <p className='note'>If you upload a file, this page will describe that file and allow other pages to make use of it.</p>
-        </label>
-        <input
-          type='file'
-          name='file'
-          id='file' />
-      </React.Fragment>
-    )
-  }
-
-  /**
-   * This method is called by the `DragDrop` component when a file is selected.
-   * It extracts the Blob data from the file and saves it to the state.
-   * @param file {File} - The file selected by the `DragDrop` component.
-   */
-
-  dropFile (file) {
-    const reader = new FileReader()
-    reader.addEventListener('load', () => {
-      this.setState({ file: Object.assign({}, file, { data: reader.result }) })
-    }, false)
-    reader.readAsDataURL(file)
-  }
-
-  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -240,36 +203,8 @@ export class Form extends React.Component {
       ? errorMessages[this.state.error.problem]
       : null
 
-    const fileUpload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
-      ? (typeof FileReader === 'function') && (this.state.isClient === true)
-        ? (<DragDrop onDrop={file => this.dropFile(file)} />)
-        : this.renderFileUpload()
-      : null
-    const typeRadioFile = fileUpload && (this.state.type !== 'Art')
-      ? (<input type='radio' id='type-file' name='type' value='File' defaultChecked />)
-      : (<input type='radio' id='type-file' name='type' value='File' />)
-    const typeRadioArt = (this.state.type === 'Art')
-      ? (<input type='radio' id='type-art' name='type' value='Art' defaultChecked />)
-      : (<input type='radio' id='type-art' name='type' value='Art' />)
-    const typeRadio = fileUpload
-      ? (
-        <React.Fragment>
-          <ul className='radio short'>
-            <li>
-              {typeRadioFile}
-              <label htmlFor='type-file'>File</label>
-            </li>
-            <li>
-              {typeRadioArt}
-              <label htmlFor='type-art'>Art</label>
-            </li>
-          </ul>
-        </React.Fragment>
-      )
-      : null
-
-    const thumbnail = this.state.file && (this.state.type === 'Art')
-      ? (<Thumbnailer file={this.state.file} onChange={thumbnail => this.setState({ thumbnail })} />)
+    const upload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
+      ? (<FormUpload page={this.props.page} />)
       : null
 
     return (
@@ -316,9 +251,7 @@ export class Form extends React.Component {
           onChange={value => this.changeParent(value)}
           threshold={3}
           transform={this.transformParentSuggestions} />
-        {fileUpload}
-        {typeRadio}
-        {thumbnail}
+        {upload}
         <label htmlFor='body'>Body</label>
         <textarea
           name='body'

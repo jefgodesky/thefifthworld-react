@@ -2,15 +2,18 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import autoBind from 'react-autobind'
 import axios from 'axios'
-import AwesomeDebouncePromise from 'awesome-debounce-promise'
-import slugify from '../../shared/slugify'
 import { connect } from 'react-redux'
+
+import Autosuggest from '../autosuggest/component'
 import DragDrop from '../drag-and-drop-upload/component'
 import Thumbnailer from '../thumbnailer/component'
+
 import config from '../../../config'
 import { get } from '../../shared/utils'
+import slugify from '../../shared/slugify'
 
 /**
  * This component handles the create/update form for wiki pages.
@@ -25,7 +28,6 @@ export class Form extends React.Component {
     this.state = {
       isClient: false,
       showPath: true,
-      suggestedParents: [],
       file: null,
       thumbnail: null,
       type: get(this.props, 'page.type'),
@@ -99,69 +101,6 @@ export class Form extends React.Component {
   }
 
   /**
-   * This method is called each time the parent field changes. It dispatches a
-   * request to the `/autocomplete/title` endpoint to get a list of suggestions
-   * for the current state of that field's value.
-   * @param value {string} - The value to check.
-   * @returns {Promise} - A promise that resolves with the results from the
-   *   `/autocomplete/title` endpoint.
-   */
-
-  async autocomplete (value) {
-    if (value.length > 2) {
-      const results = await axios.post(`${config.root}/autocomplete/title`, {
-        str: value
-      })
-      this.setState({ suggestedParents: results.data })
-    } else {
-      this.setState({ suggestedParents: [] })
-    }
-  }
-
-  /**
-   * This method is called when a user clicks on a suggestedd parent. It sets
-   * the parent field value equal to the suggestion's path.
-   * @param suggestion {Object} - The suggestion object. It must, at a minimum,
-   *   include a `path` property. The parent field value will be set to the
-   *   value of that property.
-   */
-
-  selectSuggestion (suggestion) {
-    this.parentField.current.value = suggestion.path
-    this.setState({ suggestedParents: [] })
-
-    const path = this.state.showPath
-      ? this.state.path
-      : `${suggestion.path}/${slugify(this.state.title)}`
-    this.setPath(path)
-  }
-
-  /**
-   * Renders the suggestions offered for the parent.
-   * @returns {*} - JSX for the rendered parent suggestions.
-   */
-
-  renderSuggestions () {
-    if (this.state.suggestedParents.length > 0) {
-      const suggestions = this.state.suggestedParents.map(suggestion => {
-        return (
-          <li key={suggestion.path} onClick={() => this.selectSuggestion(suggestion)}>
-            <p>{suggestion.title}</p>
-            <p className='note'><code>{config.root}{suggestion.path}</code></p>
-          </li>
-        )
-      })
-      return (
-        <ul className='autocomplete'>
-          {suggestions}
-        </ul>
-      )
-    } else {
-      return null
-    }
-  }
-
-  /**
    * Renders the commit message field.
    * @returns {Object} - JSX to render the commit message field.
    */
@@ -209,8 +148,30 @@ export class Form extends React.Component {
     const path = this.state.showPath
       ? this.state.path
       : `${parent}/${slugify(this.state.title)}`
-    this.autocomplete(parent)
     this.setPath(path)
+  }
+
+  /**
+   * Transforms an array returned from an endpoint listing possible matching
+   * pages into an array suitable for the Autocomplete component.
+   * @param results {Array} - An array of objects to be transformed. It is
+   *   expected that these objects will have `title` and `path` properties.
+   * @returns {Array} - An array of objects, each with a `name` property equal
+   *   to the `title` of the corresponding object in the original array, a
+   *   `note` property equal to an HTML string including the `path` property
+   *   of the corresponding object in the original array, and a `value`
+   *   property equal to the `path` property of the corresponding object in the
+   *   original array.
+   */
+
+  transformParentSuggestions (results) {
+    return results.map(res => {
+      return {
+        name: res.title,
+        note: `<code>${config.root}${res.path}</code>`,
+        value: res.path
+      }
+    })
   }
 
   /**
@@ -256,7 +217,6 @@ export class Form extends React.Component {
     const action = this.props.page && this.props.page.path ? this.props.page.path : '/new'
     const buttonText = action === '/new' ? 'Create New Wiki Page' : 'Save'
     const cancel = this.props.page ? this.props.page.path : '/dashboard'
-    const suggestions = this.renderSuggestions()
     const body = get(this.props.page, 'curr.body')
 
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
@@ -360,18 +320,16 @@ export class Form extends React.Component {
           {error}
         </React.Fragment>
         }
-        <label htmlFor='parent'>
-          Parent
-          <p className='note'>Should this page belong to a different page? {parentInstructions}</p>
-        </label>
-        <input
-          type='text'
-          name='parent'
-          id='parent'
-          ref={this.parentField}
+        <Autosuggest
           defaultValue={parentPath}
-          onChange={event => this.changeParent(event.target.value)} />
-        {suggestions}
+          endpoint='/autocomplete/title'
+          id='parent'
+          label='Parent'
+          name='parent'
+          note={`Should this page belong to a different page? ${parentInstructions}`}
+          onChange={value => this.changeParent(value)}
+          threshold={3}
+          transform={this.transformParentSuggestions} />
         {fileUpload}
         {typeRadio}
         {thumbnail}

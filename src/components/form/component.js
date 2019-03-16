@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 
 import Autosuggest from '../autosuggest/component'
 import DragDrop from '../drag-and-drop-upload/component'
+import FormActions from '../form-actions/component'
 import Thumbnailer from '../thumbnailer/component'
 
 import config from '../../../config'
@@ -24,12 +25,12 @@ export class Form extends React.Component {
     super(props)
     autoBind(this)
 
-    this.parentField = React.createRef()
     this.state = {
       isClient: false,
       showPath: true,
       file: null,
       thumbnail: null,
+      parent: null,
       type: get(this.props, 'page.type'),
       path: get(this.props, 'page.path'),
       title: get(this.props, 'page.title'),
@@ -129,12 +130,11 @@ export class Form extends React.Component {
    */
 
   changeTitle (title) {
-    const parent = get(this.parentField, 'current.value')
     this.setState({ title })
 
     const path = this.state.showPath
       ? this.state.path
-      : `${parent}/${slugify(title)}`
+      : `${this.state.parent}/${slugify(title)}`
     this.setPath(path)
   }
 
@@ -145,6 +145,7 @@ export class Form extends React.Component {
    */
 
   changeParent (parent) {
+    this.setState({ parent })
     const path = this.state.showPath
       ? this.state.path
       : `${parent}/${slugify(this.state.title)}`
@@ -214,10 +215,9 @@ export class Form extends React.Component {
    */
 
   render () {
-    const action = this.props.page && this.props.page.path ? this.props.page.path : '/new'
-    const buttonText = action === '/new' ? 'Create New Wiki Page' : 'Save'
-    const cancel = this.props.page ? this.props.page.path : '/dashboard'
-    const body = get(this.props.page, 'curr.body')
+    const path = get(this.props, 'page.path')
+    const action = path || '/new'
+    const body = get(this.props, 'page.curr.body')
 
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
     const parentObject = lineage.length > 0 ? lineage[0] : null
@@ -271,20 +271,6 @@ export class Form extends React.Component {
     const thumbnail = this.state.file && (this.state.type === 'Art')
       ? (<Thumbnailer file={this.state.file} onChange={thumbnail => this.setState({ thumbnail })} />)
       : null
-
-    const permissionsVal = get(this.props, 'page.permissions')
-    const permissions = permissionsVal ? parseInt(permissionsVal) : 777
-    const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
-    const lock = canAdmin && permissions > 744
-      ? (<input type='submit' name='lock' value='Lock' className='secondary' />)
-      : permissions <= 744
-        ? (<input type='submit' name='unlock' value='Unlock' className='secondary' />)
-        : null
-    const hide = canAdmin && permissions > 400
-      ? (<input type='submit' name='hide' value='Hide' className='secondary' />)
-      : permissions <= 400
-        ? (<input type='submit' name='unhide' value='Unhide' className='secondary' />)
-        : null
 
     return (
       <form action={action} method='post' className='wiki' encType='multipart/form-data'>
@@ -342,12 +328,9 @@ export class Form extends React.Component {
           <p>You can format your page using <a href='/markown'>markdown</a>.</p>
         </aside>
         {message}
-        <p className='actions'>
-          <button>{buttonText}</button>
-          {lock}
-          {hide}
-          <a href={cancel} className='button secondary'>Cancel</a>
-        </p>
+        <FormActions
+          loggedInMember={this.props.loggedInMember}
+          page={this.props.page} />
       </form>
     )
   }

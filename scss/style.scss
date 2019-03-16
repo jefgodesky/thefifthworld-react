@@ -1,4 +1,5 @@
 @import '../node_modules/modularscale-sass/stylesheets/modularscale';
+@import '../node_modules/react-image-crop/lib/ReactCrop';
 
 $modularscale: (
   base: 1em,
@@ -34,3 +35,5 @@ $modularscale: (
 @import 'components/dashboard';
 @import 'components/connections';
 @import 'components/wiki';
+@import 'components/drag-and-drop';
+@import 'components/thumbnailer';

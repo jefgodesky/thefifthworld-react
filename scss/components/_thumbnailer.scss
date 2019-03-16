@@ -1,0 +1,12 @@
+.thumbnailer {
+  overflow: auto;
+
+  .thumbnail {
+    border: .25em solid $white;
+    float: right;
+    height: 256px;
+    margin: -2em 2em 0 0;
+    position: relative;
+    width: 256px;
+  }
+}

@@ -1,3 +1,5 @@
+/* global FileReader */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
@@ -5,6 +7,8 @@ import axios from 'axios'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import slugify from '../../shared/slugify'
 import { connect } from 'react-redux'
+import DragDrop from '../drag-and-drop-upload/component'
+import Thumbnailer from '../thumbnailer/component'
 import config from '../../../config'
 import { get } from '../../shared/utils'
 
@@ -22,6 +26,9 @@ export class Form extends React.Component {
       isClient: false,
       showPath: true,
       suggestedParents: [],
+      file: null,
+      thumbnail: null,
+      type: get(this.props, 'page.type'),
       path: get(this.props, 'page.path'),
       title: get(this.props, 'page.title'),
       error: false
@@ -227,6 +234,20 @@ export class Form extends React.Component {
   }
 
   /**
+   * This method is called by the `DragDrop` component when a file is selected.
+   * It extracts the Blob data from the file and saves it to the state.
+   * @param file {File} - The file selected by the `DragDrop` component.
+   */
+
+  dropFile (file) {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      this.setState({ file: Object.assign({}, file, { data: reader.result }) })
+    }, false)
+    reader.readAsDataURL(file)
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -259,14 +280,15 @@ export class Form extends React.Component {
       ? errorMessages[this.state.error.problem]
       : null
 
-    const type = get(this.props, 'page.type')
-    const fileUpload = this.props.upload || (type === 'File') || (type === 'Art')
-      ? this.renderFileUpload()
+    const fileUpload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
+      ? (typeof FileReader === 'function') && (this.state.isClient === true)
+        ? (<DragDrop onDrop={file => this.dropFile(file)} />)
+        : this.renderFileUpload()
       : null
-    const typeRadioFile = fileUpload && (type !== 'Art')
+    const typeRadioFile = fileUpload && (this.state.type !== 'Art')
       ? (<input type='radio' id='type-file' name='type' value='File' defaultChecked />)
       : (<input type='radio' id='type-file' name='type' value='File' />)
-    const typeRadioArt = (type === 'Art')
+    const typeRadioArt = (this.state.type === 'Art')
       ? (<input type='radio' id='type-art' name='type' value='Art' defaultChecked />)
       : (<input type='radio' id='type-art' name='type' value='Art' />)
     const typeRadio = fileUpload
@@ -284,6 +306,10 @@ export class Form extends React.Component {
           </ul>
         </React.Fragment>
       )
+      : null
+
+    const thumbnail = this.state.file && (this.state.type === 'Art')
+      ? (<Thumbnailer file={this.state.file} onChange={thumbnail => this.setState({ thumbnail })} />)
       : null
 
     const permissionsVal = get(this.props, 'page.permissions')
@@ -348,6 +374,7 @@ export class Form extends React.Component {
         {suggestions}
         {fileUpload}
         {typeRadio}
+        {thumbnail}
         <label htmlFor='body'>Body</label>
         <textarea
           name='body'

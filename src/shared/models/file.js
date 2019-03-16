@@ -72,12 +72,71 @@ class File {
   }
 
   /**
+   * Uploads a file to AWS S3.
+   * @param name {string} - The name to use for the file.
+   * @param data {Blob} - The file data to upload.
+   * @param mime {string} - The MIME type of the file.
+   * @returns {Promise<void>} - A promise that resolves when the file has been
+   *   uploaded to AWS S3.
+   */
+
+  static async uploadFile (name, data, mime) {
+    return new Promise((resolve, reject) => {
+      bucket.upload({
+        Key: name,
+        ContentType: mime,
+        Body: data,
+        ACL: 'public-read'
+      }, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
+    })
+  }
+
+  /**
+   * If a thumbnail is provided, this method uploads it. If not, and the file
+   * is an image, one is generated, and then uploaded with the name and MIME
+   * type provided. If neither of these are true, the promise simply resolves
+   * with a value of `null`.
+   * @param thumbnail {Blob} - A thumbnail to upload.
+   * @param name {string} - The name to use for the thumbnail.
+   * @param data {Blob} - The data for an image file to create a thumbnail for.
+   * @param mime {string} - The MIME type of the thumbnail.
+   * @returns {Promise<void>} - A promise that resolves once the thumbnail has
+   *   been uploaded, if there is a thumbnail to upload.
+   */
+
+  static async uploadThumb (thumbnail, name, data, mime) {
+    return new Promise((resolve, reject) => {
+      const imageTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
+      if (thumbnail) {
+        return File.uploadFile(name, thumbnail, mime)
+      } else if (imageTypes.indexOf(mime) > -1) {
+        sharp(data)
+          .resize(256, 256)
+          .toBuffer()
+          .then(thumb => {
+            resolve(thumb)
+          })
+          .catch(err => { reject(err) })
+      } else {
+        resolve(null)
+      }
+    })
+  }
+
+  /**
    * Uploads a file to Amazon AWS S3 and adds a record to the database.
    * @param file {Object} - An object providing the file to be uploaded.
    *   Expects properties `name` (string; the file name of the file being
    *   uploaded), `mimetype` (string; the MIME type of the file), `data` (the
    *   actual file to be uploaded), and `size` (integer; the size of the file
    *   in bytes).
+   * @param thumbnail {Blob} - The blob for a thumbnail to use for the file.
    * @param page {Page} - The file's page.
    * @param member {Member} - The member uploading the file.
    * @param db {Pool} - A database connection.
@@ -85,83 +144,33 @@ class File {
    *   once the file has been uploaded and added to the database.
    */
 
-  static async upload (file, page, member, db) {
-    return new Promise((resolve, reject) => {
-      const parts = file.name.split('.')
-      const nameParts = parts.slice(0, parts.length - 1)
-      const ext = parts[parts.length - 1]
-      const stamp = new Date()
-      const yr = stamp.getFullYear()
-      const mo = `${stamp.getMonth() + 1}`.padStart(2, '0')
-      const da = `${stamp.getDate()}`.padStart(2, '0')
-      const hr = `${stamp.getHours()}`.padStart(2, '0')
-      const mn = `${stamp.getMinutes()}`.padStart(2, '0')
-      const sc = `${stamp.getSeconds()}`.padStart(2, '0')
-      const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
+  static async upload (file, thumbnail, page, member, db) {
+    const parts = file.name.split('.')
+    const nameParts = parts.slice(0, parts.length - 1)
+    const ext = parts[parts.length - 1]
+    const stamp = new Date()
+    const yr = stamp.getFullYear()
+    const mo = `${stamp.getMonth() + 1}`.padStart(2, '0')
+    const da = `${stamp.getDate()}`.padStart(2, '0')
+    const hr = `${stamp.getHours()}`.padStart(2, '0')
+    const mn = `${stamp.getMinutes()}`.padStart(2, '0')
+    const sc = `${stamp.getSeconds()}`.padStart(2, '0')
+    const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
+    const thumbName = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.256x256.${ext}`
+    const thumbMime = thumbnail ? 'image/jpeg' : file.mimetype
 
-      // Welcome to callback hell going on here. This is a great opportunity
-      // for someone more comfortable with the AWS SDK than me to clean up a
-      // nasty mess. Which could well just be future me. (JG, 2019-03-12)
-
-      bucket.upload({
-        Key: name,
-        ContentType: file.mimetype,
-        Body: file.data,
-        ACL: 'public-read'
-      }, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          const imgTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
-          if (imgTypes.indexOf(file.mimetype) > -1) {
-            sharp(file.data)
-              .resize(256, 256)
-              .toBuffer()
-              .then(thumb => {
-                const thumbnail = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.256x256.${ext}`
-                bucket.upload({
-                  Key: thumbnail,
-                  ContentType: file.mimetype,
-                  Body: thumb,
-                  ACL: 'public-read'
-                }, err => {
-                  if (err) {
-                    reject(err)
-                  } else {
-                    File.create({
-                      name: data.key,
-                      thumbnail,
-                      mime: file.mimetype,
-                      size: file.size
-                    }, page, member, db)
-                      .then(data => {
-                        resolve(data)
-                      })
-                      .catch(err => {
-                        reject(err)
-                      })
-                  }
-                })
-              })
-              .catch(err => {
-                reject(err)
-              })
-          } else {
-            File.create({
-              name: data.key,
-              mime: file.mimetype,
-              size: file.size
-            }, page, member, db)
-              .then(data => {
-                resolve(data)
-              })
-              .catch(err => {
-                reject(err)
-              })
-          }
-        }
-      })
-    })
+    try {
+      await File.uploadFile(name, file.data, file.mimetype)
+      const thumb = await File.uploadThumb(thumbnail, thumbName, file.data, thumbMime)
+      return File.create({
+        name,
+        thumbnail: thumb,
+        mime: file.mimetype,
+        size: file.size
+      }, page, member, db)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   /**
@@ -197,6 +206,7 @@ class File {
    *   uploaded), `mimetype` (string; the MIME type of the file), `data` (the
    *   actual file to be uploaded), and `size` (integer; the size of the file
    *   in bytes).
+   * @param thumbnail {Blob} - The blob for the thumbnail to use.
    * @param page {Page} - The file's page.
    * @param member {Member} - The member uploading the file.
    * @param db {Pool} - A database connection.
@@ -205,12 +215,12 @@ class File {
    *   the new file has been uploaded to AWS S3 and added to the database.
    */
 
-  static async update (file, page, member, db) {
+  static async update (file, thumbnail, page, member, db) {
     const old = await db.run(`SELECT name, thumbnail FROM files WHERE page=${page.id};`)
     for (let i = 0; i < old.length; i++) {
       await File.delete(old[i], db)
     }
-    return File.upload(file, page, member, db)
+    return File.upload(file, thumbnail, page, member, db)
   }
 }
 

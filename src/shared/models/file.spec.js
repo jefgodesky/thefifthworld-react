@@ -34,7 +34,7 @@ describe('File', () => {
       }
 
       const actual = []
-      const res = await File.upload(file1, page, member, db)
+      const res = await File.upload(file1, null, page, member, db)
       let url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${res.name}`
       const check1 = await axios.get(url)
       actual.push(check1)
@@ -47,7 +47,7 @@ describe('File', () => {
         mimetype: 'text/plain',
         size: `${Date.now()}`.length
       }
-      const update = await File.update(file2, page, member, db)
+      const update = await File.update(file2, null, page, member, db)
       const check2 = await db.run(`SELECT id FROM files WHERE page=${page.id};`)
       actual.push(check2.length === 1)
       url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${update.name}`

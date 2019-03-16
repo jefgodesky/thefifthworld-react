@@ -1,0 +1,21 @@
+.droppable {
+  input {
+    @extend %hidden;
+    display: block;
+  }
+
+  label {
+    background: $brown112;
+    border: .125em dashed $brown13;
+    cursor: pointer;
+    display: block;
+    font-weight: normal;
+    margin: 1em 0;
+    padding: 4em 2em;
+    text-align: center;
+
+    strong {
+      display: block;
+    }
+  }
+}

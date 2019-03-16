@@ -67,10 +67,21 @@ export class View extends React.Component {
       )
       : null
 
+    const art = this.props.page.file && this.props.page.type && (this.props.page.type === 'Art')
+      ? (
+        <a href={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`}>
+          <img
+            src={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`}
+            alt={this.props.page.title} />
+        </a>
+      )
+      : null
+
     return (
       <React.Fragment>
         <h1>{this.props.page.title}</h1>
         {old}
+        {art}
         {file}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
         {options}

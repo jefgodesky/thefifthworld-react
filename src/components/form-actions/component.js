@@ -1,19 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import autoBind from 'react-autobind'
-import { connect } from 'react-redux'
 import { get } from '../../shared/utils'
 
 /**
  * This component handles the buttons displayed on a form.
  */
 
-export class FormActions extends React.Component {
-  constructor (props) {
-    super(props)
-    autoBind(this)
-  }
-
+class FormActions extends React.Component {
   /**
    * The render function
    * @returns {string} - The rendered output.
@@ -52,22 +45,9 @@ export class FormActions extends React.Component {
   }
 }
 
-/**
- * Maps Redux state to the component's props.
- * @param state {Object} - The state from Redux.
- * @returns {Object} - The component's new props.
- */
-
-const mapStateToProps = state => {
-  return {
-    loggedInMember: state.MemberLogin,
-    page: state.Page
-  }
-}
-
 FormActions.propTypes = {
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }
 
-export default connect(mapStateToProps)(FormActions)
+export default FormActions

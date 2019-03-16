@@ -3,7 +3,7 @@
 import React from 'react'
 import { shallow, configure } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import { FormActions } from './component'
+import FormActions from './component'
 
 configure({ adapter: new Adapter() })
 

@@ -6,6 +6,20 @@ import db from '../db'
 
 const PageRouter = express.Router()
 
+const getSQLError = (msg, content) => {
+  const match = msg.match(/Duplicate entry \'(.+?)\' for key \'(.+?)\'/)
+  if (match.length > 2) {
+    return {
+      field: match[2],
+      code: 'ER_DUP_ENTRY',
+      value: match[1],
+      content
+    }
+  } else {
+    return { content }
+  }
+}
+
 // POST /new
 PageRouter.post('/new', async (req, res) => {
   if (req.user) {
@@ -14,10 +28,7 @@ PageRouter.post('/new', async (req, res) => {
       await File.upload(req.files.file, null, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
-      const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
-      const key = extract.length === 3 ? extract[2] : null
-      const val = extract.length === 3 ? extract[1] : null
-      req.session.error = Object.assign({}, err, { content: req.body, key, val })
+      req.session.error = getSQLError(err.sqlMessage, req.body)
       res.redirect('/new')
     }
   } else {
@@ -78,11 +89,7 @@ PageRouter.post('*', async (req, res) => {
       if (req.files.file) await File.update(req.files.file, null, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
-      console.error(err)
-      const extract = err.sqlMessage ? err.sqlMessage.match(/Duplicate entry '(.*)' for key '(.*)'/) : []
-      const key = extract.length === 3 ? extract[2] : null
-      const val = extract.length === 3 ? extract[1] : null
-      req.session.error = Object.assign({}, err, { content: req.body, key, val })
+      req.session.error = getSQLError(err.sqlMessage, req.body)
       res.redirect(`${query[0]}/edit`)
     }
   }

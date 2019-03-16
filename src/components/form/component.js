@@ -31,15 +31,8 @@ export class Form extends React.Component {
       type: get(this.props, 'page.type'),
       path: get(this.props, 'page.path'),
       title: get(this.props, 'page.title'),
-      error: false
-    }
-
-    if (this.props.error && this.props.error.key === 'path') {
-      this.state.path = this.props.error.val
-      this.state.error = {
-        problem: 'dupe',
-        path: this.props.error.val
-      }
+      body: get(this.props, 'page.curr.body'),
+      error: this.props.error
     }
 
     this.debouncedCheckPath = AwesomeDebouncePromise(this.checkPath, 1000)
@@ -81,8 +74,9 @@ export class Form extends React.Component {
       const error = (err.response && err.response.status === 404)
         ? false
         : {
-          problem: (err.response === undefined) ? 'invalid' : 'dupe',
-          path
+          field: 'path',
+          code: 'ER_INVALID',
+          value: this.state.path
         }
       this.setState({ error })
     }
@@ -173,6 +167,78 @@ export class Form extends React.Component {
   }
 
   /**
+   * This method renders the path portion of the form in its "expanded" state,
+   * as when a user edits it directly or when there is an error.
+   * @returns {*} - The JSX for the path portion of the form in its "expanded"
+   *   state.
+   */
+
+  renderExpandedPath () {
+    const { error } = this.state
+
+    let errMsg = null
+    if (error && error.field === 'path' && error.code === 'ER_DUP_ENTRY') {
+      errMsg = (
+        <p className='error'><a href={error.value} className='path' target='_blank'>{error.value}</a> already exists. Please choose a different path to make this page unique.</p>
+      )
+    } else if (error && error.field === 'path' && error.code === 'ER_INVALID') {
+      errMsg = (
+        <p className='error'><span className='path'>{error.value}</span> won&rsquo;t work. Please provide a valid path.</p>
+      )
+    }
+
+    return (
+      <React.Fragment>
+        <label htmlFor='path' className={error && error.field === 'path' ? 'error' : null}>
+          Path
+          <p className='note'>This sets the page&rsquo;s URL. If left blank, it will default to
+            a &ldquo;slugified&rdquo; version of the title (e.g., &rdquo;New Page&rdquo; will
+            become <code>/new-page</code>)</p>
+        </label>
+        <input
+          type='text'
+          name='path'
+          id='path'
+          onChange={event => this.setPath(event.target.value)}
+          placeholder='/example'
+          defaultValue={this.state.path} />
+        {errMsg}
+      </React.Fragment>
+    )
+  }
+
+  /**
+   * This method renders the path portion of the form when it is "collapsed."
+   * @returns {*} - The JSX for the path portion of the form in its "collapsed"
+   *   state.
+   */
+
+  renderCollapsedPath () {
+    return (
+      <p className='note'>
+        <strong>Path:</strong> <code>{this.state.path}</code>
+        <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
+      </p>
+    )
+  }
+
+  /**
+   * This method renders the path portion of the form.
+   * @returns {*} - The JSX for the path portion of the form.
+   */
+
+  renderPath () {
+    const { error, showPath, isClient } = this.state
+    if (error && error.field === 'path') {
+      return this.renderExpandedPath()
+    } else if (!showPath && isClient) {
+      return this.renderCollapsedPath()
+    } else {
+      return this.renderExpandedPath()
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -180,7 +246,6 @@ export class Form extends React.Component {
   render () {
     const path = get(this.props, 'page.path')
     const action = path || '/new'
-    const body = get(this.props, 'page.curr.body')
 
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
     const parentObject = lineage.length > 0 ? lineage[0] : null
@@ -188,20 +253,6 @@ export class Form extends React.Component {
     const parentInstructions = this.state.isClient
       ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
-    const message = this.renderMessageField()
-
-    const errorMessages = {
-      dupe: (
-        <p className='error'><a href={this.state.error.path} className='path' target='_blank'>{this.state.error.path}</a> already exists. Please choose a different path to make this page unique.</p>
-      ),
-      invalid: (
-        <p className='error'><span className='path'>{this.state.error.path}</span> won&rsquo;t work. Please provide a valid path.</p>
-      )
-    }
-
-    const error = this.state.error
-      ? errorMessages[this.state.error.problem]
-      : null
 
     const upload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
       ? (<FormUpload page={this.props.page} />)
@@ -217,30 +268,7 @@ export class Form extends React.Component {
           defaultValue={get(this.props, 'page.title')}
           onChange={event => this.changeTitle(event.target.value)}
           placeholder='What do you want to write about?' />
-        {!error && !this.state.showPath &&
-        <p className='note'>
-          <strong>Path:</strong> <code>{this.state.path}</code>
-          <a onClick={() => this.setState({ showPath: true })} className='button'>Edit</a>
-        </p>
-        }
-        {(error || this.state.showPath) &&
-        <React.Fragment>
-          <label htmlFor='path' className={error ? 'error' : null}>
-            Path
-            <p className='note'>This sets the page&rsquo;s URL. If left blank, it will default to
-              a &ldquo;slugified&rdquo; version of the title (e.g., &rdquo;New Page&rdquo; will
-              become <code>/new-page</code>)</p>
-          </label>
-          <input
-            type='text'
-            name='path'
-            id='path'
-            onChange={event => this.setPath(event.target.value)}
-            placeholder='/example'
-            defaultValue={this.state.path} />
-          {error}
-        </React.Fragment>
-        }
+        {this.renderPath()}
         <Autosuggest
           defaultValue={parentPath}
           endpoint='/autocomplete/title'
@@ -256,11 +284,12 @@ export class Form extends React.Component {
         <textarea
           name='body'
           id='body'
-          defaultValue={body} />
+          defaultValue={this.state.body}
+          onChange={event => this.setState({ body: event.target.value })} />
         <aside className='note'>
           <p>You can format your page using <a href='/markown'>markdown</a>.</p>
         </aside>
-        {message}
+        {this.renderMessageField()}
         <FormActions
           loggedInMember={this.props.loggedInMember}
           page={this.props.page} />

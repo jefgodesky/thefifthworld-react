@@ -1,3 +1,5 @@
+/* global FormData */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
@@ -66,8 +68,9 @@ export class Form extends React.Component {
     try {
       await axios.get(`${protocol}//${host}${path}`)
       const error = {
-        problem: 'dupe',
-        path
+        field: 'path',
+        code: 'ER_DUP_ENTRY',
+        value: path
       }
       if (this.state.path && this.state.path !== '/') this.setState({ error })
     } catch (err) {
@@ -239,6 +242,59 @@ export class Form extends React.Component {
   }
 
   /**
+   * This method is passed to the `update` prop of the `FormUpload` component
+   * to update this component's state when the file or thumbnail are edited.
+   * @param data {Object} - An object with a `file` property and a `thumbnail`
+   *   property, expected to contain the Blob for those files.
+   */
+
+  updateFiles (data) {
+    this.setState(data)
+  }
+
+  /**
+   * This method is called when the form is submitted. It handles client-side
+   * form submission. Drag-and-drop files and thumbnailing require files to be
+   * stored and manipulated client-side, which means that form submission must
+   * also be handled client-side, since the images to submit are not on the
+   * server yet.
+   * @param event {Object} - The form submission event.
+   * @returns {Promise<void>} - A promise that resolves when the form has been
+   *   submitted and the window location updated to the new location.
+   */
+
+  async handleSubmit (event) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const { error, title, path, parent, type, body, file, thumbnail } = this.state
+    const existingPath = get(this.props, 'page.path')
+    const action = existingPath || '/new'
+
+    if (!error) {
+      try {
+        const headers = {
+          'Content-Type': 'multipart/form-data'
+        }
+
+        const data = new FormData()
+        data.set('title', title)
+        data.set('path', path)
+        data.set('parent', parent)
+        data.set('type', type)
+        data.set('body', body)
+        if (file) data.append('file', file, file.name)
+        if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
+
+        await axios.post(action, data, { headers })
+        window.location.href = `${config.root}${path}`
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -255,11 +311,16 @@ export class Form extends React.Component {
       : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
 
     const upload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
-      ? (<FormUpload page={this.props.page} />)
+      ? (<FormUpload page={this.props.page} update={data => this.updateFiles(data)} />)
       : null
 
     return (
-      <form action={action} method='post' className='wiki' encType='multipart/form-data'>
+      <form
+        action={action}
+        method='post'
+        className='wiki'
+        encType='multipart/form-data'
+        onSubmit={this.handleSubmit}>
         <label htmlFor='title'>Title</label>
         <input
           type='text'

@@ -6,6 +6,14 @@ import db from '../db'
 
 const PageRouter = express.Router()
 
+/**
+ * Returns an error object based on an SQL error message.
+ * @param msg {string} - An SQL error message.
+ * @param content {Object} - An object with the form content that was submitted
+ *   when the SQL error was encountered.
+ * @returns {Object} - An error object describing the error.
+ */
+
 const getSQLError = (msg, content) => {
   const match = msg.match(/Duplicate entry \'(.+?)\' for key \'(.+?)\'/)
   if (match.length > 2) {
@@ -24,10 +32,13 @@ const getSQLError = (msg, content) => {
 PageRouter.post('/new', async (req, res) => {
   if (req.user) {
     try {
+      const file = req.files && req.files.file ? req.files.file : null
+      const thumbnail = req.files && req.files.thumbnail ? req.files.thumbnail : null
       const page = await Page.create(req.body, req.user, 'Initial text', db)
-      await File.upload(req.files.file, null, page, req.user, db)
+      if (file) await File.upload(file, thumbnail, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
+      console.error(err)
       req.session.error = getSQLError(err.sqlMessage, req.body)
       res.redirect('/new')
     }
@@ -85,10 +96,13 @@ PageRouter.post('*', async (req, res) => {
     }
 
     try {
+      const file = req.files && req.files.file ? req.files.file : null
+      const thumbnail = req.files && req.files.thumbnail ? req.files.thumbnail : null
       await page.update(req.body, editor, msg, db)
-      if (req.files.file) await File.update(req.files.file, null, page, req.user, db)
+      if (file) await File.update(file, thumbnail, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
+      console.error(err)
       req.session.error = getSQLError(err.sqlMessage, req.body)
       res.redirect(`${query[0]}/edit`)
     }

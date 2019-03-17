@@ -8,6 +8,6 @@ import Thumbnailer from './component'
 configure({ adapter: new Adapter() })
 
 it('should render a ReactCrop component', () => {
-  const wrapper = shallow(<Thumbnailer file={{ data: 'test' }} />)
+  const wrapper = shallow(<Thumbnailer file='test' />)
   expect(wrapper.find('ReactCrop').length).toEqual(1)
 })

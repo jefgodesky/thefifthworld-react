@@ -17,6 +17,7 @@ class DragDrop extends React.Component {
     this.handleDragOut = this.handleDragOut.bind(this)
     this.handleDragOver = this.handleDragOver.bind(this)
     this.handleDrop = this.handleDrop.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
   }
 
   /**
@@ -70,6 +71,15 @@ class DragDrop extends React.Component {
   }
 
   /**
+   * This method is called when a user selects a file using the file input.
+   * @param event {Object} - The event object.
+   */
+
+  handleSelect (event) {
+    this.props.onDrop(event.target.files[0])
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -85,7 +95,7 @@ class DragDrop extends React.Component {
         onDragLeave={this.handleDragOut}
         onDragOver={this.handleDragOver}
         onDrop={this.handleDrop}>
-        <input type='file' name='file' id='file' />
+        <input type='file' name='file' id='file' onChange={this.handleSelect} />
         <label htmlFor='file'><strong>Choose a file</strong> or drag it here</label>
       </div>
     )

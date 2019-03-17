@@ -102,7 +102,7 @@ class File {
    * is an image, one is generated, and then uploaded with the name and MIME
    * type provided. If neither of these are true, the promise simply resolves
    * with a value of `null`.
-   * @param thumbnail {Blob} - A thumbnail to upload.
+   * @param thumbnail {File} - A thumbnail to upload.
    * @param name {string} - The name to use for the thumbnail.
    * @param data {Blob} - The data for an image file to create a thumbnail for.
    * @param mime {string} - The MIME type of the thumbnail.
@@ -114,7 +114,13 @@ class File {
     return new Promise((resolve, reject) => {
       const imageTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
       if (thumbnail) {
-        return File.uploadFile(name, thumbnail, mime)
+        File.uploadFile(name, thumbnail.data, 'image/jpeg')
+          .then(data => {
+            resolve(data)
+          })
+          .catch(err => {
+            reject(err)
+          })
       } else if (imageTypes.indexOf(mime) > -1) {
         sharp(data)
           .resize(256, 256)
@@ -145,6 +151,11 @@ class File {
    */
 
   static async upload (file, thumbnail, page, member, db) {
+    const exts = {
+      'image/gif': 'gif',
+      'image/jpeg': 'jpg',
+      'image/png': 'png'
+    }
     const parts = file.name.split('.')
     const nameParts = parts.slice(0, parts.length - 1)
     const ext = parts[parts.length - 1]
@@ -155,16 +166,17 @@ class File {
     const hr = `${stamp.getHours()}`.padStart(2, '0')
     const mn = `${stamp.getMinutes()}`.padStart(2, '0')
     const sc = `${stamp.getSeconds()}`.padStart(2, '0')
-    const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
-    const thumbName = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.256x256.${ext}`
     const thumbMime = thumbnail ? 'image/jpeg' : file.mimetype
+    const thumbExt = exts[thumbMime] ? exts[thumbMime] : ext
+    const name = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.${ext}`
+    const thumbName = `uploads/${nameParts.join('.')}.${yr}${mo}${da}.${hr}${mn}${sc}.256x256.${thumbExt}`
 
     try {
       await File.uploadFile(name, file.data, file.mimetype)
-      const thumb = await File.uploadThumb(thumbnail, thumbName, file.data, thumbMime)
+      await File.uploadThumb(thumbnail, thumbName, file.data, thumbMime)
       return File.create({
         name,
-        thumbnail: thumb,
+        thumbnail: thumbName,
         mime: file.mimetype,
         size: file.size
       }, page, member, db)

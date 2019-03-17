@@ -19,6 +19,7 @@ class FormUpload extends React.Component {
     this.state = {
       isClient: false,
       file: null,
+      fileStr: null,
       thumbnail: null,
       type: get(this.props.page, 'type')
     }
@@ -41,7 +42,19 @@ class FormUpload extends React.Component {
    */
 
   handleTypeChange (type) {
+    if (this.props.update && typeof this.props.update === 'function') this.props.update({ type })
     this.setState({ type })
+  }
+
+  /**
+   * This method is passed to the `Thumbnailer` component and called any time
+   * that the thumbnail is updated.
+   * @param data {File} - The thumbnail File object.
+   */
+
+  async handleThumbnailChange (thumbnail) {
+    if (this.props.update && typeof this.props.update === 'function') this.props.update({ thumbnail })
+    this.setState({ thumbnail })
   }
 
   /**
@@ -50,11 +63,12 @@ class FormUpload extends React.Component {
    * @param file {File} - The file selected by the `DragDrop` component.
    */
 
-  dropFile (file) {
+  async dropFile (file) {
     const reader = new FileReader()
     reader.addEventListener('load', () => {
-      this.setState({ file: Object.assign({}, file, { data: reader.result }) })
-    }, false)
+      if (this.props.update && typeof this.props.update === 'function') this.props.update({ file })
+      this.setState({ file, fileStr: reader.result })
+    })
     reader.readAsDataURL(file)
   }
 
@@ -122,8 +136,8 @@ class FormUpload extends React.Component {
     if (this.state.file && this.state.type === 'Art') {
       return (
         <Thumbnailer
-          file={this.state.file}
-          onChange={thumbnail => this.setState({ thumbnail })} />
+          file={this.state.fileStr}
+          onChange={thumbnail => this.handleThumbnailChange(thumbnail)} />
       )
     } else {
       return null
@@ -147,7 +161,8 @@ class FormUpload extends React.Component {
 }
 
 FormUpload.propTypes = {
-  page: PropTypes.object
+  page: PropTypes.object,
+  update: PropTypes.func
 }
 
 export default FormUpload

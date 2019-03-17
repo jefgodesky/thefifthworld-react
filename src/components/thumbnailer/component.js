@@ -1,3 +1,5 @@
+/* global File */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactCrop from 'react-image-crop'
@@ -56,9 +58,10 @@ class Thumbnailer extends React.Component {
 
   async getThumbnail (crop, pixelCrop) {
     if (this.ref && crop.width && crop.height) {
-      const thumbnail = await this.generateThumbnail(this.ref, pixelCrop, 'thumbnail.jpg')
-      this.setState({ thumbnail })
-      if (this.props.onChange) this.props.onChange(thumbnail)
+      const res = await this.generateThumbnail(this.ref, pixelCrop, 'thumbnail.jpg')
+      const file = new File([ res.blob ], 'thumbnail.jpg', { type: 'image/jpeg' })
+      this.setState({ thumbnail: res.url })
+      if (this.props.onChange) this.props.onChange(file)
     }
   }
 
@@ -84,7 +87,7 @@ class Thumbnailer extends React.Component {
           blob.name = fileName
           window.URL.revokeObjectURL(this.thumbnailURL)
           this.thumbnailURL = window.URL.createObjectURL(blob)
-          resolve(this.thumbnailURL)
+          resolve({ blob, url: this.thumbnailURL })
         } else {
           reject(new Error('Canvas is empty'))
         }
@@ -111,13 +114,13 @@ class Thumbnailer extends React.Component {
       <div className='thumbnailer'>
         <label>Thumbnail</label>
         <ReactCrop
-          src={this.props.file && this.props.file.data ? this.props.file.data : null}
+          src={this.props.file ? this.props.file : ''}
           crop={this.state.crop}
           onImageLoaded={this.onImageLoaded}
           onComplete={this.onComplete}
           onChange={this.onChange} />
-        {this.state.thumbnail && (
-          <img src={this.state.thumbnail} alt='Thumbnail' className='thumbnail' />
+        {this.state.thumbnail && this.state.thumbnail.url && (
+          <img src={this.state.thumbnail.url} alt='Thumbnail' className='thumbnail' />
         )}
       </div>
     )
@@ -125,7 +128,7 @@ class Thumbnailer extends React.Component {
 }
 
 Thumbnailer.propTypes = {
-  file: PropTypes.object,
+  file: PropTypes.string,
   onChange: PropTypes.func
 }
 

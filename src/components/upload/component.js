@@ -29,7 +29,7 @@ export class Upload extends React.Component {
           <Header />
           <main className='wiki'>
             <Messages />
-            <h1>Create a New Page</h1>
+            <h1>Upload a File</h1>
             <Form upload />
           </main>
           <Footer />

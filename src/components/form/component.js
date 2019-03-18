@@ -27,6 +27,7 @@ export class Form extends React.Component {
     this.state = {
       isClient: false,
       showPath: true,
+      showSuggestions: false,
       file: null,
       thumbnail: null,
       parent: null,
@@ -62,26 +63,28 @@ export class Form extends React.Component {
    */
 
   async checkPath (path) {
-    const { protocol, hostname, port } = window.location
-    const host = port === undefined ? hostname : `${hostname}:${port}`
+    if (!this.state.showSuggestions) {
+      const { protocol, hostname, port } = window.location
+      const host = port === undefined ? hostname : `${hostname}:${port}`
 
-    try {
-      await axios.get(`${protocol}//${host}${path}`)
-      const error = {
-        field: 'path',
-        code: 'ER_DUP_ENTRY',
-        value: path
-      }
-      if (this.state.path && this.state.path !== '/') this.setState({ error })
-    } catch (err) {
-      const error = (err.response && err.response.status === 404)
-        ? false
-        : {
+      try {
+        await axios.get(`${protocol}//${host}${path}`)
+        const error = {
           field: 'path',
-          code: 'ER_INVALID',
-          value: this.state.path
+          code: 'ER_DUP_ENTRY',
+          value: path
         }
-      this.setState({ error })
+        if (this.state.path && this.state.path !== '/') this.setState({ error })
+      } catch (err) {
+        const error = (err.response && err.response.status === 404)
+          ? false
+          : {
+            field: 'path',
+            code: 'ER_INVALID',
+            value: this.state.path
+          }
+        this.setState({ error })
+      }
     }
   }
 
@@ -170,6 +173,14 @@ export class Form extends React.Component {
         value: res.path
       }
     })
+  }
+
+  changeSuggestions (suggestions) {
+    if (suggestions.length > 0) {
+      this.setState({ showSuggestions: true })
+    } else {
+      this.setState({ showSuggestions: false })
+    }
   }
 
   /**
@@ -341,6 +352,7 @@ export class Form extends React.Component {
           name='parent'
           note={`Should this page belong to a different page? ${parentInstructions}`}
           onChange={value => this.changeParent(value)}
+          onSuggest={suggestions => this.changeSuggestions(suggestions)}
           threshold={3}
           transform={this.transformParentSuggestions} />
         {upload}

@@ -24,6 +24,9 @@ import config from '../../../config'
  *                  value is changed, including both when a user types in a
  *                  value and when a suggestion is selected. The new value is
  *                  passed as an argument.
+ * onSuggest ...... (Function) This function is called any time that the list
+ *                  of suggestions is changed. The array of suggestions is
+ *                  passed as an argument.
  * threshold ...... (Integer) How many characters long should the input be
  *                  before suggestions are requested? For example, if you set
  *                  the threshold to 3, then a user typing `hello` will get
@@ -69,6 +72,7 @@ class Autocomplete extends React.Component {
   selectSuggestion (suggestion) {
     this.field.current.value = suggestion.value
     if (this.props.onChange) this.props.onChange(suggestion.value)
+    if (this.props.onSuggest) this.props.onSuggest([])
     this.setState({ suggestions: [] })
   }
 
@@ -137,8 +141,10 @@ class Autocomplete extends React.Component {
     if (value.length > 2) {
       const results = await axios.post(`${config.root}${this.props.endpoint}`, { str: value })
       const suggestions = this.props.transform(results.data)
+      if (this.props.onSuggest) this.props.onSuggest(suggestions)
       this.setState({ suggestions })
     } else {
+      if (this.props.onSuggest) this.props.onSuggest([])
       this.setState({ suggestions: [] })
     }
   }
@@ -156,6 +162,7 @@ class Autocomplete extends React.Component {
     if (value.length >= this.props.threshold) {
       this.autocomplete(value)
     } else {
+      if (this.props.onSuggest) this.props.onSuggest([])
       this.setState({ suggestions: [] })
     }
     if (this.props.onChange && typeof this.props.onChange === 'function') this.props.onChange(value)
@@ -194,6 +201,7 @@ Autocomplete.propTypes = {
   name: PropTypes.string,
   note: PropTypes.string,
   onChange: PropTypes.func,
+  onSuggest: PropTypes.func,
   threshold: PropTypes.number.isRequired,
   transform: PropTypes.func.isRequired
 }

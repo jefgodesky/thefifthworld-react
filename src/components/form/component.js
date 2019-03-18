@@ -126,9 +126,12 @@ export class Form extends React.Component {
   changeTitle (title) {
     this.setState({ title })
 
+    const slug = slugify(title)
     const path = this.state.showPath
       ? this.state.path
-      : `${this.state.parent}/${slugify(title)}`
+      : this.state.parent
+        ? `${this.state.parent}/${slug}`
+        : `/${slug}`
     this.setPath(path)
   }
 

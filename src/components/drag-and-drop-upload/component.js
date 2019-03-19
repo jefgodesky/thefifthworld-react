@@ -10,6 +10,7 @@ class DragDrop extends React.Component {
     super(props)
 
     this.state = {
+      name: null,
       dragging: false
     }
 
@@ -64,9 +65,10 @@ class DragDrop extends React.Component {
     event.preventDefault()
     event.stopPropagation()
 
-    this.setState({ dragging: false })
+    const file = event.dataTransfer.files[0]
+    this.setState({ dragging: false, name: file.name })
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
-      this.props.onDrop(event.dataTransfer.files[0])
+      this.props.onDrop(file)
     }
   }
 
@@ -85,6 +87,9 @@ class DragDrop extends React.Component {
    */
 
   render () {
+    const label = this.state.name
+      ? (<React.Fragment>Ready to upload <strong>{this.state.name}</strong></React.Fragment>)
+      : (<React.Fragment><strong>Choose a file</strong> or drag it here</React.Fragment>)
     const classes = [ 'droppable' ]
     if (this.state.dragging) classes.push('dragging')
 
@@ -96,7 +101,7 @@ class DragDrop extends React.Component {
         onDragOver={this.handleDragOver}
         onDrop={this.handleDrop}>
         <input type='file' name='file' id='file' onChange={this.handleSelect} />
-        <label htmlFor='file'><strong>Choose a file</strong> or drag it here</label>
+        <label htmlFor='file'>{label}</label>
       </div>
     )
   }

@@ -68,8 +68,8 @@ class FormUpload extends React.Component {
     reader.addEventListener('load', () => {
       let type = this.state.type
       const imgTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
-      if (this.props.update && typeof this.props.update === 'function') this.props.update({ file })
       if (file && file.type && file.type && imgTypes.indexOf(file.type) > -1) type = 'Art'
+      if (this.props.update && typeof this.props.update === 'function') this.props.update({ file, type })
       this.setState({ file, fileStr: reader.result, type })
     })
     reader.readAsDataURL(file)

@@ -114,7 +114,12 @@ class File {
     return new Promise((resolve, reject) => {
       const imageTypes = [ 'image/gif', 'image/jpeg', 'image/png' ]
       if (thumbnail) {
-        File.uploadFile(name, thumbnail.data, 'image/jpeg')
+        sharp(thumbnail.data)
+          .resize(256, 256)
+          .toBuffer()
+          .then(data => {
+            return File.uploadFile(name, data, 'image/jpeg')
+          })
           .then(data => {
             resolve(data)
           })

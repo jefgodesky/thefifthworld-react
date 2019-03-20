@@ -176,6 +176,13 @@ export class Form extends React.Component {
     })
   }
 
+  /**
+   * This method is called when the list of suggestions displayed by the
+   * `Autosuggest` component is changed.
+   * @param suggestions {Array} - The array of suggestions being displayed by
+   *   the `Autosuggest` component.
+   */
+
   changeSuggestions (suggestions) {
     if (suggestions.length > 0) {
       this.setState({ showSuggestions: true })

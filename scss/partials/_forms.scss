@@ -110,3 +110,19 @@ p.error {
   font-family: monospace;
   text-decoration: none;
 }
+
+.loading .actions button:not(.secondary) {
+  cursor: not-allowed;
+  opacity: .5;
+
+  &:before {
+    background: url(#{$images}/loading.gif) no-repeat center;
+    background-size: contain;
+    content: '';
+    display: inline-block;
+    height: 1em;
+    margin: 0 .5em 0 0;
+    vertical-align: middle;
+    width: 1em;
+  }
+}

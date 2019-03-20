@@ -26,6 +26,7 @@ export class Form extends React.Component {
 
     this.state = {
       isClient: false,
+      isLoading: false,
       showPath: true,
       showSuggestions: false,
       file: null,
@@ -281,29 +282,32 @@ export class Form extends React.Component {
     event.preventDefault()
     event.stopPropagation()
 
-    const { error, title, path, parent, type, body, file, thumbnail } = this.state
-    const existingPath = get(this.props, 'page.path')
-    const action = existingPath || '/new'
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true })
+      const { error, title, path, parent, type, body, file, thumbnail } = this.state
+      const existingPath = get(this.props, 'page.path')
+      const action = existingPath || '/new'
 
-    if (!error) {
-      try {
-        const headers = {
-          'Content-Type': 'multipart/form-data'
+      if (!error) {
+        try {
+          const headers = {
+            'Content-Type': 'multipart/form-data'
+          }
+
+          const data = new FormData()
+          data.set('title', title)
+          data.set('path', path)
+          data.set('parent', parent)
+          data.set('type', type)
+          data.set('body', body)
+          if (file) data.append('file', file, file.name)
+          if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
+
+          await axios.post(action, data, { headers })
+          window.location.href = `${config.root}${path}`
+        } catch (err) {
+          console.error(err)
         }
-
-        const data = new FormData()
-        data.set('title', title)
-        data.set('path', path)
-        data.set('parent', parent)
-        data.set('type', type)
-        data.set('body', body)
-        if (file) data.append('file', file, file.name)
-        if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
-
-        await axios.post(action, data, { headers })
-        window.location.href = `${config.root}${path}`
-      } catch (err) {
-        console.error(err)
       }
     }
   }
@@ -316,6 +320,8 @@ export class Form extends React.Component {
   render () {
     const path = get(this.props, 'page.path')
     const action = path || '/new'
+    const classes = [ 'wiki' ]
+    if (this.state.isLoading) classes.push('loading')
 
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
     const parentObject = lineage.length > 0 ? lineage[0] : null
@@ -332,7 +338,7 @@ export class Form extends React.Component {
       <form
         action={action}
         method='post'
-        className='wiki'
+        className={classes.join(' ')}
         encType='multipart/form-data'
         onSubmit={this.handleSubmit}>
         <label htmlFor='title'>Title</label>

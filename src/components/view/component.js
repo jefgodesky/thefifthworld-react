@@ -79,9 +79,9 @@ export class View extends React.Component {
 
     return (
       <React.Fragment>
+        {art}
         <h1>{this.props.page.title}</h1>
         {old}
-        {art}
         {file}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
         {options}

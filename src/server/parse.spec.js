@@ -110,7 +110,7 @@ describe('Wikitext parser', () => {
     const member = await Member.get(1, db)
     const parent = await Page.create({
       title: 'Parent',
-      body: 'This is a parent page.\n\n<children />'
+      body: 'This is a parent page.\n\n{{Children}}'
     }, member, 'Initial text', db)
     await Page.create({
       title: 'Child 1',
@@ -139,7 +139,7 @@ describe('Wikitext parser', () => {
     }, member, 'Initial text', db)
     const page = await Page.create({
       title: 'Child 1',
-      body: 'This is a child page. <children of="/parent" />',
+      body: 'This is a child page. {{Children of="/parent"}}',
       parent: '/parent'
     }, member, 'Initial text', db)
     await Page.create({
@@ -160,7 +160,7 @@ describe('Wikitext parser', () => {
     const member = await Member.get(1, db)
     const page = await Page.create({
       title: 'Parent',
-      body: 'This is a parent page.\n\n<children type="Match" />'
+      body: 'This is a parent page.\n\n{{Children type="Match"}}'
     }, member, 'Initial text', db)
     await Page.create({
       title: 'Child 1',

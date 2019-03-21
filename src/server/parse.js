@@ -189,7 +189,7 @@ const parseLinks = async (wikitext, db) => {
 }
 
 /**
- * Replaces <children /> in wikitext with a list of child pages.
+ * Replaces {{Children}} in wikitext with a list of child pages.
  * @param wikitext {string} - The wikitext to parse.
  * @param path {string} - The path of the page to that we will be looking for
  *   child pages relative to.
@@ -199,7 +199,7 @@ const parseLinks = async (wikitext, db) => {
  */
 
 const listChildren = async (wikitext, path, db) => {
-  const matches = wikitext.match(/<children(.*?)\/>/g)
+  const matches = wikitext.match(/{{Children(.*?)}}/g)
   if (matches) {
     for (let match of matches) {
       let type = null
@@ -220,7 +220,7 @@ const listChildren = async (wikitext, path, db) => {
       const markup = items
         ? items.join('')
         : false
-      wikitext = markup ? wikitext.replace(/<children(.*?)\/>/g, markup) : wikitext
+      wikitext = markup ? wikitext.replace(/{{Children(.*?)}}/g, markup) : wikitext
     }
   }
   return wikitext

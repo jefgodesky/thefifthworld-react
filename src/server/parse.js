@@ -47,9 +47,9 @@ const addTemplates = async (matches, db) => {
     const res = await db.run(`SELECT c.json AS json FROM changes c, pages p WHERE p.id=c.page AND p.type='Template' AND p.title='${name}' ORDER BY p.depth ASC, c.timestamp DESC;`)
     if (res.length > 0) {
       const full = JSON.parse(res[0].json).body.replace(/\[\[Type:(.*?)\]\]/g, '').trim()
-      const tagged = full.match(/<tpl>(.+?)<\/tpl>/g)
+      const tagged = full.match(/{{Template}}(.+?){{\/Template}}/g)
       if (tagged) {
-        let wikitext = tagged[0].substr(5, tagged[0].length - 11)
+        let wikitext = tagged[0].substr(12, tagged[0].length - 25)
         Object.keys(params).forEach(param => {
           const re = new RegExp(`{{{${param}}}}`, 'g')
           wikitext = wikitext.replace(re, params[param])
@@ -255,7 +255,7 @@ const doNotEmail = markup => {
 const parse = async (wikitext, db, path = null) => {
   if (wikitext) {
     // Removing stuff that shouldn't be rendered...
-    wikitext = wikitext.replace(/<tpl>(.*?)<\/tpl>/g, '') // Remove templates
+    wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
 
     // Stuff that we need to check with the database on...

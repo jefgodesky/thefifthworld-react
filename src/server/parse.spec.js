@@ -74,11 +74,11 @@ describe('Wikitext parser', () => {
 
     const member = await Member.get(1, db)
     await Page.create({
-      title: 'Template',
-      body: '<tpl>This is a template.</tpl> [[Type:Template]]'
+      title: 'Test Template',
+      body: '{{Template}}This is a template.{{/Template}} [[Type:Template]]'
     }, member, 'Initial text', db)
 
-    const actual = await parse('{{Template}} This is a page.', db)
+    const actual = await parse('{{Test Template}} This is a page.', db)
     const expected = '<p>This is a template. This is a page.</p>'
     expect(actual.trim()).toEqual(expected.trim())
   })
@@ -89,7 +89,7 @@ describe('Wikitext parser', () => {
     const member = await Member.get(1, db)
     await Page.create({
       title: 'Template',
-      body: '<tpl>This is a template. {{{p1}}} {{{p2}}}</tpl> [[Type:Template]]'
+      body: '{{Template}}This is a template. {{{p1}}} {{{p2}}}{{/Template}} [[Type:Template]]'
     }, member, 'Initial text', db)
 
     const actual = await parse('{{Template\n  p1="This is a parameter."\n  p2="This is also a parameter."\n}}\n\nThis is a page.', db)
@@ -99,7 +99,7 @@ describe('Wikitext parser', () => {
 
   it('doesn\'t render templates on their own pages', async () => {
     expect.assertions(1)
-    const actual = await parse('<tpl>This is a template.</tpl> This is documentation. [[Type:Template]]', db)
+    const actual = await parse('{{Template}}This is a template.{{/Template}} This is documentation. [[Type:Template]]', db)
     const expected = '<p>This is documentation.</p>'
     expect(actual.trim()).toEqual(expected.trim())
   })

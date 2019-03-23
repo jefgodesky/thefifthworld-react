@@ -7,6 +7,7 @@ import autoBind from 'react-autobind'
 import axios from 'axios'
 import { connect } from 'react-redux'
 
+import Page from '../../shared/models/page'
 import Autosuggest from '../autosuggest/component'
 import FormActions from '../form-actions/component'
 import FormUpload from '../form-upload/component'
@@ -291,7 +292,8 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { error, title, path, parent, type, body, file, thumbnail } = this.state
+      const { error, title, path, parent, body, file, thumbnail } = this.state
+      const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
 

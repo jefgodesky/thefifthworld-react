@@ -83,3 +83,7 @@ form.wiki {
     }
   }
 }
+
+.gallery {
+  @extend %unformatted-list;
+}

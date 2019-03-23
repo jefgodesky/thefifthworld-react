@@ -486,8 +486,8 @@ describe('Page', () => {
 
     const actual = await parent.getChildren(db)
     const expected = [
-      { path: '/parent/child-1', title: 'Child 1' },
-      { path: '/parent/child-2', title: 'Child 2' }
+      { path: '/parent/child-1', title: 'Child 1', thumbnail: null },
+      { path: '/parent/child-2', title: 'Child 2', thumbnail: null }
     ]
     expect(actual).toEqual(expected)
   })
@@ -512,7 +512,7 @@ describe('Page', () => {
 
     const actual = await parent.getChildren(db, 'Match')
     const expected = [
-      { path: '/parent/child-2', title: 'Child 2' }
+      { path: '/parent/child-2', title: 'Child 2', thumbnail: null }
     ]
     expect(actual).toEqual(expected)
   })

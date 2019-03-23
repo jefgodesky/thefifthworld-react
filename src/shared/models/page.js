@@ -333,9 +333,9 @@ class Page {
 
   async getChildren (db, type = null) {
     if (type) {
-      return db.run(`SELECT title, path FROM pages WHERE parent=${this.id} AND type='${type}';`)
+      return db.run(`SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id} AND p.type='${type}';`)
     } else {
-      return db.run(`SELECT title, path FROM pages WHERE parent=${this.id};`)
+      return db.run(`SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id};`)
     }
   }
 

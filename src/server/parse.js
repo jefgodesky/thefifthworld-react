@@ -1,6 +1,7 @@
 import marked from 'marked'
 import Page from '../shared/models/page'
 import slugify from '../shared/slugify'
+import config from '../../config'
 
 marked.setOptions({
   sanitize: true,
@@ -194,15 +195,20 @@ const parseLinks = async (wikitext, db) => {
  * @param path {string} - The path of the page to that we will be looking for
  *   child pages relative to.
  * @param db {Pool} - A database connection.
+ * @param gallery {boolean} - If `true`, it looks for the {{Gallery}} tag,
+ *   matches only pages of type 'Art', and displays thumbnails. If `false`,
+ *   the type parameter is used normally and a regular bulleted list of child
+ *   pages is returned (default: `false`).
  * @returns {Promise<*>} - A promise that resolves with the transformed
  *   wikitext, with <children /> replaced with a list of children.
  */
 
-const listChildren = async (wikitext, path, db) => {
-  const matches = wikitext.match(/{{Children(.*?)}}/g)
+const listChildren = async (wikitext, path, db, gallery = false) => {
+  const regex = gallery ? /{{Gallery(.*?)}}/g : /{{Children(.*?)}}/g
+  const matches = wikitext.match(regex)
   if (matches) {
     for (let match of matches) {
-      let type = null
+      let type = gallery ? 'Art' : null
       const props = match.match(/\s(.*?)="(.*?)"\/?/g)
       if (props) {
         for (let prop of props) {
@@ -214,13 +220,18 @@ const listChildren = async (wikitext, path, db) => {
 
       const parent = await Page.get(path, db)
       const children = parent ? await parent.getChildren(db, type) : false
-      const items = children
-        ? children.map(child => `\n* [[${child.path} ${child.title}]]`)
-        : false
-      const markup = items
-        ? items.join('')
-        : false
-      wikitext = markup ? wikitext.replace(/{{Children(.*?)}}/g, markup) : wikitext
+      const imgBase = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}`
+      let markup = ''
+      if (children && gallery) {
+        const items = children
+          .filter(child => (child.path && child.title && child.thumbnail))
+          .map(child => `<li><a href="${child.path}"><img src="${imgBase}/${child.thumbnail}" alt="${child.title}" /></a>`)
+        markup = items ? `<ul class="gallery">${items.join('')}</ul>` : ''
+      } else if (children) {
+        const items = children.map(child => `\n* [[${child.path} ${child.title}]]`)
+        markup = items ? items.join('') : ''
+      }
+      wikitext = wikitext.replace(regex, markup)
     }
   }
   return wikitext
@@ -260,6 +271,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Stuff that we need to check with the database on...
     wikitext = await parseTemplates(wikitext, db)
+    wikitext = await listChildren(wikitext, path, db, true)
     wikitext = await listChildren(wikitext, path, db)
     wikitext = await parseLinks(wikitext, db)
 

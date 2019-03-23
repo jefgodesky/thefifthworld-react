@@ -69,7 +69,9 @@ export class View extends React.Component {
 
     const art = this.props.page.file && this.props.page.type && (this.props.page.type === 'Art')
       ? (
-        <a href={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`}>
+        <a
+          href={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`}
+          className='art'>
           <img
             src={`https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${this.props.page.file.name}`}
             alt={this.props.page.title} />

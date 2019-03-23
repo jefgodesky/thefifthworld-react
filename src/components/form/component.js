@@ -32,7 +32,7 @@ export class Form extends React.Component {
       showSuggestions: false,
       file: null,
       thumbnail: null,
-      parent: null,
+      parent: undefined,
       type: get(this.props, 'page.type'),
       path: get(this.props, 'page.path'),
       title: get(this.props, 'page.title'),
@@ -50,8 +50,13 @@ export class Form extends React.Component {
    */
 
   componentDidMount () {
+    const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
+    const parentObject = lineage.length > 0 ? lineage[0] : null
+    const parent = parentObject ? parentObject.path : undefined
+
     this.setState({
       isClient: true,
+      parent,
       showPath: false
     })
   }
@@ -332,12 +337,9 @@ export class Form extends React.Component {
     const classes = [ 'wiki' ]
     if (this.state.isLoading) classes.push('loading')
 
-    const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
-    const parentObject = lineage.length > 0 ? lineage[0] : null
-    const parentPath = parentObject ? parentObject.path : ''
     const parentInstructions = this.state.isClient
-      ? 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
-      : 'If so, begin typing the title of that page and select it to make this page a child of that one.'
+      ? 'If so, begin typing the title of that page and select it to make this page a child of that one.'
+      : 'If so, provide the path for that page here, and we’ll create this page as a child of that one.'
 
     const upload = this.props.upload || (this.state.type === 'File') || (this.state.type === 'Art')
       ? (<FormUpload page={this.props.page} update={data => this.updateFiles(data)} />)
@@ -360,7 +362,7 @@ export class Form extends React.Component {
           placeholder='What do you want to write about?' />
         {this.renderPath()}
         <Autosuggest
-          defaultValue={parentPath}
+          defaultValue={this.state.parent}
           endpoint='/autocomplete/title'
           id='parent'
           label='Parent'

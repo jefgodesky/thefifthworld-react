@@ -18,7 +18,7 @@ describe('Form', () => {
 
     const expected = {
       title: undefined,
-      parent: '',
+      parent: undefined,
       body: undefined
     }
 

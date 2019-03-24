@@ -329,15 +329,29 @@ class Page {
    *   be returned. (Default: `null`)
    * @param limit {Number} - An integer to limit the number of responses to.
    *   (Default: `null`)
+   * @param order {string} - If provided the string `'oldest'`, returns pages
+   *   in order from oldest to newest (chronological order, as determined by
+   *   ID). If provided the string `'newest'`, returns pages in order from
+   *   newest to oldest (reverse chronological order, as determined by ID).
+   *   If provided the string `'alphabetical'`, returns the pages in
+   *   alphabetical order by title. (Default: `'alphabetical'`)
    * @returns {Promise<*>} - A promise that resolves with an array of all of
    *   the page's direct child pages.
    */
 
-  async getChildren (db, type = null, limit = null) {
+  async getChildren (db, type = null, limit = null, order = 'alphabetical') {
     const base = `SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id}`
     const typeQuery = type ? ` AND p.type='${type}'` : ''
     const limitQuery = limit ? ` LIMIT ${limit}` : ''
-    return db.run(`${base}${typeQuery}${limitQuery};`)
+
+    let orderQuery = ''
+    switch (order) {
+      case 'oldest': orderQuery = ' ORDER BY p.id ASC'; break
+      case 'newest': orderQuery = ' ORDER BY p.id DESC'; break
+      default: orderQuery = ' ORDER BY p.title ASC'; break
+    }
+
+    return db.run(`${base}${typeQuery}${orderQuery}${limitQuery};`)
   }
 
   /**

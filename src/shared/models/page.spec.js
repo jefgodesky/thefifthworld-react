@@ -541,6 +541,90 @@ describe('Page', () => {
     ]
     expect(actual).toEqual(expected)
   })
+
+  it('lists a page\'s children in chronological order', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parent.getChildren(db, null, null, 'oldest')
+    const expected = [
+      { path: '/parent/child-1', title: 'Child 1', thumbnail: null },
+      { path: '/parent/child-2', title: 'Child 2', thumbnail: null }
+    ]
+    expect(actual).toEqual(expected)
+  })
+
+  it('lists a page\'s children in reverse chronological order', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parent.getChildren(db, null, null, 'newest')
+    const expected = [
+      { path: '/parent/child-2', title: 'Child 2', thumbnail: null },
+      { path: '/parent/child-1', title: 'Child 1', thumbnail: null }
+    ]
+    expect(actual).toEqual(expected)
+  })
+
+  it('lists a page\'s children in alphabetical order', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Charlie',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parent.getChildren(db, null, null, 'alphabetical')
+    const expected = [
+      { path: '/parent/alice', title: 'Alice', thumbnail: null },
+      { path: '/parent/bob', title: 'Bob', thumbnail: null },
+      { path: '/parent/charlie', title: 'Charlie', thumbnail: null }
+    ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

@@ -210,6 +210,7 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
     for (let match of matches) {
       let type = gallery ? 'Art' : null
       let limit = null
+      let order = null
 
       const props = match.match(/\s(.*?)="(.*?)"\/?/g)
       if (props) {
@@ -219,6 +220,8 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
             path = pair[1].substr(1, pair[1].length - 2)
           } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'type') {
             type = pair[1].substr(1, pair[1].length - 2)
+          } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'order') {
+            order = pair[1].substr(1, pair[1].length - 2)
           } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'limit') {
             const val = parseInt(pair[1].substr(1, pair[1].length - 2))
             if (!isNaN(val)) limit = val
@@ -227,7 +230,7 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
       }
 
       const parent = await Page.get(path, db)
-      const children = parent ? await parent.getChildren(db, type, limit) : false
+      const children = parent ? await parent.getChildren(db, type, limit, order) : false
       const imgBase = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}`
       let markup = ''
       if (children && gallery) {

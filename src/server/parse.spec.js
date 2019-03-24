@@ -204,6 +204,86 @@ describe('Wikitext parser', () => {
     expect(actual.trim()).toEqual(expected.trim())
   })
 
+  it('lists children in chronological order', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    const page = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.\n\n{{Children order="oldest"}}'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const content = page.getContent()
+    const actual = content ? await parse(content.body, db, '/parent') : false
+    const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
+    expect(actual.trim()).toEqual(expected.trim())
+  })
+
+  it('lists children in reverse chronological order', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    const page = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.\n\n{{Children order="newest"}}'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const content = page.getContent()
+    const actual = content ? await parse(content.body, db, '/parent') : false
+    const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/child-2">Child 2</a></li>\n<li><a href="/parent/child-1">Child 1</a></li>\n</ul>'
+    expect(actual.trim()).toEqual(expected.trim())
+  })
+
+  it('lists children in alphabetical order', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    const page = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.\n\n{{Children order="alphabetical"}}'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Charlie',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const content = page.getContent()
+    const actual = content ? await parse(content.body, db, '/parent') : false
+    const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/alice">Alice</a></li>\n<li><a href="/parent/bob">Bob</a></li>\n<li><a href="/parent/charlie">Charlie</a></li>\n</ul>'
+    expect(actual.trim()).toEqual(expected.trim())
+  })
+
   it('sanitizes HTML', async () => {
     expect.assertions(1)
     const actual = await parse('<script></script><div id="my-div"></div><span style="color: red;"></span>')

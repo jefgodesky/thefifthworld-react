@@ -210,7 +210,7 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
     for (let match of matches) {
       let type = gallery ? 'Art' : null
       let limit = null
-      let order = null
+      let order = gallery ? 'newest' : null
 
       const props = match.match(/\s(.*?)="(.*?)"\/?/g)
       if (props) {

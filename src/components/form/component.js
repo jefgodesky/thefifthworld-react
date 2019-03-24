@@ -37,6 +37,7 @@ export class Form extends React.Component {
       path: get(this.props, 'page.path'),
       title: get(this.props, 'page.title'),
       body: get(this.props, 'page.curr.body'),
+      message: '',
       error: this.props.error
     }
 
@@ -118,7 +119,12 @@ export class Form extends React.Component {
             Message
             <p className='note'>Briefly describe the change you’ve made.</p>
           </label>
-          <input type='text' name='message' id='message' />
+          <input
+            type='text'
+            name='message'
+            id='message'
+            defaultValue={this.state.message}
+            onChange={event => this.setState({ message: event.target.value })} />
         </React.Fragment>
       )
     } else {
@@ -297,7 +303,7 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { error, title, path, parent, body, file, thumbnail } = this.state
+      const { error, title, path, parent, body, file, thumbnail, message } = this.state
       const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
@@ -314,6 +320,7 @@ export class Form extends React.Component {
           data.set('parent', parent)
           data.set('type', type)
           data.set('body', body)
+          data.set('message', message)
           if (file) data.append('file', file, file.name)
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
 

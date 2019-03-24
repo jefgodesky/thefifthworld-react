@@ -179,6 +179,31 @@ describe('Wikitext parser', () => {
     expect(actual.trim()).toEqual(expected.trim())
   })
 
+  it('limits list of children', async () => {
+    expect.assertions(1)
+
+    const member = await Member.get(1, db)
+    const page = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.\n\n{{Children limit="1"}}'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const content = page.getContent()
+    const actual = content ? await parse(content.body, db, '/parent') : false
+    const expected = '<p>This is a parent page.</p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n</ul>'
+    expect(actual.trim()).toEqual(expected.trim())
+  })
+
   it('sanitizes HTML', async () => {
     expect.assertions(1)
     const actual = await parse('<script></script><div id="my-div"></div><span style="color: red;"></span>')

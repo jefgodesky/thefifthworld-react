@@ -326,17 +326,18 @@ class Page {
    * Returns the page's direct child pages.
    * @param db {Pool} - A database connection.
    * @param type {string} - If provided, only child pages of this type will
-   *   be returned.
+   *   be returned. (Default: `null`)
+   * @param limit {Number} - An integer to limit the number of responses to.
+   *   (Default: `null`)
    * @returns {Promise<*>} - A promise that resolves with an array of all of
    *   the page's direct child pages.
    */
 
-  async getChildren (db, type = null) {
-    if (type) {
-      return db.run(`SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id} AND p.type='${type}';`)
-    } else {
-      return db.run(`SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id};`)
-    }
+  async getChildren (db, type = null, limit = null) {
+    const base = `SELECT p.title, p.path, f.thumbnail FROM pages p LEFT JOIN files f ON f.page = p.id WHERE p.parent=${this.id}`
+    const typeQuery = type ? ` AND p.type='${type}'` : ''
+    const limitQuery = limit ? ` LIMIT ${limit}` : ''
+    return db.run(`${base}${typeQuery}${limitQuery};`)
   }
 
   /**

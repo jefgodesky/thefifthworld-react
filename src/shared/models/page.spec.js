@@ -516,6 +516,31 @@ describe('Page', () => {
     ]
     expect(actual).toEqual(expected)
   })
+
+  it('limits a list of a page\'s children', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const parent = await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 1',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Child 2',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+
+    const actual = await parent.getChildren(db, null, 1)
+    const expected = [
+      { path: '/parent/child-1', title: 'Child 1', thumbnail: null }
+    ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

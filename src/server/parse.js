@@ -6,7 +6,7 @@ import config from '../../config'
 marked.setOptions({
   sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'strong em ul ol li a pre code img div ins del sup sub table thead tbody tfoot blockquote dl dt dd tr td th span strike'.split(' ')
+    const allowedHTML = 'strong em ul ol li a pre code img div ins del sup sub section table thead tbody tfoot blockquote dl dt dd tr td th span strike'.split(' ')
     const inside = markup.replace(/<\/?(.*?)>/g, '$1').split(' ')
     return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
   },
@@ -242,8 +242,28 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
         const items = children.map(child => `\n* [[${child.path} ${child.title}]]`)
         markup = items ? items.join('') : ''
       }
-      wikitext = wikitext.replace(regex, markup)
+      wikitext = wikitext.replace(match, markup)
     }
+  }
+  return wikitext
+}
+
+/**
+ * Searches wikitext for incidents of the string `{{Artists}}`. If any are
+ * found, obtains a list of all pages with `type` equal to `Artist` and lists
+ * them along with a `{{Gallery}}` template limited to four of their children.
+ * @param wikitext {string} - The wikitext string to parse.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<*>} - A promise that resolves with the processed wikitext.
+ */
+
+const listArtists = async (wikitext, db) => {
+  const matches = wikitext.match(/{{Artists}}/g)
+  if (matches) {
+    const artists = await db.run('SELECT title, path FROM pages WHERE type=\'Artist\' ORDER BY title ASC;')
+    const list = artists.map(artist => `<section class="artist"><h2><a href="${artist.path}">${artist.title}</a></h2>\n{{Gallery of="${artist.path}" limit="4"}}\n</section>`)
+    const markup = await listChildren(list.join('\n'), '/art', db, true)
+    wikitext = wikitext.replace(/{{Artists}}/gi, markup)
   }
   return wikitext
 }
@@ -288,6 +308,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
+    wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
     return wikitext
   } else {

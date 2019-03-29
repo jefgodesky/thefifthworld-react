@@ -190,6 +190,60 @@ const parseLinks = async (wikitext, db) => {
 }
 
 /**
+ * Parses {{Download}} templates to show file downloads.
+ * @param wikitext {string} - The wikitest to parse.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<void>} - A promise that resolves with the wikitext, with
+ *   each instance of {{Download}} replaced with an appropriate link.
+ */
+
+const parseDownload = async (wikitext, db) => {
+  const matches = wikitext.match(/{{Download(.*?)}}/g)
+  if (matches) {
+    for (let match of matches) {
+      let file = null
+      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
+      if (props) {
+        for (let prop of props) {
+          const pair = prop.trim().split('=')
+          if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'file') {
+            file = pair[1].substr(1, pair[1].length - 2)
+          }
+        }
+      }
+      if (file) {
+        const pages = await Page.getPaths([ file ], db)
+        if (pages) {
+          const page = await Page.get(pages[0].path, db)
+          const file = page.file
+          let filesize = '0 B'
+          if (file.size && file.size < 1000) {
+            filesize = `${file.size} B`
+          } else if (file.size && file.size < 1000000) {
+            const kb = file.size / 1000
+            filesize = `${Math.round(kb * 10) / 10} kB`
+          } else if (file.size && file.size < 1000000000) {
+            const mb = file.size / 1000000
+            filesize = `${Math.round(mb * 10) / 10} MB`
+          } else if (file.size && file.size) {
+            const gb = file.size / 1000000000
+            filesize = `${Math.round(gb * 10) / 10} GB`
+          }
+
+          const url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${page.file.name}`
+          const name = `<span class="label">${page.file.name}</span>`
+          const size = `<span class="details">${page.file.mime}; ${filesize}</span>`
+          const markup = `<a href="${url}" class="download">${name}${size}</a>`
+
+          wikitext = wikitext.replace(match, markup)
+        }
+      }
+    }
+  }
+  return wikitext
+}
+
+/**
  * Replaces {{Children}} in wikitext with a list of child pages.
  * @param wikitext {string} - The wikitext to parse.
  * @param path {string} - The path of the page to that we will be looking for
@@ -302,6 +356,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Stuff that we need to check with the database on...
     wikitext = await parseTemplates(wikitext, db)
+    wikitext = await parseDownload(wikitext, db)
     wikitext = await listChildren(wikitext, path, db, true)
     wikitext = await listChildren(wikitext, path, db)
     wikitext = await parseLinks(wikitext, db)

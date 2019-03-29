@@ -1,6 +1,7 @@
 import marked from 'marked'
 import Page from '../shared/models/page'
 import slugify from '../shared/slugify'
+import { getFileSizeStr } from '../shared/utils'
 import config from '../../config'
 
 marked.setOptions({
@@ -215,26 +216,11 @@ const parseDownload = async (wikitext, db) => {
         const pages = await Page.getPaths([ file ], db)
         if (pages) {
           const page = await Page.get(pages[0].path, db)
-          const file = page.file
-          let filesize = '0 B'
-          if (file.size && file.size < 1000) {
-            filesize = `${file.size} B`
-          } else if (file.size && file.size < 1000000) {
-            const kb = file.size / 1000
-            filesize = `${Math.round(kb * 10) / 10} kB`
-          } else if (file.size && file.size < 1000000000) {
-            const mb = file.size / 1000000
-            filesize = `${Math.round(mb * 10) / 10} MB`
-          } else if (file.size && file.size) {
-            const gb = file.size / 1000000000
-            filesize = `${Math.round(gb * 10) / 10} GB`
-          }
-
+          const filesize = getFileSizeStr(page.file.size)
           const url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${page.file.name}`
           const name = `<span class="label">${page.file.name}</span>`
           const size = `<span class="details">${page.file.mime}; ${filesize}</span>`
           const markup = `<a href="${url}" class="download">${name}${size}</a>`
-
           wikitext = wikitext.replace(match, markup)
         }
       }

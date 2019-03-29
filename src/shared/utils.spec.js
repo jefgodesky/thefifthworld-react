@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { checkExists, get, formatDate, dedupe } from './utils'
+import { checkExists, get, formatDate, dedupe, getFileSizeStr } from './utils'
 
 describe('checkExists', () => {
   it('can tell if a chain of properties exist', () => {
@@ -58,6 +58,15 @@ describe('dedupe', () => {
       deduped: [ 1, 2, 3 ]
     }
     const actual = { orig, deduped }
+    expect(actual).toEqual(expected)
+  })
+})
+
+describe('getFileSizeStr', () => {
+  it('describes a file size', () => {
+    const sizes = [ 900, 900000, 900000000, 1100000000 ]
+    const actual = sizes.map(size => getFileSizeStr(size))
+    const expected = [ '900 B', '900 kB', '900 MB', '1.1 GB' ]
     expect(actual).toEqual(expected)
   })
 })

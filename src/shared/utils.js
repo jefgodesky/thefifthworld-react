@@ -68,9 +68,34 @@ const dedupe = arr => {
   return [ ...new Set(arr) ]
 }
 
+/**
+ * Returns a string expressing the size of a file.
+ * @param size {int} - The size of the file in bytes.
+ * @returns {string} - The size of the file expressed as a string (e.g.,
+ *   3 MB or 72 kB).
+ */
+
+const getFileSizeStr = size => {
+  if (size < 1000) {
+    return `${size} B`
+  } else if (size < 1000000) {
+    const kb = size / 1000
+    return `${Math.round(kb * 10) / 10} kB`
+  } else if (size < 1000000000) {
+    const mb = size / 1000000
+    return `${Math.round(mb * 10) / 10} MB`
+  } else if (size) {
+    const gb = size / 1000000000
+    return `${Math.round(gb * 10) / 10} GB`
+  } else {
+    return '0 B'
+  }
+}
+
 export {
   checkExists,
   get,
   formatDate,
-  dedupe
+  dedupe,
+  getFileSizeStr
 }

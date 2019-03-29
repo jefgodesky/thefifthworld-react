@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import config from '../../../config'
 import { canWrite } from '../../shared/permissions'
 import renderOptions from '../../shared/options'
-import { formatDate } from '../../shared/utils'
+import { formatDate, getFileSizeStr } from '../../shared/utils'
 
 /**
  * This component handles viewing a page.
@@ -44,19 +44,9 @@ export class View extends React.Component {
       )
       : null
 
-    let filesize = '0 B'
-    if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000) {
-      filesize = `${this.props.page.file.size} B`
-    } else if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000000) {
-      const kb = this.props.page.file.size / 1000
-      filesize = `${Math.round(kb * 10) / 10} kB`
-    } else if (this.props.page && this.props.page.file && this.props.page.file.size && this.props.page.file.size < 1000000000) {
-      const mb = this.props.page.file.size / 1000000
-      filesize = `${Math.round(mb * 10) / 10} MB`
-    } else if (this.props.page && this.props.page.file && this.props.page.file.size) {
-      const gb = this.props.page.file.size / 1000000000
-      filesize = `${Math.round(gb * 10) / 10} GB`
-    }
+    const filesize = this.props.page && this.props.page.file && this.props.page.file.size
+      ? getFileSizeStr(this.props.page.file.size)
+      : '0 B'
 
     const file = this.props.page.file && this.props.page.type && (this.props.page.type === 'File')
       ? (

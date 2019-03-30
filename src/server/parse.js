@@ -17,6 +17,16 @@ marked.setOptions({
 })
 
 /**
+ * Returns the absolute URL for an asset on Amazon AWS S3.
+ * @param path {string} - The relative path of the asset.
+ * @returns {string} - The absolute path for an asset on Amazon AWS S3.
+ */
+
+const getURL = path => {
+  return `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${path}`
+}
+
+/**
  * Fetches templates from the database and returns an array of objects.
  * @param matches {Array} - The results of a regex match searching for template
  *   calls in a piece of wikitext.
@@ -254,7 +264,7 @@ const parseDownload = async (wikitext, db) => {
   const downloads = await matchFiles(wikitext, /{{Download(.*?)}}/g, 'file', db)
   for (let download of downloads) {
     const filesize = getFileSizeStr(download.page.file.size)
-    const url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${download.page.file.name}`
+    const url = getURL(download.page.file.name)
     const name = `<span class="label">${download.page.file.name}</span>`
     const size = `<span class="details">${download.page.file.mime}; ${filesize}</span>`
     const markup = `<a href="${url}" class="download">${name}${size}</a>`
@@ -305,12 +315,11 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
 
       const parent = await Page.get(path, db)
       const children = parent ? await parent.getChildren(db, type, limit, order) : false
-      const imgBase = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}`
       let markup = ''
       if (children && gallery) {
         const items = children
           .filter(child => (child.path && child.title && child.thumbnail))
-          .map(child => `<li><a href="${child.path}"><img src="${imgBase}/${child.thumbnail}" alt="${child.title}" /></a>`)
+          .map(child => `<li><a href="${child.path}"><img src="${getURL(child.thumbnail)}" alt="${child.title}" /></a>`)
         markup = items ? `<ul class="gallery">${items.join('')}</ul>` : ''
       } else if (children) {
         const items = children.map(child => `\n* [[${child.path} ${child.title}]]`)

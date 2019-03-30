@@ -298,7 +298,8 @@ const parseArt = async (wikitext, db) => {
     const img = image.props.thumbnail && image.page.file.thumbnail
       ? `<img src="${getURL(image.page.file.thumbnail)}" alt="${image.props.caption}" />`
       : `<img src="${getURL(image.page.file.name)}" alt="${image.props.caption}" />`
-    const markup = `<figure>${img}${caption}</figure>`
+    const link = `<a href="${image.page.path}">${img}</a>`
+    const markup = `<figure>${link}${caption}</figure>`
     wikitext = wikitext.replace(image.match, markup)
   }
   return wikitext

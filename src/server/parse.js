@@ -191,6 +191,58 @@ const parseLinks = async (wikitext, db) => {
 }
 
 /**
+ * This method looks for tags in wikitext that refer to a page (per the `Page`
+ * model's ``getPaths` method, which matches either names or paths) and
+ * performs some operation (`op`) upon them.
+ * @param wikitext {string} - The wikitext to parse.
+ * @param regex {RegExp} - A regular expression defining what tag to find.
+ * @param id {string} - The prop or attribute used by the tag to identify the
+ *   intended page (e.g., in `{{Download file="Name"}}`, the `id` would be
+ *   `file`.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<void>} - A promise that resolves with an array of objects.
+ *   Each object in the array corresponds to one of the tags matched in the
+ *   wikitext and includes three properties:
+ *     * `page`:  The `Page` instance identified by the tag.
+ *     * `match`: The string matched by the regular expression. Typically this
+ *                is the string you want to replace.
+ *     * `props`: An object representing all of the other properties or
+ *                attributes defined by the tag.
+ */
+
+const matchFiles = async (wikitext, regex, id, db) => {
+  const res = []
+  const matches = wikitext.match(regex)
+  if (matches) {
+    for (let match of matches) {
+      let file = null
+      const vals = {}
+
+      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
+      if (props) {
+        for (let prop of props) {
+          const pair = prop.trim().split('=')
+          if (Array.isArray(pair) && pair.length > 1 && pair[0] === id) {
+            file = pair[1].substr(1, pair[1].length - 2)
+          } else if (Array.isArray(pair) && pair.length > 1) {
+            vals[pair[0]] = pair[1]
+          }
+        }
+      }
+
+      if (file) {
+        const pages = await Page.getPaths([ file ], db)
+        if (pages) {
+          const page = await Page.get(pages[0].path, db)
+          res.push({ page, match, props: vals })
+        }
+      }
+    }
+  }
+  return res
+}
+
+/**
  * Parses {{Download}} templates to show file downloads.
  * @param wikitext {string} - The wikitest to parse.
  * @param db {Pool} - A database connection.
@@ -199,32 +251,14 @@ const parseLinks = async (wikitext, db) => {
  */
 
 const parseDownload = async (wikitext, db) => {
-  const matches = wikitext.match(/{{Download(.*?)}}/g)
-  if (matches) {
-    for (let match of matches) {
-      let file = null
-      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
-      if (props) {
-        for (let prop of props) {
-          const pair = prop.trim().split('=')
-          if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'file') {
-            file = pair[1].substr(1, pair[1].length - 2)
-          }
-        }
-      }
-      if (file) {
-        const pages = await Page.getPaths([ file ], db)
-        if (pages) {
-          const page = await Page.get(pages[0].path, db)
-          const filesize = getFileSizeStr(page.file.size)
-          const url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${page.file.name}`
-          const name = `<span class="label">${page.file.name}</span>`
-          const size = `<span class="details">${page.file.mime}; ${filesize}</span>`
-          const markup = `<a href="${url}" class="download">${name}${size}</a>`
-          wikitext = wikitext.replace(match, markup)
-        }
-      }
-    }
+  const downloads = await matchFiles(wikitext, /{{Download(.*?)}}/g, 'file', db)
+  for (let download of downloads) {
+    const filesize = getFileSizeStr(download.page.file.size)
+    const url = `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${download.page.file.name}`
+    const name = `<span class="label">${download.page.file.name}</span>`
+    const size = `<span class="details">${download.page.file.mime}; ${filesize}</span>`
+    const markup = `<a href="${url}" class="download">${name}${size}</a>`
+    wikitext = wikitext.replace(download.match, markup)
   }
   return wikitext
 }

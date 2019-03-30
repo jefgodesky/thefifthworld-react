@@ -7,7 +7,7 @@ import config from '../../config'
 marked.setOptions({
   sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'strong em ul ol li a pre code img div ins del sup sub section table thead tbody tfoot blockquote dl dt dd tr td th span strike'.split(' ')
+    const allowedHTML = 'pre code div ins del sup sub section blockquote dl dt dd'.split(' ')
     const inside = markup.replace(/<\/?(.*?)>/g, '$1').split(' ')
     return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
   },
@@ -24,6 +24,30 @@ marked.setOptions({
 
 const getURL = path => {
   return `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/${path}`
+}
+
+/**
+ * Parses the properties or attributes used in a tag into an object, where each
+ * attribute is a property, and the value of that attribute is the value of
+ * that property.
+ * @param tag {string} - The tag string.
+ * @returns {Object} - An object representing the tag's properties.
+ */
+
+const getProps = tag => {
+  const matches = tag.match(/\s(.*?)=”(.*?)”\/?/g)
+  const props = {}
+  if (matches) {
+    for (let match of matches) {
+      const pair = match.trim().split('=')
+      if (Array.isArray(pair) && pair.length > 1) {
+        const key = pair[0]
+        const val = pair[1].substr(1, pair[1].length - 2)
+        props[key] = val
+      }
+    }
+  }
+  return props
 }
 
 /**
@@ -225,26 +249,12 @@ const matchFiles = async (wikitext, regex, id, db) => {
   const matches = wikitext.match(regex)
   if (matches) {
     for (let match of matches) {
-      let file = null
-      const vals = {}
-
-      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
-      if (props) {
-        for (let prop of props) {
-          const pair = prop.trim().split('=')
-          if (Array.isArray(pair) && pair.length > 1 && pair[0] === id) {
-            file = pair[1].substr(1, pair[1].length - 2)
-          } else if (Array.isArray(pair) && pair.length > 1) {
-            vals[pair[0]] = pair[1]
-          }
-        }
-      }
-
-      if (file) {
-        const pages = await Page.getPaths([ file ], db)
+      const props = getProps(match)
+      if (props[id]) {
+        const pages = await Page.getPaths([ props[id] ], db)
         if (pages) {
           const page = await Page.get(pages[0].path, db)
-          res.push({ page, match, props: vals })
+          res.push({ page, match, props })
         }
       }
     }
@@ -261,7 +271,7 @@ const matchFiles = async (wikitext, regex, id, db) => {
  */
 
 const parseDownload = async (wikitext, db) => {
-  const downloads = await matchFiles(wikitext, /{{Download(.*?)}}/g, 'file', db)
+  const downloads = await matchFiles(wikitext, /{{Download(}}|\s(.*?)}})/g, 'file', db)
   for (let download of downloads) {
     const filesize = getFileSizeStr(download.page.file.size)
     const url = getURL(download.page.file.name)
@@ -269,6 +279,25 @@ const parseDownload = async (wikitext, db) => {
     const size = `<span class="details">${download.page.file.mime}; ${filesize}</span>`
     const markup = `<a href="${url}" class="download">${name}${size}</a>`
     wikitext = wikitext.replace(download.match, markup)
+  }
+  return wikitext
+}
+
+/**
+ * Parses {{Art}} templates to show images.
+ * @param wikitext {string} - The wikitest to parse.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<void>} - A promise that resolves with the wikitext, with
+ *   each instance of {{Art}} replaced with an appropriate figure and image.
+ */
+
+const parseArt = async (wikitext, db) => {
+  const images = await matchFiles(wikitext, /{{Art(}}|\s(.*?)}})/g, 'src', db)
+  for (let image of images) {
+    const caption = `<figcaption>${image.props.caption}</figcaption>`
+    const img = `<img src="${getURL(image.page.file.name)}" alt="${image.props.caption}" />`
+    const markup = `<figure>${img}${caption}</figure>`
+    wikitext = wikitext.replace(image.match, markup)
   }
   return wikitext
 }
@@ -292,26 +321,11 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
   const matches = wikitext.match(regex)
   if (matches) {
     for (let match of matches) {
-      let type = gallery ? 'Art' : null
-      let limit = null
-      let order = gallery ? 'newest' : null
-
-      const props = match.match(/\s(.*?)="(.*?)"\/?/g)
-      if (props) {
-        for (let prop of props) {
-          const pair = prop.trim().split('=')
-          if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'of') {
-            path = pair[1].substr(1, pair[1].length - 2)
-          } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'type') {
-            type = pair[1].substr(1, pair[1].length - 2)
-          } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'order') {
-            order = pair[1].substr(1, pair[1].length - 2)
-          } else if (Array.isArray(pair) && pair.length > 0 && pair[0] === 'limit') {
-            const val = parseInt(pair[1].substr(1, pair[1].length - 2))
-            if (!isNaN(val)) limit = val
-          }
-        }
-      }
+      const props = getProps(match)
+      const type = props.type ? props.type : gallery ? 'Art' : null
+      const order = props.order ? props.order : gallery ? 'newest' : null
+      const limit = (props.limit && !isNaN(parseInt(props.limit))) ? parseInt(props.limit) : null
+      if (props.of) path = props.of
 
       const parent = await Page.get(path, db)
       const children = parent ? await parent.getChildren(db, type, limit, order) : false
@@ -320,12 +334,16 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
         const items = children
           .filter(child => (child.path && child.title && child.thumbnail))
           .map(child => `<li><a href="${child.path}"><img src="${getURL(child.thumbnail)}" alt="${child.title}" /></a>`)
-        markup = items ? `<ul class="gallery">${items.join('')}</ul>` : ''
+        markup = items ? `<ul class="gallery">\n${items.join('\n')}\n</ul>` : ''
       } else if (children) {
-        const items = children.map(child => `\n* [[${child.path} ${child.title}]]`)
-        markup = items ? items.join('') : ''
+        const items = children.map(child => `<li><a href="${child.path}">${child.title}</a></li>`)
+        markup = items ? `<ul>\n${items.join('\n')}\n</ul>` : ''
       }
-      wikitext = wikitext.replace(match, markup)
+
+      // Replace the match, unless it's wrapped in <p> tags, in which case,
+      // replace those, too.
+      const r = wikitext.match(`<p>${match}</p>`) ? `<p>${match}</p>` : match
+      wikitext = wikitext.replace(r, markup)
     }
   }
   return wikitext
@@ -383,17 +401,22 @@ const parse = async (wikitext, db, path = null) => {
     wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
 
-    // Stuff that we need to check with the database on...
+    // Render templates.
     wikitext = await parseTemplates(wikitext, db)
-    wikitext = await parseDownload(wikitext, db)
-    wikitext = await listChildren(wikitext, path, db, true)
-    wikitext = await listChildren(wikitext, path, db)
-    wikitext = await parseLinks(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
     wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
+
+    // More stuff that we need to check with the database on, after Markdown
+    // has been rendered.
+    wikitext = await parseDownload(wikitext, db)
+    wikitext = await parseArt(wikitext, db)
+    wikitext = await listChildren(wikitext, path, db, true)
+    wikitext = await listChildren(wikitext, path, db)
+    wikitext = await parseLinks(wikitext, db)
+
     return wikitext
   } else {
     return false

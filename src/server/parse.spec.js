@@ -139,7 +139,7 @@ describe('Wikitext parser', () => {
     }, member, 'Initial text', db)
     const page = await Page.create({
       title: 'Child 1',
-      body: 'This is a child page. {{Children of="/parent"}}',
+      body: 'This is a child page.\n\n{{Children of="/parent"}}',
       parent: '/parent'
     }, member, 'Initial text', db)
     await Page.create({
@@ -150,7 +150,7 @@ describe('Wikitext parser', () => {
 
     const content = page.getContent()
     const actual = content ? await parse(content.body, db, '/parent/child-1') : false
-    const expected = '<p>This is a child page. </p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
+    const expected = '<p>This is a child page.</p>\n<ul>\n<li><a href="/parent/child-1">Child 1</a></li>\n<li><a href="/parent/child-2">Child 2</a></li>\n</ul>'
     expect(actual.trim()).toEqual(expected.trim())
   })
 
@@ -287,7 +287,7 @@ describe('Wikitext parser', () => {
   it('sanitizes HTML', async () => {
     expect.assertions(1)
     const actual = await parse('<script></script><div id="my-div"></div><span style="color: red;"></span>')
-    const expected = '<p><div id="my-div"></div><span style="color: red;"></span></p>'
+    const expected = '<p><div id="my-div"></div></p>'
     expect(actual.trim()).toEqual(expected.trim())
   })
 })

@@ -295,7 +295,9 @@ const parseArt = async (wikitext, db) => {
   const images = await matchFiles(wikitext, /{{Art(}}|\s(.*?)}})/g, 'src', db)
   for (let image of images) {
     const caption = `<figcaption>${image.props.caption}</figcaption>`
-    const img = `<img src="${getURL(image.page.file.name)}" alt="${image.props.caption}" />`
+    const img = image.props.thumbnail && image.page.file.thumbnail
+      ? `<img src="${getURL(image.page.file.thumbnail)}" alt="${image.props.caption}" />`
+      : `<img src="${getURL(image.page.file.name)}" alt="${image.props.caption}" />`
     const markup = `<figure>${img}${caption}</figure>`
     wikitext = wikitext.replace(image.match, markup)
   }

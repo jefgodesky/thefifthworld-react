@@ -40,6 +40,66 @@ class Page {
   }
 
   /**
+   * Returns `true` if the path given matches the pattern for any of the
+   * reserved paths (paths that are used internally, and so cannot be used for
+   * any member-created pages). Returns `false` if the path does not match any
+   * of those patterns (meaning it's safe to use).
+   * @param path {string} - The path to check.
+   * @returns {boolean} - A boolean indicating if the path matches a reserved
+   *   pattern (`true`), or if it is safe to use (`false`).
+   */
+
+  static isReservedPath (path) {
+    let reserved = false
+    const reservedPaths = [
+      /^\/login(\/(.*))?$/g,
+      /^\/login-route(\/(.*))?$/g,
+      /^\/logout(\/(.*))?$/g,
+      /^\/connect(\/(.*))?$/g,
+      /^\/disconnect(\/(.*))?$/g,
+      /^\/member(\/(.*))?$/g,
+      /^\/welcome(\/(.*))?$/g,
+      /^\/invite(\/(.*))?$/g,
+      /^\/join(\/(.*))?$/g,
+      /^\/forgot-passphrase(\/(.*))?$/g,
+      /^\/dashboard(\/(.*))?$/g,
+      /^\/new(\/(.*))?$/g,
+      /^\/upload(\/(.*))?$/g,
+      /^\/autocomplete(\/(.*))?$/g
+    ]
+
+    for (let pattern of reservedPaths) {
+      if (path.match(pattern)) reserved = true
+    }
+    return reserved
+  }
+
+  /**
+   * If passed the type and title to be used when saving a page, this method
+   * returns `false` if the page is not a template or if it is a template with
+   * a valid name (one that is not the name of an internal template). It will
+   * return `true` if the type argument is equal to the string `'Template'` and
+   * the title argument is one of the reserved, internal template names
+   * (meaning that the page is not valid).
+   * @param type {string} - The type of the page.
+   * @param title {string} - The title of the page.
+   * @returns {boolean} - `true` if the given arguments indicate that the page
+   *   will conflict with reserved, internal templates, or `false` if not.
+   */
+
+  static isReservedTemplate (type, title) {
+    const reservedTemplates = [
+      'Template',
+      'Children',
+      'Gallery',
+      'Artists',
+      'Art',
+      'Download'
+    ]
+    return (type === 'Template' && reservedTemplates.indexOf(title) > -1)
+  }
+
+  /**
    * Returns the value of the first [[Type:X]] tag in the string provided, or
    * null if no such tag is found.
    * @param str {string} - The string to find the type tags in.
@@ -106,13 +166,19 @@ class Page {
     const type = data.type ? data.type : Page.getType(data.body)
 
     // Add to database
-    try {
-      const res = await db.run(`INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`)
-      const id = res.insertId
-      await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-      return Page.get(id, db)
-    } catch (err) {
-      throw err
+    if (Page.isReservedPath(path)) {
+      throw new Error(`${path} is a reserved path.`)
+    } else if (Page.isReservedTemplate(type, title)) {
+      throw new Error(`{{${title}}} is used internally. You cannot create a template with that name.`)
+    } else {
+      try {
+        const res = await db.run(`INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`)
+        const id = res.insertId
+        await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+        return Page.get(id, db)
+      } catch (err) {
+        throw err
+      }
     }
   }
 
@@ -237,42 +303,55 @@ class Page {
       if (type && this.type !== type) update.type = type
     }
 
-    // Update this object
-    Object.keys(update).forEach(key => { this[key] = update[key] })
+    // Check to make sure we're not trying to use a reserved path or template
+    const newPath = update.path ? update.path : this.path
+    const newType = update.type ? update.type : this.type
+    const newTitle = update.title ? update.title : this.title
 
-    // Update the pages table in the database
-    const fields = [
-      { name: 'title', type: 'string' },
-      { name: 'slug', type: 'string' },
-      { name: 'path', type: 'string' },
-      { name: 'parent', type: 'number' },
-      { name: 'type', type: 'string' },
-      { name: 'permissions', type: 'number' },
-      { name: 'owner', type: 'number' },
-      { name: 'depth', type: 'number' }
-    ]
-    const vals = updateVals(fields, update)
-
-    try {
-      if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
-
-      // Track changes
-      const timestamp = Math.floor(Date.now() / 1000)
-      const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-
-      // Add change to this instance
-      this.changes.unshift({
-        id: res.insertId,
-        timestamp,
-        msg,
-        content: data,
-        editor: {
-          name: editor.getName(),
-          id: editor.id
-        }
+    if (Page.isReservedPath(newPath)) {
+      throw new Error(`${newPath} is a reserved path.`)
+    } else if (Page.isReservedTemplate(newType, newTitle)) {
+      throw new Error(`{{${newTitle}}} is used internally. You cannot create a template with that name.`)
+    } else {
+      // Update this object
+      Object.keys(update).forEach(key => {
+        this[key] = update[key]
       })
-    } catch (err) {
-      throw err
+
+      // Update the pages table in the database
+      const fields = [
+        {name: 'title', type: 'string'},
+        {name: 'slug', type: 'string'},
+        {name: 'path', type: 'string'},
+        {name: 'parent', type: 'number'},
+        {name: 'type', type: 'string'},
+        {name: 'permissions', type: 'number'},
+        {name: 'owner', type: 'number'},
+        {name: 'depth', type: 'number'}
+      ]
+      const vals = updateVals(fields, update)
+
+      try {
+        if (vals !== '') await db.run(`UPDATE pages SET ${vals} WHERE id=${this.id};`)
+
+        // Track changes
+        const timestamp = Math.floor(Date.now() / 1000)
+        const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+
+        // Add change to this instance
+        this.changes.unshift({
+          id: res.insertId,
+          timestamp,
+          msg,
+          content: data,
+          editor: {
+            name: editor.getName(),
+            id: editor.id
+          }
+        })
+      } catch (err) {
+        throw err
+      }
     }
   }
 

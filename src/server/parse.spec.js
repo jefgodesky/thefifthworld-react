@@ -74,11 +74,11 @@ describe('Wikitext parser', () => {
 
     const member = await Member.get(1, db)
     await Page.create({
-      title: 'Test Template',
+      title: 'TestTemplate',
       body: '{{Template}}This is a template.{{/Template}} [[Type:Template]]'
     }, member, 'Initial text', db)
 
-    const actual = await parse('{{Test Template}} This is a page.', db)
+    const actual = await parse('{{TestTemplate}} This is a page.', db)
     const expected = '<p>This is a template. This is a page.</p>'
     expect(actual.trim()).toEqual(expected.trim())
   })
@@ -88,11 +88,11 @@ describe('Wikitext parser', () => {
 
     const member = await Member.get(1, db)
     await Page.create({
-      title: 'Template',
+      title: 'TestTemplate',
       body: '{{Template}}This is a template. {{{p1}}} {{{p2}}}{{/Template}} [[Type:Template]]'
     }, member, 'Initial text', db)
 
-    const actual = await parse('{{Template\n  p1="This is a parameter."\n  p2="This is also a parameter."\n}}\n\nThis is a page.', db)
+    const actual = await parse('{{TestTemplate\n  p1="This is a parameter."\n  p2="This is also a parameter."\n}}\n\nThis is a page.', db)
     const expected = '<p>This is a template. This is a parameter. This is also a parameter.</p>\n<p>This is a page.</p>'
     expect(actual.trim()).toEqual(expected.trim())
   })

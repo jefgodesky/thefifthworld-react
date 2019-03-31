@@ -38,6 +38,21 @@ describe('Page', () => {
     expect(checks.reduce((res, check) => res && check)).toEqual(true)
   })
 
+  it('returns an error when a new page uses a reserved path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    try {
+      await Page.create({
+        title: 'New Page',
+        body: 'This is a new page.',
+        path: '/login'
+      }, member, 'Initial text', db)
+      expect(false).toEqual(true)
+    } catch (err) {
+      expect(err.toString()).toEqual('Error: /login is a reserved path.')
+    }
+  })
+
   it('returns an error when a new page uses an existing path', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)
@@ -212,6 +227,23 @@ describe('Page', () => {
     }, member, 'Changing path', db)
 
     expect([ page.path, page.slug ]).toEqual([ '/something/something/new-path', 'new-path' ])
+  })
+
+  it('returns an error when you edit a page to use a reserved path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.'
+    }, member, 'Initial text', db)
+    try {
+      await page.update({
+        path: '/login'
+      }, member, 'Can we make this /login?', db)
+      expect(false).toEqual(true)
+    } catch (err) {
+      expect(err.toString()).toEqual('Error: /login is a reserved path.')
+    }
   })
 
   it('can return its current data', async () => {
@@ -624,6 +656,39 @@ describe('Page', () => {
       { path: '/parent/charlie', title: 'Charlie', thumbnail: null }
     ]
     expect(actual).toEqual(expected)
+  })
+
+  it('returns an error when a new page uses a reserved template name', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    try {
+      await Page.create({
+        title: 'Artists',
+        body: 'This is a new page. [[Type:Template]]',
+        path: '/artists'
+      }, member, 'Initial text', db)
+      expect(false).toEqual(true)
+    } catch (err) {
+      expect(err.toString()).toEqual('Error: {{Artists}} is used internally. You cannot create a template with that name.')
+    }
+  })
+
+  it('returns an error when you edit a page to use a reserved template name', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.'
+    }, member, 'Initial text', db)
+    try {
+      await page.update({
+        title: 'Artists',
+        body: 'This is a new page. [[Type:Template]]'
+      }, member, 'Edit to {{Artists}}', db)
+      expect(false).toEqual(true)
+    } catch (err) {
+      expect(err.toString()).toEqual('Error: {{Artists}} is used internally. You cannot create a template with that name.')
+    }
   })
 })
 

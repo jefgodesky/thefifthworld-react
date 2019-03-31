@@ -320,14 +320,14 @@ class Page {
 
       // Update the pages table in the database
       const fields = [
-        {name: 'title', type: 'string'},
-        {name: 'slug', type: 'string'},
-        {name: 'path', type: 'string'},
-        {name: 'parent', type: 'number'},
-        {name: 'type', type: 'string'},
-        {name: 'permissions', type: 'number'},
-        {name: 'owner', type: 'number'},
-        {name: 'depth', type: 'number'}
+        { name: 'title', type: 'string' },
+        { name: 'slug', type: 'string' },
+        { name: 'path', type: 'string' },
+        { name: 'parent', type: 'number' },
+        { name: 'type', type: 'string' },
+        { name: 'permissions', type: 'number' },
+        { name: 'owner', type: 'number' },
+        { name: 'depth', type: 'number' }
       ]
       const vals = updateVals(fields, update)
 

@@ -28,6 +28,40 @@ const getSQLError = (msg, content) => {
   }
 }
 
+/**
+ * Returns an error object.
+ * @param err {Error} - The error object to parse.
+ * @param content {Object} - An object with the submitted content.
+ * @returns {Object} - An object defining the error.
+ */
+
+const getError = (err, content) => {
+  const str = err.toString()
+  const pathMatch = str.match(/Error: (.*?) is a reserved path./)
+  const tplMatch = str.match(/Error: {{(.*?)}} is used internally. You cannot create a template with that name./)
+
+  if (err.sqlMessage) {
+    return getSQLError(err.sqlMessage, content)
+  } else if (pathMatch) {
+    return {
+      field: 'path',
+      code: 'ER_RESERVED_PATH',
+      value: pathMatch[1],
+      content
+    }
+  } else if (tplMatch) {
+    return {
+      field: 'title',
+      code: 'ER_RESERVED_TPL',
+      value: tplMatch[1],
+      content
+    }
+  } else {
+    console.error(err)
+    return {}
+  }
+}
+
 // POST /new
 PageRouter.post('/new', async (req, res) => {
   if (req.user) {
@@ -38,8 +72,7 @@ PageRouter.post('/new', async (req, res) => {
       if (file) await File.upload(file, thumbnail, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
-      console.error(err)
-      req.session.error = getSQLError(err.sqlMessage, req.body)
+      req.session.error = getError(err, req.body)
       res.redirect('/new')
     }
   } else {
@@ -102,8 +135,7 @@ PageRouter.post('*', async (req, res) => {
       if (file) await File.update(file, thumbnail, page, req.user, db)
       res.redirect(page.path)
     } catch (err) {
-      console.error(err)
-      req.session.error = getSQLError(err.sqlMessage, req.body)
+      req.session.error = getError(err, req.body)
       res.redirect(`${query[0]}/edit`)
     }
   }

@@ -222,6 +222,10 @@ export class Form extends React.Component {
       errMsg = (
         <p className='error'><span className='path'>{error.value}</span> won&rsquo;t work. Please provide a valid path.</p>
       )
+    } else if (error && error.field === 'path' && error.code === 'ER_RESERVED_PATH') {
+      errMsg = (
+        <p className='error'>We use <span className='path'>{error.value}</span> internally. Please choose a different path.</p>
+      )
     }
 
     return (
@@ -339,6 +343,7 @@ export class Form extends React.Component {
    */
 
   render () {
+    const { error } = this.state
     const path = get(this.props, 'page.path')
     const action = path || '/new'
     const classes = [ 'wiki' ]
@@ -352,6 +357,13 @@ export class Form extends React.Component {
       ? (<FormUpload page={this.props.page} update={data => this.updateFiles(data)} />)
       : null
 
+    let errMsg = null
+    if (error && error.field === 'title' && error.code === 'ER_RESERVED_TPL') {
+      errMsg = (
+        <p className='error'>We use <code>&#123;&#123;{error.value}&#125;&#125;</code> internally. You cannot create a template with that name.</p>
+      )
+    }
+
     return (
       <form
         action={action}
@@ -359,7 +371,9 @@ export class Form extends React.Component {
         className={classes.join(' ')}
         encType='multipart/form-data'
         onSubmit={this.handleSubmit}>
-        <label htmlFor='title'>Title</label>
+        <label
+          className={error && error.field === 'title' ? 'error' : null}
+          htmlFor='title'>Title</label>
         <input
           type='text'
           name='title'
@@ -367,6 +381,7 @@ export class Form extends React.Component {
           defaultValue={get(this.props, 'page.title')}
           onChange={event => this.changeTitle(event.target.value)}
           placeholder='What do you want to write about?' />
+        {errMsg}
         {this.renderPath()}
         <Autosuggest
           defaultValue={this.state.parent}

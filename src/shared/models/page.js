@@ -109,12 +109,14 @@ class Page {
    */
 
   static getType (str) {
-    const matches = str.match(/\[\[Type:(.+?)\]\]/g)
-    if (matches && matches.length > 0) {
-      const first = matches[0].substr(2, matches[0].length - 4).split(':')
-      return first[0] === 'Type' ? first[1] : null
-    } else {
-      return null
+    if (str) {
+      const matches = str.match(/\[\[Type:(.+?)\]\]/g)
+      if (matches && matches.length > 0) {
+        const first = matches[0].substr(2, matches[0].length - 4).split(':')
+        return first[0] === 'Type' ? first[1] : null
+      } else {
+        return null
+      }
     }
   }
 

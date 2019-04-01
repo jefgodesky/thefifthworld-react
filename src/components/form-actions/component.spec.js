@@ -106,4 +106,17 @@ describe('Form', () => {
 
     expect(actual).toEqual(expected)
   })
+
+  it('should disable buttons if told to', () => {
+    const admin = { admin: true }
+    const page = {
+      path: '/test',
+      permissions: 777
+    }
+
+    const wrapper = shallow(<FormActions loggedInMember={admin} page={page} disabled />)
+    const actual = [ wrapper.find('button[disabled]').length, wrapper.find('input[disabled]').length ]
+    const expected = [ 1, 2 ]
+    expect(actual).toEqual(expected)
+  })
 })

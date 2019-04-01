@@ -23,20 +23,20 @@ class FormActions extends React.Component {
     const canAdmin = this.props.loggedInMember.admin && this.props.page && this.props.page.path
 
     const lock = canAdmin && permissions > 744
-      ? (<input type='submit' name='lock' value='Lock' className='secondary' />)
+      ? (<input type='submit' name='lock' value='Lock' className='secondary' disabled={this.props.disabled} />)
       : permissions <= 744
-        ? (<input type='submit' name='unlock' value='Unlock' className='secondary' />)
+        ? (<input type='submit' name='unlock' value='Unlock' className='secondary' disabled={this.props.disabled} />)
         : null
 
     const hide = canAdmin && permissions > 400
-      ? (<input type='submit' name='hide' value='Hide' className='secondary' />)
+      ? (<input type='submit' name='hide' value='Hide' className='secondary' disabled={this.props.disabled} />)
       : permissions <= 400
-        ? (<input type='submit' name='unhide' value='Unhide' className='secondary' />)
+        ? (<input type='submit' name='unhide' value='Unhide' className='secondary' disabled={this.props.disabled} />)
         : null
 
     return (
       <p className='actions'>
-        <button>{submitText}</button>
+        <button disabled={this.props.disabled}>{submitText}</button>
         {lock}
         {hide}
         <a href={cancel} className='button secondary'>Cancel</a>
@@ -46,6 +46,7 @@ class FormActions extends React.Component {
 }
 
 FormActions.propTypes = {
+  disabled: PropTypes.bool,
   loggedInMember: PropTypes.object,
   page: PropTypes.object
 }

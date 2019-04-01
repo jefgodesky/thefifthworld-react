@@ -319,11 +319,12 @@ export class Form extends React.Component {
           }
 
           const data = new FormData()
+          const b = body || ''
           data.set('title', title)
           data.set('path', path)
           data.set('parent', parent)
           data.set('type', type)
-          data.set('body', body)
+          data.set('body', b)
           data.set('message', message)
           if (file) data.append('file', file, file.name)
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)

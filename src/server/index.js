@@ -22,7 +22,6 @@ import db from './db'
 import parse from './parse'
 import reducers from '../shared/reducers'
 import routes from '../shared/routes'
-import { get } from '../shared/utils'
 import getMarkup from './ssr'
 import { login } from '../components/member-login/actions'
 import { load as loadPage } from '../components/page/actions'
@@ -162,7 +161,7 @@ server.get('*', redirector, async (req, res) => {
       if (!page.canRead(req.user)) res.status(401)
 
       page.curr = curr
-      page.html = await parse(get(curr, 'body'), db, path)
+      page.html = curr && curr.body ? await parse(curr.body, db, path) : ''
       page.lineage = await page.getLineage(db)
       page.command = command
       page.params = params

@@ -57,9 +57,13 @@ describe('Form', () => {
 
   it('should display a duplicate path error', () => {
     const error = {
-      field: 'path',
-      code: 'ER_DUP_ENTRY',
-      value: '/error/path'
+      errors: [
+        {
+          field: 'path',
+          code: 'ER_DUP_ENTRY',
+          value: '/error/path'
+        }
+      ]
     }
     const wrapper = shallow(<Form loggedInMember={{}} page={{}} error={error} />)
     const actual = wrapper.find('p.error').html()

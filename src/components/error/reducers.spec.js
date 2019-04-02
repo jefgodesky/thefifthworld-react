@@ -1,6 +1,6 @@
 /* global it, expect */
 
-import { throwError } from './actions'
+import { throwError, saveContent } from './actions'
 import Error from './reducers'
 
 it('should return state by default', () => {
@@ -10,6 +10,21 @@ it('should return state by default', () => {
 })
 
 it('should log error', () => {
-  const actual = Error({}, throwError(true))
-  expect(actual).toEqual(true)
+  const actual = Error(null, throwError(true))
+  expect(actual).toEqual({ errors: [ true ] })
+})
+
+it('should log multiple errors in an array', () => {
+  const actual = Error({ errors: [ true ] }, throwError([ true, false ]))
+  expect(actual).toEqual({ errors: [ true, true, false ] })
+})
+
+it('should add to an array of errors', () => {
+  const actual = Error({ errors: [ true ] }, throwError(false))
+  expect(actual).toEqual({ errors: [ true, false ] })
+})
+
+it('should assign content', () => {
+  const actual = Error(null, saveContent({}))
+  expect(actual).toEqual({ content: {} })
 })

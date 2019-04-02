@@ -8,10 +8,18 @@ import * as types from './action-types'
  * @constructor
  */
 
-export default function Error (state = null, action = {}) {
+export default function Error (state = { errors: [] }, action = {}) {
   switch (action.type) {
     case types.THROW_ERROR:
-      return action.payload
+      if (state && state.errors && Array.isArray(state.errors) && Array.isArray(action.payload)) {
+        return Object.assign({}, state, { errors: [ ...state.errors, ...action.payload ] })
+      } else if (state && state.errors && Array.isArray(state.errors)) {
+        return Object.assign({}, state, { errors: [ ...state.errors, action.payload ] })
+      } else {
+        return { errors: [ action.payload ] }
+      }
+    case types.SAVE_CONTENT:
+      return Object.assign({}, state, { content: action.payload })
     default:
       return state
   }

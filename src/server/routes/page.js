@@ -9,22 +9,19 @@ const PageRouter = express.Router()
 /**
  * Returns an error object based on an SQL error message.
  * @param msg {string} - An SQL error message.
- * @param content {Object} - An object with the form content that was submitted
- *   when the SQL error was encountered.
  * @returns {Object} - An error object describing the error.
  */
 
-const getSQLError = (msg, content) => {
+const getSQLError = (msg) => {
   const match = msg.match(/Duplicate entry \'(.+?)\' for key \'(.+?)\'/)
   if (match.length > 2) {
     return {
       field: match[2],
       code: 'ER_DUP_ENTRY',
-      value: match[1],
-      content
+      value: match[1]
     }
   } else {
-    return { content }
+    return null
   }
 }
 
@@ -37,28 +34,40 @@ const getSQLError = (msg, content) => {
 
 const getError = (err, content) => {
   const str = err.toString()
-  const pathMatch = str.match(/Error: (.*?) is a reserved path./)
-  const tplMatch = str.match(/Error: {{(.*?)}} is used internally. You cannot create a template with that name./)
+  const error = { content, errors: [] }
 
   if (err.sqlMessage) {
-    return getSQLError(err.sqlMessage, content)
-  } else if (pathMatch) {
-    return {
-      field: 'path',
-      code: 'ER_RESERVED_PATH',
-      value: pathMatch[1],
-      content
-    }
-  } else if (tplMatch) {
-    return {
-      field: 'title',
-      code: 'ER_RESERVED_TPL',
-      value: tplMatch[1],
-      content
-    }
+    error.errors = [ getSQLError(err.sqlMessage) ]
+  }
+
+  const pathMatch = str.match(/Error: (.*?) is a reserved path./)
+  if (pathMatch) {
+    error.errors = [
+      ...error.errors,
+      {
+        field: 'path',
+        code: 'ER_RESERVED_PATH',
+        value: pathMatch[1]
+      }
+    ]
+  }
+
+  const tplMatch = str.match(/Error: {{(.*?)}} is used internally. You cannot create a template with that name./)
+  if (tplMatch) {
+    error.errors = [
+      ...error.errors,
+      {
+        field: 'title',
+        code: 'ER_RESERVED_TPL',
+        value: tplMatch[1]
+      }
+    ]
+  }
+
+  if (error.errors.length > 0) {
+    return error
   } else {
-    console.error(err)
-    return {}
+    return null
   }
 }
 

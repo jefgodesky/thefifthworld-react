@@ -14,6 +14,7 @@ import FormUpload from '../form-upload/component'
 
 import config from '../../../config'
 import { get } from '../../shared/utils'
+import { addError, resolveError, getErrorsFor } from '../../components/error/utils'
 import slugify from '../../shared/slugify'
 
 /**
@@ -38,7 +39,7 @@ export class Form extends React.Component {
       title: get(this.props, 'page.title'),
       body: get(this.props, 'page.curr.body'),
       message: '',
-      error: this.props.error
+      errors: this.props.error ? this.props.error.errors : []
     }
 
     this.debouncedCheckPath = AwesomeDebouncePromise(this.checkPath, 1000)
@@ -77,21 +78,24 @@ export class Form extends React.Component {
 
       try {
         await axios.get(`${protocol}//${host}${path}`)
-        const error = {
+        this.setState({ errors: addError({
           field: 'path',
           code: 'ER_DUP_ENTRY',
           value: path
-        }
-        if (this.state.path && this.state.path !== '/') this.setState({ error })
+        }, this.state.errors) })
       } catch (err) {
-        const error = (err.response && err.response.status === 404)
-          ? false
-          : {
+        if (err.response && err.response.status === 404) {
+          this.setState({ errors: resolveError({
+            field: 'path',
+            code: 'ER_DUP_ENTRY'
+          }, this.state.errors) })
+        } else {
+          this.setState({ errors: addError({
             field: 'path',
             code: 'ER_INVALID',
             value: this.state.path
-          }
-        this.setState({ error })
+          }, this.state.errors) })
+        }
       }
     }
   }
@@ -211,18 +215,18 @@ export class Form extends React.Component {
    */
 
   renderExpandedPath () {
-    const { error } = this.state
-
+    const pathErrors = getErrorsFor('path', this.state.errors)
+    const error = pathErrors.length > 0 ? pathErrors[0] : null
     let errMsg = null
-    if (error && error.field === 'path' && error.code === 'ER_DUP_ENTRY') {
+    if (error && error.code === 'ER_DUP_ENTRY') {
       errMsg = (
         <p className='error'><a href={error.value} className='path' target='_blank'>{error.value}</a> already exists. Please choose a different path to make this page unique.</p>
       )
-    } else if (error && error.field === 'path' && error.code === 'ER_INVALID') {
+    } else if (error && error.code === 'ER_INVALID') {
       errMsg = (
         <p className='error'><span className='path'>{error.value}</span> won&rsquo;t work. Please provide a valid path.</p>
       )
-    } else if (error && error.field === 'path' && error.code === 'ER_RESERVED_PATH') {
+    } else if (error && error.code === 'ER_RESERVED_PATH') {
       errMsg = (
         <p className='error'>We use <span className='path'>{error.value}</span> internally. Please choose a different path.</p>
       )
@@ -230,7 +234,7 @@ export class Form extends React.Component {
 
     return (
       <React.Fragment>
-        <label htmlFor='path' className={error && error.field === 'path' ? 'error' : null}>
+        <label htmlFor='path' className={error ? 'error' : null}>
           Path
           <p className='note'>This sets the page&rsquo;s URL. If left blank, it will default to
             a &ldquo;slugified&rdquo; version of the title (e.g., &rdquo;New Page&rdquo; will
@@ -269,8 +273,9 @@ export class Form extends React.Component {
    */
 
   renderPath () {
-    const { error, showPath, isClient } = this.state
-    if (error && error.field === 'path') {
+    const { showPath, isClient } = this.state
+    const errors = getErrorsFor('path', this.state.errors)
+    if (errors.length > 0) {
       return this.renderExpandedPath()
     } else if (!showPath && isClient) {
       return this.renderCollapsedPath()
@@ -307,12 +312,12 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { error, title, path, parent, body, file, thumbnail, message } = this.state
+      const { errors, title, path, parent, body, file, thumbnail, message } = this.state
       const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
 
-      if (!error) {
+      if (!errors || (errors && Array.isArray(errors) && errors.length === 0)) {
         try {
           const headers = {
             'Content-Type': 'multipart/form-data'
@@ -344,7 +349,8 @@ export class Form extends React.Component {
    */
 
   render () {
-    const { error } = this.state
+    const titleErrors = getErrorsFor('title', this.state.errors)
+    const titleError = titleErrors.length > 0 ? titleErrors[0] : null
     const path = get(this.props, 'page.path')
     const action = path || '/new'
     const classes = [ 'wiki' ]
@@ -359,9 +365,9 @@ export class Form extends React.Component {
       : null
 
     let errMsg = null
-    if (error && error.field === 'title' && error.code === 'ER_RESERVED_TPL') {
+    if (titleError && titleError.code === 'ER_RESERVED_TPL') {
       errMsg = (
-        <p className='error'>We use <code>&#123;&#123;{error.value}&#125;&#125;</code> internally. You cannot create a template with that name.</p>
+        <p className='error'>We use <code>&#123;&#123;{titleError.value}&#125;&#125;</code> internally. You cannot create a template with that name.</p>
       )
     }
 
@@ -373,7 +379,7 @@ export class Form extends React.Component {
         encType='multipart/form-data'
         onSubmit={this.handleSubmit}>
         <label
-          className={error && error.field === 'title' ? 'error' : null}
+          className={titleError ? 'error' : null}
           htmlFor='title'>Title</label>
         <input
           type='text'

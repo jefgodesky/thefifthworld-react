@@ -111,7 +111,7 @@ server.get('*', redirector, async (req, res) => {
     const page = req.session.error.content
     page.curr = { body: page.body }
     store.dispatch(loadPage(page))
-    store.dispatch(throwError(req.session.error))
+    store.dispatch(throwError(req.session.error.errors))
     req.session.error = null
   }
 

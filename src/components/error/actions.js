@@ -6,3 +6,10 @@ export function throwError (err) {
     payload: err
   }
 }
+
+export function saveContent (content) {
+  return {
+    type: types.SAVE_CONTENT,
+    payload: content
+  }
+}

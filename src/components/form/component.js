@@ -64,6 +64,16 @@ export class Form extends React.Component {
   }
 
   /**
+   * Resolves all errors in the component state with the given field and code.
+   * @param field {string} - The field.
+   * @param code {string} - The error code.
+   */
+
+  clearError (field, code) {
+    this.setState({ errors: resolveError({ field, code }, this.state.errors) })
+  }
+
+  /**
    * Checks if a path exists, and sets an error if the path is already in nuse
    * or if the path is invalid.
    * @param path {string} - The path to check
@@ -85,10 +95,7 @@ export class Form extends React.Component {
         }, this.state.errors) })
       } catch (err) {
         if (err.response && err.response.status === 404) {
-          this.setState({ errors: resolveError({
-            field: 'path',
-            code: 'ER_DUP_ENTRY'
-          }, this.state.errors) })
+          this.clearError('path', 'ER_DUP_ENTRY')
         } else {
           this.setState({ errors: addError({
             field: 'path',
@@ -97,6 +104,29 @@ export class Form extends React.Component {
           }, this.state.errors) })
         }
       }
+    }
+  }
+
+  /**
+   * If the given configuration changes would result in an invalid template,
+   * this method adds an error to the component state.
+   * @param changes {object} - An object with changes being made to the
+   *   component state. This is used instead of just checking the state because
+   *   we appear to get ahead of the state update sometimes.
+   */
+
+  checkValidTemplate (changes) {
+    const title = changes.title || this.state.title
+    const body = changes.body || this.state.body
+    const type = this.state.type || Page.getType(body)
+    if (Page.isReservedTemplate(type, title)) {
+      this.setState({ errors: addError({
+        field: 'title',
+        code: 'ER_RESERVED_TPL',
+        value: title
+      }, this.state.errors) })
+    } else {
+      this.clearError('title', 'ER_RESERVED_TPL')
     }
   }
 
@@ -153,6 +183,7 @@ export class Form extends React.Component {
         ? `${this.state.parent}/${slug}`
         : `/${slug}`
     this.setPath(path)
+    this.checkValidTemplate({ title })
   }
 
   /**
@@ -167,6 +198,15 @@ export class Form extends React.Component {
       ? this.state.path
       : `${parent}/${slugify(this.state.title)}`
     this.setPath(path)
+  }
+
+  /**
+   * This method is called whenever a user changes the body.
+   * @param body {string} - The new body value.
+   */
+  changeBody (body) {
+    this.setState({ body })
+    this.checkValidTemplate({ body })
   }
 
   /**
@@ -407,7 +447,7 @@ export class Form extends React.Component {
           name='body'
           id='body'
           defaultValue={this.state.body}
-          onChange={event => this.setState({ body: event.target.value })} />
+          onChange={event => this.changeBody(event.target.value)} />
         <aside className='note'>
           <p>You can format your page using <a href='/markown'>markdown</a>.</p>
         </aside>

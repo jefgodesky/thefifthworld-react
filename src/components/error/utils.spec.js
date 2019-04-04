@@ -1,36 +1,6 @@
 /* global describe, it, expect */
 
-import { isSameError, isKnownError, addError, resolveError, getErrorsFor } from './utils'
-
-describe('isSameError', () => {
-  it('tells you when two errors are the same', () => {
-    const e1 = {
-      field: 'path',
-      code: 'ER_DUP_ENTRY',
-      value: '/dupe'
-    }
-    const e2 = {
-      field: 'path',
-      code: 'ER_DUP_ENTRY',
-      value: '/dupe'
-    }
-    expect(isSameError(e1, e2)).toEqual(true)
-  })
-
-  it('tells you when two errors are not the same', () => {
-    const e1 = {
-      field: 'path',
-      code: 'ER_DUP_ENTRY',
-      value: '/dupe'
-    }
-    const e2 = {
-      field: 'title',
-      code: 'ER_SOMETHING_ELSE',
-      value: 'nope'
-    }
-    expect(isSameError(e1, e2)).toEqual(false)
-  })
-})
+import { isKnownError, addError, resolveError, getErrorsFor } from './utils'
 
 describe('isKnownError', () => {
   it('tells you when an error is in the array', () => {
@@ -76,6 +46,41 @@ describe('resolveError', () => {
       value: '/dupe'
     }
     expect(resolveError(error, [ error ])).toEqual([])
+  })
+
+  it('removes an error from the array with only a field and a code', () => {
+    const e1 = {
+      field: 'path',
+      code: 'ER_DUP_ENTRY',
+      value: '/dupe'
+    }
+    const e2 = {
+      field: 'path',
+      code: 'ER_DIFF_CODE',
+      value: '/dupe'
+    }
+    const r = {
+      field: 'path',
+      code: 'ER_DUP_ENTRY'
+    }
+    expect(resolveError(r, [ e1, e2 ])).toEqual([ e2 ])
+  })
+
+  it('removes an error from the array with only a field', () => {
+    const e1 = {
+      field: 'path',
+      code: 'ER_DUP_ENTRY',
+      value: '/dupe'
+    }
+    const e2 = {
+      field: 'path',
+      code: 'ER_DUP_ENTRY',
+      value: '/another'
+    }
+    const r = {
+      field: 'path'
+    }
+    expect(resolveError(r, [ e1, e2 ])).toEqual([])
   })
 })
 

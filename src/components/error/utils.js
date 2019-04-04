@@ -1,15 +1,4 @@
 /**
- * Returns true if two error objects are the same.
- * @param e1 {object} - An error object to compare.
- * @param e2 {object} - An error object to compare.
- * @returns {boolean} - `true` if `e1` and `e2` are equal, or `false` if not.
- */
-
-const isSameError = (e1, e2) => {
-  return (e1.field === e2.field) && (e1.code === e2.code) && (e1.value === e2.value)
-}
-
-/**
  * Returns `true` if the error given is already in the array of errors given,
  * or `false` if it is not.
  * @param err {object} - An error object to check for.
@@ -20,7 +9,7 @@ const isSameError = (e1, e2) => {
 
 const isKnownError = (err, arr) => {
   const check = arr && Array.isArray(arr)
-    ? arr.filter(e => isSameError(err, e))
+    ? arr.filter(e => ((e.field === err.field) && (e.code === err.code) && (e.value === err.value)))
     : []
   return (check.length > 0)
 }
@@ -55,10 +44,15 @@ const addError = (err, arr) => {
  */
 
 const resolveError = (err, arr) => {
-  if (arr && Array.isArray(arr)) {
-    return arr.filter(e => !isSameError(err, e))
+  const { field, code, value } = err
+  if (field && code && value) {
+    return arr.filter(e => !((e.field === field) && (e.code === code) && (e.value === value)))
+  } else if (field && code) {
+    return arr.filter(e => !((e.field === field) && (e.code === code)))
+  } else if (field) {
+    return arr.filter(e => !(e.field === field))
   } else {
-    return []
+    return arr
   }
 }
 
@@ -78,7 +72,6 @@ const getErrorsFor = (field, arr) => {
 }
 
 export {
-  isSameError,
   isKnownError,
   addError,
   resolveError,

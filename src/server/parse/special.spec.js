@@ -3,7 +3,8 @@
 import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
-  listChildren
+  listChildren,
+  parseLocation
 } from './special'
 import db from '../db'
 
@@ -148,6 +149,20 @@ describe('listChildren', () => {
     }, member, 'Initial text', db)
     const actual = await listChildren('{{Children order="alphabetical"}}', '/parent', db)
     expect(actual).toEqual('<ul>\n<li><a href="/parent/alice">Alice</a></li>\n<li><a href="/parent/bob">Bob</a></li>\n<li><a href="/parent/charlie">Charlie</a></li>\n</ul>')
+  })
+})
+
+describe('parseLocation', () => {
+  it('hides location tag in wikitext', () => {
+    const actual = parseLocation('This has some text. [[Location:40.441848, -80.012827]] And some more text after it, too.')
+    const expected = 'This has some text. And some more text after it, too.'
+    expect(actual).toEqual(expected)
+  })
+
+  it('hides all location tags', () => {
+    const actual = parseLocation('This has [[Location:40.441848, -80.012827]] some text. [[Location:40.441848, -80.012827]] And some more text [[Location:40.441848, -80.012827]] after it, too.')
+    const expected = 'This has some text. And some more text after it, too.'
+    expect(actual).toEqual(expected)
   })
 })
 

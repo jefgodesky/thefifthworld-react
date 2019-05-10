@@ -19,6 +19,8 @@ class Page {
     this.permissions = page.permissions.toString()
     this.owner = page.owner
     this.depth = page.depth
+    this.lat = page.lat
+    this.lon = page.lon
     this.changes = []
 
     changes.forEach(change => {
@@ -100,6 +102,34 @@ class Page {
   }
 
   /**
+   * If the string includes a location tag, this returns an object with the
+   * latitude and longitude specified by the last tag.
+   * @param str {string} - A string of wikitext.
+   * @returns {boolean|{lon: number, lat: number}} - `false` if the text does
+   *   not include any location tags. If it does, it returns an object with two
+   *   properties: `lat` (containing a float with the latitude specified by the
+   *   last location tag in the wikitext) and `lon` (containing a float with
+   *   the longitude specified by the last location tag in the wikitext).
+   */
+
+  static getLocation (str) {
+    if (str) {
+      const matches = str.match(/\[\[Location:(.+?)\]\]/g)
+      if (matches && matches.length > 0) {
+        const match = matches.pop()
+        const arr = match.substr(11, str.length - 13).split(',')
+        if (arr && arr.length > 1) {
+          return {
+            lat: parseFloat(arr[0].trim()),
+            lon: parseFloat(arr[1].trim())
+          }
+        }
+      }
+    }
+    return false
+  }
+
+  /**
    * Returns the value of the first [[Type:X]] tag in the string provided, or
    * null if no such tag is found.
    * @param str {string} - The string to find the type tags in.
@@ -110,12 +140,17 @@ class Page {
 
   static getType (str) {
     if (str) {
-      const matches = str.match(/\[\[Type:(.+?)\]\]/g)
-      if (matches && matches.length > 0) {
-        const first = matches[0].substr(2, matches[0].length - 4).split(':')
-        return first[0] === 'Type' ? first[1] : null
+      const coords = Page.getLocation(str)
+      if (coords) {
+        return 'Place'
       } else {
-        return null
+        const matches = str.match(/\[\[Type:(.+?)\]\]/g)
+        if (matches && matches.length > 0) {
+          const first = matches[0].substr(2, matches[0].length - 4).split(':')
+          return first[0] === 'Type' ? first[1] : null
+        } else {
+          return null
+        }
       }
     }
   }
@@ -166,6 +201,7 @@ class Page {
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
     const type = data.type ? data.type : Page.getType(data.body)
+    const coords = Page.getLocation(data.body)
 
     // Add to database
     if (Page.isReservedPath(path)) {
@@ -174,7 +210,10 @@ class Page {
       throw new Error(`{{${title}}} is used internally. You cannot create a template with that name.`)
     } else {
       try {
-        const res = await db.run(`INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`)
+        const ins = coords
+          ? `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth, lat, lon) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth}, ${coords.lat}, ${coords.lon});`
+          : `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`
+        const res = await db.run(ins)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
         return Page.get(id, db)
@@ -303,6 +342,12 @@ class Page {
     if (data.body) {
       const type = data.type ? data.type : Page.getType(data.body)
       if (type && this.type !== type) update.type = type
+
+      const coords = Page.getLocation(data.body)
+      if (coords) {
+        update.lat = coords.lat
+        update.lon = coords.lon
+      }
     }
 
     // Check to make sure we're not trying to use a reserved path or template
@@ -329,7 +374,9 @@ class Page {
         { name: 'type', type: 'string' },
         { name: 'permissions', type: 'number' },
         { name: 'owner', type: 'number' },
-        { name: 'depth', type: 'number' }
+        { name: 'depth', type: 'number' },
+        { name: 'lat', type: 'number' },
+        { name: 'lon', type: 'number' }
       ]
       const vals = updateVals(fields, update)
 

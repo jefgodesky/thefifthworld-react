@@ -163,10 +163,21 @@ const doNotEmail = markup => {
   return markup.replace(/<a href=\"mailto:(.*?)\">(.*?)<\/a>/g, '$2')
 }
 
+/**
+ * Removes all location tags from the text.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - Text without location tags.
+ */
+
+const parseLocation = wikitext => {
+  return wikitext.replace(/\[\[Location:(.*?)\]\]/g, '').replace(/\ \ /g, ' ')
+}
+
 export {
   listChildren,
   listArtists,
   doNotEmail,
   parseDownload,
-  parseArt
+  parseArt,
+  parseLocation
 }

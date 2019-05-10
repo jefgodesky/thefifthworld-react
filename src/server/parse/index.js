@@ -6,7 +6,8 @@ import {
   listArtists,
   doNotEmail,
   parseDownload,
-  parseArt
+  parseArt,
+  parseLocation
 } from './special'
 
 marked.setOptions({
@@ -55,6 +56,7 @@ const parse = async (wikitext, db, path = null) => {
     wikitext = await listChildren(wikitext, path, db, true)
     wikitext = await listChildren(wikitext, path, db)
     wikitext = await parseLinks(wikitext, db)
+    wikitext = parseLocation(wikitext)
 
     return wikitext
   } else {

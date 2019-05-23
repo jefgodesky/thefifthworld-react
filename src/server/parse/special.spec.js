@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global describe, it, expect, beforeEach, afterEach, afterAll */
 
 import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'

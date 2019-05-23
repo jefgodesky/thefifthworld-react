@@ -88,6 +88,18 @@ export class MemberProfile extends React.Component {
             </aside>
             <label htmlFor='bio'>About</label>
             <textarea name='bio' id='bio' defaultValue={this.props.member.bio} />
+            <h2>Links</h2>
+            <p>If you&lsquo;d like to make it easier for other people to find and follow you on social media or other networks, provide some links here. Any that you provide will be shown on your profile. Anny you choose not to share will simply not appear.</p>
+            <label htmlFor='facebook'>Facebook</label>
+            <input type='text' name='facebook' id='facebook' placeholder='https://facebook.com/your-username-here' />
+            <label htmlFor='twitter'>Twitter</label>
+            <input type='text' name='twitter' id='twitter' placeholder='https://twitter.com/your-username-here' />
+            <label htmlFor='github'>Github</label>
+            <input type='text' name='github' id='github' placeholder='https://github.com/your-username-here' />
+            <label htmlFor='patreon'>Patreon</label>
+            <input type='text' name='patreon' id='patreon' placeholder='https://patreon.com/your-username-here' />
+            <label htmlFor='web'>Website</label>
+            <input type='text' name='web' id='web' placeholder='https://yourwebsite.com' />
             <p className='actions'>
               <button>Save</button>
               <a href={`/member/${this.props.member.id}`} className='button secondary'>Cancel</a>
@@ -97,6 +109,28 @@ export class MemberProfile extends React.Component {
         <Footer />
       </React.Fragment>
     )
+  }
+
+  /**
+   * Renders the links to be shown on a member's profile.
+   * @returns {*} - JSX for the links to be rendered on a member's profile.
+   */
+
+  renderLinks () {
+    const { facebook, twitter, github, patreon, web } = this.props.member
+    const links = []
+    if (web) links.push(<li key='web' className='web'><a href={web}>Website</a></li>)
+    if (patreon) links.push(<li key='patreon' className='patreon'><a href={patreon}>Patreon</a></li>)
+    if (github) links.push(<li key='github' className='github'><a href={github}>Github</a></li>)
+    if (facebook) links.push(<li key='facebook' className='facebook'><a href={facebook}>Facebook</a></li>)
+    if (twitter) links.push(<li key='twitter' className='twitter'><a href={twitter}>Twitter</a></li>)
+    return links.length > 0
+      ? (
+        <ul className='links'>
+          {links}
+        </ul>
+      )
+      : null
   }
 
   /**
@@ -111,12 +145,14 @@ export class MemberProfile extends React.Component {
     const bio = this.props.member.bio
       ? (<div className='bio' dangerouslySetInnerHTML={{ __html: this.props.member.bioHTML }} />)
       : null
+
     return (
       <React.Fragment>
         <Header />
         <main className='profile'>
           <h1>{this.props.member.name}</h1>
           {bio}
+          {this.renderLinks()}
           {actions}
         </main>
         <Footer />

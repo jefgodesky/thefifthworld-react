@@ -106,38 +106,78 @@ describe('Member', () => {
     // Admin can update herself
     await admin.update({
       name: 'Checkpoint A',
-      bio: 'Checkpoint A'
+      bio: 'Checkpoint A',
+      facebook: 'Checkpoint A',
+      twitter: 'Checkpoint A',
+      github: 'Checkpoint A',
+      patreon: 'Checkpoint A',
+      web: 'Checkpoint A'
     }, admin.getObject(), db)
     update = await Member.get(1, db)
     checks.push(update.name === 'Checkpoint A')
     checks.push(update.bio === 'Checkpoint A')
+    checks.push(update.facebook === 'Checkpoint A')
+    checks.push(update.twitter === 'Checkpoint A')
+    checks.push(update.github === 'Checkpoint A')
+    checks.push(update.patreon === 'Checkpoint A')
+    checks.push(update.web === 'Checkpoint A')
 
     // Admin can update a member
     await member.update({
       name: 'Checkpoint B',
-      bio: 'Checkpoint B'
+      bio: 'Checkpoint B',
+      facebook: 'Checkpoint B',
+      twitter: 'Checkpoint B',
+      github: 'Checkpoint B',
+      patreon: 'Checkpoint B',
+      web: 'Checkpoint B'
     }, admin.getObject(), db)
     update = await Member.get(2, db)
     checks.push(update.name === 'Checkpoint B')
     checks.push(update.bio === 'Checkpoint B')
+    checks.push(update.facebook === 'Checkpoint B')
+    checks.push(update.twitter === 'Checkpoint B')
+    checks.push(update.github === 'Checkpoint B')
+    checks.push(update.patreon === 'Checkpoint B')
+    checks.push(update.web === 'Checkpoint B')
 
     // Member can update herself
     await member.update({
       name: 'Checkpoint C',
-      bio: 'Checkpoint C'
+      bio: 'Checkpoint C',
+      facebook: 'Checkpoint C',
+      twitter: 'Checkpoint C',
+      github: 'Checkpoint C',
+      patreon: 'Checkpoint C',
+      web: 'Checkpoint C'
     }, member.getObject(), db)
     update = await Member.get(2, db)
     checks.push(update.name === 'Checkpoint C')
     checks.push(update.bio === 'Checkpoint C')
+    checks.push(update.facebook === 'Checkpoint C')
+    checks.push(update.twitter === 'Checkpoint C')
+    checks.push(update.github === 'Checkpoint C')
+    checks.push(update.patreon === 'Checkpoint C')
+    checks.push(update.web === 'Checkpoint C')
 
     // Member CANNOT update an admin
     await admin.update({
       name: 'Checkpoint D',
-      bio: 'Checkpoint D'
+      bio: 'Checkpoint D',
+      facebook: 'Checkpoint D',
+      twitter: 'Checkpoint D',
+      github: 'Checkpoint D',
+      patreon: 'Checkpoint D',
+      web: 'Checkpoint D'
     }, member.getObject(), db)
     update = await Member.get(1, db)
     checks.push(update.name === 'Checkpoint A')
     checks.push(update.bio === 'Checkpoint A')
+    checks.push(update.facebook === 'Checkpoint A')
+    checks.push(update.twitter === 'Checkpoint A')
+    checks.push(update.github === 'Checkpoint A')
+    checks.push(update.patreon === 'Checkpoint A')
+    checks.push(update.web === 'Checkpoint A')
 
     // Can set a passphrase
     const password = 'New passphrase'

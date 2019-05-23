@@ -21,6 +21,11 @@ class Member {
     this.password = obj.password
     this.email = obj.email
     this.bio = obj.bio
+    this.facebook = obj.facebook
+    this.twitter = obj.twitter
+    this.github = obj.github
+    this.patreon = obj.patreon
+    this.web = obj.web
     this.active = Boolean(obj.active)
     this.admin = Boolean(obj.admin)
     this.invitations = obj.invitations
@@ -180,7 +185,12 @@ class Member {
       const fields = [
         { name: 'name', type: 'string' },
         { name: 'email', type: 'string' },
-        { name: 'bio', type: 'string' }
+        { name: 'bio', type: 'string' },
+        { name: 'facebook', type: 'string' },
+        { name: 'twitter', type: 'string' },
+        { name: 'github', type: 'string' },
+        { name: 'patreon', type: 'string' },
+        { name: 'web', type: 'string' }
       ]
 
       if (vals.password) {

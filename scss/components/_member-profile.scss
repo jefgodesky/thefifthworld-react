@@ -1,0 +1,44 @@
+main.profile {
+  .links {
+    @extend %unformatted-list;
+
+    li {
+      display: inline-block;
+      height: ms(2);
+      margin: ms(1) ms(0) ms(1) 0;
+      width: ms(2);
+
+      &.facebook {
+        background: url('#{$cdn}/images/facebook.svg') center no-repeat;
+        background-size: contain;
+      }
+
+      &.twitter {
+        background: url('#{$cdn}/images/twitter.svg') center no-repeat;
+        background-size: contain;
+      }
+
+      &.github {
+        background: url('#{$cdn}/images/github.svg') center no-repeat;
+        background-size: contain;
+      }
+
+      &.patreon {
+        background: url('#{$cdn}/images/patreon.svg') center no-repeat;
+        background-size: contain;
+      }
+
+      &.web {
+        background: url('#{$cdn}/images/web.svg') center no-repeat;
+        background-size: contain;
+      }
+
+      a {
+        display: block;
+        font-size: 0;
+        height: 100%;
+        width: 100%;
+      }
+    }
+  }
+}

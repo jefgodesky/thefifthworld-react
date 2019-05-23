@@ -1,3 +1,5 @@
+import { escape as SQLEscape } from 'sqlstring'
+
 /**
  * This method takes an array that provides the names and types for the
  * columns in a database and an object with data, and returns a string
@@ -24,7 +26,7 @@ const updateVals = (cols, vals) => {
 
   Object.keys(vals).forEach(key => {
     if (validKeys.indexOf(key) > -1) {
-      const val = types[key] === 'number' ? vals[key] : `'${vals[key]}'`
+      const val = types[key] === 'number' ? vals[key] : SQLEscape(vals[key])
       query.push(`${key}=${val}`)
     }
   })

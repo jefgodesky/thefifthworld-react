@@ -9,6 +9,7 @@ import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import parse from '../../server/parse'
 
 import * as actions from './actions'
 import Member from '../../shared/models/member'
@@ -38,6 +39,7 @@ export class MemberProfile extends React.Component {
       const params = routeParser.match(req.originalUrl)
       if (params.id) {
         const member = await Member.get(params.id, db)
+        if (member.bio) member.bioHTML = await parse(member.bio, db)
         store.dispatch(actions.load(member))
       }
     }
@@ -84,6 +86,8 @@ export class MemberProfile extends React.Component {
                 <input type='text' name='password' id='password' placeholder='Enter a secret pass phrase' />
               </div>
             </aside>
+            <label htmlFor='bio'>About</label>
+            <textarea name='bio' id='bio' defaultValue={this.props.member.bio} />
             <p className='actions'>
               <button>Save</button>
               <a href={`/member/${this.props.member.id}`} className='button secondary'>Cancel</a>
@@ -104,11 +108,15 @@ export class MemberProfile extends React.Component {
     const actions = Member.canEdit(this.props.member, this.props.loggedInMember)
       ? (<p className='actions'><a href={`/member/${this.props.member.id}/edit`} className='button'>Edit Profile</a></p>)
       : (<React.Fragment />)
+    const bio = this.props.member.bio
+      ? (<div className='bio' dangerouslySetInnerHTML={{ __html: this.props.member.bioHTML }} />)
+      : null
     return (
       <React.Fragment>
         <Header />
         <main className='profile'>
           <h1>{this.props.member.name}</h1>
+          {bio}
           {actions}
         </main>
         <Footer />

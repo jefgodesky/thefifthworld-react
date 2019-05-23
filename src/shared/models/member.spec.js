@@ -104,24 +104,40 @@ describe('Member', () => {
     let update
 
     // Admin can update herself
-    await admin.update({ name: 'Checkpoint A' }, admin.getObject(), db)
+    await admin.update({
+      name: 'Checkpoint A',
+      bio: 'Checkpoint A'
+    }, admin.getObject(), db)
     update = await Member.get(1, db)
     checks.push(update.name === 'Checkpoint A')
+    checks.push(update.bio === 'Checkpoint A')
 
     // Admin can update a member
-    await member.update({ name: 'Checkpoint B' }, admin.getObject(), db)
+    await member.update({
+      name: 'Checkpoint B',
+      bio: 'Checkpoint B'
+    }, admin.getObject(), db)
     update = await Member.get(2, db)
     checks.push(update.name === 'Checkpoint B')
+    checks.push(update.bio === 'Checkpoint B')
 
     // Member can update herself
-    await member.update({ name: 'Checkpoint C' }, member.getObject(), db)
+    await member.update({
+      name: 'Checkpoint C',
+      bio: 'Checkpoint C'
+    }, member.getObject(), db)
     update = await Member.get(2, db)
     checks.push(update.name === 'Checkpoint C')
+    checks.push(update.bio === 'Checkpoint C')
 
     // Member CANNOT update an admin
-    await admin.update({ name: 'Checkpoint D' }, member.getObject(), db)
+    await admin.update({
+      name: 'Checkpoint D',
+      bio: 'Checkpoint D'
+    }, member.getObject(), db)
     update = await Member.get(1, db)
     checks.push(update.name === 'Checkpoint A')
+    checks.push(update.bio === 'Checkpoint A')
 
     // Can set a passphrase
     const password = 'New passphrase'

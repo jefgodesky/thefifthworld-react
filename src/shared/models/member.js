@@ -20,6 +20,7 @@ class Member {
     this.name = obj.name
     this.password = obj.password
     this.email = obj.email
+    this.bio = obj.bio
     this.active = Boolean(obj.active)
     this.admin = Boolean(obj.admin)
     this.invitations = obj.invitations
@@ -178,7 +179,8 @@ class Member {
     if (Member.canEdit(this.getObject(), editor)) {
       const fields = [
         { name: 'name', type: 'string' },
-        { name: 'email', type: 'string' }
+        { name: 'email', type: 'string' },
+        { name: 'bio', type: 'string' }
       ]
 
       if (vals.password) {
@@ -193,6 +195,7 @@ class Member {
       await db.run(`UPDATE members SET ${query} WHERE id=${this.id};`)
       this.name = vals.name
       this.email = vals.email
+      this.bio = vals.bio
     }
   }
 

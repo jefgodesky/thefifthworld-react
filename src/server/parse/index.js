@@ -7,7 +7,8 @@ import {
   doNotEmail,
   parseDownload,
   parseArt,
-  parseLocation
+  parseLocation,
+  parseClaim
 } from './special'
 
 marked.setOptions({
@@ -51,12 +52,13 @@ const parse = async (wikitext, db, path = null) => {
 
     // More stuff that we need to check with the database on, after Markdown
     // has been rendered.
+    wikitext = parseLocation(wikitext)
+    wikitext = parseClaim(wikitext)
     wikitext = await parseDownload(wikitext, db)
     wikitext = await parseArt(wikitext, db)
     wikitext = await listChildren(wikitext, path, db, true)
     wikitext = await listChildren(wikitext, path, db)
     wikitext = await parseLinks(wikitext, db)
-    wikitext = parseLocation(wikitext)
 
     return wikitext
   } else {

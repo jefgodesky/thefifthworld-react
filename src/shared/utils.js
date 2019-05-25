@@ -92,10 +92,22 @@ const getFileSizeStr = size => {
   }
 }
 
+/**
+ * Returns a deep clone of an object
+ * @param obj {any} - An object to clone.
+ * @returns {any} - A clone of the object provided.
+ */
+
+const clone = obj => {
+  const str = JSON.stringify(obj)
+  return JSON.parse(str)
+}
+
 export {
   checkExists,
   get,
   formatDate,
   dedupe,
-  getFileSizeStr
+  getFileSizeStr,
+  clone
 }

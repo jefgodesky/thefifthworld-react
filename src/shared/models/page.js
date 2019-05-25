@@ -18,6 +18,7 @@ class Page {
     this.file = page.file
     this.permissions = page.permissions.toString()
     this.owner = page.owner
+    this.claim = page.claim
     this.depth = page.depth
     this.lat = page.lat
     this.lon = page.lon
@@ -156,6 +157,26 @@ class Page {
   }
 
   /**
+   * Return the value of the first claim tag ([[Owner:X]]) inn the string
+   * provided.
+   * @param str {string} - A string of wikitext.
+   * @returns {null|number} - Either the value of the first claim tag or null
+   *   if no claim tag could be found.
+   */
+
+  static getClaim (str) {
+    if (str) {
+      const matches = str.match(/\[\[Owner:(.+?)\]\]/g)
+      if (matches && matches.length > 0) {
+        const first = matches[0].substr(2, matches[0].length - 4).split(':')
+        const r = first[0] === 'Owner' ? parseInt(first[1]) : null
+        return isNaN(r) ? null : r
+      }
+    }
+    return null
+  }
+
+  /**
    * Returns a path for a page by combining the path of its parent
    * concatenated with its own slug.
    * @param data {Object} - An object that should include a `slug` property
@@ -198,6 +219,7 @@ class Page {
     const pid = parent ? parent.id : 0
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
+    const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
     const type = data.type ? data.type : Page.getType(data.body)
@@ -211,8 +233,8 @@ class Page {
     } else {
       try {
         const ins = coords
-          ? `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth, lat, lon) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth}, ${coords.lat}, ${coords.lon});`
-          : `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${depth});`
+          ? `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, claim, depth, lat, lon) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
+          : `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, claim, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${claim}, ${depth});`
         const res = await db.run(ins)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
@@ -341,7 +363,9 @@ class Page {
 
     if (data.body) {
       const type = data.type ? data.type : Page.getType(data.body)
+      const claim = Page.getClaim(data.body)
       if (type && this.type !== type) update.type = type
+      if (this.claim !== claim) update.claim = claim
 
       const coords = Page.getLocation(data.body)
       if (coords) {
@@ -374,6 +398,7 @@ class Page {
         { name: 'type', type: 'string' },
         { name: 'permissions', type: 'number' },
         { name: 'owner', type: 'number' },
+        { name: 'claim', type: 'number' },
         { name: 'depth', type: 'number' },
         { name: 'lat', type: 'number' },
         { name: 'lon', type: 'number' }

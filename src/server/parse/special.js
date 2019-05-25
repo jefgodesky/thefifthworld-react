@@ -170,7 +170,17 @@ const doNotEmail = markup => {
  */
 
 const parseLocation = wikitext => {
-  return wikitext.replace(/\[\[Location:(.*?)\]\]/g, '').replace(/\ \ /g, ' ')
+  return wikitext.replace(/\[\[Location:(.*?)\]\]/g, '').replace(/\ +/g, ' ')
+}
+
+/**
+ * Remove all claim tags from the text.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - Text without claim tags.
+ */
+
+const parseClaim = wikitext => {
+  return wikitext.replace(/\[\[Owner:(.*?)\]\]/g, '').replace(/\ +/g, ' ')
 }
 
 export {
@@ -179,5 +189,6 @@ export {
   doNotEmail,
   parseDownload,
   parseArt,
-  parseLocation
+  parseLocation,
+  parseClaim
 }

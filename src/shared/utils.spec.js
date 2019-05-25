@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { checkExists, get, formatDate, dedupe, getFileSizeStr } from './utils'
+import { checkExists, get, formatDate, dedupe, getFileSizeStr, clone } from './utils'
 
 describe('checkExists', () => {
   it('can tell if a chain of properties exist', () => {
@@ -68,5 +68,30 @@ describe('getFileSizeStr', () => {
     const actual = sizes.map(size => getFileSizeStr(size))
     const expected = [ '900 B', '900 kB', '900 MB', '1.1 GB' ]
     expect(actual).toEqual(expected)
+  })
+})
+
+describe('clone', () => {
+  it('can deep clone objects', () => {
+    const obj = {
+      param: {
+        val: {
+          nested: true
+        }
+      }
+    }
+    const c = clone(obj)
+    expect(c).toEqual(obj)
+  })
+
+  it('can deep clone an array', () => {
+    const arr = [
+      { param: { val: { nested: true } } },
+      { param: { otherVal: [ 1, 2, 3 ] } },
+      'Hello',
+      [ 4, 5, 6 ]
+    ]
+    const c = clone(arr)
+    expect(c).toEqual(arr)
   })
 })

@@ -2,6 +2,7 @@
 
 import { escape as SQLEscape } from 'sqlstring'
 import Member from './member'
+import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
@@ -436,6 +437,52 @@ describe('Member', () => {
     const actual = await admin.getAuth(db)
     const expected = [ 'test' ]
     expect(actual).toEqual(expected)
+  })
+
+  it('can return a list of pages that the member has claimed', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Page 1',
+      body: 'This is a member\'s page. [[Owner:2]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Page 2',
+      body: 'This is a member\'s page. [[Owner:2]]'
+    }, admin, 'Initial text', db)
+    const pages = await member.getClaims(null, db)
+    const actual = pages.map(page => page.path)
+    expect(actual).toEqual([ '/page-1', '/page-2' ])
+  })
+
+  it('can return a list of pages that the memmber has claimed of a particular type', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Page 1',
+      body: 'This is a member\'s page. [[Type:A]] [[Owner:2]]',
+      path: '/a'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Page 2',
+      body: 'This is a member\'s page. [[Type:B]] [[Owner:2]]',
+      path: '/b'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Page 3',
+      body: 'This is a member\'s page. [[Type:A]] [[Owner:2]]',
+      path: '/c'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Page 4',
+      body: 'This is a member\'s page. [[Owner:2]]',
+      path: '/d'
+    }, admin, 'Initial text', db)
+    const pages = await member.getClaims('A', db)
+    const actual = pages.map(page => page.path)
+    expect(actual).toEqual([ '/a', '/c' ])
   })
 })
 

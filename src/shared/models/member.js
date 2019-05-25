@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt-nodejs'
 import { updateVals, generateInvitationCode } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
+import Page from './page'
 import parse from '../../server/parse'
 
 const msgTypes = {
@@ -480,6 +481,27 @@ class Member {
     } else {
       return null
     }
+  }
+
+  /**
+   * Returns pages that the member has claimed.
+   * @param type {string} - If supplied, returns only pages of that type.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<Array>} - A promise that resolves with an array of
+   *   Page objects.
+   */
+
+  async getClaims (type, db) {
+    const q = type
+      ? `SELECT id FROM pages WHERE claim = ${this.id} AND type = ${SQLEscape(type)};`
+      : `SELECT id FROM pages WHERE claim = ${this.id};`
+    const ids = await db.run(q)
+    const pages = []
+    for (const p of ids) {
+      const page = await Page.get(p.id, db)
+      pages.push(page)
+    }
+    return pages
   }
 }
 

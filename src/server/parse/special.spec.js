@@ -4,7 +4,8 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
   listChildren,
-  parseLocation
+  parseLocation,
+  parseClaim
 } from './special'
 import db from '../db'
 
@@ -161,6 +162,20 @@ describe('parseLocation', () => {
 
   it('hides all location tags', () => {
     const actual = parseLocation('This has [[Location:40.441848, -80.012827]] some text. [[Location:40.441848, -80.012827]] And some more text [[Location:40.441848, -80.012827]] after it, too.')
+    const expected = 'This has some text. And some more text after it, too.'
+    expect(actual).toEqual(expected)
+  })
+})
+
+describe('parseClaim', () => {
+  it('removes claims from wikitext', () => {
+    const actual = parseClaim('This has some text. [[Owner:2]] And some more text after it, too.')
+    const expected = 'This has some text. And some more text after it, too.'
+    expect(actual).toEqual(expected)
+  })
+
+  it('removes all claims from wikitext', () => {
+    const actual = parseClaim('This has [[Owner:2]] some text. [[Owner:3]] And some more text after it, [[Owner:4]] too.')
     const expected = 'This has some text. And some more text after it, too.'
     expect(actual).toEqual(expected)
   })

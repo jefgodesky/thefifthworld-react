@@ -5,12 +5,13 @@ import Page from '../../shared/models/page'
 import {
   listChildren,
   listOtherNames,
+  listNamesKnown,
   parseTags
 } from './special'
 import db from '../db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'members', 'pages', 'changes', 'names' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
@@ -176,6 +177,50 @@ describe('listOtherNames', () => {
   })
 })
 
+describe('listNamesKnown', () => {
+  it('lists names known', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, member, 'Initial text', db)
+    const actual = await listNamesKnown('{{NamesKnown}}', '/bob', db)
+    const expected = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody><tr><td><a href="/alice">Alice</a></td><td><a href="/alice/abba-zabba">Abba Zabba</a></td></tr></tbody></table>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('listens to tag attributes', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, member, 'Initial text', db)
+    const actual = await listNamesKnown('{{NamesKnown path="/bob"}}', '/alice', db)
+    const expected = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody><tr><td><a href="/alice">Alice</a></td><td><a href="/alice/abba-zabba">Abba Zabba</a></td></tr></tbody></table>'
+    expect(actual).toEqual(expected)
+  })
+})
+
 describe('parseTags', () => {
   it('hides tags in wikitext', () => {
     const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] And some more text after it, too. [[Type:Test]]')
@@ -185,7 +230,7 @@ describe('parseTags', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'members', 'pages', 'changes', 'names' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

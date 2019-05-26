@@ -151,6 +151,16 @@ const listArtists = async (wikitext, db) => {
   return wikitext
 }
 
+/**
+ * Searches wikitext for incidents of the string `{{OtherNames}}`. If any are
+ * found, shows all the names for the current page and replaces the template
+ * with that content.
+ * @param wikitext {string} - The wikitext string to parse.
+ * @param path {string} - The path of the page being parsed.
+ * @param db {Pool} - A database connection.
+ * @returns {Promise<*>} - A Promise that resolves with the updated wikitext.
+ */
+
 const listOtherNames = async (wikitext, path, db) => {
   const page = await Page.get(path, db)
   if (page) {
@@ -182,6 +192,27 @@ const listOtherNames = async (wikitext, path, db) => {
       markup += '</section>'
 
       wikitext = wikitext.replace(/{{OtherNames}}/gi, markup)
+    }
+  }
+  return wikitext
+}
+
+const listNamesKnown = async (wikitext, path, db) => {
+  const matches = wikitext.match(/{{NamesKnown(.*?)}}/g)
+  if (matches) {
+    for (let match of matches) {
+      const props = getProps(match)
+      const p = props.path ? props.path : path
+      const page = await Page.get(p, db)
+      if (page) {
+        const names = await page.getNamesKnown(db)
+        let markup = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody>'
+        for (const name of names) {
+          markup += `<tr><td><a href="${name.known.path}">${name.known.name}</a></td><td><a href="${name.path}">${name.name}</a></td></tr>`
+        }
+        markup += '</tbody></table>'
+        wikitext = wikitext.replace(match, markup)
+      }
     }
   }
   return wikitext
@@ -223,6 +254,7 @@ export {
   listChildren,
   listArtists,
   listOtherNames,
+  listNamesKnown,
   doNotEmail,
   parseDownload,
   parseArt,

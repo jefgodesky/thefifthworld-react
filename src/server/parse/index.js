@@ -4,6 +4,7 @@ import parseLinks from './links'
 import {
   listChildren,
   listArtists,
+  listOtherNames,
   doNotEmail,
   parseDownload,
   parseArt,
@@ -56,6 +57,7 @@ const parse = async (wikitext, db, path = null) => {
     wikitext = await parseArt(wikitext, db)
     wikitext = await listChildren(wikitext, path, db, true)
     wikitext = await listChildren(wikitext, path, db)
+    wikitext = await listOtherNames(wikitext, path, db)
     wikitext = await parseLinks(wikitext, db)
 
     return wikitext

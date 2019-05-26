@@ -495,6 +495,7 @@ class Page {
    *   knowers: Array}>} - An object with the following properties:
    *     - name:     The name in question.
    *     - path:     The path to the name's page.
+   *     - body:     The current body of the name page.
    *     - known:    An object identifying who the name refers to, with
    *                 properties `name` and `path`.
    *     - knowers:  An array of objects, each one referring to someone who
@@ -520,6 +521,7 @@ class Page {
       return {
         name: p.title,
         path: p.path,
+        body,
         known: {
           name: known.title,
           path: known.path

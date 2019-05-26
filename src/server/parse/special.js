@@ -1,6 +1,7 @@
 import Page from '../../shared/models/page'
 import { getURL, getProps } from './utils'
 import { getFileSizeStr } from '../../shared/utils'
+import parse from './index'
 
 /**
  * This method looks for tags in wikitext that refer to a page (per the `Page`
@@ -150,6 +151,42 @@ const listArtists = async (wikitext, db) => {
   return wikitext
 }
 
+const listOtherNames = async (wikitext, path, db) => {
+  const page = await Page.get(path, db)
+  if (page) {
+    const names = await page.getNames(db)
+    let markup = ''
+    for (const n of names) {
+      const knowers = n.knowers.map(knower => `<a href="${knower.path}">${knower.name}</a>`)
+      let k = ''
+      switch (knowers.length) {
+        case 0:
+          k = false
+          break
+        case 1:
+          k = knowers[0]
+          break
+        case 2:
+          k = `${knowers[0]} and ${knowers[1]}`
+          break
+        default:
+          const last = k.pop()
+          k = `${knowers.join(', ')}, and ${last}`
+          break
+      }
+
+      markup += '<section>'
+      markup += `<h3>${n.name}</h3>`
+      if (k) markup += `<p class="known-to">Known to ${k}.</p>`
+      markup += await parse(n.body, db)
+      markup += '</section>'
+
+      wikitext = wikitext.replace(/{{OtherNames}}/gi, markup)
+    }
+  }
+  return wikitext
+}
+
 /**
  * Removes all mailto: links from a string of markup, replacing each with the
  * text of the link.
@@ -185,6 +222,7 @@ const parseTags = wikitext => {
 export {
   listChildren,
   listArtists,
+  listOtherNames,
   doNotEmail,
   parseDownload,
   parseArt,

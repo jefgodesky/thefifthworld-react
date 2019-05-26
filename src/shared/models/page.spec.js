@@ -920,6 +920,7 @@ describe('Page', () => {
     const expected = {
       name: 'Abba Zabba',
       path: '/alice/abba-zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
       known: {
         name: 'Alice',
         path: '/alice'
@@ -953,6 +954,7 @@ describe('Page', () => {
     const expectedName = {
       name: 'Abba Zabba',
       path: '/alice/abba-zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
       knowers: [
         {
           name: 'Bob',
@@ -987,6 +989,7 @@ describe('Page', () => {
     const expectedName = {
       name: 'Abba Zabba',
       path: '/alice/abba-zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
       knowers: [
         {
           name: 'Bob',

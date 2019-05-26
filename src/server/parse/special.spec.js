@@ -4,6 +4,7 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
   listChildren,
+  listOtherNames,
   parseTags
 } from './special'
 import db from '../db'
@@ -149,6 +150,29 @@ describe('listChildren', () => {
     }, member, 'Initial text', db)
     const actual = await listChildren('{{Children order="alphabetical"}}', '/parent', db)
     expect(actual).toEqual('<ul>\n<li><a href="/parent/alice">Alice</a></li>\n<li><a href="/parent/bob">Bob</a></li>\n<li><a href="/parent/charlie">Charlie</a></li>\n</ul>')
+  })
+})
+
+describe('listOtherNames', () => {
+  it('lists other names', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, member, 'Initial text', db)
+    const actual = await listOtherNames('{{OtherNames}}', '/alice', db)
+    const expected = '<section><h3>Abba Zabba</h3><p class="known-to">Known to <a href="/bob">Bob</a>.</p><p>This is a name that <a href="/bob">Bob</a> knows. </p></section>'
+    expect(actual).toEqual(expected)
   })
 })
 

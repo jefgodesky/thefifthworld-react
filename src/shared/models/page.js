@@ -200,6 +200,23 @@ class Page {
   }
 
   /**
+   * Returns the content of all [[Knower]] tags in the string provided.
+   * @param str {string} - A string to search for [[Knower]] tags.
+   * @returns {Array} - An array of strings with the values of each [[Knower]]
+   *   tag in the provided string, in order.
+   */
+
+  static getKnowers (str) {
+    const knowers = []
+    const matches = str.match(/\[\[Knower:(.+?)\]\]/g)
+    for (const match of matches) {
+      const pair = match.substr(2, match.length - 4).split(':')
+      if (pair[0] === 'Knower') knowers.push(pair[1].trim())
+    }
+    return knowers
+  }
+
+  /**
    * Creates a new page.
    * @param data {Object} - An object defining the data for the page. Expected
    *   properties include `path` (for the page's path), `title` (for the page's
@@ -238,6 +255,7 @@ class Page {
         const res = await db.run(ins)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
+        if (type === 'Name') await Page.linkName(path, data.body, db)
         return Page.get(id, db)
       } catch (err) {
         throw err
@@ -412,6 +430,13 @@ class Page {
         const timestamp = Math.floor(Date.now() / 1000)
         const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
 
+        // It might be a name
+        if (data.body && this.type === 'Name') {
+          await Page.linkName(this.path, data.body, db)
+        } else if (this.type !== 'Name') {
+          await Page.unlinkName(this.path, db)
+        }
+
         // Add change to this instance
         this.changes.unshift({
           id: res.insertId,
@@ -427,6 +452,117 @@ class Page {
         throw err
       }
     }
+  }
+
+  /**
+   * Records links between pages created by a name.
+   * @param path {string} - The path of the name page.
+   * @param body {string} - The body of the name page, which should include
+   *   [[Knower]] tags for the people who know this name.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<void>} - A Promise that resolves when the necessary
+   *   database records have been added.
+   */
+
+  static async linkName (path, body, db) {
+    const knowers = Page.getKnowers(body)
+    for (const knower of knowers) {
+      const check = await db.run(`SELECT id FROM names WHERE name = ${SQLEscape(path)} AND knower = ${SQLEscape(knower)};`)
+      if (check.length === 0) {
+        await db.run(`INSERT INTO names (name, knower) VALUES (${SQLEscape(path)}, ${SQLEscape(knower)});`)
+      }
+    }
+  }
+
+  /**
+   * Removes links between pages when a page is no longer a name.
+   * @param path {string} - Path of the former name page.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<void>} - A Promise that resolves once all of the
+   *   database records that are no longer needed have been deleted.
+   */
+
+  static async unlinkName (path, db) {
+    await db.run(`DELETE FROM names WHERE name = ${SQLEscape(path)};`)
+  }
+
+  /**
+   * Fetches information about a name, who it refers to, and who knows it.
+   * @param page {string|Page} - The path of the name's page, or the Page
+   *   object itself.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<null|{path: *, known: {path, name: *}, name: *,
+   *   knowers: Array}>} - An object with the following properties:
+   *     - name:     The name in question.
+   *     - path:     The path to the name's page.
+   *     - known:    An object identifying who the name refers to, with
+   *                 properties `name` and `path`.
+   *     - knowers:  An array of objects, each one referring to someone who
+   *                 knows this name. Each object includes the properties
+   *                 `name` and `path`.
+   */
+
+  static async getName (page, db) {
+    const p = (page && page.constructor && page.constructor.name === 'Page')
+      ? page
+      : await Page.get(page, db)
+    if (p) {
+      const known = await Page.get(p.parent, db)
+      const content = p.getContent()
+      const body = content.body ? content.body : null
+      const knowerPaths = body ? Page.getKnowers(body) : []
+      const knowers = []
+      for (const path of knowerPaths) {
+        const knower = await Page.get(path, db)
+        if (knower) knowers.push({ name: knower.title, path })
+      }
+
+      return {
+        name: p.title,
+        path: p.path,
+        known: {
+          name: known.title,
+          path: known.path
+        },
+        knowers
+      }
+    } else {
+      return null
+    }
+  }
+
+  /**
+   * Returns names that refer to a person or place.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<Array>} - An array of objects. Each object is structured
+   *   with the `getName` method.
+   */
+
+  async getNames (db) {
+    const names = []
+    const pages = await this.getChildren(db, 'Name')
+    for (const page of pages) {
+      const name = await Page.getName(page.path, db)
+      names.push(name)
+    }
+    return names
+  }
+
+  /**
+   * Returns name that are known by a person.
+   * @param db {Pool} - A database connnection.
+   * @returns {Promise<Array>} - An array of objects. Each object is structured
+   *   with the `getName` method.
+   */
+
+  async getNamesKnown (db) {
+    const names = []
+    const paths = await db.run(`SELECT name FROM names WHERE knower = ${SQLEscape(this.path)};`)
+    for (const record of paths) {
+      const name = await Page.getName(record.name, db)
+      names.push(name)
+    }
+    return names
   }
 
   /**

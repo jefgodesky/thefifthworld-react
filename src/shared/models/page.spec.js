@@ -5,7 +5,7 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'members', 'pages', 'changes', 'names' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
@@ -692,6 +692,7 @@ describe('Page', () => {
   })
 
   it('saves coords when it\'s tagged with location', async () => {
+    expect.assertions(1)
     const member = await Member.get(2, db)
     const page = await Page.create({
       title: 'The Point',
@@ -703,6 +704,7 @@ describe('Page', () => {
   })
 
   it('marks the page as a place when it\'s tagged with location', async () => {
+    expect.assertions(1)
     const member = await Member.get(2, db)
     const page = await Page.create({
       title: 'The Point',
@@ -712,6 +714,7 @@ describe('Page', () => {
   })
 
   it('updates coords when it\'s tagged with location', async () => {
+    expect.assertions(1)
     const member = await Member.get(2, db)
     const page = await Page.create({
       title: 'New Page',
@@ -732,6 +735,7 @@ describe('Page', () => {
   })
 
   it('updates type to place when it\'s tagged with location', async () => {
+    expect.assertions(1)
     const member = await Member.get(2, db)
     const page = await Page.create({
       title: 'New Page',
@@ -780,6 +784,7 @@ describe('Page', () => {
   })
 
   it('lets a member claim a page', async () => {
+    expect.assertions(1)
     const admin = await Member.get(1, db)
     const page = await Page.create({
       title: 'New Page',
@@ -789,6 +794,7 @@ describe('Page', () => {
   })
 
   it('lets a member update a page to claim it', async () => {
+    expect.assertions(1)
     const admin = await Member.get(1, db)
     const page = await Page.create({
       title: 'New Page',
@@ -805,10 +811,200 @@ describe('Page', () => {
       expect(err).toEqual(null)
     }
   })
+
+  it('can pick up [[Knower]] tags', () => {
+    const actual = Page.getKnowers('Hello! [[Knower:/alice]] [[Knower:/bob]]')
+    const expected = [ '/alice', '/bob' ]
+    expect(actual).toEqual(expected)
+  })
+
+  it('can link names', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    const res = await db.run(`SELECT * FROM names WHERE name = '/alice/abba-zabba' AND knower = '/bob';`)
+    expect(res.length).toEqual(1)
+  })
+
+  it('doesn\'t duplicate records on name update', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    const name = await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    try {
+      await name.update({
+        title: 'Abba Zabba',
+        body: 'This is a name for Alice. We\'re updating it. [[Type:Name]] [[Knower:/bob]]'
+      }, admin, 'Small update.', db)
+      const res = await db.run(`SELECT * FROM names WHERE name = '/alice/abba-zabba' AND knower = '/bob';`)
+      expect(res.length).toEqual(1)
+    } catch (err) {
+      console.error(err)
+      expect(err).toEqual(null)
+    }
+  })
+
+  it('can add people who know a name', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Charlie',
+      body: 'This is Charlie\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    const name = await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    try {
+      await name.update({
+        title: 'Abba Zabba',
+        body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]] [[Knower:/charlie]]'
+      }, admin, 'Small update.', db)
+      const res = await db.run(`SELECT * FROM names WHERE name = '/alice/abba-zabba';`)
+      expect(res.length).toEqual(2)
+    } catch (err) {
+      console.error(err)
+      expect(err).toEqual(null)
+    }
+  })
+
+  it('can fetch a more useful object for a name', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    const actual = await Page.getName('/alice/abba-zabba', db)
+    const expected = {
+      name: 'Abba Zabba',
+      path: '/alice/abba-zabba',
+      known: {
+        name: 'Alice',
+        path: '/alice'
+      },
+      knowers: [
+        {
+          name: 'Bob',
+          path: '/bob'
+        }
+      ]
+    }
+    expect(actual).toEqual(expected)
+  })
+
+  it('can fetch a person\'s names', async () => {
+    const admin = await Member.get(1, db)
+    const a = await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    const actual = await a.getNames(db)
+    const expectedName = {
+      name: 'Abba Zabba',
+      path: '/alice/abba-zabba',
+      knowers: [
+        {
+          name: 'Bob',
+          path: '/bob'
+        }
+      ],
+      known: {
+        name: 'Alice',
+        path: '/alice'
+      }
+    }
+    const expected = [ expectedName ]
+    expect(actual).toEqual(expected)
+  })
+
+  it('can fetch the names that a person knows', async () => {
+    const admin = await Member.get(1, db)
+    await Page.create({
+      title: 'Alice',
+      body: 'This is Alice\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    const b = await Page.create({
+      title: 'Bob',
+      body: 'This is Bob\'s page. [[Type:Person]]'
+    }, admin, 'Initial text', db)
+    await Page.create({
+      title: 'Abba Zabba',
+      body: 'This is a name for Alice. [[Type:Name]] [[Knower:/bob]]',
+      parent: '/alice'
+    }, admin, 'Initial text', db)
+    const actual = await b.getNamesKnown(db)
+    const expectedName = {
+      name: 'Abba Zabba',
+      path: '/alice/abba-zabba',
+      knowers: [
+        {
+          name: 'Bob',
+          path: '/bob'
+        }
+      ],
+      known: {
+        name: 'Alice',
+        path: '/alice'
+      }
+    }
+    const expected = [ expectedName ]
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'members', 'pages', 'changes', 'names' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

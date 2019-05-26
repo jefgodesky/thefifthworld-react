@@ -4,8 +4,7 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
   listChildren,
-  parseLocation,
-  parseClaim
+  parseTags
 } from './special'
 import db from '../db'
 
@@ -153,29 +152,9 @@ describe('listChildren', () => {
   })
 })
 
-describe('parseLocation', () => {
-  it('hides location tag in wikitext', () => {
-    const actual = parseLocation('This has some text. [[Location:40.441848, -80.012827]] And some more text after it, too.')
-    const expected = 'This has some text. And some more text after it, too.'
-    expect(actual).toEqual(expected)
-  })
-
-  it('hides all location tags', () => {
-    const actual = parseLocation('This has [[Location:40.441848, -80.012827]] some text. [[Location:40.441848, -80.012827]] And some more text [[Location:40.441848, -80.012827]] after it, too.')
-    const expected = 'This has some text. And some more text after it, too.'
-    expect(actual).toEqual(expected)
-  })
-})
-
-describe('parseClaim', () => {
-  it('removes claims from wikitext', () => {
-    const actual = parseClaim('This has some text. [[Owner:2]] And some more text after it, too.')
-    const expected = 'This has some text. And some more text after it, too.'
-    expect(actual).toEqual(expected)
-  })
-
-  it('removes all claims from wikitext', () => {
-    const actual = parseClaim('This has [[Owner:2]] some text. [[Owner:3]] And some more text after it, [[Owner:4]] too.')
+describe('parseTags', () => {
+  it('hides tags in wikitext', () => {
+    const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] And some more text after it, too. [[Type:Test]]')
     const expected = 'This has some text. And some more text after it, too.'
     expect(actual).toEqual(expected)
   })

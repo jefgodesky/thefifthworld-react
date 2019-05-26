@@ -247,10 +247,10 @@ describe('Member', () => {
 
     const actual = await Member.getMessages(admin.id, db)
     const expected = {
-      confirmation: [ `<p>${confirmation}</p>\n` ],
-      error: [ `<p>${error}</p>\n` ],
-      warning: [ `<p>${warning}</p>\n` ],
-      info: [ `<p>${info}</p>\n`, `<p>${invalid}</p>\n` ]
+      confirmation: [ `<p>${confirmation}</p>` ],
+      error: [ `<p>${error}</p>` ],
+      warning: [ `<p>${warning}</p>` ],
+      info: [ `<p>${info}</p>`, `<p>${invalid}</p>` ]
     }
 
     expect(actual).toEqual(expected)
@@ -294,8 +294,8 @@ describe('Member', () => {
     const actual = await Member.getMessages(member.id, db)
     const expected = {
       confirmation: [
-        '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>\n',
-        '<p><strong>test1@thefifthworld.com</strong> already had an invitation, so we sent a reminder.</p>\n'
+        '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>',
+        '<p><strong>test1@thefifthworld.com</strong> already had an invitation, so we sent a reminder.</p>'
       ]
     }
     expect(actual).toEqual(expected)
@@ -332,26 +332,26 @@ describe('Member', () => {
     const expected = {
       adminMsg: {
         confirmation: [
-          '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>\n'
+          '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>'
         ],
         info: [
-          '<p><a href="/member/2">Normal</a> is already a member.</p>\n'
+          '<p><a href="/member/2">Normal</a> is already a member.</p>'
         ]
       },
       memberMsg: {
         confirmation: [
-          '<p><strong>test1@thefifthworld.com</strong> already had an invitation, so we sent a reminder.</p>\n',
-          '<p>Invitation sent to <strong>test2@thefifthworld.com</strong>.</p>\n',
-          '<p>Invitation sent to <strong>test3@thefifthworld.com</strong>.</p>\n',
-          '<p>Invitation sent to <strong>test4@thefifthworld.com</strong>.</p>\n',
-          '<p>Invitation sent to <strong>test5@thefifthworld.com</strong>.</p>\n',
-          '<p>Invitation sent to <strong>test6@thefifthworld.com</strong>.</p>\n'
+          '<p><strong>test1@thefifthworld.com</strong> already had an invitation, so we sent a reminder.</p>',
+          '<p>Invitation sent to <strong>test2@thefifthworld.com</strong>.</p>',
+          '<p>Invitation sent to <strong>test3@thefifthworld.com</strong>.</p>',
+          '<p>Invitation sent to <strong>test4@thefifthworld.com</strong>.</p>',
+          '<p>Invitation sent to <strong>test5@thefifthworld.com</strong>.</p>',
+          '<p>Invitation sent to <strong>test6@thefifthworld.com</strong>.</p>'
         ],
         info: [
-          '<p><a href="/member/1">Admin</a> is already a member.</p>\n'
+          '<p><a href="/member/1">Admin</a> is already a member.</p>'
         ],
         warning: [
-          '<p>Sorry, you’ve run out of invitations. No invitation sent to <strong>test7@thefifthworld.com</strong>.</p>\n'
+          '<p>Sorry, you’ve run out of invitations. No invitation sent to <strong>test7@thefifthworld.com</strong>.</p>'
         ]
       },
       adminInvites: 5,
@@ -377,14 +377,14 @@ describe('Member', () => {
     const actual = await Member.getMessages(2, db)
     const expected = {
       confirmation: [
-        '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>\n',
-        '<p>Invitation sent to <strong>test2@thefifthworld.com</strong>.</p>\n',
-        '<p>Invitation sent to <strong>test3@thefifthworld.com</strong>.</p>\n',
-        '<p>Invitation sent to <strong>test4@thefifthworld.com</strong>.</p>\n',
-        '<p>Invitation sent to <strong>test5@thefifthworld.com</strong>.</p>\n'
+        '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>',
+        '<p>Invitation sent to <strong>test2@thefifthworld.com</strong>.</p>',
+        '<p>Invitation sent to <strong>test3@thefifthworld.com</strong>.</p>',
+        '<p>Invitation sent to <strong>test4@thefifthworld.com</strong>.</p>',
+        '<p>Invitation sent to <strong>test5@thefifthworld.com</strong>.</p>'
       ],
       warning: [
-        '<p>Sorry, you’ve run out of invitations. No invitation sent to <strong>test6@thefifthworld.com</strong>.</p>\n'
+        '<p>Sorry, you’ve run out of invitations. No invitation sent to <strong>test6@thefifthworld.com</strong>.</p>'
       ]
     }
     expect(actual).toEqual(expected)

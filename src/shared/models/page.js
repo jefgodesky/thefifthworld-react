@@ -68,7 +68,9 @@ class Page {
       /^\/dashboard(\/(.*))?$/g,
       /^\/new(\/(.*))?$/g,
       /^\/upload(\/(.*))?$/g,
-      /^\/autocomplete(\/(.*))?$/g
+      /^\/autocomplete(\/(.*))?$/g,
+      /^\/like(\/(.*))?$/g,
+      /^\/unlike(\/(.*))?$/g
     ]
 
     for (let pattern of reservedPaths) {

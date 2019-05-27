@@ -22,6 +22,7 @@ class Page {
     this.depth = page.depth
     this.lat = page.lat
     this.lon = page.lon
+    this.likes = page.likes
     this.changes = []
 
     changes.forEach(change => {
@@ -292,6 +293,9 @@ class Page {
         // And see if it has any files...
         const files = await db.run(`SELECT * FROM files WHERE page=${pages[0].id} ORDER BY timestamp DESC;`)
         if (files) pages[0].file = files[0]
+        // And find out who likes it...
+        const likes = await db.run(`SELECT member FROM likes WHERE page=${pages[0].id};`)
+        if (likes) pages[0].likes = likes.map(like => like.member)
         return new Page(pages[0], changes)
       } else {
         // Either no pages found, or too many (which should never happen).
@@ -677,6 +681,40 @@ class Page {
   static async getPaths (arr, db) {
     const map = arr.map(s => SQLEscape(s)).join(', ')
     return db.run(`SELECT title, path FROM pages WHERE title IN (${map}) OR path IN (${map}) ORDER BY depth, id;`)
+  }
+
+  /**
+   * Records a "like" for a page.
+   * @param id {number} - The ID of the member liking the page.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<void>} - A Promise that resolves when the like has been
+   *   recorded to the database.
+   */
+
+  async like (id, db) {
+    const check1 = this.likes.indexOf(id) < 0 && !isNaN(id)
+    if (check1) {
+      const check2 = await db.run(`SELECT id FROM likes WHERE page = ${this.id} AND member = ${id};`)
+      if (check2.length === 0) {
+        await db.run(`INSERT INTO likes (path, page, member) VALUES (${SQLEscape(this.path)}, ${this.id}, ${id});`)
+        this.likes.push(id)
+      }
+    }
+  }
+
+  /**
+   * Removes a member's "like" from a page.
+   * @param id {nnumber} - The ID of the member removing her like.
+   * @param db {Pool} - A database connection.
+   * @returns {Promise<void>} - A Promise that is resolved when the record of
+   *   the member's "like" has been removed.
+   */
+
+  async unlike (id, db) {
+    if (!isNaN(id)) {
+      await db.run(`DELETE FROM likes WHERE page = ${this.id} AND member = ${id};`)
+      this.likes = this.likes.filter(member => member !== id)
+    }
   }
 }
 

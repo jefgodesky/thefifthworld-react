@@ -107,6 +107,30 @@ PageRouter.get('/*?/rollback/:id', async (req, res) => {
   }
 })
 
+// GET /*?/like
+PageRouter.get('/*?/like', async (req, res) => {
+  const path = `/${req.params[0]}`
+  const page = await Page.get(path, db)
+  if (page && req.user) {
+    await page.like(req.user.id, db)
+    res.redirect(path)
+  } else {
+    res.redirect('/')
+  }
+})
+
+// GET /*?/unlike
+PageRouter.get('/*?/unlike', async (req, res) => {
+  const path = `/${req.params[0]}`
+  const page = await Page.get(path, db)
+  if (page && req.user) {
+    await page.unlike(req.user.id, db)
+    res.redirect(path)
+  } else {
+    res.redirect('/')
+  }
+})
+
 // POST *
 PageRouter.post('*', async (req, res) => {
   const query = req.originalUrl.split('?')

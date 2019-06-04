@@ -1,7 +1,7 @@
 #
 # SQL Export
 # Created by Querious (201054)
-# Created: June 3, 2019 at 5:33:13 PM EDT
+# Created: June 4, 2019 at 5:12:31 PM EDT
 # Encoding: Unicode (UTF-8)
 #
 
@@ -108,6 +108,8 @@ CREATE TABLE `names` (
 CREATE TABLE `pages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `description` varchar(240) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Four hundred years from now, humanity thrives beyond civilization.',
+  `image` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg',
   `slug` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `path` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `parent` int(11) unsigned DEFAULT '0',

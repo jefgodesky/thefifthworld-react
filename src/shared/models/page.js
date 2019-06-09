@@ -1,5 +1,6 @@
 import config from '../../../config'
 import slugify from '../slugify'
+import plainParse from '../../server/parse/plain'
 import { updateVals } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
 import { checkPermissions, canRead, canWrite } from '../permissions'
@@ -114,19 +115,20 @@ class Page {
    * @returns {string} - Suitable body text for the page given.
    */
 
-  static getDescription (body) {
+  static async getDescription (body) {
     // Google truncates descriptions to ~155-160 characters, so we want to make
     // a description that uses all the complete sentences that will fit into
     // that space.
     const cutoff = 150
-    if (!body || body.length === 0) {
+    const txt = await plainParse(body)
+    if (!txt || txt.length === 0) {
       // Things have gone wrong in a completely unexpected way. Return our
       // default description.
       return 'Four hundred years from now, humanity thrives beyond civilization.'
-    } else if (body.length < cutoff) {
-      return body
+    } else if (txt.length < cutoff) {
+      return txt
     } else {
-      const sentences = body.match(/[^\.!\?]+[\.!\?]+/g)
+      const sentences = txt.match(/[^\.!\?]+[\.!\?]+/g)
       let desc = sentences[0]
       let i = 1
       let ready = false
@@ -277,7 +279,7 @@ class Page {
     const pid = parent ? parent.id : 0
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
-    const description = data.description ? data.description : Page.getDescription(data.body)
+    const description = data.description ? data.description : await Page.getDescription(data.body)
     const image = data.image ? data.image : `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/social/default.jpg`
     const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774

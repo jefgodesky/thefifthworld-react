@@ -30,10 +30,11 @@ marked.setOptions({
  * @param db {Pool} - A database connection. If none is provided, the method
  *   makes a request to the `/get-paths` endpoint. The `db` parameter is
  *   mostly for testing -- in production, this should generally use the
- *   endpoint, as this method is used on both the client and the server.
+ *   endpoint, as this method is used on both the client and the server. If
+ *   this is `null`, templates and links will not be parsed.
  * @param path {string} - The path of the page for which we're parsing this
  *   wikitext. This is used as the default reference point should the
- *   wikitext request a list of child pages. Defaults to null.
+ *   wikitext request a list of child pages. (Default: null)
  * @returns {string} - The HTML string defined by the given wikitext.
  */
 
@@ -44,23 +45,25 @@ const parse = async (wikitext, db, path = null) => {
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
 
     // Render templates.
-    wikitext = await parseTemplates(wikitext, db)
+    if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
-    wikitext = await listArtists(wikitext, db)
+    if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
 
     // More stuff that we need to check with the database on, after Markdown
     // has been rendered.
     wikitext = parseTags(wikitext)
-    wikitext = await parseDownload(wikitext, db)
-    wikitext = await parseArt(wikitext, db)
-    wikitext = await listChildren(wikitext, path, db, true)
-    wikitext = await listChildren(wikitext, path, db)
-    wikitext = await listOtherNames(wikitext, path, db)
-    wikitext = await listNamesKnown(wikitext, path, db)
-    wikitext = await parseLinks(wikitext, db)
+    if (db) {
+      wikitext = await parseDownload(wikitext, db)
+      wikitext = await parseArt(wikitext, db)
+      wikitext = await listChildren(wikitext, path, db, true)
+      wikitext = await listChildren(wikitext, path, db)
+      wikitext = await listOtherNames(wikitext, path, db)
+      wikitext = await listNamesKnown(wikitext, path, db)
+      wikitext = await parseLinks(wikitext, db)
+    }
 
     return wikitext
   } else {

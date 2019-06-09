@@ -85,6 +85,16 @@ describe('Page', () => {
     }, member, 'Initial text', db)
     expect(page.description).toEqual('The world has changed. The ruins of ancient cities lie submerged beneath the swollen seas.')
   })
+
+  it('does not count Markdown', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'For this test, we need sentences very close to the limit. **We have Markdown**, and if you count those characters, then this sentence won\'t make the cut. But if you don\'t count the Markdown, it will.'
+    }, member, 'Initial text', db)
+    expect(page.description).toEqual('For this test, we need sentences very close to the limit. We have Markdown, and if you count those characters, then this sentence won’t make the cut.')
+  })
 })
 
 afterEach(async () => {

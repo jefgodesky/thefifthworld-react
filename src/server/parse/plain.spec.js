@@ -23,4 +23,11 @@ describe('plainParse', () => {
     const expected = 'This has a template.'
     expect(actual).toEqual(expected)
   })
+
+  it('strips out tags', async () => {
+    expect.assertions(1)
+    const actual = await plainParse('This has tags. [[Type:Test]] [[Knower:/bob]] [[Location:40.441848, -80.012827]] [[Owner:2]]')
+    const expected = 'This has tags.'
+    expect(actual).toEqual(expected)
+  })
 })

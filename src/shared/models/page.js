@@ -109,6 +109,41 @@ class Page {
   }
 
   /**
+   * Derives a suitable description from body text.
+   * @param body {string} - Body text for a page.
+   * @returns {string} - Suitable body text for the page given.
+   */
+
+  static getDescription (body) {
+    // Google truncates descriptions to ~155-160 characters, so we want to make
+    // a description that uses all the complete sentences that will fit into
+    // that space.
+    const cutoff = 150
+    if (!body || body.length === 0) {
+      // Things have gone wrong in a completely unexpected way. Return our
+      // default description.
+      return 'Four hundred years from now, humanity thrives beyond civilization.'
+    } else if (body.length < cutoff) {
+      return body
+    } else {
+      const sentences = body.match(/[^\.!\?]+[\.!\?]+/g)
+      let desc = sentences[0]
+      let i = 1
+      let ready = false
+      while (!ready) {
+        const candidate = `${desc.trim()} ${sentences[i].trim()}`
+        if ((candidate.length > cutoff) || (i === sentences.length - 1)) {
+          ready = true
+        } else {
+          desc = candidate
+          i++
+        }
+      }
+      return desc
+    }
+  }
+
+  /**
    * If the string includes a location tag, this returns an object with the
    * latitude and longitude specified by the last tag.
    * @param str {string} - A string of wikitext.
@@ -242,7 +277,7 @@ class Page {
     const pid = parent ? parent.id : 0
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
-    const description = data.description ? data.description : 'Four hundred years from now, humanity thrives beyond civilization.'
+    const description = data.description ? data.description : Page.getDescription(data.body)
     const image = data.image ? data.image : `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/social/default.jpg`
     const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774

@@ -75,6 +75,16 @@ describe('Page', () => {
     }, member, 'Testing description update', db)
     expect(page.description).toEqual(description)
   })
+
+  it('will create a description from the body if no other is provided', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'The world has changed. The ruins of ancient cities lie submerged beneath the swollen seas. Beaches of translucent plastic sand mark new boundaries between land and water. Jungles stretch from the equator to the poles. Herds of elephants trample savannas in Canada and Russia.'
+    }, member, 'Initial text', db)
+    expect(page.description).toEqual('The world has changed. The ruins of ancient cities lie submerged beneath the swollen seas.')
+  })
 })
 
 afterEach(async () => {

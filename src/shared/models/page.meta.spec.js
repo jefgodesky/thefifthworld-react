@@ -45,6 +45,36 @@ describe('Page', () => {
     }, member, 'Testing image update', db)
     expect(page.image).toEqual(image)
   })
+
+  it('can create a page with a description', async () => {
+    expect.assertions(1)
+    const description = 'This is a description.'
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      description
+    }, member, 'Initial text', db)
+    expect(page.description).toEqual(description)
+  })
+
+  it('can update a page\'s description', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      description: 'This is the old description.'
+    }, member, 'Initial text', db)
+
+    const description = 'This is the new description.'
+    await page.update({
+      title: 'New Page',
+      body: 'New content',
+      description
+    }, member, 'Testing description update', db)
+    expect(page.description).toEqual(description)
+  })
 })
 
 afterEach(async () => {

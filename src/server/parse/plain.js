@@ -32,8 +32,9 @@ const plainParse = async (markdown) => {
   let plain = await parse(markdown)
   plain = plain.replace(/<[^>]*>?/gm, '')
   plain = plainParseLinks(plain)
+  plain = plain.replace(/{{(.*?)}}/g, '')
   plain = plain.replace(/\s+/g, ' ')
-  return plain
+  return plain.trim()
 }
 
 export default plainParse

@@ -16,4 +16,11 @@ describe('plainParse', () => {
     const expected = 'This has a simple link and a more complex one.'
     expect(actual).toEqual(expected)
   })
+
+  it('strips out templates', async () => {
+    expect.assertions(1)
+    const actual = await plainParse('{{TemplateName param="here" otherParam="also here"}} This has a template.')
+    const expected = 'This has a template.'
+    expect(actual).toEqual(expected)
+  })
 })

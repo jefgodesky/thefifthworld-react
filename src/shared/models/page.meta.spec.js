@@ -27,6 +27,24 @@ describe('Page', () => {
     }, member, 'Initial text', db)
     expect(page.image).toEqual(image)
   })
+
+  it('can update a page\'s image', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      image: 'https://example.com/old.png'
+    }, member, 'Initial text', db)
+
+    const image = 'https://example.com/new.png'
+    await page.update({
+      title: 'New Page',
+      body: 'New content',
+      image
+    }, member, 'Testing image update', db)
+    expect(page.image).toEqual(image)
+  })
 })
 
 afterEach(async () => {

@@ -370,7 +370,7 @@ class Page {
 
   async update (data, editor, msg, db) {
     // What updates do we need to make to the page itself?
-    const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner', 'type']
+    const inPage = [ 'title', 'description', 'image', 'slug', 'path', 'parent', 'permissions', 'owner', 'type' ]
     const update = {}
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
@@ -421,6 +421,8 @@ class Page {
       // Update the pages table in the database
       const fields = [
         { name: 'title', type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'image', type: 'string' },
         { name: 'slug', type: 'string' },
         { name: 'path', type: 'string' },
         { name: 'parent', type: 'number' },

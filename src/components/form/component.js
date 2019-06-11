@@ -39,6 +39,8 @@ export class Form extends React.Component {
       title: get(this.props, 'page.title'),
       body: get(this.props, 'page.curr.body'),
       message: '',
+      description: get(this.props, 'page.description'),
+      image: get(this.props, 'page.image'),
       errors: this.props.error ? this.props.error.errors : []
     }
 
@@ -204,9 +206,28 @@ export class Form extends React.Component {
    * This method is called whenever a user changes the body.
    * @param body {string} - The new body value.
    */
+
   changeBody (body) {
     this.setState({ body })
     this.checkValidTemplate({ body })
+  }
+
+  /**
+   * This method is called whenever a user changes the description.
+   * @param description {string} - The value of the description field.
+   */
+
+  changeDescription (description) {
+    this.setState({ description })
+  }
+
+  /**
+   * This method is called whenever a user changes the imagee meta tag value.
+   * @param image {string} - Thee value of the image field.
+   */
+
+  changeImage (image) {
+    this.setState({ image })
   }
 
   /**
@@ -338,7 +359,9 @@ export class Form extends React.Component {
         </label>
         <textarea
           name='description'
-          id='description' />
+          id='description'
+          defaultValue={this.state.description}
+          onChange={event => this.changeDescription(event.target.value)} />
         <label htmlFor='image'>
           Image
           <p className='note'>Image used by social media when you share this page.</p>
@@ -346,7 +369,9 @@ export class Form extends React.Component {
         <input
           type='text'
           name='image'
-          id='image' />
+          id='image'
+          defaultValue={this.state.image}
+          onChange={event => this.changeImage(event.target.value)} />
       </aside>
     )
   }
@@ -379,7 +404,7 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { errors, title, path, parent, body, file, thumbnail, message } = this.state
+      const { errors, title, path, parent, body, file, thumbnail, message, description, image } = this.state
       const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
@@ -398,6 +423,8 @@ export class Form extends React.Component {
           data.set('type', type)
           data.set('body', b)
           data.set('message', message)
+          data.set('description', description)
+          data.set('image', image)
           if (file) data.append('file', file, file.name)
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
 

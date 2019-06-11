@@ -325,6 +325,33 @@ export class Form extends React.Component {
   }
 
   /**
+   * Render meta tag options.
+   * @returns {*} - JSX to render meta tag options.
+   */
+
+  renderMeta () {
+    return (
+      <aside className='meta'>
+        <label htmlFor='description'>
+          Description
+          <p className='note'>A short description added to the head of the page, used by search engines and other robots.</p>
+        </label>
+        <textarea
+          name='description'
+          id='description' />
+        <label htmlFor='image'>
+          Image
+          <p className='note'>Image used by social media when you share this page.</p>
+        </label>
+        <input
+          type='text'
+          name='image'
+          id='image' />
+      </aside>
+    )
+  }
+
+  /**
    * This method is passed to the `update` prop of the `FormUpload` component
    * to update this component's state when the file or thumbnail are edited.
    * @param data {Object} - An object with a `file` property and a `thumbnail`
@@ -448,9 +475,8 @@ export class Form extends React.Component {
           id='body'
           defaultValue={this.state.body}
           onChange={event => this.changeBody(event.target.value)} />
-        <aside className='note'>
-          <p>You can format your page using <a href='/markown'>markdown</a>.</p>
-        </aside>
+        <p className='instructions'>You can format your page using <a href='/markown'>markdown</a>.</p>
+        {this.renderMeta()}
         {this.renderMessageField()}
         <FormActions
           loggedInMember={this.props.loggedInMember}

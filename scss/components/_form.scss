@@ -1,0 +1,10 @@
+form.wiki {
+  .meta {
+    padding-bottom: ms(2);
+    padding-top: ms(2);
+
+    & > label:first-child {
+      margin-top: 0;
+    }
+  }
+}

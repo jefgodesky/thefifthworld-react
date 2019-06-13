@@ -27,6 +27,7 @@ export class Form extends React.Component {
     autoBind(this)
 
     const description = get(this.props, 'page.description')
+    const image = get(this.props, 'page.image') || 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
     this.state = {
       isClient: false,
       isLoading: false,
@@ -42,7 +43,7 @@ export class Form extends React.Component {
       body: get(this.props, 'page.curr.body'),
       message: '',
       description,
-      image: get(this.props, 'page.image'),
+      image,
       errors: this.props.error ? this.props.error.errors : []
     }
 

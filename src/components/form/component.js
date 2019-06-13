@@ -26,9 +26,12 @@ export class Form extends React.Component {
     super(props)
     autoBind(this)
 
+    const description = get(this.props, 'page.description')
+    const image = get(this.props, 'page.image') || 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
     this.state = {
       isClient: false,
       isLoading: false,
+      hasSetDescription: Boolean(description),
       showPath: true,
       showSuggestions: false,
       file: null,
@@ -39,6 +42,8 @@ export class Form extends React.Component {
       title: get(this.props, 'page.title'),
       body: get(this.props, 'page.curr.body'),
       message: '',
+      description,
+      image,
       errors: this.props.error ? this.props.error.errors : []
     }
 
@@ -204,9 +209,34 @@ export class Form extends React.Component {
    * This method is called whenever a user changes the body.
    * @param body {string} - The new body value.
    */
-  changeBody (body) {
-    this.setState({ body })
+
+  async changeBody (body) {
+    if (this.state.hasSetDescription) {
+      this.setState({ body })
+    } else {
+      const description = await Page.getDescription(body)
+      this.setState({ body, description })
+    }
     this.checkValidTemplate({ body })
+  }
+
+  /**
+   * This method is called whenever a user changes the description.
+   * @param description {string} - The value of the description field.
+   */
+
+  changeDescription (description) {
+    this.setState({ description })
+    if (!this.state.hasSetDescription) this.setState({ hasSetDescription: true })
+  }
+
+  /**
+   * This method is called whenever a user changes the imagee meta tag value.
+   * @param image {string} - Thee value of the image field.
+   */
+
+  changeImage (image) {
+    this.setState({ image })
   }
 
   /**
@@ -325,6 +355,37 @@ export class Form extends React.Component {
   }
 
   /**
+   * Render meta tag options.
+   * @returns {*} - JSX to render meta tag options.
+   */
+
+  renderMeta () {
+    return (
+      <aside className='meta'>
+        <label htmlFor='description'>
+          Description
+          <p className='note'>A short description added to the head of the page, used by search engines and other robots.</p>
+        </label>
+        <textarea
+          name='description'
+          id='description'
+          value={this.state.description}
+          onChange={event => this.changeDescription(event.target.value)} />
+        <label htmlFor='image'>
+          Image
+          <p className='note'>Image used by social media when you share this page.</p>
+        </label>
+        <input
+          type='text'
+          name='image'
+          id='image'
+          defaultValue={this.state.image}
+          onChange={event => this.changeImage(event.target.value)} />
+      </aside>
+    )
+  }
+
+  /**
    * This method is passed to the `update` prop of the `FormUpload` component
    * to update this component's state when the file or thumbnail are edited.
    * @param data {Object} - An object with a `file` property and a `thumbnail`
@@ -352,7 +413,7 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { errors, title, path, parent, body, file, thumbnail, message } = this.state
+      const { errors, title, path, parent, body, file, thumbnail, message, description, image } = this.state
       const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
@@ -371,6 +432,8 @@ export class Form extends React.Component {
           data.set('type', type)
           data.set('body', b)
           data.set('message', message)
+          data.set('description', description)
+          data.set('image', image)
           if (file) data.append('file', file, file.name)
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
 
@@ -448,9 +511,8 @@ export class Form extends React.Component {
           id='body'
           defaultValue={this.state.body}
           onChange={event => this.changeBody(event.target.value)} />
-        <aside className='note'>
-          <p>You can format your page using <a href='/markown'>markdown</a>.</p>
-        </aside>
+        <p className='instructions'>You can format your page using <a href='/markown'>markdown</a>.</p>
+        {this.renderMeta()}
         {this.renderMessageField()}
         <FormActions
           loggedInMember={this.props.loggedInMember}

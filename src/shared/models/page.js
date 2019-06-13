@@ -1,4 +1,6 @@
+import config from '../../../config'
 import slugify from '../slugify'
+import plainParse from '../../server/parse/plain'
 import { updateVals } from '../../server/utils'
 import { escape as SQLEscape } from 'sqlstring'
 import { checkPermissions, canRead, canWrite } from '../permissions'
@@ -11,6 +13,8 @@ class Page {
   constructor (page, changes) {
     this.id = page.id
     this.title = page.title
+    this.description = page.description
+    this.image = page.image
     this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
@@ -103,6 +107,42 @@ class Page {
       'Download'
     ]
     return (type === 'Template' && reservedTemplates.indexOf(title) > -1)
+  }
+
+  /**
+   * Derives a suitable description from body text.
+   * @param body {string} - Body text for a page.
+   * @returns {string} - Suitable body text for the page given.
+   */
+
+  static async getDescription (body) {
+    // Google truncates descriptions to ~155-160 characters, so we want to make
+    // a description that uses all the complete sentences that will fit into
+    // that space.
+    const cutoff = 150
+    const txt = await plainParse(body)
+    if (!txt || txt.length === 0) {
+      // Things have gone wrong in a completely unexpected way. Return our
+      // default description.
+      return 'Four hundred years from now, humanity thrives beyond civilization.'
+    } else if (txt.length < cutoff) {
+      return txt
+    } else {
+      const sentences = txt.match(/[^\.!\?]+[\.!\?]+/g)
+      let desc = sentences[0]
+      let i = 1
+      let ready = false
+      while (!ready) {
+        const candidate = `${desc.trim()} ${sentences[i].trim()}`
+        if ((candidate.length > cutoff) || (i === sentences.length - 1)) {
+          ready = true
+        } else {
+          desc = candidate
+          i++
+        }
+      }
+      return desc
+    }
   }
 
   /**
@@ -239,6 +279,8 @@ class Page {
     const pid = parent ? parent.id : 0
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
+    const description = data.description ? data.description : await Page.getDescription(data.body)
+    const image = data.image ? data.image : `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/social/default.jpg`
     const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
@@ -253,8 +295,8 @@ class Page {
     } else {
       try {
         const ins = coords
-          ? `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, claim, depth, lat, lon) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
-          : `INSERT INTO pages (slug, path, parent, type, title, permissions, owner, claim, depth) VALUES ('${slug}', '${path}', ${pid}, '${type}', '${title}', ${permissions}, ${editor.id}, ${claim}, ${depth});`
+          ? `INSERT INTO pages (slug, path, parent, type, title, description, image, permissions, owner, claim, depth, lat, lon) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
+          : `INSERT INTO pages (slug, path, parent, type, title, description, image, permissions, owner, claim, depth) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${permissions}, ${editor.id}, ${claim}, ${depth});`
         const res = await db.run(ins)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
@@ -365,7 +407,7 @@ class Page {
 
   async update (data, editor, msg, db) {
     // What updates do we need to make to the page itself?
-    const inPage = ['title', 'slug', 'path', 'parent', 'permissions', 'owner', 'type']
+    const inPage = [ 'title', 'description', 'image', 'slug', 'path', 'parent', 'permissions', 'owner', 'type' ]
     const update = {}
     for (const key of inPage) {
       if (data[key] && this[key] !== data[key]) {
@@ -416,6 +458,8 @@ class Page {
       // Update the pages table in the database
       const fields = [
         { name: 'title', type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'image', type: 'string' },
         { name: 'slug', type: 'string' },
         { name: 'path', type: 'string' },
         { name: 'parent', type: 'number' },

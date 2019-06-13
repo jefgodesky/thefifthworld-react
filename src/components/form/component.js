@@ -26,9 +26,11 @@ export class Form extends React.Component {
     super(props)
     autoBind(this)
 
+    const description = get(this.props, 'page.description')
     this.state = {
       isClient: false,
       isLoading: false,
+      hasSetDescription: Boolean(description),
       showPath: true,
       showSuggestions: false,
       file: null,
@@ -39,7 +41,7 @@ export class Form extends React.Component {
       title: get(this.props, 'page.title'),
       body: get(this.props, 'page.curr.body'),
       message: '',
-      description: get(this.props, 'page.description'),
+      description,
       image: get(this.props, 'page.image'),
       errors: this.props.error ? this.props.error.errors : []
     }
@@ -207,8 +209,13 @@ export class Form extends React.Component {
    * @param body {string} - The new body value.
    */
 
-  changeBody (body) {
-    this.setState({ body })
+  async changeBody (body) {
+    if (this.state.hasSetDescription) {
+      this.setState({ body })
+    } else {
+      const description = await Page.getDescription(body)
+      this.setState({ body, description })
+    }
     this.checkValidTemplate({ body })
   }
 
@@ -219,6 +226,7 @@ export class Form extends React.Component {
 
   changeDescription (description) {
     this.setState({ description })
+    if (!this.state.hasSetDescription) this.setState({ hasSetDescription: true })
   }
 
   /**
@@ -360,7 +368,7 @@ export class Form extends React.Component {
         <textarea
           name='description'
           id='description'
-          defaultValue={this.state.description}
+          value={this.state.description}
           onChange={event => this.changeDescription(event.target.value)} />
         <label htmlFor='image'>
           Image

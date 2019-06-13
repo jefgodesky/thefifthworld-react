@@ -29,7 +29,7 @@ const plainParseLinks = txt => {
  */
 
 const plainParse = async (markdown) => {
-  let plain = await parse(markdown)
+  let plain = await parse(markdown) || ''
   plain = plain.replace(/<[^>]*>?/gm, '')
   plain = plainParseLinks(plain)
   plain = plain.replace(/{{(.*?)}}/g, '')

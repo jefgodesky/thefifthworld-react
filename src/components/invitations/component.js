@@ -84,12 +84,13 @@ export class Invitations extends React.Component {
    */
 
   render () {
-    const invitationCount = this.props.loggedInMember.admin ? '∞' : this.props.loggedInMember.invitations
+    const { loggedInMember } = this.props
+    const invitationCount = loggedInMember.admin ? '∞' : loggedInMember.invitations
     const invitations = this.getInvitations()
 
     return (
       <React.Fragment>
-        <Header />
+        <Header name={loggedInMember.name} />
         <main className='invitations'>
           <nav className='breadcrumbs'>
             <ul>

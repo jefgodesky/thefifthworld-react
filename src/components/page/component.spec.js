@@ -15,13 +15,13 @@ it('should render a wiki page by default', () => {
 
 it('should display a 404 error if there is no page', () => {
   const wrapper = shallow(<Page loggedInMember={null} page={null} />)
-  expect(wrapper.find('Error404').length).toEqual(1)
+  expect(wrapper.find('Connect(Error404)').length).toEqual(1)
 })
 
 it('should display a 401 error if you\'re not authorized to read it', () => {
   const page = { permissions: 700 }
   const wrapper = shallow(<Page loggedInMember={null} page={page} />)
-  expect(wrapper.find('Error401').length).toEqual(1)
+  expect(wrapper.find('Connect(Error401)').length).toEqual(1)
 })
 
 it('should render for admin regardless of permissions', () => {

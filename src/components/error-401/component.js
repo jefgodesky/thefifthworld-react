@@ -1,13 +1,15 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Header from '../header/component'
 import Footer from '../footer/component'
 import autoBind from 'react-autobind'
+import { connect } from 'react-redux'
 
 /**
  * This component handles a 404 error page.
  */
 
-class Error401 extends React.Component {
+export class Error401 extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -19,9 +21,10 @@ class Error401 extends React.Component {
    */
 
   render () {
+    const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header />
+        <Header name={loggedInMember ? loggedInMember.name : null} />
         <main>
           <p>Unauthorized!</p>
         </main>
@@ -31,4 +34,20 @@ class Error401 extends React.Component {
   }
 }
 
-export default Error401
+/**
+ * Maps Redux state to the component's props.
+ * @params state {Object} - The current state.
+ * @returns {Object} - The component's new props.
+ */
+
+const mapStateToProps = state => {
+  return {
+    loggedInMember: state.MemberLogin
+  }
+}
+
+Error401.propTypes = {
+  loggedInMember: PropTypes.object
+}
+
+export default connect(mapStateToProps)(Error401)

@@ -1,30 +1,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import autoBind from 'react-autobind'
-import { connect } from 'react-redux'
 
 /**
  * This component handles the home page.
  */
 
 export class Header extends React.Component {
-  constructor (props) {
-    super(props)
-    autoBind(this)
-  }
-
   /**
    * The render function
    * @returns {string} - The rendered output.
    */
 
   render () {
-    const account = this.props.loggedInMember
+    const account = this.props.name
       ? [
-        <li key={1}><a href='/dashboard'>{this.props.loggedInMember.name}</a></li>,
+        <li key={1}><a href='/dashboard'>{this.props.name}</a></li>,
         <li key={2}><a href='/logout'>Logout</a></li>
       ]
       : (<li><a href='/login'>Login</a></li>)
+    const title = this.props.title
+      ? (<h1>{this.props.title}</h1>)
+      : null
+
     return (
       <header>
         <nav className='account'>
@@ -32,11 +29,12 @@ export class Header extends React.Component {
             {account}
           </ul>
         </nav>
-        <h1>
+        <h1 className='brand'>
           <a href='/'>
             <img src='https://s3.amazonaws.com/thefifthworld/website/images/wordmark.white.svg' alt='The Fifth World' />
           </a>
         </h1>
+        {title}
         <nav>
           <ul>
             <li><a href='/explore'>Explore</a></li>
@@ -49,20 +47,9 @@ export class Header extends React.Component {
   }
 }
 
-/**
- * Maps Redux state to the component's props.
- * @returns {Object} - The component's new props.
- */
-
-const mapStateToProps = state => {
-  const loggedInMember = state.MemberLogin
-  return {
-    loggedInMember
-  }
-}
-
 Header.propTypes = {
-  loggedInMember: PropTypes.object
+  name: PropTypes.string,
+  title: PropTypes.string
 }
 
-export default connect(mapStateToProps)(Header)
+export default Header

@@ -19,14 +19,15 @@ export class Create extends React.Component {
   }
 
   render () {
-    if (!this.props.loggedInMember) {
+    const { loggedInMember } = this.props
+    if (!loggedInMember) {
       return (
         <Error401 />
       )
     } else {
       return (
         <React.Fragment>
-          <Header />
+          <Header name={loggedInMember.name} />
           <main className='wiki'>
             <Messages />
             <h1>Create a New Page</h1>

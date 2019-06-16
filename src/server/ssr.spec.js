@@ -169,13 +169,13 @@ describe('Server-side rendering', () => {
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="In the Fifth World tabletop roleplaying game, you and a handful of friends explore what happens to your descendants living beyond civilization in the Fifth World amongst the familiar places of your own life transformed by four centuries of change." />
+    <meta name="description" content="Four centuries from now, humanity thrives beyond civilization." />
 
     <!-- Twitter Card data -->
     <meta name="twitter:title" content="The Fifth World" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@thefifthworld" />
-    <meta name="twitter:description" content="In the Fifth World tabletop roleplaying game, you and a handful of friends explore what happens to your descendants living beyond civilization in the Fifth World amongst the familiar places of your own life transformed by four centuries of change." />
+    <meta name="twitter:description" content="Four centuries from now, humanity thrives beyond civilization." />
     <meta name="twitter:image" content="https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg" />
 
     <!-- Open Graph data -->
@@ -183,7 +183,7 @@ describe('Server-side rendering', () => {
     <meta property="og:site_name" content="The Fifth World" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://thefifthworld.com" />
-    <meta property="og:description" content="In the Fifth World tabletop roleplaying game, you and a handful of friends explore what happens to your descendants living beyond civilization in the Fifth World amongst the familiar places of your own life transformed by four centuries of change." />
+    <meta property="og:description" content="Four centuries from now, humanity thrives beyond civilization." />
     <meta property="og:image" content="https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg" />
     <meta property="fb:app_id" content="241682169673933" />
   </head>

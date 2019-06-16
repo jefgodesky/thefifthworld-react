@@ -121,10 +121,11 @@ const other = meta => {
  */
 
 const head = meta => {
-  const defaultDesc = 'In the Fifth World tabletop roleplaying game, you and a handful of friends explore what happens to your descendants living beyond civilization in the Fifth World amongst the familiar places of your own life transformed by four centuries of change.'
+  const defaultDesc = 'Four centuries from now, humanity thrives beyond civilization.'
+  const defaultImg = 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
   const title = meta ? meta.title ? meta.title : 'The Fifth World' : 'The Fifth World'
   const desc = meta ? meta.description ? meta.description : defaultDesc : defaultDesc
-  const img = 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
+  const img = meta ? meta.image ? meta.image : defaultImg : defaultImg
   const metaTwitter = meta ? meta.twitter : {}
   const metaOg = meta ? meta.og : {}
 

@@ -82,7 +82,22 @@ const respond = (req, res, store) => {
       </StaticRouter>
     </Provider>
   )
-  res.send(getMarkup(markup, {}, store))
+
+  const state = store.getState()
+  const { title, description, image } = state.Page
+  const meta = {
+    title,
+    description,
+    og: {
+      image,
+      url: `https://${req.get('host')}${req.originalUrl}`
+    },
+    twitter: {
+      image
+    }
+  }
+
+  res.send(getMarkup(markup, meta, store))
 }
 
 const redirector = (req, res, next) => {

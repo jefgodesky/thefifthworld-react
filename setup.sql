@@ -1,7 +1,7 @@
 #
 # SQL Export
 # Created by Querious (201054)
-# Created: June 4, 2019 at 5:12:31 PM EDT
+# Created: June 17, 2019 at 7:24:35 PM EDT
 # Encoding: Unicode (UTF-8)
 #
 
@@ -34,7 +34,7 @@ CREATE TABLE `changes` (
   `msg` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `json` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `files` (
@@ -110,6 +110,7 @@ CREATE TABLE `pages` (
   `title` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `description` varchar(240) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Four hundred years from now, humanity thrives beyond civilization.',
   `image` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg',
+  `header` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `slug` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `path` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `parent` int(11) unsigned DEFAULT '0',
@@ -122,7 +123,7 @@ CREATE TABLE `pages` (
   `lon` decimal(10,5) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `sessions` (

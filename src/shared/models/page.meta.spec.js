@@ -46,6 +46,53 @@ describe('Page', () => {
     expect(page.image).toEqual(image)
   })
 
+  it('can create a page with a header', async () => {
+    expect.assertions(1)
+    const header = 'https://example.com/image.png'
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      header
+    }, member, 'Initial text', db)
+    expect(page.header).toEqual(header)
+  })
+
+  it('can update a page\'s header', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      header: 'https://example.com/old.png'
+    }, member, 'Initial text', db)
+
+    const header = 'https://example.com/new.png'
+    await page.update({
+      title: 'New Page',
+      body: 'New content',
+      header
+    }, member, 'Testing image update', db)
+    expect(page.header).toEqual(header)
+  })
+
+  it('can update a page\'s header to null', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'This is a new page.',
+      header: 'https://example.com/old.png'
+    }, member, 'Initial text', db)
+
+    await page.update({
+      title: 'New Page',
+      body: 'New content',
+      header: ''
+    }, member, 'Testing image update', db)
+    expect(page.header).toEqual(null)
+  })
+
   it('can create a page with a description', async () => {
     expect.assertions(1)
     const description = 'This is a description.'

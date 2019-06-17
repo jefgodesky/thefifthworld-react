@@ -15,6 +15,30 @@ describe('updateVals', () => {
     const expected = `stringField='string value', numField=42`
     expect(actual).toEqual(expected)
   })
+
+  it('sets null for an empty string', () => {
+    const actual = utils.updateVals([
+      { name: 'stringField', type: 'string' },
+      { name: 'numField', type: 'number' }
+    ], {
+      stringField: '',
+      numField: 42
+    })
+    const expected = `stringField=null, numField=42`
+    expect(actual).toEqual(expected)
+  })
+
+  it('accepts null values', () => {
+    const actual = utils.updateVals([
+      { name: 'stringField', type: 'string' },
+      { name: 'numField', type: 'number' }
+    ], {
+      stringField: null,
+      numField: null
+    })
+    const expected = `stringField=null, numField=null`
+    expect(actual).toEqual(expected)
+  })
 })
 
 describe('generateInvitationCode', () => {

@@ -23,12 +23,13 @@ export class Dashboard extends React.Component {
    */
 
   render () {
+    const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header />
+        <Header name={loggedInMember.name} />
         <main className='dashboard'>
           <Messages />
-          <p><strong>Hello, {this.props.loggedInMember.name}.</strong> Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
+          <p><strong>Hello, {loggedInMember.name}.</strong> Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
           <hr />
           <section className='choices create'>
             <h3>Create Something</h3>
@@ -46,7 +47,7 @@ export class Dashboard extends React.Component {
             <h3>Your Membership</h3>
             <ul>
               <li>
-                <a href={`/member/${this.props.loggedInMember.id}/edit`} className='button'>Your Profile</a>
+                <a href={`/member/${loggedInMember.id}/edit`} className='button'>Your Profile</a>
                 <p>Update your name, email, and password, and decide what you want to share about your activity on the Fifth World.</p>
               </li>
               <li>

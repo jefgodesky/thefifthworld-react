@@ -12,7 +12,7 @@ it('should show the member\'s name', () => {
   const member = { name: 'Daniel', id: 'dq' }
   const match = { path: '/member/:id' }
   const wrapper = shallow(<MemberProfile loggedInMember={loggedInMember} member={member} match={match} />)
-  expect(wrapper.find('h1').text()).toEqual(member.name)
+  expect(wrapper.find('.profile').length).toEqual(1)
 })
 
 it('should let a member edit her profile', () => {

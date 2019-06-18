@@ -8,25 +8,21 @@ import { Header } from './component'
 configure({ adapter: new Adapter() })
 
 it('should know my name', () => {
-  const member = { name: 'Daniel', id: 'dq' }
-  const wrapper = shallow(<Header loggedInMember={member} />)
-  expect(wrapper.find('nav.account li').first().text()).toEqual(member.name)
+  const wrapper = shallow(<Header name='Jason' />)
+  expect(wrapper.find('nav.account li').first().text()).toEqual('Jason')
 })
 
 it('should provide a logout button', () => {
-  const member = { name: 'Daniel', id: 'dq' }
-  const wrapper = shallow(<Header loggedInMember={member} />)
+  const wrapper = shallow(<Header name='Jason' />)
   expect(wrapper.find('a[href="/logout"]').length).toEqual(1)
 })
 
 it('should include the logo', () => {
-  const member = { name: 'Daniel', id: 'dq' }
-  const wrapper = shallow(<Header loggedInMember={member} />)
+  const wrapper = shallow(<Header />)
   expect(wrapper.find('h1').length).toEqual(1)
 })
 
 it('should include a main nav', () => {
-  const member = { name: 'Daniel', id: 'dq' }
-  const wrapper = shallow(<Header loggedInMember={member} />)
+  const wrapper = shallow(<Header />)
   expect(wrapper.find('nav').length).toEqual(2)
 })

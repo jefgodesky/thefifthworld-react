@@ -180,7 +180,6 @@ export class View extends React.Component {
     return (
       <React.Fragment>
         {this.renderArt()}
-        <h1>{this.props.page.title}</h1>
         {this.renderOld(permissions)}
         {this.renderFile()}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />

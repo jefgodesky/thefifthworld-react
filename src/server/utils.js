@@ -26,7 +26,8 @@ const updateVals = (cols, vals) => {
 
   Object.keys(vals).forEach(key => {
     if (validKeys.indexOf(key) > -1) {
-      const val = types[key] === 'number' ? vals[key] : SQLEscape(vals[key])
+      let val = vals[key]
+      if (val !== null && types[key] !== 'number') val = val === '' ? null : SQLEscape(vals[key])
       query.push(`${key}=${val}`)
     }
   })

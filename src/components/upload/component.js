@@ -19,17 +19,19 @@ export class Upload extends React.Component {
   }
 
   render () {
-    if (!this.props.loggedInMember) {
+    const { loggedInMember } = this.props
+    if (!loggedInMember) {
       return (
         <Error401 />
       )
     } else {
       return (
         <React.Fragment>
-          <Header />
+          <Header
+            name={loggedInMember.name}
+            title='Upload a File' />
           <main className='wiki'>
             <Messages />
-            <h1>Upload a File</h1>
             <Form upload />
           </main>
           <Footer />

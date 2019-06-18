@@ -28,6 +28,8 @@ export class Form extends React.Component {
 
     const description = get(this.props, 'page.description')
     const image = get(this.props, 'page.image') || 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
+    const header = get(this.props, 'page.header') || null
+
     this.state = {
       isClient: false,
       isLoading: false,
@@ -44,6 +46,7 @@ export class Form extends React.Component {
       message: '',
       description,
       image,
+      header,
       errors: this.props.error ? this.props.error.errors : []
     }
 
@@ -231,12 +234,21 @@ export class Form extends React.Component {
   }
 
   /**
-   * This method is called whenever a user changes the imagee meta tag value.
+   * This method is called whenever a user changes the image meta tag value.
    * @param image {string} - Thee value of the image field.
    */
 
   changeImage (image) {
     this.setState({ image })
+  }
+
+  /**
+   * This method is called whenever a user changes the header field.
+   * @param header {string} - The value of the header field.
+   */
+
+  changeHeader (header) {
+    this.setState({ header })
   }
 
   /**
@@ -381,6 +393,16 @@ export class Form extends React.Component {
           id='image'
           defaultValue={this.state.image}
           onChange={event => this.changeImage(event.target.value)} />
+        <label htmlFor='header'>
+          Header
+          <p className='note'>Image used across the header of the page. Header images should be 1800&times;500px. If left blank, the default site header will be used.</p>
+        </label>
+        <input
+          type='text'
+          name='header'
+          id='header'
+          defaultValue={this.state.header}
+          onChange={event => this.changeHeader(event.target.value)} />
       </aside>
     )
   }
@@ -413,7 +435,7 @@ export class Form extends React.Component {
 
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
-      const { errors, title, path, parent, body, file, thumbnail, message, description, image } = this.state
+      const { errors, title, path, parent, body, file, thumbnail, message, description, image, header } = this.state
       const type = this.state.type ? this.state.type : Page.getType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
@@ -434,6 +456,7 @@ export class Form extends React.Component {
           data.set('message', message)
           data.set('description', description)
           data.set('image', image)
+          data.set('header', header)
           if (file) data.append('file', file, file.name)
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
 

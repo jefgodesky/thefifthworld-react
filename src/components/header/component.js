@@ -21,9 +21,12 @@ export class Header extends React.Component {
     const title = this.props.title
       ? (<h1>{this.props.title}</h1>)
       : null
+    const header = this.props.header
+      ? { backgroundImage: `url(${this.props.header})` }
+      : null
 
     return (
-      <header>
+      <header style={header}>
         <nav className='account'>
           <ul>
             {account}
@@ -48,6 +51,7 @@ export class Header extends React.Component {
 }
 
 Header.propTypes = {
+  header: PropTypes.string,
   name: PropTypes.string,
   title: PropTypes.string
 }

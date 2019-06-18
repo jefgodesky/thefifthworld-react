@@ -79,6 +79,7 @@ export class Page extends React.Component {
         return (
           <React.Fragment>
             <Header
+              header={page.header ? page.header : null}
               name={loggedInMember ? loggedInMember.name : null}
               title={page.title} />
             <main>

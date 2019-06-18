@@ -9,21 +9,34 @@
   padding-bottom: 0;
   padding-top: 0;
 
-  & > h1 {
+  & > .brand img {
     border-bottom: 0;
+    height: ms(-3);
     margin-top: ms(1);
 
-    & > a > img {
-      width: 90%;
-
-      @media (min-width: 50em) {
-        width: ms(6);
-      }
+    @media (min-width: 50em) {
+      height: ms(-2);
     }
 
+    @media (min-width: 60em) {
+      height: ms(-1);
+    }
+  }
+
+  & > .brand + h1 {
+    color: $white;
+    font-size: ms(2);
+    line-height: 1;
+    margin-top: ms(-2) * -1;
+
     @media (min-width: 50em) {
-      margin-top: ms(0);
-      text-align: left;
+      font-size: ms(3);
+      margin-top: ms(-3) * -1;
+    }
+
+    @media (min-width: 60em) {
+      font-size: ms(4);
+      margin-top: ms(-4) * -1;
     }
   }
 

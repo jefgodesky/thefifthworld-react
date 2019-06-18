@@ -9,5 +9,5 @@ configure({ adapter: new Adapter() })
 
 it('should render the page', () => {
   const wrapper = shallow(<View page={{ title: 'Test Page' }} />)
-  expect(wrapper.find('h1').text()).toEqual('Test Page')
+  expect(wrapper.find('.wiki-body').length).toEqual(1)
 })

@@ -60,14 +60,15 @@ export class Page extends React.Component {
    */
 
   render () {
-    if (this.props.page && Object.keys(this.props.page).length > 0) {
-      if (canRead(this.props.loggedInMember, this.props.page)) {
+    const { loggedInMember, page } = this.props
+    if (page && Object.keys(page).length > 0) {
+      if (canRead(loggedInMember, page)) {
         let component
-        if (this.props.page.command === 'edit') {
+        if (page.command === 'edit') {
           component = (<Form />)
-        } else if (this.props.page.command === 'history') {
+        } else if (page.command === 'history') {
           component = (<History />)
-        } else if (this.props.page.command === 'compare') {
+        } else if (page.command === 'compare') {
           component = (<Compare />)
         } else {
           component = (<View />)
@@ -77,7 +78,10 @@ export class Page extends React.Component {
 
         return (
           <React.Fragment>
-            <Header />
+            <Header
+              header={page.header ? page.header : null}
+              name={loggedInMember ? loggedInMember.name : null}
+              title={page.title} />
             <main>
               <Messages />
               {breadcrumbs}

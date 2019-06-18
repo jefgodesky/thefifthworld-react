@@ -9,7 +9,7 @@ configure({ adapter: new Adapter() })
 
 it('should render a 401 error if there is no user', () => {
   const wrapper = shallow(<Upload loggedInMember={null} />)
-  expect(wrapper.find('Error401').length).toEqual(1)
+  expect(wrapper.find('Connect(Error401)').length).toEqual(1)
 })
 
 it('should render a form', () => {

@@ -54,7 +54,8 @@ export class MemberProfile extends React.Component {
    */
 
   renderForm (firstTime = false) {
-    const name = firstTime ? '' : this.props.member.getName ? this.props.member.getName() : this.props.member.name
+    const { member, loggedInMember } = this.props
+    const name = firstTime ? '' : member.getName ? member.getName() : member.name
     const front = firstTime
       ? (<p><strong>Welcome to the Fifth World!</strong> First tell us a little bit about yourself. Then add a <em>passphrase</em> so you can log back in later.</p>)
       : [
@@ -69,15 +70,17 @@ export class MemberProfile extends React.Component {
 
     return (
       <React.Fragment>
-        <Header />
+        <Header
+          name={loggedInMember ? loggedInMember.name : null}
+          title={name} />
         <main>
           {front}
           <form method='post' action={action}>
-            <input type='hidden' name='id' value={this.props.member.id} />
+            <input type='hidden' name='id' value={member.id} />
             <label htmlFor='name'>Name</label>
             <input type='text' name='name' id='name' defaultValue={name} placeholder='What would you like us to call you?' />
             <label htmlFor='email'>Email</label>
-            <input type='text' name='email' id='email' defaultValue={this.props.member.email} placeholder='you@example.com' />
+            <input type='text' name='email' id='email' defaultValue={member.email} placeholder='you@example.com' />
             <aside>
               <p>A long, memorable phrase, like a sentence, can provide more security than an arcane string of random letters and numbers that you&rsquo;ll have a hard time remembering. That&rsquo;s why we ask for a pass <em>phrase</em>. We also leave it open in plain text to make it easier for you to come up with and use a stronger one. You can probably check for someone looking over your shoulder more easily than you can check for hackers.</p>
               <p>If you submit this form without providing anything here, your old pass phrase will remain unchanged.</p>
@@ -87,19 +90,44 @@ export class MemberProfile extends React.Component {
               </div>
             </aside>
             <label htmlFor='bio'>About</label>
-            <textarea name='bio' id='bio' defaultValue={this.props.member.bio} />
+            <textarea name='bio' id='bio' defaultValue={member.bio} />
             <h2>Links</h2>
             <p>If you&lsquo;d like to make it easier for other people to find and follow you on social media or other networks, provide some links here. Any that you provide will be shown on your profile. Anny you choose not to share will simply not appear.</p>
             <label htmlFor='facebook'>Facebook</label>
-            <input type='text' name='facebook' id='facebook' placeholder='https://facebook.com/your-username-here' />
+            <input
+              type='text'
+              name='facebook'
+              id='facebook'
+              placeholder='https://facebook.com/your-username-here'
+              defaultValue={member.facebook} />
             <label htmlFor='twitter'>Twitter</label>
-            <input type='text' name='twitter' id='twitter' placeholder='https://twitter.com/your-username-here' />
+            <input
+              type='text'
+              name='twitter'
+              id='twitter'
+              placeholder='https://twitter.com/your-username-here'
+              defaultValue={member.twitter} />
             <label htmlFor='github'>Github</label>
-            <input type='text' name='github' id='github' placeholder='https://github.com/your-username-here' />
+            <input
+              type='text'
+              name='github'
+              id='github'
+              placeholder='https://github.com/your-username-here'
+              defaultValue={member.github} />
             <label htmlFor='patreon'>Patreon</label>
-            <input type='text' name='patreon' id='patreon' placeholder='https://patreon.com/your-username-here' />
+            <input
+              type='text'
+              name='patreon'
+              id='patreon'
+              placeholder='https://patreon.com/your-username-here'
+              defaultValue={member.patreon} />
             <label htmlFor='web'>Website</label>
-            <input type='text' name='web' id='web' placeholder='https://yourwebsite.com' />
+            <input
+              type='text'
+              name='web'
+              id='web'
+              placeholder='https://yourwebsite.com'
+              defaultValue={member.web} />
             <p className='actions'>
               <button>Save</button>
               <a href={`/member/${this.props.member.id}`} className='button secondary'>Cancel</a>
@@ -139,18 +167,20 @@ export class MemberProfile extends React.Component {
    */
 
   renderProfile () {
-    const actions = Member.canEdit(this.props.member, this.props.loggedInMember)
-      ? (<p className='actions'><a href={`/member/${this.props.member.id}/edit`} className='button'>Edit Profile</a></p>)
+    const { member, loggedInMember } = this.props
+    const actions = Member.canEdit(member, loggedInMember)
+      ? (<p className='actions'><a href={`/member/${member.id}/edit`} className='button'>Edit Profile</a></p>)
       : (<React.Fragment />)
-    const bio = this.props.member.bio
-      ? (<div className='bio' dangerouslySetInnerHTML={{ __html: this.props.member.bioHTML }} />)
+    const bio = member.bio
+      ? (<div className='bio' dangerouslySetInnerHTML={{ __html: member.bioHTML }} />)
       : null
 
     return (
       <React.Fragment>
-        <Header />
+        <Header
+          name={loggedInMember.name}
+          title={member.name} />
         <main className='profile'>
-          <h1>{this.props.member.name}</h1>
           {bio}
           {this.renderLinks()}
           {actions}
@@ -166,15 +196,16 @@ export class MemberProfile extends React.Component {
    */
 
   render () {
+    const { member, loggedInMember, match } = this.props
     const canEdit = func => {
-      if (Member.canEdit(this.props.member, this.props.loggedInMember)) {
+      if (Member.canEdit(member, loggedInMember)) {
         return func()
       } else {
         return (<Error401 />)
       }
     }
 
-    switch (this.props.match.path) {
+    switch (match.path) {
       case '/member/:id/edit':
         return canEdit(() => this.renderForm())
       case '/welcome/:id':

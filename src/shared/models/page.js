@@ -15,6 +15,7 @@ class Page {
     this.title = page.title
     this.description = page.description
     this.image = page.image
+    this.header = page.header
     this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
@@ -281,6 +282,7 @@ class Page {
     const title = data.title ? data.title : ''
     const description = data.description ? data.description : await Page.getDescription(data.body)
     const image = data.image ? data.image : `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/social/default.jpg`
+    const header = data.header ? data.header : null
     const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
@@ -295,8 +297,8 @@ class Page {
     } else {
       try {
         const ins = coords
-          ? `INSERT INTO pages (slug, path, parent, type, title, description, image, permissions, owner, claim, depth, lat, lon) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
-          : `INSERT INTO pages (slug, path, parent, type, title, description, image, permissions, owner, claim, depth) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${permissions}, ${editor.id}, ${claim}, ${depth});`
+          ? `INSERT INTO pages (slug, path, parent, type, title, description, image, header, permissions, owner, claim, depth, lat, lon) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${SQLEscape(header)}, ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
+          : `INSERT INTO pages (slug, path, parent, type, title, description, image, header, permissions, owner, claim, depth) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${SQLEscape(header)}, ${permissions}, ${editor.id}, ${claim}, ${depth});`
         const res = await db.run(ins)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
@@ -407,10 +409,11 @@ class Page {
 
   async update (data, editor, msg, db) {
     // What updates do we need to make to the page itself?
-    const inPage = [ 'title', 'description', 'image', 'slug', 'path', 'parent', 'permissions', 'owner', 'type' ]
+    const inPage = [ 'title', 'description', 'image', 'header', 'slug', 'path', 'parent', 'permissions', 'owner', 'type' ]
+    const nullEmptyStr = [ 'title', 'header', 'type' ]
     const update = {}
     for (const key of inPage) {
-      if (data[key] && this[key] !== data[key]) {
+      if (data.hasOwnProperty(key) && this[key] !== data[key]) {
         if (key === 'parent') {
           const parent = await Page.get(data.parent, db)
           update.parent = parent && parent.id ? parent.id : 0
@@ -422,7 +425,11 @@ class Page {
         } else if (key === 'permissions') {
           update.permissions = data.permissions.toString()
         } else {
-          update[key] = data[key]
+          if (nullEmptyStr.includes(key) && data[key] === '') {
+            update[key] = null
+          } else {
+            update[key] = data[key]
+          }
         }
       }
     }
@@ -460,6 +467,7 @@ class Page {
         { name: 'title', type: 'string' },
         { name: 'description', type: 'string' },
         { name: 'image', type: 'string' },
+        { name: 'header', type: 'string' },
         { name: 'slug', type: 'string' },
         { name: 'path', type: 'string' },
         { name: 'parent', type: 'number' },

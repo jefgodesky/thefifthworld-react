@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Header from '../header/component'
 import Footer from '../footer/component'
 import PatreonLink from '../patreon-link/component'
@@ -21,9 +22,10 @@ export class Home extends React.Component {
    */
 
   render () {
+    const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header />
+        <Header name={loggedInMember ? loggedInMember.name : null} />
         <main>
           <p>This is the homepage.</p>
           <hr />
@@ -37,11 +39,18 @@ export class Home extends React.Component {
 
 /**
  * Maps Redux state to the component's props.
+ * @params state {Object} - The current state.
  * @returns {Object} - The component's new props.
  */
 
-const mapStateToProps = () => {
-  return {}
+const mapStateToProps = (state) => {
+  return {
+    loggedInMember: state.MemberLogin
+  }
+}
+
+Home.propTypes = {
+  loggedInMember: PropTypes.object
 }
 
 export default connect(mapStateToProps)(Home)

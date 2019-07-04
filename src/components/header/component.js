@@ -24,9 +24,14 @@ export class Header extends React.Component {
     const header = this.props.header
       ? { backgroundImage: `url(${this.props.header})` }
       : null
+    const classes = this.props.addClasses
+      ? Array.isArray(this.props.addClasses)
+        ? this.props.addClasses.join(' ')
+        : this.props.addClasses
+      : null
 
     return (
-      <header style={header}>
+      <header style={header} className={classes}>
         <nav className='account'>
           <ul>
             {account}
@@ -51,6 +56,7 @@ export class Header extends React.Component {
 }
 
 Header.propTypes = {
+  addClasses: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
   header: PropTypes.string,
   name: PropTypes.string,
   title: PropTypes.string

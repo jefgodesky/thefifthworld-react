@@ -9,5 +9,5 @@ configure({ adapter: new Adapter() })
 
 it('should show a Map component', () => {
   const wrapper = shallow(<Explore />)
-  expect(wrapper.find('ul').length).toEqual(1)
+  expect(wrapper.find('Map').length).toEqual(1)
 })

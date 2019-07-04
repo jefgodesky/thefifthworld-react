@@ -122,4 +122,12 @@
       }
     }
   }
+
+  &.fullpage {
+    background: transparent;
+
+    & > .brand img {
+      margin-top: ms(0);
+    }
+  }
 }

@@ -69,13 +69,14 @@ export class Explore extends React.Component {
 
   render () {
     const { loggedInMember } = this.props
-    const content = this.state.isClient
-      ? Explore.renderClient()
-      : Explore.renderServer()
+    const { isClient } = this.state
+    const content = isClient ? Explore.renderClient() : Explore.renderServer()
 
     return (
       <React.Fragment>
-        <Header name={loggedInMember && loggedInMember.name ? loggedInMember.name : null} />
+        <Header
+          name={loggedInMember && loggedInMember.name ? loggedInMember.name : null}
+          fullPage={isClient} />
         {content}
         <Footer />
       </React.Fragment>

@@ -36,3 +36,8 @@ it('can take multiple additional classes', () => {
   const wrapper = shallow(<Header addClasses={['test1', 'test2']} />)
   expect(wrapper.find('header.test1.test2').length).toEqual(1)
 })
+
+it('has a full page mode', () => {
+  const wrapper = shallow(<Header fullPage />)
+  expect(wrapper.find('nav').length).toEqual(1)
+})

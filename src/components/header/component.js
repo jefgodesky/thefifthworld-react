@@ -12,9 +12,10 @@ export class Header extends React.Component {
    */
 
   render () {
-    const account = this.props.name
+    const { addClasses, fullPage, name } = this.props
+    const account = name
       ? [
-        <li key={1}><a href='/dashboard'>{this.props.name}</a></li>,
+        <li key={1}><a href='/dashboard'>{name}</a></li>,
         <li key={2}><a href='/logout'>Logout</a></li>
       ]
       : (<li><a href='/login'>Login</a></li>)
@@ -24,11 +25,29 @@ export class Header extends React.Component {
     const header = this.props.header
       ? { backgroundImage: `url(${this.props.header})` }
       : null
-    const classes = this.props.addClasses
-      ? Array.isArray(this.props.addClasses)
-        ? this.props.addClasses.join(' ')
-        : this.props.addClasses
-      : null
+
+    let arr = []
+    if (addClasses && Array.isArray(addClasses)) {
+      arr = addClasses
+    } else if (addClasses) {
+      arr = [ addClasses ]
+    }
+    if (fullPage) {
+      arr = [ ...arr, 'fullpage' ]
+    }
+    const classes = arr.length > 0 ? arr.join(' ') : null
+
+    const nav = fullPage
+      ? null
+      : (
+        <nav>
+          <ul>
+            <li><a href='/explore'>Explore</a></li>
+            <li><a href='/stories'>Read</a></li>
+            <li><a href='/rpg'>Play</a></li>
+          </ul>
+        </nav>
+      )
 
     return (
       <header style={header} className={classes}>
@@ -43,13 +62,7 @@ export class Header extends React.Component {
           </a>
         </h1>
         {title}
-        <nav>
-          <ul>
-            <li><a href='/explore'>Explore</a></li>
-            <li><a href='/stories'>Read</a></li>
-            <li><a href='/rpg'>Play</a></li>
-          </ul>
-        </nav>
+        {nav}
       </header>
     )
   }
@@ -57,6 +70,7 @@ export class Header extends React.Component {
 
 Header.propTypes = {
   addClasses: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
+  fullPage: PropTypes.bool,
   header: PropTypes.string,
   name: PropTypes.string,
   title: PropTypes.string

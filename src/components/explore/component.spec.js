@@ -8,6 +8,6 @@ import { Explore } from './component'
 configure({ adapter: new Adapter() })
 
 it('should show a Map component', () => {
-  const wrapper = shallow(<Explore />)
+  const wrapper = shallow(<Explore places={[]} />)
   expect(wrapper.find('Map').length).toEqual(1)
 })

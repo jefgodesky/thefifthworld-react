@@ -1,3 +1,5 @@
+/* global __isClient__ */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import Header from '../header/component'
@@ -5,6 +7,7 @@ import Footer from '../footer/component'
 import Map from '../map/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import * as actions from './actions'
 
 /**
  * This component handles the invitations page.
@@ -35,8 +38,8 @@ export class Explore extends React.Component {
    * @returns {*} - JSX for the enhanced experience.
    */
 
-  static renderClient () {
-    return (<Map />)
+  renderClient () {
+    return (<Map places={this.props.places} />)
   }
 
   /**
@@ -63,6 +66,22 @@ export class Explore extends React.Component {
   }
 
   /**
+   * This is a static function used on the server to load data from the
+   * database. If the requested records are found, then an action is
+   * dispatched that adds those records to the Redux state.
+   * @param req {Object} - The request object from Express.
+   * @param db {Pool} - A database connection to query.
+   * @param store {Object} - A Redux store object.
+   */
+
+  static async load (req, db, store) {
+    if (!__isClient__) {
+      const records = await db.run('SELECT title, path, lat, lon FROM pages WHERE type="Place" AND lat IS NOT NULL and lon IS NOT NULL')
+      store.dispatch(actions.load(records))
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -70,7 +89,7 @@ export class Explore extends React.Component {
   render () {
     const { loggedInMember } = this.props
     const { isClient } = this.state
-    const content = isClient ? Explore.renderClient() : Explore.renderServer()
+    const content = isClient ? this.renderClient() : Explore.renderServer()
 
     return (
       <React.Fragment>
@@ -92,12 +111,14 @@ export class Explore extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    loggedInMember: state.MemberLogin
+    loggedInMember: state.MemberLogin,
+    places: state.Explore
   }
 }
 
 Explore.propTypes = {
-  loggedInMember: PropTypes.object
+  loggedInMember: PropTypes.object,
+  places: PropTypes.array
 }
 
 export default connect(mapStateToProps)(Explore)

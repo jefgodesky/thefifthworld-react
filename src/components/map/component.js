@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import axios from 'axios'
 import { requestLocation } from '../../shared/utils'
 import config from '../../../config'
@@ -97,6 +98,32 @@ export default class Map extends React.Component {
   }
 
   /**
+   * Render markers.
+   * @param Marker {Component} - The Marker component from the `react-leaflet`
+   *   library.
+   * @param Popup {Component} - The Popup component from the `react-leaflet`
+   *   library.
+   * @returns {[]} - An array of JSX for all of the places retrieved.
+   */
+
+  renderMarkers (Marker, Popup) {
+    const { places } = this.props
+    if (places && Array.isArray(places) && places.length > 0) {
+      const jsx = []
+      places.forEach(place => {
+        jsx.push(
+          <Marker position={[place.lat, place.lon]} key={`${place.lat}x${place.lon}`}>
+            <Popup>
+              <a href={place.path}>{place.title}</a>
+            </Popup>
+          </Marker>
+        )
+      })
+      return jsx
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
@@ -106,9 +133,9 @@ export default class Map extends React.Component {
       let { lat, lon, zoom } = this.state
       const leaflet = require('react-leaflet')
       const LeafletMap = leaflet.Map
-      const TileLayer = leaflet.TileLayer
-      const GeoJSON = leaflet.GeoJSON
+      const { TileLayer, GeoJSON, Marker, Popup } = leaflet
       const sealevel = this.raiseSeaLevel(GeoJSON)
+      const markers = this.renderMarkers(Marker, Popup)
 
       return (
         <LeafletMap
@@ -122,10 +149,15 @@ export default class Map extends React.Component {
             url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'
             noWrap />
           {sealevel}
+          {markers}
         </LeafletMap>
       )
     } else {
       return null
     }
   }
+}
+
+Map.propTypes = {
+  places: PropTypes.array
 }

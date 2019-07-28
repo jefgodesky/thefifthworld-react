@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { requestLocation } from '../../shared/utils'
 import config from '../../../config'
 
 /**
@@ -29,6 +30,26 @@ export default class Map extends React.Component {
   componentDidMount () {
     this.setState({ isClient: true })
     this.loadGeoJSON()
+    this.requestUserLocation()
+  }
+
+  /**
+   * Ask for the user's location, and if it's provided, zoom the map in on that
+   * location.
+   * @returns {Promise<void>} - A Promise that updates the component's state,
+   *   setting the latitude and longitude to the user's location and setting
+   *   the zoom to 12, if the user agrees to share her location.
+   */
+
+  async requestUserLocation () {
+    if (navigator && 'geolocation' in navigator) {
+      const pos = await requestLocation()
+      this.setState({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        zoom: 12
+      })
+    }
   }
 
   /**
@@ -82,7 +103,7 @@ export default class Map extends React.Component {
 
   render () {
     if (this.state.isClient) {
-      const { lat, lon, zoom } = this.state
+      let { lat, lon, zoom } = this.state
       const leaflet = require('react-leaflet')
       const LeafletMap = leaflet.Map
       const TileLayer = leaflet.TileLayer

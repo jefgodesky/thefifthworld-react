@@ -146,7 +146,7 @@ export default class Map extends React.Component {
           zoom={zoom}
           minZoom={3}
           maxZoom={15}
-          style={{ width: '100%', height }}>
+          style={{ height }}>
           <TileLayer
             attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
             url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'

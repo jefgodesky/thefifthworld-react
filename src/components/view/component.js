@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Map from '../map/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import axios from 'axios'
@@ -96,6 +97,24 @@ export class View extends React.Component {
   }
 
   /**
+   * If the page is a place, renders a map marking its location.
+   * @returns {null|*} - `null` if the page is not a place, or JSX to render
+   *   a map indicating where the place is if it is one.
+   */
+
+  renderMap () {
+    if (this.props.page && this.props.page.type && (this.props.page.type === 'Place')) {
+      const place = {
+        lat: this.props.page.lat,
+        lon: this.props.page.lon
+      }
+      return (<Map place={place} />)
+    } else {
+      return null
+    }
+  }
+
+  /**
    * If this is a file page, this method renders the file.
    * @returns {null|*} - Either the JSX to render the file, or null if this is
    *   not a file page.
@@ -180,6 +199,7 @@ export class View extends React.Component {
     return (
       <React.Fragment>
         {this.renderArt()}
+        {this.renderMap()}
         {this.renderOld(permissions)}
         {this.renderFile()}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />

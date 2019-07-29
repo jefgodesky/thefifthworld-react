@@ -16,9 +16,9 @@ export default class Map extends React.Component {
       base: `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/maps`,
       isClient: false,
       json: [],
-      lat: 0,
-      lon: 0,
-      zoom: 3
+      lat: this.props.place ? this.props.place.lat : 0,
+      lon: this.props.place ? this.props.place.lon : 0,
+      zoom: this.props.place ? 14 : 3
     }
   }
 
@@ -43,7 +43,7 @@ export default class Map extends React.Component {
    */
 
   async requestUserLocation () {
-    if (navigator && 'geolocation' in navigator) {
+    if (!this.props.place && navigator && 'geolocation' in navigator) {
       const pos = await requestLocation()
       this.setState({
         lat: pos.coords.latitude,
@@ -103,12 +103,14 @@ export default class Map extends React.Component {
    *   library.
    * @param Popup {Component} - The Popup component from the `react-leaflet`
    *   library.
-   * @returns {[]} - An array of JSX for all of the places retrieved.
+   * @returns {[]} - JSX for the markers to be displayed on the map.
    */
 
   renderMarkers (Marker, Popup) {
-    const { places } = this.props
-    if (places && Array.isArray(places) && places.length > 0) {
+    const { place, places } = this.props
+    if (place && place.lat && place.lon) {
+      return (<Marker position={[place.lat, place.lon]} />)
+    } else if (places && Array.isArray(places) && places.length > 0) {
       const jsx = []
       places.forEach(place => {
         jsx.push(
@@ -136,6 +138,7 @@ export default class Map extends React.Component {
       const { TileLayer, GeoJSON, Marker, Popup } = leaflet
       const sealevel = this.raiseSeaLevel(GeoJSON)
       const markers = this.renderMarkers(Marker, Popup)
+      const height = this.props.place ? '24.781em' : '90vh'
 
       return (
         <LeafletMap
@@ -143,7 +146,7 @@ export default class Map extends React.Component {
           zoom={zoom}
           minZoom={3}
           maxZoom={15}
-          style={{ width: '100%', height: '90vh' }}>
+          style={{ width: '100%', height }}>
           <TileLayer
             attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
             url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'
@@ -159,5 +162,6 @@ export default class Map extends React.Component {
 }
 
 Map.propTypes = {
+  place: PropTypes.object,
   places: PropTypes.array
 }

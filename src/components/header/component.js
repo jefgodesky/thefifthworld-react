@@ -49,6 +49,16 @@ export class Header extends React.Component {
         </nav>
       )
 
+    const branding = fullPage
+      ? null
+      : (
+        <h1 className='brand'>
+          <a href='/'>
+            <img src='https://s3.amazonaws.com/thefifthworld/website/images/wordmark.white.svg' alt='The Fifth World' />
+          </a>
+        </h1>
+      )
+
     return (
       <header style={header} className={classes}>
         <nav className='account'>
@@ -56,11 +66,7 @@ export class Header extends React.Component {
             {account}
           </ul>
         </nav>
-        <h1 className='brand'>
-          <a href='/'>
-            <img src='https://s3.amazonaws.com/thefifthworld/website/images/wordmark.white.svg' alt='The Fifth World' />
-          </a>
-        </h1>
+        {branding}
         {title}
         {nav}
       </header>

@@ -1,0 +1,10 @@
+.place.view .leaflet-container {
+  left: 0;
+  margin-top: ms(2);
+  position: absolute;
+  right: 0;
+
+  & + * {
+    margin-top: ms(8);
+  }
+}

@@ -21,6 +21,7 @@ describe('Server-side rendering', () => {
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
+    <link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="This is a test of the SSR function" />
 
@@ -76,6 +77,7 @@ describe('Server-side rendering', () => {
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
+    <link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="This is a test of the SSR function" />
 
@@ -123,6 +125,7 @@ describe('Server-side rendering', () => {
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
+    <link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="This is a test of the SSR function" />
 
@@ -168,6 +171,7 @@ describe('Server-side rendering', () => {
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
+    <link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Four centuries from now, humanity thrives beyond civilization." />
 

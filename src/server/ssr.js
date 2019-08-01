@@ -17,6 +17,7 @@ const core = (title, desc) => {
     <meta name="theme-color" content="#ffffff" />
 
     <link rel="stylesheet" media="all" href="/css/style.css" />
+    <link rel="stylesheet" media="all" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="${desc}" />`
 }

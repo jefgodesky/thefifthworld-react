@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import Error from '../components/error/reducers'
+import Explore from '../components/explore/reducers'
 import Invitations from '../components/invitations/reducers'
 import MemberLogin from '../components/member-login/reducers'
 import MemberProfile from '../components/member-profile/reducers'
@@ -10,6 +11,7 @@ import Page from '../components/page/reducers'
 
 const reducers = {
   Error,
+  Explore,
   Invitations,
   MemberLogin,
   MemberProfile,

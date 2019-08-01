@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import config from '../../../config'
 
 /**
  * This component handles the home page.
@@ -23,7 +24,7 @@ export class Header extends React.Component {
       ? (<h1>{this.props.title}</h1>)
       : null
     const header = this.props.header
-      ? { backgroundImage: `url(${this.props.header})` }
+      ? { backgroundImage: `url(https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/top.png), url(${this.props.header})` }
       : null
 
     let arr = []

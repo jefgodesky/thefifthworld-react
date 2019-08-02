@@ -1,5 +1,5 @@
 @mixin highlight ($img) {
-  background-attachment: scroll, scroll, fixed;
+  background-attachment: scroll;
   background-image: url('#{$images}/top.png'), url('#{$images}/bottom.png'), url('#{$images}#{$img}');
   background-position: bottom center, top center, center;
   background-repeat: repeat-x, repeat-x, no-repeat;

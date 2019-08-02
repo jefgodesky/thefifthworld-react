@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Header from '../header/component'
 import Footer from '../footer/component'
-import PatreonLink from '../patreon-link/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
@@ -53,9 +52,6 @@ export class Home extends React.Component {
             <p className='actions'>
               <a href='/about/membership' className='button'>How to Join</a>
             </p>
-          </section>
-          <section>
-            <PatreonLink />
           </section>
         </main>
         <Footer />

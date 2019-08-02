@@ -28,6 +28,7 @@ export class Footer extends React.Component {
           </ul>
         </nav>
 
+        <p><em>The Fifth World</em> exists thanks to the generosity of our supporters, partners, and friends on Patreon. <a href='https://www.patreon.com/thefifthworld'>Would you like to join them and become part of our growing community?</a></p>
         <p className='copyleft'>
           <span className='icons'>
             <img src='https://s3.amazonaws.com/thefifthworld/website/images/cc.svg' alt='Creative Commons' />

@@ -67,6 +67,11 @@ main.homepage {
         padding: ms(2);
       }
 
+      blockquote {
+        font-style: italic;
+        margin: 0;
+      }
+
       %prenote::before {
         color: $white13;
       }

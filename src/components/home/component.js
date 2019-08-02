@@ -25,7 +25,10 @@ export class Home extends React.Component {
     const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header name={loggedInMember ? loggedInMember.name : null} />
+        <Header
+          name={loggedInMember ? loggedInMember.name : null}
+          addClasses={[ 'homepage' ]}
+          skipNav />
         <main>
           <p>This is the homepage.</p>
           <hr />

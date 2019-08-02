@@ -37,7 +37,12 @@ it('can take multiple additional classes', () => {
   expect(wrapper.find('header.test1.test2').length).toEqual(1)
 })
 
-it('has a full page mode', () => {
-  const wrapper = shallow(<Header fullPage />)
+it('can skip the branding', () => {
+  const wrapper = shallow(<Header skipBranding />)
+  expect(wrapper.find('h1').length).toEqual(0)
+})
+
+it('can skip the navigation', () => {
+  const wrapper = shallow(<Header skipNav />)
   expect(wrapper.find('nav').length).toEqual(1)
 })

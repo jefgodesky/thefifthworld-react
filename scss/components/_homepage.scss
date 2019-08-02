@@ -1,0 +1,29 @@
+#root > header.homepage {
+  height: 66vh;
+  position: relative;
+
+  & > .brand {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    img {
+      height: ms(-2);
+      margin-top: 0;
+      max-width: none;
+
+      @media (min-width: 50em) {
+        height: ms(-1);
+      }
+
+      @media (min-width: 60em) {
+        height: ms(0);
+      }
+
+      @media (min-width: 70em) {
+        height: ms(1);
+      }
+    }
+  }
+}

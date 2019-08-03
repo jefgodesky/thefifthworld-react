@@ -24,9 +24,12 @@ export class Error404 extends React.Component {
     const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header name={loggedInMember ? loggedInMember.name : null} />
+        <Header
+          name={loggedInMember ? loggedInMember.name : null}
+          title='Page Not Found' />
         <main>
-          <p>Sorry, could not find that page</p>
+          <h2>Error 404</h2>
+          <p>The page you requested doesnn&rsquo;t seem to exist.</p>
         </main>
         <Footer />
       </React.Fragment>

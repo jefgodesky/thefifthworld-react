@@ -9,5 +9,5 @@ configure({ adapter: new Adapter() })
 
 it('should display a 404 error', () => {
   const wrapper = shallow(<Error404 />)
-  expect(wrapper.find('p').text()).toEqual('Sorry, could not find that page')
+  expect(wrapper.find('h2').text()).toEqual('Error 404')
 })

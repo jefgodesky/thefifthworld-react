@@ -108,7 +108,11 @@ export class View extends React.Component {
         lat: this.props.page.lat,
         lon: this.props.page.lon
       }
-      return (<Map place={place} />)
+      return (
+        <div className='map'>
+          <Map place={place} />
+        </div>
+      )
     } else {
       return null
     }

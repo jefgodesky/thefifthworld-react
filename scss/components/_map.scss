@@ -1,10 +1,11 @@
-.place.view .leaflet-container {
-  left: 0;
-  margin-top: ms(2);
-  position: absolute;
-  right: 0;
+.place.view .map {
+  margin: ms(1) auto;
+  height: 300px;
 
-  & + * {
-    margin-top: ms(8);
+  .leaflet-container {
+    height: 300px;
+    left: 0;
+    position: absolute;
+    right: 0;
   }
 }

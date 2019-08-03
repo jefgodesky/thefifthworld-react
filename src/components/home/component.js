@@ -30,10 +30,10 @@ export class Home extends React.Component {
           skipNav />
         <main className='homepage'>
           <section>
-            <h1>Humanity thrives beyond civilization.</h1>
+            <h1>Humanity thrives beyond&nbsp;civilization.</h1>
             <p><strong>The world has changed.</strong> The ruins of ancient cities lie submerged beneath the swollen seas. Beaches of translucent plastic sand mark new boundaries between land and water. Jungles stretch from the equator to the poles. Herds of elephants trample savannas in Canada and Russia. Tigers prowl the broken, overgrown ruins of London and Beijing. Tribes of hunter-gatherers roam the wilds. Villages cultivate forest gardens. The season of civilization has passed. Humanity has come home to a more-than-human world, but the bonds of kinship that provide them with everything they want or need in this feral future require constant care and attention lest they fray and break &mdash; as they nearly did in the ancient past.</p>
             <p className='actions'>
-              <a href='/explore' className='button'>Explore</a>
+              <a href='/explore' className='button'>Begin Exploring</a>
             </p>
           </section>
           <section className='highlight wormwood'>
@@ -52,6 +52,38 @@ export class Home extends React.Component {
             <p className='actions'>
               <a href='/about/membership' className='button'>How to Join</a>
             </p>
+          </section>
+          <section className='highlight rpg'>
+            <div>
+              <h1 className='rpg'>Step Into a Feral&nbsp;Future</h1>
+              <p>In the Fifth World <a href='/rpg'>tabletop roleplaying game</a>, you and a handful of friends explore what happens to your descendants living beyond civilization in the Fifth World, amongst the familiar places of your own life, transformed by four centuries of change. You&rsquo;ll take on the roles of the members of a family living where you live as they struggle to balance the web of kinship all around them and find the right path into the future. Afterwards, add your stories to the wiki to make them part of the growing history of the Fifth World.</p>
+              <p className='actions'>
+                <a href='/rpg' className='button'>Get Started</a>
+              </p>
+            </div>
+          </section>
+          <section className='newsletter'>
+            <p>Sign up to receive our monthly newsletter, featuring stories in and features about the Fifth World.</p>
+            <form
+              action='https://thefifthworld.us19.list-manage.com/subscribe/post?u=16621fb5062428d5db0d4fbe4&amp;id=88efe4bbc2'
+              method='post'
+              id='mc-embedded-subscribe-form'
+              name='mc-embedded-subscribe-form'>
+              <input
+                type='email'
+                name='EMAIL'
+                id='mce-EMAIL'
+                placeholder='you@example.com' />
+              <div style={{ position: 'absolute', left: '-5000px' }} aria-hidden='true'>
+                <input type='text' name='b_16621fb5062428d5db0d4fbe4_88efe4bbc2' tabIndex='-1' defaultValue='' />
+              </div>
+              <input
+                type='submit'
+                value='Subscribe'
+                name='subscribe'
+                id='mc-embedded-subscribe'
+                className='button' />
+            </form>
           </section>
         </main>
         <Footer />

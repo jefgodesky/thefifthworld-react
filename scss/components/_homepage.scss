@@ -49,6 +49,8 @@ main.homepage {
 
   section {
     @extend %layout;
+    padding-bottom: ms(3);
+    padding-top: ms(3);
     text-align: center;
 
     &.highlight {
@@ -59,8 +61,6 @@ main.homepage {
       background-repeat: repeat-x, repeat-x;
       background-size: auto, auto;
       color: $white;
-      padding-bottom: ms(4);
-      padding-top: ms(4);
 
       div {
         background: $black23;
@@ -72,13 +72,22 @@ main.homepage {
         margin: 0;
       }
 
+      a {
+        color: $white;
+      }
+
       %prenote::before {
         color: $white13;
       }
 
-      &.highlight.wormwood {
-        @include highlight('/wormwood/1400.jpg');
-      }
+      &.highlight.wormwood { @include highlight('/wormwood/1400.jpg'); }
+      &.highlight.rpg { @include highlight('/forest.jpg'); }
+    }
+
+    &.highlight,
+    &.newsletter {
+      padding-bottom: ms(4);
+      padding-top: ms(4);
     }
   }
 
@@ -91,4 +100,8 @@ main.homepage {
   h1.novel::before { content: 'Novel'; }
   h1.project::before { content: 'Our Project'; }
   h1.rpg::before { content: 'Roleplaying Game'; }
+
+  form {
+    display: flex;
+  }
 }

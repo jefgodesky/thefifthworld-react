@@ -9,5 +9,5 @@ configure({ adapter: new Adapter() })
 
 it('should display a 401 error', () => {
   const wrapper = shallow(<Error401 />)
-  expect(wrapper.find('p').text()).toEqual('Unauthorized!')
+  expect(wrapper.find('h2').text()).toEqual('Error 401')
 })

@@ -1,3 +1,18 @@
+%text-entry {
+  background: $white;
+  border: 0;
+  box-shadow: 0 0 ms(-2) $black13;
+  display: block;
+  margin: 1em 0;
+  padding: 1em;
+  width: 100%;
+
+  @media (min-width: 50em) {
+    margin: 1em -1em;
+    width: calc(100% + 2em);
+  }
+}
+
 label {
   display: block;
   font-family: 'Fontin Sans';
@@ -27,16 +42,7 @@ label {
 input[type='text'],
 input[type='email'],
 input[type='password'] {
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid $brown13;
-  display: block;
-  outline: none;
-  width: 100%;
-
-  &:focus {
-    border-bottom: 2px solid $brown;
-  }
+  @extend %text-entry;
 
   & + .note {
     font-size: ms(-1);
@@ -64,18 +70,8 @@ ul.radio {
 }
 
 textarea {
-  border: 0;
-  box-shadow: 0 0 ms(-2) $black13;
-  display: block;
+  @extend %text-entry;
   height: ms(7);
-  margin: 1em 0;
-  padding: 1em;
-  width: 100%;
-
-  @media (min-width: 50em) {
-    margin: 1em -1em;
-    width: calc(100% + 2em);
-  }
 }
 
 .autocomplete {

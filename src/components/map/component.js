@@ -138,7 +138,7 @@ export default class Map extends React.Component {
       const { TileLayer, GeoJSON, Marker, Popup } = leaflet
       const sealevel = this.raiseSeaLevel(GeoJSON)
       const markers = this.renderMarkers(Marker, Popup)
-      const height = this.props.place ? '24.781em' : '90vh'
+      const height = this.props.place ? '300px' : '90vh'
 
       return (
         <LeafletMap

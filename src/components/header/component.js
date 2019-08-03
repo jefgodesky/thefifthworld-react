@@ -13,7 +13,7 @@ export class Header extends React.Component {
    */
 
   render () {
-    const { addClasses, fullPage, name } = this.props
+    const { addClasses, skipBranding, skipNav, name } = this.props
     const account = name
       ? [
         <li key={1}><a href='/dashboard'>{name}</a></li>,
@@ -33,12 +33,9 @@ export class Header extends React.Component {
     } else if (addClasses) {
       arr = [ addClasses ]
     }
-    if (fullPage) {
-      arr = [ ...arr, 'fullpage' ]
-    }
     const classes = arr.length > 0 ? arr.join(' ') : null
 
-    const nav = fullPage
+    const nav = skipNav
       ? null
       : (
         <nav>
@@ -50,7 +47,7 @@ export class Header extends React.Component {
         </nav>
       )
 
-    const branding = fullPage
+    const branding = skipBranding
       ? null
       : (
         <h1 className='brand'>
@@ -77,9 +74,10 @@ export class Header extends React.Component {
 
 Header.propTypes = {
   addClasses: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
-  fullPage: PropTypes.bool,
   header: PropTypes.string,
   name: PropTypes.string,
+  skipBranding: PropTypes.bool,
+  skipNav: PropTypes.bool,
   title: PropTypes.string
 }
 

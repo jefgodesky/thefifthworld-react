@@ -95,7 +95,9 @@ export class Explore extends React.Component {
       <React.Fragment>
         <Header
           name={loggedInMember && loggedInMember.name ? loggedInMember.name : null}
-          fullPage={isClient} />
+          addClasses={[ 'fullpage' ]}
+          skipBranding
+          skipNav />
         {content}
         <Footer />
       </React.Fragment>

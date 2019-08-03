@@ -43,7 +43,7 @@
     @supports (display: grid) {
       section.login {
         display: grid;
-        grid-gap: ms(0);
+        grid-gap: ms(1);
         grid-template-columns: 50% 50%;
       }
     }

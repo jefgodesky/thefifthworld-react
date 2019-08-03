@@ -63,7 +63,7 @@ export class Home extends React.Component {
             </div>
           </section>
           <section className='newsletter'>
-            <p>Sign up to receive our monthly newsletter, featuring stories in and features about the Fifth World.</p>
+            <p>Sign up to receive our monthly newsletter, featuring stories in and pieces on the Fifth World.</p>
             <form
               action='https://thefifthworld.us19.list-manage.com/subscribe/post?u=16621fb5062428d5db0d4fbe4&amp;id=88efe4bbc2'
               method='post'

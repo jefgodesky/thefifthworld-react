@@ -2,7 +2,7 @@
   @extend %layout;
   background-attachment: scroll;
   background-image: url('#{$images}/top.png'), url('#{$images}/headers/standard.jpg');
-  background-position: bottom center, center;
+  background-position: bottom center, top center;
   background-repeat: repeat-x, no-repeat;
   background-size: auto, cover;
   overflow: auto;

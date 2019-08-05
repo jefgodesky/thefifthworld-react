@@ -381,7 +381,7 @@ export class Form extends React.Component {
         <textarea
           name='description'
           id='description'
-          value={this.state.description}
+          defaultValue={this.state.description ? this.state.description : ''}
           onChange={event => this.changeDescription(event.target.value)} />
         <label htmlFor='image'>
           Image
@@ -391,7 +391,7 @@ export class Form extends React.Component {
           type='text'
           name='image'
           id='image'
-          defaultValue={this.state.image}
+          defaultValue={this.state.image ? this.state.image : ''}
           onChange={event => this.changeImage(event.target.value)} />
         <label htmlFor='header'>
           Header
@@ -401,7 +401,7 @@ export class Form extends React.Component {
           type='text'
           name='header'
           id='header'
-          defaultValue={this.state.header}
+          defaultValue={this.state.header ? this.state.header : ''}
           onChange={event => this.changeHeader(event.target.value)} />
       </aside>
     )

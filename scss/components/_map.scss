@@ -1,0 +1,11 @@
+.place.view .map {
+  height: 300px;
+  margin: ms(1) auto;
+
+  .leaflet-container {
+    height: 300px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+}

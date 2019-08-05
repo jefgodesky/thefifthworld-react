@@ -1,0 +1,111 @@
+@mixin highlight ($img) {
+  background-attachment: scroll;
+  background-image: url('#{$images}/top.png'), url('#{$images}/bottom.png'), url('#{$images}#{$img}');
+  background-position: bottom center, top center, center;
+  background-repeat: repeat-x, repeat-x, no-repeat;
+  background-size: auto, auto, cover;
+}
+
+%prenote {
+  &::before {
+    color: $brown13;
+    display: block;
+    font-size: ms(-1);
+  }
+}
+
+#root > header.homepage {
+  height: 66vh;
+  position: relative;
+
+  & > .brand {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    img {
+      height: ms(-2);
+      margin-top: 0;
+      max-width: none;
+
+      @media (min-width: 50em) {
+        height: ms(-1);
+      }
+
+      @media (min-width: 60em) {
+        height: ms(0);
+      }
+
+      @media (min-width: 70em) {
+        height: ms(1);
+      }
+    }
+  }
+}
+
+main.homepage {
+  padding: 0;
+
+  section {
+    @extend %layout;
+    padding-bottom: ms(3);
+    padding-top: ms(3);
+    text-align: center;
+
+    &.highlight {
+      background-attachment: scroll;
+      background-color: $black;
+      background-image: url('#{$images}/top.png'), url('#{$images}/bottom.png');
+      background-position: bottom center, top center;
+      background-repeat: repeat-x, repeat-x;
+      background-size: auto, auto;
+      color: $white;
+
+      div {
+        background: $black23;
+        padding: ms(2);
+      }
+
+      blockquote {
+        font-style: italic;
+        margin: 0;
+      }
+
+      a {
+        color: $white;
+      }
+
+      %prenote::before {
+        color: $white13;
+      }
+
+      &.highlight.wormwood { @include highlight('/wormwood/1400.jpg'); }
+      &.highlight.rpg { @include highlight('/forest.jpg'); }
+    }
+
+    &.highlight,
+    &.newsletter {
+      padding-bottom: ms(4);
+      padding-top: ms(4);
+    }
+
+    .actions {
+      margin-top: ms(2);
+    }
+  }
+
+  h1.novel,
+  h1.project,
+  h1.rpg {
+    @extend %prenote;
+  }
+
+  h1.novel::before { content: 'Novel'; }
+  h1.project::before { content: 'Our Project'; }
+  h1.rpg::before { content: 'Roleplaying Game'; }
+
+  form {
+    display: flex;
+  }
+}

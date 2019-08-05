@@ -40,18 +40,12 @@
   }
 
   @media (min-width: 50em) {
-    form,
-    .oauth2-login {
-      float: left;
-      width: 50%;
-    }
-
-    form {
-      padding-right: ms(0);
-    }
-
-    .oauth2-login {
-      padding-left: ms(0);
+    @supports (display: grid) {
+      section.login {
+        display: grid;
+        grid-gap: ms(1);
+        grid-template-columns: 50% 50%;
+      }
     }
   }
 }

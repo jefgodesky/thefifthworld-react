@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import config from '../../../config'
 
 /**
  * This component handles the home page.
@@ -12,9 +13,10 @@ export class Header extends React.Component {
    */
 
   render () {
-    const account = this.props.name
+    const { addClasses, skipBranding, skipNav, name } = this.props
+    const account = name
       ? [
-        <li key={1}><a href='/dashboard'>{this.props.name}</a></li>,
+        <li key={1}><a href='/dashboard'>{name}</a></li>,
         <li key={2}><a href='/logout'>Logout</a></li>
       ]
       : (<li><a href='/login'>Login</a></li>)
@@ -22,22 +24,20 @@ export class Header extends React.Component {
       ? (<h1>{this.props.title}</h1>)
       : null
     const header = this.props.header
-      ? { backgroundImage: `url(${this.props.header})` }
+      ? { backgroundImage: `url("https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/top.png"), url("${this.props.header}")` }
       : null
 
-    return (
-      <header style={header}>
-        <nav className='account'>
-          <ul>
-            {account}
-          </ul>
-        </nav>
-        <h1 className='brand'>
-          <a href='/'>
-            <img src='https://s3.amazonaws.com/thefifthworld/website/images/wordmark.white.svg' alt='The Fifth World' />
-          </a>
-        </h1>
-        {title}
+    let arr = []
+    if (addClasses && Array.isArray(addClasses)) {
+      arr = addClasses
+    } else if (addClasses) {
+      arr = [ addClasses ]
+    }
+    const classes = arr.length > 0 ? arr.join(' ') : null
+
+    const nav = skipNav
+      ? null
+      : (
         <nav>
           <ul>
             <li><a href='/explore'>Explore</a></li>
@@ -45,14 +45,39 @@ export class Header extends React.Component {
             <li><a href='/rpg'>Play</a></li>
           </ul>
         </nav>
+      )
+
+    const branding = skipBranding
+      ? null
+      : (
+        <h1 className='brand'>
+          <a href='/'>
+            <img src='https://s3.amazonaws.com/thefifthworld/website/images/wordmark.white.svg' alt='The Fifth World' />
+          </a>
+        </h1>
+      )
+
+    return (
+      <header style={header} className={classes}>
+        <nav className='account'>
+          <ul>
+            {account}
+          </ul>
+        </nav>
+        {branding}
+        {title}
+        {nav}
       </header>
     )
   }
 }
 
 Header.propTypes = {
+  addClasses: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
   header: PropTypes.string,
   name: PropTypes.string,
+  skipBranding: PropTypes.bool,
+  skipNav: PropTypes.bool,
   title: PropTypes.string
 }
 

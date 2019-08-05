@@ -2,6 +2,7 @@
 
 import Create from '../components/create/component'
 import Dashboard from '../components/dashboard/component'
+import Explore from '../components/explore/component'
 import ForgotPassphrase from '../components/forgot-passphrase/component'
 import Home from '../components/home/component'
 import Invitations from '../components/invitations/component'
@@ -76,6 +77,11 @@ const routes = [
     path: '/upload',
     exact: true,
     component: Upload
+  },
+  {
+    path: '/explore',
+    exact: true,
+    component: Explore
   }
 ]
 

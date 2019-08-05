@@ -15,7 +15,7 @@ class Page {
     this.title = page.title
     this.description = page.description
     this.image = page.image
-    this.header = page.header
+    this.header = page.header === 'null' ? null : page.header
     this.slug = page.slug
     this.path = page.path
     this.parent = page.parent
@@ -76,7 +76,9 @@ class Page {
       /^\/upload(\/(.*))?$/g,
       /^\/autocomplete(\/(.*))?$/g,
       /^\/like(\/(.*))?$/g,
-      /^\/unlike(\/(.*))?$/g
+      /^\/unlike(\/(.*))?$/g,
+      /^\/explore(\/(.*))?$/g,
+      /^\/stories(\/(.*))?$/g
     ]
 
     for (let pattern of reservedPaths) {

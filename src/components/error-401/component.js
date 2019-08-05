@@ -24,9 +24,12 @@ export class Error401 extends React.Component {
     const { loggedInMember } = this.props
     return (
       <React.Fragment>
-        <Header name={loggedInMember ? loggedInMember.name : null} />
+        <Header
+          name={loggedInMember ? loggedInMember.name : null}
+          title='Unauthorized' />
         <main>
-          <p>Unauthorized!</p>
+          <h2>Error 401</h2>
+          <p>Only members have access to this page. You might just need to <a href='/login'>log in</a>. If you haven&rsquo;t become a member, <a href='/about/membership'>you can find out more about how to become one</a>.</p>
         </main>
         <Footer />
       </React.Fragment>

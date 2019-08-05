@@ -14,6 +14,7 @@ import View from '../view/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canRead } from '../../shared/permissions'
+import slugify from '../../shared/slugify'
 
 /**
  * This component handles the member profile page.
@@ -75,6 +76,9 @@ export class Page extends React.Component {
         }
 
         const breadcrumbs = this.renderBreadcrumbs()
+        const type = page.type ? slugify(page.type) : null
+        const cmd = page.command ? page.command : 'view'
+        const classes = [ type, cmd ]
 
         return (
           <React.Fragment>
@@ -82,7 +86,7 @@ export class Page extends React.Component {
               header={page.header ? page.header : null}
               name={loggedInMember ? loggedInMember.name : null}
               title={page.title} />
-            <main>
+            <main className={classes.join(' ')}>
               <Messages />
               {breadcrumbs}
               {component}

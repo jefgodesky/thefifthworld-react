@@ -36,15 +36,14 @@ export class History extends React.Component {
         <tr key={change.id}>
           <td>{a}</td>
           <td>{b}</td>
-          <td className='num'>{change.id}</td>
-          <td>{change.msg}</td>
           <td>
-            <a
-              href={`${this.props.page.path}/v/${change.id}`}
-              dangerouslySetInnerHTML={{ __html: formatDate(change.timestamp) }} />
-          </td>
-          <td>
-            <a href={`/member/${change.editor.id}`}>{change.editor.name}</a>
+            {change.msg}
+            <p className='details'>
+              Change made by <a href={`/member/${change.editor.id}`}>{change.editor.name}</a>,
+              <a
+                href={`${this.props.page.path}/v/${change.id}`}
+                dangerouslySetInnerHTML={{ __html: formatDate(change.timestamp) }} />
+            </p>
           </td>
         </tr>
       )
@@ -65,10 +64,7 @@ export class History extends React.Component {
         <tr>
           <th />
           <th />
-          <th className='num'>#</th>
           <th>Summary</th>
-          <th>Time</th>
-          <th>By</th>
         </tr>
       </thead>
     )

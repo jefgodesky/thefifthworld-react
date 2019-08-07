@@ -86,6 +86,15 @@ img {
   max-width: 100%;
 }
 
+blockquote {
+  font-style: italic;
+  margin: ms(1) 0;
+
+  em {
+    font-style: normal;
+  }
+}
+
 pre {
   background: $brown16;
   margin: ms(0) -1em;

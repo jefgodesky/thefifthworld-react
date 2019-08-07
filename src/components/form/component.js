@@ -534,7 +534,7 @@ export class Form extends React.Component {
           id='body'
           defaultValue={this.state.body}
           onChange={event => this.changeBody(event.target.value)} />
-        <p className='instructions'>You can format your page using <a href='/markown'>markdown</a>.</p>
+        <p className='instructions'>You can format your page using <a href='/markdown'>markdown</a>.</p>
         {this.renderMeta()}
         {this.renderMessageField()}
         <FormActions

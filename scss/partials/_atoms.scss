@@ -87,11 +87,20 @@ img {
 }
 
 blockquote {
-  font-style: italic;
-  margin: ms(1) 0;
+  @extend %sidebar;
 
-  em {
+  cite {
+    color: $brown23;
+    display: block;
     font-style: normal;
+    margin-left: 25%;
+    max-width: 75%;
+    text-align: right;
+
+    &::before {
+      content: '\2014';
+      margin-right: ms(-2);
+    }
   }
 }
 

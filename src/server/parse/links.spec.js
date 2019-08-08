@@ -28,10 +28,43 @@ describe('parseLinks', () => {
     expect(actual).toEqual('<a href="/test-page">Test Page</a>')
   })
 
+  it('can set different link text', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Test Page',
+      body: 'This is a new page.'
+    }, member, 'Initial text', db)
+    const actual = await parseLinks('[[Test Page | Click here]]', db)
+    expect(actual).toEqual('<a href="/test-page">Click here</a>')
+  })
+
   it('links to a new page', async () => {
     expect.assertions(1)
     const actual = await parseLinks('[[Test Page]]', db)
     expect(actual).toEqual('<a href="/test-page?create" class="new">Test Page</a>')
+  })
+
+  it('can link to a path', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Test Page',
+      body: 'This is a new page.'
+    }, member, 'Initial text', db)
+    const actual = await parseLinks('[[/test-page]]', db)
+    expect(actual).toEqual('<a href="/test-page">/test-page</a>')
+  })
+
+  it('can link to a path and set different text', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Test Page',
+      body: 'This is a new page.'
+    }, member, 'Initial text', db)
+    const actual = await parseLinks('[[/test-page | Click here]]', db)
+    expect(actual).toEqual('<a href="/test-page">Click here</a>')
   })
 })
 

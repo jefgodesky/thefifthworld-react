@@ -12,17 +12,13 @@ import slugify from '../../shared/slugify'
 const getLinkObjects = links => {
   return links.map(link => {
     const text = link.substr(2, link.length - 4).trim()
-    const parts = text.split('|')
+    const parts = text.split('|').map(part => part.trim())
     const usesPath = parts[0][0] === '/'
-    const title = usesPath ? parts[0].substr(0, parts[0].indexOf(' ')) : parts[0]
-    const display = usesPath
-      ? parts[0].substr(parts[0].indexOf(' ') + 1)
-      : parts.length > 1 ? parts[1] : parts[0]
 
     return {
       orig: link,
-      title,
-      display
+      title: usesPath ? parts[0].substr(parts[0].indexOf(' ') + 1) : parts[0],
+      display: parts.length > 1 ? parts[1] : parts[0]
     }
   })
 }

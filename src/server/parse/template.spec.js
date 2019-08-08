@@ -60,6 +60,17 @@ describe('templateParse', () => {
     const actual = await templateParse('{{Template:Hello\n  Name=”Bob”}}', db)
     expect(actual).toEqual('Hello, Bob!')
   })
+
+  it('can provide documentation', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Template:Hello',
+      body: '{{Template}}Hello, {{{Name}}}!{{/Template}} This template greets you.\n\n## Example\n\n{{Temmplate:Hello Name="Bob"}}\n\n##Markdown\n\n```\n{{Temmplate:Hello Name="Bob"}}\n```\n\n[[Type:Template]]'
+    }, member, 'Initial text', db)
+    const actual = await templateParse('{{Template:Hello Name=”Bob”}}', db)
+    expect(actual).toEqual('Hello, Bob!')
+  })
 })
 
 afterEach(async () => {

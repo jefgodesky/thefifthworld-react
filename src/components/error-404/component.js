@@ -29,7 +29,7 @@ export class Error404 extends React.Component {
           title='Page Not Found' />
         <main>
           <h2>Error 404</h2>
-          <p>The page you requested doesnn&rsquo;t seem to exist.</p>
+          <p>The page you requested doesn&rsquo;t seem to exist.</p>
         </main>
         <Footer />
       </React.Fragment>

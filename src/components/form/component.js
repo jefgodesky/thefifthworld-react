@@ -13,7 +13,7 @@ import FormActions from '../form-actions/component'
 import FormUpload from '../form-upload/component'
 
 import config from '../../../config'
-import { get } from '../../shared/utils'
+import { isPopulatedArray, get } from '../../shared/utils'
 import { addError, resolveError, getErrorsFor } from '../../components/error/utils'
 import slugify from '../../shared/slugify'
 
@@ -440,7 +440,7 @@ export class Form extends React.Component {
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
 
-      if (!errors || (errors && Array.isArray(errors) && errors.length === 0)) {
+      if (!isPopulatedArray(errors)) {
         try {
           const headers = {
             'Content-Type': 'multipart/form-data'

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { requestLocation } from '../../shared/utils'
+import { isPopulatedArray, requestLocation } from '../../shared/utils'
 import config from '../../../config'
 
 /**
@@ -81,7 +81,7 @@ export default class Map extends React.Component {
 
   raiseSeaLevel (GeoJSON) {
     const { json } = this.state
-    if (json && Array.isArray(json) && json.length > 0) {
+    if (isPopulatedArray(json)) {
       const jsx = []
       json.forEach((data, index) => {
         jsx.push(
@@ -110,7 +110,7 @@ export default class Map extends React.Component {
     const { place, places } = this.props
     if (place && place.lat && place.lon) {
       return (<Marker position={[place.lat, place.lon]} />)
-    } else if (places && Array.isArray(places) && places.length > 0) {
+    } else if (isPopulatedArray(places)) {
       const jsx = []
       places.forEach(place => {
         jsx.push(

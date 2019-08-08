@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { checkExists, get, formatDate, dedupe, getFileSizeStr, clone } from './utils'
+import { checkExists, isPopulatedArray, get, formatDate, dedupe, getFileSizeStr, clone } from './utils'
 
 describe('checkExists', () => {
   it('can tell if a chain of properties exist', () => {
@@ -8,6 +8,32 @@ describe('checkExists', () => {
     const actual = [ checkExists(obj, 'prop'), checkExists(obj, 'prop.nope') ]
     const expected = [ true, false ]
     expect(actual).toEqual(expected)
+  })
+})
+
+describe('isPopulatedArray', () => {
+  it('returns true if its param is an array with one or more items', () => {
+    expect(isPopulatedArray([ 0 ])).toEqual(true)
+  })
+
+  it('returns false if its param is an array with zero items', () => {
+    expect(isPopulatedArray([])).toEqual(false)
+  })
+
+  it('returns false if its param is not an array', () => {
+    expect(isPopulatedArray('hello')).toEqual(false)
+  })
+
+  it('returns false if its param is null', () => {
+    expect(isPopulatedArray(null)).toEqual(false)
+  })
+
+  it('returns false if its param is undefined', () => {
+    expect(isPopulatedArray(undefined)).toEqual(false)
+  })
+
+  it('returns false if its param is false', () => {
+    expect(isPopulatedArray(false)).toEqual(false)
   })
 })
 

@@ -1,5 +1,6 @@
 .breadcrumbs {
   font-family: 'Fontin Sans Small Caps';
+  margin: ms(-1) 0 ms(2);
 
   ul {
     @extend %unformatted-list;

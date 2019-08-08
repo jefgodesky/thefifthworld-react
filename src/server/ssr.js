@@ -1,5 +1,7 @@
 import serialize from 'serialize-javascript'
 
+const DEFAULT_SOCIAL_IMG = 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
+
 /**
  * Renders the core `<head>` elements for each page.
  * @param title {string} - The content of the page's `<title>` tag.
@@ -43,6 +45,8 @@ const twitter = (meta, title, description, image) => {
     site: '@thefifthworld'
   }, meta)
 
+  if (val.image === null || val.image === undefined) val.image = DEFAULT_SOCIAL_IMG
+
   return `    <!-- Twitter Card data -->
     <meta name="twitter:title" content="${val.title}" />
     <meta name="twitter:card" content="${val.card}" />
@@ -74,6 +78,8 @@ const og = (meta, title, description, image) => {
     url: 'https://thefifthworld.com',
     appId: 241682169673933
   }, meta)
+
+  if (val.image === null || val.image === undefined) val.image = DEFAULT_SOCIAL_IMG
 
   return `    <!-- Open Graph data -->
     <meta property="og:title" content="${val.title}" />

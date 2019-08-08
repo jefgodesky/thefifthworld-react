@@ -15,7 +15,7 @@ import {
 marked.setOptions({
   sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'pre code div ins del sup sub section aside blockquote cite dl dt dd'.split(' ')
+    const allowedHTML = 'pre code div ins del sup sub section aside blockquote cite dl dt dd span'.split(' ')
     const inside = markup.replace(/<\/?(.*?)>/g, '$1').split(' ')
     return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
   },

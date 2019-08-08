@@ -14,10 +14,10 @@ const addTemplates = async (matches, db) => {
   const templates = []
   for (const match of matches) {
     const tpl = match.replace(/\n/g, '')
-    const name = tpl.substr(2, tpl.length - 4).replace(/\s(.*?)="(.*?)"/g, '')
+    const name = tpl.substr(2, tpl.length - 4).replace(/\s(.*?)=["“”](.*?)["“”]/g, '')
 
     // What are the parameters?
-    const paramStrings = tpl.match(/\s(.*?)="(.*?)"/g)
+    const paramStrings = tpl.match(/\s(.*?)=["“”](.*?)["“”]/g)
     const params = {}
     if (paramStrings) {
       paramStrings.forEach(str => {

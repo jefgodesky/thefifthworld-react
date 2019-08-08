@@ -27,7 +27,7 @@ export class Form extends React.Component {
     autoBind(this)
 
     const description = get(this.props, 'page.description')
-    const image = get(this.props, 'page.image') || 'https://s3.amazonaws.com/thefifthworld/website/images/social/default.jpg'
+    const image = get(this.props, 'page.image') || null
     const header = get(this.props, 'page.header') || null
 
     this.state = {

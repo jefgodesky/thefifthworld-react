@@ -1,4 +1,3 @@
-import config from '../../../config'
 import slugify from '../slugify'
 import plainParse from '../../server/parse/plain'
 import { updateVals } from '../../server/utils'
@@ -283,7 +282,7 @@ class Page {
     const path = data.path ? data.path : await Page.getPath(data, parent, db)
     const title = data.title ? data.title : ''
     const description = data.description ? data.description : await Page.getDescription(data.body)
-    const image = data.image ? data.image : `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/social/default.jpg`
+    const image = data.image
     const header = data.header ? data.header : null
     const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774

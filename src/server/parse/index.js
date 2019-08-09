@@ -9,7 +9,8 @@ import {
   doNotEmail,
   parseDownload,
   parseArt,
-  parseTags
+  parseTags,
+  unwrapDivs
 } from './special'
 
 marked.setOptions({
@@ -65,6 +66,7 @@ const parse = async (wikitext, db, path = null) => {
       wikitext = await parseLinks(wikitext, db)
     }
 
+    wikitext = unwrapDivs(wikitext)
     return wikitext
   } else {
     return false

@@ -1,6 +1,6 @@
 import Page from '../../shared/models/page'
 import { getURL, getProps } from './utils'
-import { getFileSizeStr } from '../../shared/utils'
+import { isPopulatedArray, getFileSizeStr } from '../../shared/utils'
 import parse from './index'
 
 /**
@@ -250,6 +250,32 @@ const parseTags = wikitext => {
   return wikitext
 }
 
+/**
+ * Unwraps <div> tags that are wrapped in <p> tags.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - A copy of the wikitext, but in each instance where one
+ *   or more <div> tags are wrapped inside of a <p> tag, the <p> tag is
+ *   replaced by the <div> tags. If the <p> tag includes other children besides
+ *   the <div> tags, it is preserved.
+ */
+
+const unwrapDivs = wikitext => {
+  const paragraphs = wikitext.match(/<p.*?>(.|\n)*?<\/p>/gm)
+  if (isPopulatedArray(paragraphs)) {
+    for (let p of paragraphs) {
+      const match = p.match(/<p.*?>((.|\n)*?)<\/p>/m)
+      const text = (isPopulatedArray(match) && match.length > 1) ? match[1] : null
+      const divs = text ? text.match(/<div.*?>((.|\n)*?)<\/div>/gm) : null
+      if (isPopulatedArray(divs)) {
+        let test = text
+        for (let div of divs) test = test.replace(div, '')
+        if (test.trim() === '') wikitext = wikitext.replace(p, text)
+      }
+    }
+  }
+  return wikitext
+}
+
 export {
   listChildren,
   listArtists,
@@ -258,5 +284,6 @@ export {
   doNotEmail,
   parseDownload,
   parseArt,
-  parseTags
+  parseTags,
+  unwrapDivs
 }

@@ -6,7 +6,8 @@ import {
   listChildren,
   listOtherNames,
   listNamesKnown,
-  parseTags
+  parseTags,
+  unwrapDivs
 } from './special'
 import db from '../db'
 
@@ -226,6 +227,33 @@ describe('parseTags', () => {
     const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] And some more text after it, too. [[Type:Test]]')
     const expected = 'This has some text. And some more text after it, too.'
     expect(actual).toEqual(expected)
+  })
+})
+
+describe('unwrapDivs', () => {
+  it('unwraps a single div inside of a p', () => {
+    const actual = unwrapDivs('<p><div>Hello</div></p>')
+    expect(actual).toEqual('<div>Hello</div>')
+  })
+
+  it('can handle p tags with attributes', () => {
+    const actual = unwrapDivs('<p class="test" data-test="true"><div>Hello</div></p>')
+    expect(actual).toEqual('<div>Hello</div>')
+  })
+
+  it('preserves div attributes', () => {
+    const actual = unwrapDivs('<p><div class="test" data-test="true">Hello</div></p>')
+    expect(actual).toEqual('<div class="test" data-test="true">Hello</div>')
+  })
+
+  it('unwraps multiple div tags inside of a p', () => {
+    const actual = unwrapDivs('<p><div>1</div> <div>2</div></p>')
+    expect(actual).toEqual('<div>1</div> <div>2</div>')
+  })
+
+  it('doesn\'t unwrap if there\'s something besides div tags inside the p', () => {
+    const actual = unwrapDivs('<p><div>1</div> <div>2</div> 3</p>')
+    expect(actual).toEqual('<p><div>1</div> <div>2</div> 3</p>')
   })
 })
 

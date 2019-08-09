@@ -3,6 +3,7 @@
 import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
+  escapeCodeBlockMarkdown,
   listChildren,
   listOtherNames,
   listNamesKnown,
@@ -254,6 +255,15 @@ describe('unwrapDivs', () => {
   it('doesn\'t unwrap if there\'s something besides div tags inside the p', () => {
     const actual = unwrapDivs('<p><div>1</div> <div>2</div> 3</p>')
     expect(actual).toEqual('<p><div>1</div> <div>2</div> 3</p>')
+  })
+})
+
+describe('escapeCodeBlockMarkdown', () => {
+  it('escapes Markdown characters inside of code blocks', () => {
+    const wikitext = '<pre>\n  <code>\n    Code block\n  </code>\n</pre>\n\nNot in code block.'
+    const actual = escapeCodeBlockMarkdown(wikitext)
+    const expected = '<pre>\n  <code>\n&#32;&#32;&#32;&#32;&#67;&#111;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;\n&#32;&#32;</code>\n</pre>\n\nNot in code block.'
+    expect(actual).toEqual(expected)
   })
 })
 

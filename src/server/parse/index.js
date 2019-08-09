@@ -2,6 +2,7 @@ import marked from 'marked'
 import parseTemplates from './template'
 import parseLinks from './links'
 import {
+  escapeCodeBlockMarkdown,
   listChildren,
   listArtists,
   listOtherNames,
@@ -50,6 +51,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
+    wikitext = escapeCodeBlockMarkdown(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
 

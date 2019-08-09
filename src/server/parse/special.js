@@ -4,6 +4,34 @@ import { isPopulatedArray, getFileSizeStr } from '../../shared/utils'
 import parse from './index'
 
 /**
+ * Escapes all of the characters inside of a <pre><code> block.
+ * @param wikitext {string} - Wikitext to process.
+ * @returns {*} - The same wikitext, but with the contents of any <pre><code>
+ *   blocks escaped.
+ */
+
+const escapeCodeBlockMarkdown = wikitext => {
+  const blocks = wikitext.match(/<pre.*?>\s*<code.*?>((.|\n)*?)<\/code>\s*<\/pre>/gm)
+  if (isPopulatedArray(blocks)) {
+    for (let block of blocks) {
+      const match = block.match(/<pre.*?>\s*<code.*?>((.|\n)*?)<\/code>\s*<\/pre>/m)
+      const orig = Array.isArray(match) && match.length > 1 ? match[1] : null
+      const content = orig.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&amp;/gi, '&')
+      let escaped = ''
+      for (let i = 0; i < content.length; i++) {
+        if (content.charCodeAt(i) === 10) {
+          escaped += '\n'
+        } else {
+          escaped += `&#${content.charCodeAt(i)};`
+        }
+      }
+      wikitext = wikitext.replace(orig, escaped)
+    }
+  }
+  return wikitext
+}
+
+/**
  * This method looks for tags in wikitext that refer to a page (per the `Page`
  * model's ``getPaths` method, which matches either names or paths) and
  * performs some operation (`op`) upon them.
@@ -277,6 +305,7 @@ const unwrapDivs = wikitext => {
 }
 
 export {
+  escapeCodeBlockMarkdown,
   listChildren,
   listArtists,
   listOtherNames,

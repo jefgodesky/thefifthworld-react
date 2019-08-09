@@ -135,8 +135,8 @@ class Page {
       let i = 1
       let ready = false
       while (!ready) {
-        const candidate = `${desc.trim()} ${sentences[i].trim()}`
-        if ((candidate.length > cutoff) || (i === sentences.length - 1)) {
+        const candidate = sentences.length > i ? `${desc.trim()} ${sentences[i].trim()}` : null
+        if (!candidate || (candidate.length > cutoff) || (i === sentences.length - 1)) {
           ready = true
         } else {
           desc = candidate

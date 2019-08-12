@@ -76,8 +76,7 @@ class Page {
       /^\/autocomplete(\/(.*))?$/g,
       /^\/like(\/(.*))?$/g,
       /^\/unlike(\/(.*))?$/g,
-      /^\/explore(\/(.*))?$/g,
-      /^\/stories(\/(.*))?$/g
+      /^\/explore(\/(.*))?$/g
     ]
 
     for (let pattern of reservedPaths) {

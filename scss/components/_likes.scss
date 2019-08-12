@@ -1,0 +1,16 @@
+.likes {
+  @extend %sidebar;
+  background-color: $blue13;
+  color: $blue;
+  font-family: 'Fontin Sans';
+
+  a {
+    @extend %button;
+    @include button-color($blue, $white);
+    padding: ms(-3) ms(0);
+  }
+
+  & + .wiki-options {
+    margin-top: ms(1);
+  }
+}

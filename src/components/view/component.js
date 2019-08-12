@@ -179,9 +179,15 @@ export class View extends React.Component {
       const action = this.state.liked
         ? (<a href={path + '/unlike'} onClick={this.unlike}>Unlike</a>)
         : (<a href={path + '/like'} onClick={this.like}>Like</a>)
+      const count = this.state.likes.length === 1
+        ? `1 like`
+        : `${this.state.likes.length} likes`
       return (
         <React.Fragment>
-          <p className='likes'>{action} | {this.state.likes.length} likes</p>
+          <p className='likes'>
+            {action}
+            {count}
+          </p>
         </React.Fragment>
       )
     } else {

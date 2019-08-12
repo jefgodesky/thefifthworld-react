@@ -1,7 +1,4 @@
-button,
-input[type='submit'],
-input[type='button'],
-a.button {
+%button {
   @include button-color($red, $white);
   appearance: none;
   border: 0;
@@ -32,4 +29,11 @@ a.button {
       opacity: 1;
     }
   }
+}
+
+button,
+input[type='submit'],
+input[type='button'],
+a.button {
+  @extend %button;
 }

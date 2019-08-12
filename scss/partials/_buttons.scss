@@ -1,3 +1,31 @@
+@mixin button-color ($bg, $fg) {
+  background: $bg;
+  color: $fg;
+
+  &:visited {
+    color: $fg;
+  }
+
+  &:hover {
+    background: lighten($bg, 5%);
+    color: $fg;
+  }
+
+  &:active {
+    background: darken($bg, 5%);
+    color: $fg;
+  }
+
+  &[disabled],
+  &[disabled]:visited,
+  &[disabled]:hover,
+  &[disabled]:active {
+    background: $bg;
+    cursor: default;
+    opacity: .5;
+  }
+}
+
 %button {
   @include button-color($red, $white);
   appearance: none;

@@ -35,12 +35,13 @@ export class Dashboard extends React.Component {
             <h3>Create Something</h3>
             <p>Add something new to the Fifth World.</p>
             <ul>
-              <li><a href='/new-wiki' className='button'>Write a Wiki Entry</a></li>
-              <li><a href='/new-family' className='button'>Add a Family</a></li>
-              <li><a href='/new-person' className='button'>Add a Character</a></li>
-              <li><a href='/new-place' className='button'>Add a Place</a></li>
-              <li><a href='/new-story' className='button'>Write a Story</a></li>
-              <li><a href='/new-art' className='button'>Upload Art</a></li>
+              <li><a href='/new' className='button'>Add a Page</a></li>
+              <li><a disabled title='Coming soon' className='button'>Add a Family</a></li>
+              <li><a disabled title='Coming soon' className='button'>Add a Character</a></li>
+              <li><a disabled title='Coming soon' className='button'>Add a Place</a></li>
+              <li><a disabled title='Coming soon' className='button'>Write a Story</a></li>
+              <li><a href='/upload' className='button'>Upload a File</a></li>
+              <li><a disabled title='Coming soon' className='button'>Upload Art</a></li>
             </ul>
           </section>
           <section className='member'>

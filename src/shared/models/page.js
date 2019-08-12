@@ -134,14 +134,33 @@ class Page {
       let desc = sentences[0]
       let i = 1
       let ready = false
-      while (!ready) {
-        const candidate = sentences.length > i ? `${desc.trim()} ${sentences[i].trim()}` : null
-        if (!candidate || (candidate.length > cutoff) || (i === sentences.length - 1)) {
-          ready = true
-        } else {
-          desc = candidate
-          i++
+      if (desc.length < cutoff) {
+        // The first sentence is not as long as the cutoff. How many sentences
+        // can we add before we reach that limit?
+        while (!ready) {
+          const candidate = sentences.length > i ? `${desc.trim()} ${sentences[i].trim()}` : null
+          if (!candidate || (candidate.length > cutoff) || (i === sentences.length - 1)) {
+            ready = true
+          } else {
+            desc = candidate
+            i++
+          }
         }
+      } else {
+        // The first sentence is already beyond the cutoff, so let's truncate
+        // it at the cutoff.
+        const words = desc.split(' ')
+        desc = words[0]
+        while (!ready) {
+          const candidate = words.length > i ? `${desc.trim()} ${words[i].trim()}` : null
+          if (!candidate || (candidate.length > cutoff - 1) || (i === words.length - 1)) {
+            ready = true
+          } else {
+            desc = candidate
+            i++
+          }
+        }
+        desc = `${desc}…`
       }
       return desc
     }

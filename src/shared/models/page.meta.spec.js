@@ -133,6 +133,16 @@ describe('Page', () => {
     expect(page.description).toEqual('The world has changed. The ruins of ancient cities lie submerged beneath the swollen seas.')
   })
 
+  it('will create a description from the body if no other is provided, and can handle a long first sentence', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    const page = await Page.create({
+      title: 'New Page',
+      body: 'The default cut-off is at one hundred fifty characters, but this paragraph\'s first sentence is longer than that, which is a scenario that we\'re going to encounter in some instances. This test helps ensure that we can handle those cases.'
+    }, member, 'Initial text', db)
+    expect(page.description).toEqual('The default cut-off is at one hundred fifty characters, but this paragraph’s first sentence is longer than that, which is a scenario that we’re going…')
+  })
+
   it('does not count Markdown', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

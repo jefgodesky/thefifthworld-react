@@ -107,5 +107,10 @@ main.homepage {
 
   form {
     display: flex;
+    margin: ms(2) 0;
+
+    input {
+      margin: 0 ms(1) 0 0;
+    }
   }
 }

@@ -70,6 +70,13 @@ main.homepage {
       blockquote {
         font-style: italic;
         margin: 0;
+
+        &::before,
+        &::after {
+          content: none;
+          display: none;
+          visibility: hidden;
+        }
       }
 
       a {

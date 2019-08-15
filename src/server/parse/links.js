@@ -1,5 +1,4 @@
 import Page from '../../shared/models/page'
-import slugify from '../../shared/slugify'
 
 /**
  * Transforms the result of a regex match for links in a wikitext snippet into
@@ -66,7 +65,7 @@ const markNewLinks = links => {
   return links.map(link => {
     if (!link.path) {
       return Object.assign({}, link, {
-        path: `/${slugify(link.title)}?create`,
+        path: `/new?title=${encodeURIComponent(link.title)}`,
         isNew: true
       })
     } else {

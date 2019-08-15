@@ -40,8 +40,8 @@ export class Form extends React.Component {
       thumbnail: null,
       parent: undefined,
       type: get(this.props, 'page.type'),
-      path: get(this.props, 'page.path'),
-      title: get(this.props, 'page.title'),
+      path: get(this.props, 'page.path') || this.props.path,
+      title: get(this.props, 'page.title') || this.props.title,
       body: get(this.props, 'page.curr.body'),
       message: '',
       description,
@@ -62,12 +62,12 @@ export class Form extends React.Component {
   componentDidMount () {
     const lineage = this.props.page && this.props.page.lineage && Array.isArray(this.props.page.lineage) ? this.props.page.lineage : []
     const parentObject = lineage.length > 0 ? lineage[0] : null
-    const parent = parentObject ? parentObject.path : undefined
+    const parent = parentObject ? parentObject.path : this.props.parent
 
     this.setState({
       isClient: true,
       parent,
-      showPath: false
+      showPath: Boolean(this.props.path)
     })
   }
 
@@ -477,7 +477,7 @@ export class Form extends React.Component {
   render () {
     const titleErrors = getErrorsFor('title', this.state.errors)
     const titleError = titleErrors.length > 0 ? titleErrors[0] : null
-    const path = get(this.props, 'page.path')
+    const path = get(this.props, 'page.path') || this.props.path
     const action = path || '/new'
     const classes = [ 'wiki' ]
     if (this.state.isLoading) classes.push('loading')
@@ -511,7 +511,7 @@ export class Form extends React.Component {
           type='text'
           name='title'
           id='title'
-          defaultValue={get(this.props, 'page.title')}
+          defaultValue={this.state.title}
           onChange={event => this.changeTitle(event.target.value)}
           placeholder='What do you want to write about?' />
         {errMsg}
@@ -565,6 +565,9 @@ Form.propTypes = {
   error: PropTypes.object,
   loggedInMember: PropTypes.object,
   page: PropTypes.object,
+  parent: PropTypes.string,
+  path: PropTypes.string,
+  title: PropTypes.string,
   upload: PropTypes.bool
 }
 

@@ -42,7 +42,7 @@ describe('parseLinks', () => {
   it('links to a new page', async () => {
     expect.assertions(1)
     const actual = await parseLinks('[[Test Page]]', db)
-    expect(actual).toEqual('<a href="/test-page?create" class="new">Test Page</a>')
+    expect(actual).toEqual('<a href="/new?title=Test%20Page" class="new">Test Page</a>')
   })
 
   it('can link to a path', async () => {

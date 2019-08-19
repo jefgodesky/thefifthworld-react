@@ -144,7 +144,7 @@ server.get('*', redirector, async (req, res) => {
       version = parseInt(parts.pop())
       command = parts.pop()
       path = parts.join('/')
-    } else if (commands.indexOf(parts[parts.length - 1]) > -1) {
+    } else if (parts.length > 2 && commands.indexOf(parts[parts.length - 1]) > -1) {
       command = parts.pop()
       path = parts.join('/')
     }

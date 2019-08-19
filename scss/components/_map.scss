@@ -1,3 +1,8 @@
+.map.loading {
+  background: $white url('#{$images}/loading.svg') no-repeat center;
+  background-size: ms(4);
+}
+
 .place.view .map {
   height: 300px;
   margin: ms(1) auto;

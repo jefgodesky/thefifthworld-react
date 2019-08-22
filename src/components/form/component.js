@@ -376,7 +376,7 @@ export class Form extends React.Component {
       <aside className='meta'>
         <label htmlFor='description'>
           Description
-          <p className='note'>A short description added to the head of the page, used by search engines and other robots.</p>
+          <p className='note'>A short description added to the head of the page, used by search engines and other robots. If you don&rsquo;t want to write a description, we&rsquo;ll make one from the first few sentences of the page. If you&rsquo;d like to write your own description, it has to remain shorter than 240 characters.</p>
         </label>
         <textarea
           name='description'

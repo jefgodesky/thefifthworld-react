@@ -19,12 +19,6 @@ label {
   font-weight: bold;
   margin: ms(2) 0 ms(-4);
 
-  .note {
-    font-size: ms(-1);
-    font-weight: normal;
-    margin: 0 0 ms(-1);
-  }
-
   &.error {
     color: $red;
 

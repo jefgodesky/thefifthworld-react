@@ -17,7 +17,8 @@ const getLinkObjects = links => {
     return {
       orig: link,
       title: usesPath ? parts[0].substr(parts[0].indexOf(' ') + 1) : parts[0],
-      display: parts.length > 1 ? parts[1] : parts[0]
+      display: parts.length > 1 ? parts[1] : parts[0],
+      usesPath
     }
   })
 }
@@ -64,10 +65,17 @@ const mergeDB = async (links, db) => {
 const markNewLinks = links => {
   return links.map(link => {
     if (!link.path) {
-      return Object.assign({}, link, {
-        path: `/new?title=${encodeURIComponent(link.title)}`,
-        isNew: true
-      })
+      if (link.usesPath) {
+        return Object.assign({}, link, {
+          path: `/new?path=${encodeURIComponent(link.title)}`,
+          isNew: true
+        })
+      } else {
+        return Object.assign({}, link, {
+          path: `/new?title=${encodeURIComponent(link.title)}`,
+          isNew: true
+        })
+      }
     } else {
       return link
     }

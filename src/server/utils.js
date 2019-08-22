@@ -1,4 +1,20 @@
-import { escape as SQLEscape } from 'sqlstring'
+import { escape as SQLStringEscape } from 'sqlstring'
+
+/**
+ * Returns 'NULL' for values that are null, or an SQL-escaped value for any
+ * other value.
+ * @param val {*} - The value to escape.
+ * @returns {string} - Either the SQL-escaped string or 'NULL,' depending on
+ *   the value being escaped.
+ */
+
+const SQLEscape = val => {
+  if (val === null | val === 'null') {
+    return 'NULL'
+  } else {
+    return SQLStringEscape(val)
+  }
+}
 
 /**
  * This method takes an array that provides the names and types for the
@@ -27,7 +43,11 @@ const updateVals = (cols, vals) => {
   Object.keys(vals).forEach(key => {
     if (validKeys.indexOf(key) > -1) {
       let val = vals[key]
-      if (val !== null && types[key] !== 'number') val = val === '' ? null : SQLEscape(vals[key])
+      if (val === null || val === '') {
+        val = 'NULL'
+      } else {
+        val = SQLEscape(val)
+      }
       query.push(`${key}=${val}`)
     }
   })
@@ -55,5 +75,6 @@ const generateInvitationCode = async db => {
 
 export {
   updateVals,
-  generateInvitationCode
+  generateInvitationCode,
+  SQLEscape
 }

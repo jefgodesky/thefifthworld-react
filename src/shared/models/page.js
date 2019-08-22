@@ -1,7 +1,6 @@
 import slugify from '../slugify'
 import plainParse from '../../server/parse/plain'
-import { updateVals } from '../../server/utils'
-import { escape as SQLEscape } from 'sqlstring'
+import { updateVals, SQLEscape } from '../../server/utils'
 import { checkPermissions, canRead, canWrite } from '../permissions'
 
 /**

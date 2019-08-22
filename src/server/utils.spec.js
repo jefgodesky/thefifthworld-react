@@ -24,7 +24,7 @@ describe('updateVals', () => {
       stringField: '',
       numField: 42
     })
-    const expected = `stringField=null, numField=42`
+    const expected = `stringField=NULL, numField=42`
     expect(actual).toEqual(expected)
   })
 
@@ -36,7 +36,7 @@ describe('updateVals', () => {
       stringField: null,
       numField: null
     })
-    const expected = `stringField=null, numField=null`
+    const expected = `stringField=NULL, numField=NULL`
     expect(actual).toEqual(expected)
   })
 })
@@ -47,6 +47,13 @@ describe('generateInvitationCode', () => {
     const code = await utils.generateInvitationCode(db)
     const check = await db.run(`SELECT COUNT(id) FROM invitations WHERE inviteCode='${code}';`)
     expect(check[0]['COUNT(id)']).toEqual(0)
+  })
+})
+
+describe('SQLEscape', () => {
+  it('handles null', () => {
+    const v = null
+    expect(utils.SQLEscape(v)).toEqual('NULL')
   })
 })
 

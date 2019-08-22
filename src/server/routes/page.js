@@ -3,6 +3,7 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import File from '../../shared/models/file'
 import db from '../db'
+import { isPopulatedArray } from '../../shared/utils'
 
 const PageRouter = express.Router()
 
@@ -13,12 +14,18 @@ const PageRouter = express.Router()
  */
 
 const getSQLError = (msg) => {
-  const match = msg.match(/Duplicate entry \'(.+?)\' for key \'(.+?)\'/)
-  if (match.length > 2) {
+  const dupes = msg.match(/Duplicate entry \'(.+?)\' for key \'(.+?)\'/)
+  const verbose = msg.match(/Data too long for column \'(.+?)\' at/)
+  if (isPopulatedArray(dupes) && dupes.length > 2) {
     return {
-      field: match[2],
+      field: dupes[2],
       code: 'ER_DUP_ENTRY',
-      value: match[1]
+      value: dupes[1]
+    }
+  } else if (isPopulatedArray(verbose) && verbose.length > 1) {
+    return {
+      field: verbose[1],
+      code: 'ER_DATA_TOO_LONG'
     }
   } else {
     return null

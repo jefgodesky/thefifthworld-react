@@ -164,3 +164,8 @@ p {
   font-weight: normal;
   margin: 0 0 ms(-1);
 }
+
+.warning,
+.error {
+  color: $red;
+}

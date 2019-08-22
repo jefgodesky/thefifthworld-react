@@ -20,8 +20,6 @@ label {
   margin: ms(2) 0 ms(-4);
 
   &.error {
-    color: $red;
-
     .note {
       color: $black;
     }
@@ -68,6 +66,11 @@ textarea {
   height: ms(7);
 }
 
+.char-count {
+  font-size: ms(-1);
+  text-align: right;
+}
+
 .autocomplete {
   @extend %unformatted-list;
 
@@ -89,10 +92,6 @@ textarea {
       background: $brown112;
     }
   }
-}
-
-p.error {
-  color: $red;
 }
 
 .path {

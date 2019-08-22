@@ -372,11 +372,24 @@ export class Form extends React.Component {
    */
 
   renderMeta () {
+    const { description, isClient } = this.state
     const errors = getErrorsFor('description', this.state.errors)
     const descTooLong = errors.filter(err => err.field === 'description' && err.code === 'ER_DATA_TOO_LONG')
-    const err = isPopulatedArray(descTooLong)
+    const descTooLongErr = isPopulatedArray(descTooLong)
       ? (
         <p className='note error'>This description goes too long. Can you cut it down to 240 characters or less?</p>
+      )
+      : null
+    const charCount = description && typeof description === 'string' ? description.length : 0
+    const charCountLeft = 240 - charCount
+    const charCounterLeft = 240 - charCount < 20
+      ? (<span className='warning'>({charCountLeft} left)</span>)
+      : (<span>({charCountLeft} left)</span>)
+    const charCounter = isClient
+      ? (
+        <p className='char-count'>
+          {charCount} characters {charCounterLeft}
+        </p>
       )
       : null
 
@@ -385,13 +398,15 @@ export class Form extends React.Component {
         <label htmlFor='description'>
           Description
           <p className='note'>A short description added to the head of the page, used by search engines and other robots. If you don&rsquo;t want to write a description, we&rsquo;ll make one from the first few sentences of the page. If you&rsquo;d like to write your own description, it has to remain shorter than 240 characters.</p>
-          {err}
+          {descTooLongErr}
         </label>
         <textarea
           name='description'
           id='description'
+          className='description'
           value={this.state.description ? this.state.description : ''}
           onChange={event => this.changeDescription(event.target.value)} />
+        {charCounter}
         <label htmlFor='image'>
           Image
           <p className='note'>Image used by social media when you share this page.</p>

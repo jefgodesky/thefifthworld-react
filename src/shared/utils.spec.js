@@ -1,6 +1,14 @@
 /* global describe, it, expect */
 
-import { checkExists, isPopulatedArray, get, formatDate, dedupe, getFileSizeStr, clone } from './utils'
+import {
+  checkExists,
+  isPopulatedArray,
+  get,
+  formatDate,
+  dedupe,
+  getFileSizeStr,
+  clone
+} from './utils'
 
 describe('checkExists', () => {
   it('can tell if a chain of properties exist', () => {

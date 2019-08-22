@@ -229,7 +229,7 @@ export class Form extends React.Component {
    */
 
   changeDescription (description) {
-    this.setState({ description })
+    this.setState({ description: description.substr(0, 240) })
     if (!this.state.hasSetDescription) this.setState({ hasSetDescription: true })
   }
 
@@ -390,7 +390,7 @@ export class Form extends React.Component {
         <textarea
           name='description'
           id='description'
-          defaultValue={this.state.description ? this.state.description : ''}
+          value={this.state.description ? this.state.description : ''}
           onChange={event => this.changeDescription(event.target.value)} />
         <label htmlFor='image'>
           Image

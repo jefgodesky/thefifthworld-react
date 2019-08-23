@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 
+import Dashboard from '../components/dashboard/reducers'
 import Error from '../components/error/reducers'
 import Explore from '../components/explore/reducers'
 import Invitations from '../components/invitations/reducers'
@@ -10,6 +11,7 @@ import OAuth2Connect from '../components/oauth-connect/reducers'
 import Page from '../components/page/reducers'
 
 const reducers = {
+  Dashboard,
   Error,
   Explore,
   Invitations,

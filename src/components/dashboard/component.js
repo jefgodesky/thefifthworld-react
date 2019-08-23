@@ -1,3 +1,5 @@
+/* global __isClient__ */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import Header from '../header/component'
@@ -6,6 +8,8 @@ import Messages from '../messages/component'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import config from '../../../config'
+import { formatDate } from '../../shared/utils'
+import * as actions from './actions'
 
 /**
  * This component handles the dashboard.
@@ -18,19 +22,67 @@ export class Dashboard extends React.Component {
   }
 
   /**
+   * This is a static function used on the server to load data from the
+   * database for the invitations page.
+   * @param req {Object} - The request object from Express.
+   * @param db {Pool} - A database connection to query.
+   * @param store {Object} - A Redux store object.
+   */
+
+  static async load (req, db, store) {
+    if (!__isClient__ && req.user && store.dispatch && (typeof store.dispatch === 'function')) {
+      const res = await db.run('SELECT p.id, p.title, p.path, q.timestamp FROM pages p, (SELECT page, MAX(timestamp) AS timestamp FROM changes GROUP BY page ORDER BY timestamp DESC LIMIT 10) q WHERE p.id = q.page;')
+      if (res.length > 0) {
+        const changes = res.map(r => {
+          return {
+            title: r.title,
+            path: r.path,
+            timestamp: formatDate(new Date(r.timestamp * 1000))
+          }
+        })
+        store.dispatch(actions.load(changes))
+      }
+    }
+  }
+
+  renderUpdates () {
+    const rows = this.props.updates
+      ? this.props.updates.map((update, i) => (
+        <tr key={i}>
+          <td>
+            <a href={update.path}>{update.title}</a>
+          </td>
+          <td dangerouslySetInnerHTML={{ __html: update.timestamp }} />
+        </tr>
+      ))
+      : []
+
+    return (
+      <table>
+        <tbody>
+          {rows}
+        </tbody>
+      </table>
+    )
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
 
   render () {
     const { loggedInMember } = this.props
+    const updates = this.renderUpdates()
+
     return (
       <React.Fragment>
         <Header name={loggedInMember.name} />
         <main className='dashboard'>
           <Messages />
-          <p><strong>Hello, {loggedInMember.name}.</strong> Welcome to your dashboard. This page gives you a quick summary of the latest things going on in the Fifth World.</p>
-          <hr />
+          <h1>Dashboard</h1>
+          <h2>Recent Updates</h2>
+          {updates}
           <section className='choices create'>
             <h3>Create Something</h3>
             <p>Add something new to the Fifth World.</p>
@@ -80,12 +132,14 @@ export class Dashboard extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    loggedInMember: state.MemberLogin
+    loggedInMember: state.MemberLogin,
+    updates: state.Dashboard
   }
 }
 
 Dashboard.propTypes = {
-  loggedInMember: PropTypes.object
+  loggedInMember: PropTypes.object,
+  updates: PropTypes.array
 }
 
 export default connect(mapStateToProps)(Dashboard)

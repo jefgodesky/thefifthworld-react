@@ -3,6 +3,7 @@ import parseTemplates from './template'
 import parseLinks from './links'
 import {
   escapeCodeBlockMarkdown,
+  reescapeCodeBlockMarkdown,
   listChildren,
   listArtists,
   listOtherNames,
@@ -17,8 +18,8 @@ import {
 marked.setOptions({
   sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'pre code div ins del sup sub section aside blockquote cite dl dt dd span'.split(' ')
-    const inside = markup.replace(/<\/?(.*?)>/g, '$1').split(' ')
+    const allowedHTML = 'aside pre code div ins del sup sub section aside blockquote cite dl dt dd span strong em'.split(' ')
+    const inside = markup.replace(/<\/?(.*?)>/g, '$1 ').split(' ')
     return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
   },
   smartLists: true,
@@ -45,13 +46,14 @@ const parse = async (wikitext, db, path = null) => {
     // Removing stuff that shouldn't be rendered...
     wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
+    wikitext = escapeCodeBlockMarkdown(wikitext)
 
     // Render templates.
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
-    wikitext = escapeCodeBlockMarkdown(wikitext)
+    wikitext = reescapeCodeBlockMarkdown(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
 

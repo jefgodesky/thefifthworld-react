@@ -11,22 +11,49 @@ import parse from './index'
  */
 
 const escapeCodeBlockMarkdown = wikitext => {
-  const blocks = wikitext.match(/<pre.*?>\s*<code.*?>((.|\n)*?)<\/code>\s*<\/pre>/gm)
+  const blocks = wikitext.match(/\`\`\`[\n|\r]+(.|\n)*?[\n|\r]+\`\`\`/gm)
   if (isPopulatedArray(blocks)) {
     for (let block of blocks) {
-      const match = block.match(/<pre.*?>\s*<code.*?>((.|\n)*?)<\/code>\s*<\/pre>/m)
-      const orig = Array.isArray(match) && match.length > 1 ? match[1] : null
-      const content = orig.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&amp;/gi, '&')
+      const content = block.substr(3, block.length - 6)
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&')
+        .replace(/“/gi, '"')
+        .replace(/”/gi, '"')
+        .replace(/‘/gi, '\'')
+        .replace(/’/gi, '\'')
       let escaped = ''
       for (let i = 0; i < content.length; i++) {
         if (content.charCodeAt(i) === 10) {
           escaped += '\n'
-        } else {
+        } else if (content.charCodeAt(i) > 31) {
           escaped += `&#${content.charCodeAt(i)};`
         }
       }
-      wikitext = wikitext.replace(orig, escaped)
+      wikitext = wikitext.replace(block, `\`\`\`${escaped}\`\`\``)
     }
+  }
+  return wikitext
+}
+
+/**
+ * We escape wikitext using `escapeCodeBlockMarkdown` before we apply templates
+ * so that templates in a code block aren't interpreted. Then we pass it along
+ *  to the Markdown parser, so that Markdown can also be used in templates. But
+ *  this also "helpfully" escapes the ampersands we used to escape the code
+ *  blocks earlier, so we need to make a second pass to re-escape them properly
+ *  by removing the ampersand escapes, so it's not doubly-escaped.
+ * @param wikitext {string} - The wikitext to process.
+ * @returns {*} - The wikitext, but with escape characters inside of code
+ *   blocks only escaped once, rather than twice.
+ */
+
+const reescapeCodeBlockMarkdown = wikitext => {
+  const blocks = wikitext.match(/<pre><code>(.*)<\/code><\/pre>/gm)
+  if (isPopulatedArray(blocks)) {
+    blocks.forEach(block => {
+      wikitext = wikitext.replace(block, block.replace(/&amp;#/gi, '&#'))
+    })
   }
   return wikitext
 }
@@ -306,6 +333,7 @@ const unwrapDivs = wikitext => {
 
 export {
   escapeCodeBlockMarkdown,
+  reescapeCodeBlockMarkdown,
   listChildren,
   listArtists,
   listOtherNames,

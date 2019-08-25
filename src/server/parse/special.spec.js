@@ -4,6 +4,7 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
   escapeCodeBlockMarkdown,
+  reescapeCodeBlockMarkdown,
   listChildren,
   listOtherNames,
   listNamesKnown,
@@ -260,9 +261,18 @@ describe('unwrapDivs', () => {
 
 describe('escapeCodeBlockMarkdown', () => {
   it('escapes Markdown characters inside of code blocks', () => {
-    const wikitext = '<pre>\n  <code>\n    Code block\n  </code>\n</pre>\n\nNot in code block.'
+    const wikitext = '```\n    Code block\n```\n\nNot in code block.'
     const actual = escapeCodeBlockMarkdown(wikitext)
-    const expected = '<pre>\n  <code>\n&#32;&#32;&#32;&#32;&#67;&#111;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;\n&#32;&#32;</code>\n</pre>\n\nNot in code block.'
+    const expected = '```\n&#32;&#32;&#32;&#32;&#67;&#111;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;\n```\n\nNot in code block.'
+    expect(actual).toEqual(expected)
+  })
+})
+
+describe('reescapeCodeBlockMarkdown', () => {
+  it('makes sure characters in code blocks are only escaped once', () => {
+    const wikitext = '<pre><code>&amp;#32;</code></pre> &amp;cetera'
+    const actual = reescapeCodeBlockMarkdown(wikitext)
+    const expected = '<pre><code>&#32;</code></pre> &amp;cetera'
     expect(actual).toEqual(expected)
   })
 })

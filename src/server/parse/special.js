@@ -11,7 +11,7 @@ import parse from './index'
  */
 
 const escapeCodeBlockMarkdown = wikitext => {
-  const blocks = wikitext.match(/```[\n|\r]+(.*|\n|\r)*[\n|\r]+```/gm)
+  const blocks = wikitext.match(/\`\`\`[\n|\r]+(.|\n)*?[\n|\r]+\`\`\`/gm)
   if (isPopulatedArray(blocks)) {
     for (let block of blocks) {
       const content = block.substr(3, block.length - 6)

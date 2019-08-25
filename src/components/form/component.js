@@ -485,7 +485,11 @@ export class Form extends React.Component {
           if (thumbnail) data.append('thumbnail', thumbnail, thumbnail.name)
 
           const res = await axios.post(action, data, { headers })
-          if (res.config.url !== window.location.pathname) window.location.href = res.config.url
+          if (res.request.responseURL !== window.location.href) {
+            window.location.href = res.request.responseURL
+          } else {
+            this.setState({ isLoading: false })
+          }
         } catch (err) {
           console.error(err)
         }

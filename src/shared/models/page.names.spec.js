@@ -17,7 +17,7 @@ beforeEach(async () => {
 
 describe('Page', () => {
   it('can pick up [[Knower]] tags', () => {
-    const actual = Page.getKnowers('Hello! [[Knower:/alice]] [[Knower:/bob]]')
+    const actual = Page.getTag('Hello! [[Knower:/alice]] [[Knower:/bob]]', 'Knower')
     const expected = [ '/alice', '/bob' ]
     expect(actual).toEqual(expected)
   })

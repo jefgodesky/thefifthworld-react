@@ -40,6 +40,15 @@
     }
   }
 
+  .has-credit {
+    margin-bottom: 0;
+  }
+
+  .credit {
+    color: $white;
+    margin: ms(-1) 0 ms(2);
+  }
+
   & > nav {
     ul {
       @extend %unformatted-list;

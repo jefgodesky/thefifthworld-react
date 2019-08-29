@@ -226,7 +226,7 @@ describe('listNamesKnown', () => {
 
 describe('parseTags', () => {
   it('hides tags in wikitext', () => {
-    const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] And some more text after it, too. [[Type:Test]]')
+    const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] [[Author:Me]] [[Artist:Someone else]] And some more text after it, too. [[Type:Test]]')
     const expected = 'This has some text. And some more text after it, too.'
     expect(actual).toEqual(expected)
   })

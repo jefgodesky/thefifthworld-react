@@ -6,6 +6,8 @@ import Messages from '../messages/component'
 import Error401 from '../error-401/component'
 import Error404 from '../error-404/component'
 
+import PageModel from '../../shared/models/page'
+
 import Compare from '../compare/component'
 import Form from '../form/component'
 import History from '../history/component'
@@ -75,6 +77,13 @@ export class Page extends React.Component {
           component = (<View />)
         }
 
+        const author = page && page.curr && page.curr.body
+          ? PageModel.getTag(page.curr.body, 'Author', true)
+          : null
+        const artist = page && page.curr && page.curr.body
+          ? PageModel.getTag(page.curr.body, 'Artist', true)
+          : null
+        const credit = author || artist
         const breadcrumbs = this.renderBreadcrumbs()
         const type = page.type ? slugify(page.type) : null
         const cmd = page.command ? page.command : 'view'
@@ -85,6 +94,7 @@ export class Page extends React.Component {
             <Header
               header={page.header ? page.header : null}
               name={loggedInMember ? loggedInMember.name : null}
+              credit={credit}
               title={page.title} />
             <main className={classes.join(' ')}>
               <Messages />

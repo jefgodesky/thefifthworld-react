@@ -21,7 +21,7 @@ export class Header extends React.Component {
       ]
       : (<li><a href='/login'>Login</a></li>)
     const title = this.props.title
-      ? (<h1>{this.props.title}</h1>)
+      ? (<h1 className={this.props.credit ? 'has-credit' : null}>{this.props.title}</h1>)
       : null
     const header = this.props.header
       ? { backgroundImage: `url("https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/top.png"), url("${this.props.header}")` }
@@ -57,6 +57,10 @@ export class Header extends React.Component {
         </h1>
       )
 
+    const credit = this.props.credit
+      ? (<h2 className='credit'>By {this.props.credit}</h2>)
+      : null
+
     return (
       <header style={header} className={classes}>
         <nav className='account'>
@@ -66,6 +70,7 @@ export class Header extends React.Component {
         </nav>
         {branding}
         {title}
+        {credit}
         {nav}
       </header>
     )
@@ -74,6 +79,7 @@ export class Header extends React.Component {
 
 Header.propTypes = {
   addClasses: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
+  credit: PropTypes.string,
   header: PropTypes.string,
   name: PropTypes.string,
   skipBranding: PropTypes.bool,

@@ -165,6 +165,38 @@ class Page {
   }
 
   /**
+   * Returns the value of the first tag in the string, or all tags in the
+   * string.
+   * @param str {string} - A string of wikitext to search.
+   * @param tag {string} - The tag to search for.
+   * @param first {Boolean} - If `true`, returns the value of the first tag
+   *   found. Otherwise, returns an array of the values of all tags found.
+   * @returns {string|Array} - Either the value of the first tag found, or an
+   *   array of the values of all tags found.
+   */
+
+  static getTag (str, tag, first = false) {
+    if (str) {
+      const rx = new RegExp(`\\[\\[${tag}:(.+?)\\]\\]`, 'g')
+      const matches = str.match(rx)
+      if (matches && matches.length > 0) {
+        if (first) {
+          // Just get the first match
+          const match = matches.shift()
+          const pair = match.substr(2, match.length - 4).split(':')
+          return pair[0] === tag ? pair[1] : null
+        } else {
+          // Return an array of all matches
+          return matches
+            .map(match => match.substr(2, match.length - 4).split(':'))
+            .filter(match => match[0] === tag)
+            .map(match => match[1])
+        }
+      }
+    }
+  }
+
+  /**
    * If the string includes a location tag, this returns an object with the
    * latitude and longitude specified by the last tag.
    * @param str {string} - A string of wikitext.
@@ -176,20 +208,18 @@ class Page {
    */
 
   static getLocation (str) {
-    if (str) {
-      const matches = str.match(/\[\[Location:(.+?)\]\]/g)
-      if (matches && matches.length > 0) {
-        const match = matches.pop()
-        const arr = match.substr(11, str.length - 13).split(',')
-        if (arr && arr.length > 1) {
-          return {
-            lat: parseFloat(arr[0].trim()),
-            lon: parseFloat(arr[1].trim())
-          }
+    let coords = Page.getTag(str, 'Location', true)
+    if (coords) {
+      coords = coords.split(',')
+      return coords.length === 2
+        ? {
+          lat: parseFloat(coords[0].trim()),
+          lon: parseFloat(coords[1].trim())
         }
-      }
+        : false
+    } else {
+      return false
     }
-    return false
   }
 
   /**
@@ -202,20 +232,9 @@ class Page {
    */
 
   static getType (str) {
-    if (str) {
-      const coords = Page.getLocation(str)
-      if (coords) {
-        return 'Place'
-      } else {
-        const matches = str.match(/\[\[Type:(.+?)\]\]/g)
-        if (matches && matches.length > 0) {
-          const first = matches[0].substr(2, matches[0].length - 4).split(':')
-          return first[0] === 'Type' ? first[1] : null
-        } else {
-          return null
-        }
-      }
-    }
+    const coords = Page.getLocation(str)
+    const type = Page.getTag(str, 'Type', true)
+    return coords ? 'Place' : type || null
   }
 
   /**
@@ -227,15 +246,9 @@ class Page {
    */
 
   static getClaim (str) {
-    if (str) {
-      const matches = str.match(/\[\[Owner:(.+?)\]\]/g)
-      if (matches && matches.length > 0) {
-        const first = matches[0].substr(2, matches[0].length - 4).split(':')
-        const r = first[0] === 'Owner' ? parseInt(first[1]) : null
-        return isNaN(r) ? null : r
-      }
-    }
-    return null
+    let claim = Page.getTag(str, 'Owner', true)
+    claim = parseInt(claim)
+    return isNaN(claim) ? null : claim
   }
 
   /**
@@ -259,23 +272,6 @@ class Page {
     } else {
       return false
     }
-  }
-
-  /**
-   * Returns the content of all [[Knower]] tags in the string provided.
-   * @param str {string} - A string to search for [[Knower]] tags.
-   * @returns {Array} - An array of strings with the values of each [[Knower]]
-   *   tag in the provided string, in order.
-   */
-
-  static getKnowers (str) {
-    const knowers = []
-    const matches = str.match(/\[\[Knower:(.+?)\]\]/g)
-    for (const match of matches) {
-      const pair = match.substr(2, match.length - 4).split(':')
-      if (pair[0] === 'Knower') knowers.push(pair[1].trim())
-    }
-    return knowers
   }
 
   /**
@@ -541,7 +537,7 @@ class Page {
    */
 
   static async linkName (path, body, db) {
-    const knowers = Page.getKnowers(body)
+    const knowers = Page.getTag(body, 'Knower')
     for (const knower of knowers) {
       const check = await db.run(`SELECT id FROM names WHERE name = ${SQLEscape(path)} AND knower = ${SQLEscape(knower)};`)
       if (check.length === 0) {
@@ -587,7 +583,7 @@ class Page {
       const known = await Page.get(p.parent, db)
       const content = p.getContent()
       const body = content.body ? content.body : null
-      const knowerPaths = body ? Page.getKnowers(body) : []
+      const knowerPaths = body ? Page.getTag(body, 'Knower') : []
       const knowers = []
       for (const path of knowerPaths) {
         const knower = await Page.get(path, db)

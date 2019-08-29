@@ -6,6 +6,12 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
+  const tables = [ 'members', 'authorizations', 'messages', 'invitations', 'pages', 'changes' ]
+  for (const table of tables) {
+    await db.run(`DELETE FROM ${table};`)
+    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
+  }
+
   await db.run('ALTER TABLE members AUTO_INCREMENT=1;')
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
@@ -456,7 +462,7 @@ describe('Member', () => {
     expect(actual).toEqual([ '/page-1', '/page-2' ])
   })
 
-  it('can return a list of pages that the memmber has claimed of a particular type', async () => {
+  it('can return a list of pages that the member has claimed of a particular type', async () => {
     expect.assertions(1)
     const admin = await Member.get(1, db)
     const member = await Member.get(2, db)
@@ -487,7 +493,7 @@ describe('Member', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'authorizations', 'messages', 'invitations' ]
+  const tables = [ 'members', 'authorizations', 'messages', 'invitations', 'pages', 'changes' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

@@ -62,6 +62,11 @@
 button,
 input[type='submit'],
 input[type='button'],
-a.button {
+a.button,
+.actions > a {
   @extend %button;
+}
+
+.actions {
+  text-align: center;
 }

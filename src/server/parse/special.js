@@ -174,7 +174,7 @@ const listChildren = async (wikitext, path, db, gallery = false) => {
         markup = items ? `<ul class="gallery">\n${items.join('\n')}\n</ul>` : ''
       } else if (children) {
         const items = children.map(child => `<li><a href="${child.path}">${child.title}</a></li>`)
-        const tag = Boolean(props.ordered) ? 'ol' : 'ul'
+        const tag = props.ordered ? 'ol' : 'ul'
         markup = items ? `<${tag}>\n${items.join('\n')}\n</${tag}>` : ''
       }
 

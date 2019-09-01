@@ -67,6 +67,12 @@ a.button,
   @extend %button;
 }
 
-.actions {
+.actions,
+.actions-elaboration {
   text-align: center;
+}
+
+.actions-elaboration {
+  font-family: 'Fontin Sans';
+  font-size: ms(-1);
 }

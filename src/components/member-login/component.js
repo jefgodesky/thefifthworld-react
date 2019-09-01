@@ -34,9 +34,7 @@ export class MemberLogin extends React.Component {
               <p className='actions'>
                 <button>Log in</button>
               </p>
-              <p className='actions'>
-                <a href='/forgot-passphrase'>Forgot your passphrase?</a>
-              </p>
+              <p className='actions-elaboration'><a href='/forgot-passphrase'>Forgot your passphrase?</a></p>
             </form>
             <div className='oauth2-login'>
               <p>Or login with&hellip;</p>

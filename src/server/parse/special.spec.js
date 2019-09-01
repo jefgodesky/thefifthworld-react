@@ -46,6 +46,27 @@ describe('listChildren', () => {
     expect(actual).toEqual('<ul>\n<li><a href="/parent/first-child">First Child</a></li>\n<li><a href="/parent/second-child">Second Child</a></li>\n</ul>')
   })
 
+  it('can provide an ordered list', async () => {
+    expect.assertions(1)
+    const member = await Member.get(2, db)
+    await Page.create({
+      title: 'Parent',
+      body: 'This is a parent page.'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'First Child',
+      body: 'This is a child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    await Page.create({
+      title: 'Second Child',
+      body: 'This is another child page.',
+      parent: '/parent'
+    }, member, 'Initial text', db)
+    const actual = await listChildren('{{Children ordered="true"}}', '/parent', db)
+    expect(actual).toEqual('<ol>\n<li><a href="/parent/first-child">First Child</a></li>\n<li><a href="/parent/second-child">Second Child</a></li>\n</ol>')
+  })
+
   it('lists all of a page\'s children of a particular type', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)

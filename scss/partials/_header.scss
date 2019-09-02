@@ -15,11 +15,11 @@
     margin-top: ms(1);
 
     @media (min-width: 50em) {
-      height: ms(-2);
+      height: ms(-3);
     }
 
     @media (min-width: 60em) {
-      height: ms(-1);
+      height: ms(-2);
     }
   }
 
@@ -32,11 +32,21 @@
     @media (min-width: 50em) {
       font-size: ms(3);
       margin-top: ms(-3) * -1;
+
+      &.long {
+        font-size: ms(2);
+        margin-top: ms(-2) * -1;
+      }
     }
 
     @media (min-width: 60em) {
       font-size: ms(4);
       margin-top: ms(-4) * -1;
+
+      &.long {
+        font-size: ms(3);
+        margin-top: ms(-3) * -1;
+      }
     }
   }
 

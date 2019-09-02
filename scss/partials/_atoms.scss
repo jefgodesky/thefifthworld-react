@@ -55,7 +55,6 @@ a {
 
 ul,
 ol {
-  margin: ms(1) 0;
   padding: 0;
 
   ul,
@@ -84,10 +83,6 @@ ol {
       column-count: 4;
     }
   }
-}
-
-li {
-  margin: ms(-1) 0;
 }
 
 img {

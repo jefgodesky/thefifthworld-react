@@ -8,6 +8,17 @@ form.wiki {
   }
 }
 
+.wiki-body {
+  ul,
+  ol {
+    margin: ms(1) 0;
+  }
+
+  li {
+    margin: ms(-1) 0;
+  }
+}
+
 .wiki-options {
   font-size: ms(-1);
   margin-top: ms(4);

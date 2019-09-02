@@ -1,4 +1,11 @@
 .dashboard {
+  .updates .timestamp {
+    color: $brown;
+    font-size: ms(-1);
+    text-align: right;
+    white-space: nowrap;
+  }
+
   .choices h3,
   .member h3 {
     font-family: 'Fontin Sans Small Caps';

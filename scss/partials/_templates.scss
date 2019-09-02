@@ -56,8 +56,8 @@ nav.sequence {
     @media (min-width: 50em) {
       ul {
         display: grid;
-        grid-template-columns: 50% 50%;
         grid-gap: 1em;
+        grid-template-columns: 50% 50%;
         margin: 0 -1em;
       }
 

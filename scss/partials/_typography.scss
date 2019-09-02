@@ -131,28 +131,28 @@ h1 {
   font-family: 'Fontin Sans Small Caps', 'Verdana', 'sans-serif';
   font-size: ms(2);
   font-weight: normal;
-  margin-bottom: .618em;
+  margin-bottom: ms(-1);
 }
 
 h2 {
   font-family: 'Fontin Sans', 'Verdana', 'sans-serif';
   font-size: ms(1);
   font-weight: normal;
-  margin: 1.618em 0 1em;
+  margin: ms(1) 0 0;
 }
 
 h3 {
   font-family: 'Fontin', 'Georgia', 'serif';
   font-size: ms(0);
   font-weight: bold;
-  margin-bottom: 0;
+  margin: ms(1) 0 0;
 }
 
 h4 {
   font-family: 'Fontin Sans Small Caps', 'Georgia', 'serif';
   font-size: ms(0);
   font-weight: normal;
-  margin-bottom: 0;
+  margin: ms(1) 0 0;
 }
 
 p {

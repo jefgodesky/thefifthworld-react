@@ -9,11 +9,15 @@ main {
 
 aside {
   @extend %sidebar;
+  padding-bottom: ms(2);
+  padding-top: ms(2);
 
   &.note {
     background: $brown112;
-    font-family: 'Fontin Sans';
+    font-family: 'Fontin Sans', sans-serif;
     font-size: ms(-1);
+    padding-bottom: ms(0);
+    padding-top: ms(0);
     text-align: center;
   }
 }

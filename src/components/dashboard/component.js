@@ -52,13 +52,13 @@ export class Dashboard extends React.Component {
           <td>
             <a href={update.path}>{update.title}</a>
           </td>
-          <td dangerouslySetInnerHTML={{ __html: update.timestamp }} />
+          <td className='timestamp' dangerouslySetInnerHTML={{ __html: update.timestamp }} />
         </tr>
       ))
       : []
 
     return (
-      <table>
+      <table className='updates'>
         <tbody>
           {rows}
         </tbody>

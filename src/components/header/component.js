@@ -20,8 +20,11 @@ export class Header extends React.Component {
         <li key={2}><a href='/logout'>Logout</a></li>
       ]
       : (<li><a href='/login'>Login</a></li>)
+    let titleClasses = []
+    if (this.props.credit) titleClasses = [ 'has-credit' ]
+    if (this.props.title && this.props.title.length > 40) titleClasses = [ ...titleClasses, 'long' ]
     const title = this.props.title
-      ? (<h1 className={this.props.credit ? 'has-credit' : null}>{this.props.title}</h1>)
+      ? (<h1 className={titleClasses.join(' ')}>{this.props.title}</h1>)
       : null
     const header = this.props.header
       ? { backgroundImage: `url("https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/images/top.png"), url("${this.props.header}")` }

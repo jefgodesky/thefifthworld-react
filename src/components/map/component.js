@@ -128,34 +128,40 @@ export default class Map extends React.Component {
 
   /**
    * Returns JSX to render the map.
-   * @param height {string} - Height property to pass to the map.
    * @returns {*} - JSX to render the map.
    */
 
-  renderMap (height) {
+  renderMap () {
     let { lat, lon, zoom } = this.state
     const leaflet = require('react-leaflet')
     const LeafletMap = leaflet.Map
     const { TileLayer, GeoJSON, Marker, Popup } = leaflet
     const sealevel = this.raiseSeaLevel(GeoJSON)
     const markers = this.renderMarkers(Marker, Popup)
+    const height = this.props.place ? '300px' : '90vh'
+    const loading = this.state.loaded
+      ? null
+      : (<div className='loading-map'>Melting ice caps&hellip;</div>)
 
     return (
-      <LeafletMap
-        center={[lat, lon]}
-        zoom={zoom}
-        minZoom={3}
-        maxZoom={15}
-        dragging={!this.props.place}
-        zoomControl={!this.props.place}
-        style={{ height }}>
-        <TileLayer
-          attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-          url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'
-          noWrap />
-        {sealevel}
-        {markers}
-      </LeafletMap>
+      <React.Fragment>
+        {loading}
+        <LeafletMap
+          center={[lat, lon]}
+          zoom={zoom}
+          minZoom={3}
+          maxZoom={15}
+          dragging={!this.props.place}
+          zoomControl={!this.props.place}
+          style={{ height }}>
+          <TileLayer
+            attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+            url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'
+            noWrap />
+          {sealevel}
+          {markers}
+        </LeafletMap>
+      </React.Fragment>
     )
   }
 
@@ -166,12 +172,7 @@ export default class Map extends React.Component {
 
   render () {
     if (this.state.isClient) {
-      const height = this.props.place ? '300px' : '90vh'
-      if (this.state.loaded) {
-        return this.renderMap(height)
-      } else {
-        return (<div className='map loading' style={{ height }} />)
-      }
+      return this.renderMap()
     } else {
       return null
     }

@@ -354,10 +354,17 @@ class Member {
       this.invitations = Math.max(this.invitations - 1, 0)
       await db.run(`UPDATE members SET invitations=${this.invitations} WHERE id=${this.id}`)
     }
+    /**
     await emailer({
       to: email,
       subject: 'Welcome to the Fifth World',
       body: `${this.getName()} has invited you to join the Fifth World. Click here to begin:\n\nhttps://thefifthworld.com/join/${code}`
+    })
+     **/
+    await emailer({
+      to: email,
+      subject: 'Welcome to the Fifth World Beta',
+      body: `The Fifth World is working on a new website, and since you have done so much to support us, we’re sending you an invitation to join our beta test.\n\nBy “beta test,” we mean that we have a website running, but we don’t have everything there running quite the way we’d like just yet. But we’re far enough along that we’d like to invite you to see what we have, where we’re going, and what we’re trying to do. There’s enough here for you to start perusing what we have and adding pages and art. We really want your feedback on what’s working here and what’s not working. If you have a suggestion or find something that isn’t working the way it should, please create a ticket for us at https://github.com/jefgodesky/thefifthworld-react/issues\n\nRight now, we’re only inviting patrons to this beta, so if you’d like to discuss anything about it, anything you’re thinking of adding to it, or any questions or problems you might have, please join us on the Discord server’s #patrons channel. Log in through Patreon to get your patron access.\n\nClick here to accept your invitation and get started:\n\nhttp://165.22.1.164/join/${code}`
     })
     await this.logMessage(msgTypes.confirm, `Invitation sent to **${email}**.`, db)
   }

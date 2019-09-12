@@ -28,7 +28,7 @@ export class MemberLogin extends React.Component {
           <section className='login'>
             <form action='/login' method='post'>
               <label htmlFor='email'>Email</label>
-              <input type='text' name='email' id='email' placeholder='you@example.com' />
+              <input type='email' name='email' id='email' placeholder='you@example.com' />
               <label htmlFor='passphrase'>Passphrase</label>
               <input type='text' name='passphrase' id='passphrase' placeholder='Whisper your secret passphrase' />
               <p className='actions'>

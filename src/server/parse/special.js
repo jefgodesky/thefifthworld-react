@@ -1,6 +1,7 @@
 import Page from '../../shared/models/page'
 import { getURL, getProps } from './utils'
 import { isPopulatedArray, getFileSizeStr } from '../../shared/utils'
+import slugify from '../../shared/slugify'
 import parse from './index'
 
 /**
@@ -309,6 +310,49 @@ const parseTags = wikitext => {
 }
 
 /**
+ * Replaces {{Form}} tags with forms.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - Text with {{Form}} tags replaced with rendered HTML for
+ *   forms.
+ */
+
+const parseForm = wikitext => {
+  const matches = wikitext.match(/{{Form((.|\n)*?)}}(.|\s)*?{{\/Form}}/gm) || []
+  for (const match of matches) {
+    const form = match.match(/{{Form((.|\n)*?)}}/m)
+    const formParams = form && form[1] ? getProps(form[1]) : {}
+    let fields = match.match(/{{Field((.|\s)*?)}}/gm) || []
+    fields = fields.map(f => getProps(f))
+
+    let markup = '<form action="/save-form" method="post">\n'
+    markup += `  <input type="hidden" name="form" value="${formParams.Name}" />\n`
+    for (const field of fields) {
+      const id = slugify(`${formParams.Name} ${field.Label}`)
+      const type = field.Type || 'text'
+
+      if (field.Note) {
+        markup += `  <label for="${id}">\n`
+        markup += `    ${field.Label}\n`
+        markup += `    <p class="note">${field.Note}</p>\n`
+        markup += `  </label>\n`
+      } else {
+        markup += `  <label for="${id}">${field.Label}</label>\n`
+      }
+
+      if (type === 'textarea') {
+        markup += `  <textarea name="${slugify(field.Label)}" id="${id}"></textarea>\n`
+      } else {
+        markup += `  <input type="${type}" name="${slugify(field.Label)}" id="${id}" />\n`
+      }
+    }
+    markup += '</form>'
+
+    wikitext = wikitext.replace(match, markup)
+  }
+  return wikitext
+}
+
+/**
  * Unwraps <div> tags that are wrapped in <p> tags.
  * @param wikitext {string} - Wikitext to parse.
  * @returns {string} - A copy of the wikitext, but in each instance where one
@@ -345,5 +389,6 @@ export {
   parseDownload,
   parseArt,
   parseTags,
+  parseForm,
   unwrapDivs
 }

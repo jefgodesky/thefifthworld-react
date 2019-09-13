@@ -90,7 +90,8 @@ export class Form extends React.Component {
    */
 
   async checkPath (path) {
-    if (!this.state.showSuggestions) {
+    const existingPath = this.props.page ? this.props.page.path : null
+    if (!this.state.showSuggestions && path !== existingPath) {
       const { protocol, hostname, port } = window.location
       const host = port === undefined ? hostname : `${hostname}:${port}`
 
@@ -112,6 +113,8 @@ export class Form extends React.Component {
           }, this.state.errors) })
         }
       }
+    } else if (path === existingPath) {
+      this.clearError('path', 'ER_DUP_ENTRY')
     }
   }
 

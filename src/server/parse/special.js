@@ -345,6 +345,8 @@ const parseForm = wikitext => {
         markup += `  <input type="${type}" name="${slugify(field.Label)}" id="${id}" />\n`
       }
     }
+
+    markup += `  <button>${formParams.Button || 'Send'}</button>\n`
     markup += '</form>'
 
     wikitext = wikitext.replace(match, markup)

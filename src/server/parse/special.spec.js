@@ -257,43 +257,49 @@ describe('parseTags', () => {
 describe('parseForm', () => {
   it('creates a form', () => {
     const actual = parseForm('{{Form Name="Test"}}{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('handles line breaks', () => {
     const actual = parseForm('{{Form\n  Name="Test"}}\n{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('includes text fields', () => {
     const actual = parseForm('{{Form Name="Test"}}{{Field Label="Test"}}{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">Test</label>\n  <input type="text" name="test" id="test-test" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">Test</label>\n  <input type="text" name="test" id="test-test" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('handles line breaks among fields', () => {
     const actual = parseForm('{{Form Name="Test"}}\n  {{Field\n    Label="Test"}}\n{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">Test</label>\n  <input type="text" name="test" id="test-test" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">Test</label>\n  <input type="text" name="test" id="test-test" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('handles notes', () => {
     const actual = parseForm('{{Form Name="Test"}}{{Field Label="Test" Note="This is a test."}}{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">\n    Test\n    <p class="note">This is a test.</p>\n  </label>\n  <input type="text" name="test" id="test-test" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-test">\n    Test\n    <p class="note">This is a test.</p>\n  </label>\n  <input type="text" name="test" id="test-test" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('handles email fields', () => {
     const actual = parseForm('{{Form Name="Test"}}{{Field Label="Email" Type="email"}}{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-email">Email</label>\n  <input type="email" name="email" id="test-email" />\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-email">Email</label>\n  <input type="email" name="email" id="test-email" />\n  <button>Send</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 
   it('handles textareas', () => {
     const actual = parseForm('{{Form Name="Test"}}{{Field Label="Comment" Type="textarea"}}{{/Form}}')
-    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-comment">Comment</label>\n  <textarea name="comment" id="test-comment"></textarea>\n</form>'
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <label for="test-comment">Comment</label>\n  <textarea name="comment" id="test-comment"></textarea>\n  <button>Send</button>\n</form>'
+    expect(actual).toEqual(expected)
+  })
+
+  it('can say something else on the button', () => {
+    const actual = parseForm('{{Form Name="Test" Button="Go"}}{{/Form}}')
+    const expected = '<form action="/save-form" method="post">\n  <input type="hidden" name="form" value="Test" />\n  <button>Go</button>\n</form>'
     expect(actual).toEqual(expected)
   })
 })

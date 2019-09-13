@@ -251,7 +251,7 @@ describe('Member', () => {
     await admin.logMessage('info', info, db)
     await admin.logMessage('invalid', invalid, db)
 
-    const actual = await Member.getMessages(admin.id, db)
+    const actual = await Member.getMessages(admin.id, null, db)
     const expected = {
       confirmation: [ `<p>${confirmation}</p>` ],
       error: [ `<p>${error}</p>` ],
@@ -259,6 +259,25 @@ describe('Member', () => {
       info: [ `<p>${info}</p>`, `<p>${invalid}</p>` ]
     }
 
+    expect(actual).toEqual(expected)
+  })
+
+  it('shows messages specified by query params', async () => {
+    expect.assertions(1)
+    const admin = await Member.get(1, db)
+    const actual = await Member.getMessages(admin.id, '/something?msg=save-form-received', db)
+    const expected = {
+      confirmation: [ '<p>Thanks for your response!</p>' ]
+    }
+    expect(actual).toEqual(expected)
+  })
+
+  it('shows messages specified by query params for people who aren\'t logged in', async () => {
+    expect.assertions(1)
+    const actual = await Member.getMessages(null, '/something?msg=save-form-received', db)
+    const expected = {
+      confirmation: [ '<p>Thanks for your response!</p>' ]
+    }
     expect(actual).toEqual(expected)
   })
 
@@ -297,7 +316,7 @@ describe('Member', () => {
     const invited = await Member.get(3, db)
     await member.sendReminder(invited, emailer, db)
 
-    const actual = await Member.getMessages(member.id, db)
+    const actual = await Member.getMessages(member.id, null, db)
     const expected = {
       confirmation: [
         '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>',
@@ -325,8 +344,8 @@ describe('Member', () => {
     await member.sendInvitation('test6@thefifthworld.com', emailer, db)
     await member.sendInvitation('test7@thefifthworld.com', emailer, db)
 
-    const adminMsg = await Member.getMessages(admin.id, db)
-    const memberMsg = await Member.getMessages(member.id, db)
+    const adminMsg = await Member.getMessages(admin.id, null, db)
+    const memberMsg = await Member.getMessages(member.id, null, db)
 
     const actual = {
       adminMsg,
@@ -380,7 +399,7 @@ describe('Member', () => {
     ]
 
     await Member.sendInvitations(2, addresses, () => false, db)
-    const actual = await Member.getMessages(2, db)
+    const actual = await Member.getMessages(2, null, db)
     const expected = {
       confirmation: [
         '<p>Invitation sent to <strong>test1@thefifthworld.com</strong>.</p>',

@@ -11,6 +11,7 @@ import {
   doNotEmail,
   parseDownload,
   parseArt,
+  parseForm,
   parseTags,
   unwrapDivs
 } from './special'
@@ -18,7 +19,7 @@ import {
 marked.setOptions({
   sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
+    const allowedHTML = 'br aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
     const inside = markup.replace(/<\/?(.*?)>/g, '$1 ').split(' ')
     return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
   },
@@ -53,6 +54,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
+    wikitext = parseForm(wikitext)
     wikitext = reescapeCodeBlockMarkdown(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)

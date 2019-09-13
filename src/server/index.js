@@ -32,6 +32,7 @@ import Member from '../shared/models/member'
 import Page from '../shared/models/page'
 import MemberRouter from './routes/member'
 import PageRouter from './routes/page'
+import FormRouter from './routes/form'
 import Router from '../components/router/component'
 
 // Initialize server
@@ -71,6 +72,7 @@ auth(passport)
 
 // Other-than-GET responses
 server.use('/', MemberRouter)
+server.use('/', FormRouter)
 server.use('/', PageRouter)
 
 // Sends the response
@@ -118,7 +120,7 @@ server.get('*', redirector, async (req, res) => {
     const loginObj = Object.assign({}, req.user)
     delete loginObj.password
     store.dispatch(login(loginObj))
-    const messages = await Member.getMessages(req.user.id, db)
+    const messages = await Member.getMessages(req.user.id, req.url, db)
     if (messages) store.dispatch(load(messages))
   }
 

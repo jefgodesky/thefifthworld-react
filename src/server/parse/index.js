@@ -11,6 +11,7 @@ import {
   doNotEmail,
   parseDownload,
   parseArt,
+  parseForm,
   parseTags,
   unwrapDivs
 } from './special'
@@ -53,6 +54,7 @@ const parse = async (wikitext, db, path = null) => {
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
+    wikitext = parseForm(wikitext)
     wikitext = reescapeCodeBlockMarkdown(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)

@@ -296,6 +296,7 @@ class Member {
    * Returns the messages left for a member in the database, and then deletes
    * them.
    * @param id {int} - The ID of the member.
+   * @param url {string} - The URL of the page.
    * @param db {Pool} - A database connection.
    * @returns {Promise} - A promise that resolves with an object. Each of the
    *   properties in the object defines a type of message (see `msgTypes` for a
@@ -303,10 +304,10 @@ class Member {
    *   type.
    */
 
-  static async getMessages (id, db) {
+  static async getMessages (id, url, db) {
+    const res = {}
     const messages = await db.run(`SELECT * FROM messages WHERE member=${id}`)
     if (messages.length > 0) {
-      const res = {}
       for (const msg of messages) {
         const message = await parse(msg.message, db)
         if (res[msg.type]) {
@@ -316,10 +317,29 @@ class Member {
         }
         db.run(`DELETE FROM messages WHERE id=${msg.id};`)
       }
-      return res
-    } else {
-      return {}
     }
+
+    const parts = url ? url.split('?') : []
+    if (parts.length > 1) {
+      const pairs = parts[1].split('&') || []
+      pairs.forEach(pair => {
+        const p = pair.split('=')
+        if (p.length > 1 && p[0] === 'msg') {
+          switch (p[1]) {
+            case 'save-form-received':
+              if (!res.confirmation || !Array.isArray(res.confirmation)) res.confirmation = []
+              res.confirmation = [ ...res.confirmation, '<p>Thanks for your response!</p>' ]
+              break
+            case 'save-form-failed':
+              if (!res.error || !Array.isArray(res.error)) res.error = []
+              res.error = [ ...res.error, '<p>Sorry, something went wrong. We couldn\'t save your response.</p>' ]
+              break
+          }
+        }
+      })
+    }
+
+    return res
   }
 
   /**

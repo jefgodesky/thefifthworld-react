@@ -1,7 +1,7 @@
 #
 # SQL Export
-# Created by Querious (201054)
-# Created: June 17, 2019 at 7:24:35 PM EDT
+# Created by Querious (201067)
+# Created: September 13, 2019 at 10:21:53 PM EDT
 # Encoding: Unicode (UTF-8)
 #
 
@@ -85,7 +85,7 @@ CREATE TABLE `members` (
   `invitations` int(11) unsigned NOT NULL DEFAULT '5',
   `reset` int(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `messages` (
@@ -123,6 +123,14 @@ CREATE TABLE `pages` (
   `lon` decimal(10,5) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `responses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 

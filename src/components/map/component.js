@@ -139,9 +139,9 @@ export default class Map extends React.Component {
     const sealevel = this.raiseSeaLevel(GeoJSON)
     const markers = this.renderMarkers(Marker, Popup)
     const height = this.props.place ? '300px' : '90vh'
-    const loading = this.state.loaded
-      ? null
-      : (<div className='loading-map'>Melting ice caps&hellip;</div>)
+    const loading = !this.props.place && !this.state.loaded
+      ? (<div className='loading-map'>Melting ice caps&hellip;</div>)
+      : null
 
     return (
       <React.Fragment>

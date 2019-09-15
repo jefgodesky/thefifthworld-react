@@ -22,7 +22,7 @@ export class Header extends React.Component {
       : (<li><a href='/login'>Login</a></li>)
     let titleClasses = []
     if (this.props.credit) titleClasses = [ 'has-credit' ]
-    if (this.props.title && this.props.title.length > 40) titleClasses = [ ...titleClasses, 'long' ]
+    if (this.props.title && this.props.title.length > 25) titleClasses = [ ...titleClasses, 'long' ]
     const title = this.props.title
       ? (<h1 className={titleClasses.join(' ')}>{this.props.title}</h1>)
       : null

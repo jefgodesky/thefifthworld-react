@@ -17,7 +17,6 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canRead } from '../../shared/permissions'
 import slugify from '../../shared/slugify'
-import { isPopulatedArray } from '../../shared/utils'
 
 /**
  * This component handles the member profile page.
@@ -27,20 +26,6 @@ export class Page extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
-  }
-
-  /**
-   * Returns the latest changes to the parent of the page.
-   * @returns {Object} - The most recent changes to the page's parent.
-   */
-
-  getParent () {
-    const { page } = this.props
-    return isPopulatedArray(page.lineage) && isPopulatedArray(page.lineage[0].changes)
-      ? page.lineage[0].changes[0] && page.lineage[0].changes[0].content
-        ? page.lineage[0].changes[0].content
-        : undefined
-      : undefined
   }
 
   /**
@@ -54,7 +39,7 @@ export class Page extends React.Component {
 
   getCredit () {
     const { page } = this.props
-    const p = this.getParent()
+    const p = PageModel.getParent(page)
     const author = page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel'
       ? PageModel.getTag(p.body, 'Author', true)
       : page && page.curr && page.curr.body
@@ -76,7 +61,7 @@ export class Page extends React.Component {
   getTitle () {
     const { page } = this.props
     let title = page.title
-    const p = this.getParent()
+    const p = PageModel.getParent(page)
     if (page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel') title = p.title
     return title
   }

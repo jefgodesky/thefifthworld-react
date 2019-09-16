@@ -17,6 +17,7 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canRead } from '../../shared/permissions'
 import slugify from '../../shared/slugify'
+import { isPopulatedArray } from '../../shared/utils'
 
 /**
  * This component handles the member profile page.
@@ -26,6 +27,58 @@ export class Page extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
+  }
+
+  /**
+   * Returns the latest changes to the parent of the page.
+   * @returns {Object} - The most recent changes to the page's parent.
+   */
+
+  getParent () {
+    const { page } = this.props
+    return isPopulatedArray(page.lineage) && isPopulatedArray(page.lineage[0].changes)
+      ? page.lineage[0].changes[0] && page.lineage[0].changes[0].content
+        ? page.lineage[0].changes[0].content
+        : undefined
+      : undefined
+  }
+
+  /**
+   * Returns the string to display for credit in the header. If this is a
+   * Chapter and its parent is a Novel, then that's the Author tag found in the
+   * Novel. Otherwise, it's the Author tag or the Artist tag (Author taking
+   * precedence over Artist. That's not a value judgment, we just need one to
+   * win out. Really, you shouldn't have both on the same page, right?).
+   * @returns {string|null}
+   */
+
+  getCredit () {
+    const { page } = this.props
+    const p = this.getParent()
+    const author = page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel'
+      ? PageModel.getTag(p.body, 'Author', true)
+      : page && page.curr && page.curr.body
+        ? PageModel.getTag(page.curr.body, 'Author', true)
+        : null
+    const artist = page && page.curr && page.curr.body
+      ? PageModel.getTag(page.curr.body, 'Artist', true)
+      : null
+    return author || artist
+  }
+
+  /**
+   * Returns the title to be displayed in the header. This is normally the
+   * page's title, but if it's a Chapter and its parent is a Novel, it's the
+   * Novel's title.
+   * @returns {string} - The title to display in the header.
+   */
+
+  getTitle () {
+    const { page } = this.props
+    let title = page.title
+    const p = this.getParent()
+    if (page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel') title = p.title
+    return title
   }
 
   /**
@@ -77,13 +130,6 @@ export class Page extends React.Component {
           component = (<View />)
         }
 
-        const author = page && page.curr && page.curr.body
-          ? PageModel.getTag(page.curr.body, 'Author', true)
-          : null
-        const artist = page && page.curr && page.curr.body
-          ? PageModel.getTag(page.curr.body, 'Artist', true)
-          : null
-        const credit = author || artist
         const breadcrumbs = this.renderBreadcrumbs()
         const type = page.type ? slugify(page.type) : null
         const cmd = page.command ? page.command : 'view'
@@ -94,8 +140,8 @@ export class Page extends React.Component {
             <Header
               header={page.header ? page.header : null}
               name={loggedInMember ? loggedInMember.name : null}
-              credit={credit}
-              title={page.title} />
+              credit={this.getCredit()}
+              title={this.getTitle()} />
             <main className={classes.join(' ')}>
               <Messages />
               {breadcrumbs}

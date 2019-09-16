@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Map from '../map/component'
+import Page from '../../shared/models/page'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import axios from 'axios'
@@ -201,9 +202,18 @@ export class View extends React.Component {
    */
 
   render () {
-    const __html = this.props.page.html
+    const { loggedInMember, page } = this.props
+    const par = Page.getParent(page)
+    const chapter = page && page.curr && page.curr.body
+      ? Page.getTag(page.curr.body, 'Chapter', true)
+      : undefined
+    const __html = page.type === 'Chapter' && par.type === 'Novel'
+      ? chapter
+        ? `<h1>${chapter}. ${page.title}</h1>\n${page.html}`
+        : `<h1>${page.title}</h1>\n${page.html}`
+      : page.html
     const permissions = {
-      edit: canWrite(this.props.loggedInMember, this.props.page)
+      edit: canWrite(loggedInMember, page)
     }
 
     return (
@@ -214,7 +224,7 @@ export class View extends React.Component {
         {this.renderFile()}
         <div className='wiki-body' dangerouslySetInnerHTML={{ __html }} />
         {this.renderLike()}
-        {renderOptions(this.props.page.path, permissions, 'view')}
+        {renderOptions(page.path, permissions, 'view')}
       </React.Fragment>
     )
   }

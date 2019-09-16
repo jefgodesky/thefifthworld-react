@@ -86,7 +86,21 @@ const respond = (req, res, store) => {
   )
 
   const state = store.getState()
-  const { title, description, image } = state.Page
+  const { description, image, type } = state.Page
+  let title = state.Page.title
+
+  // If this is a chapter in a novel, concatenate novel and chapter info to
+  // generate the page title.
+  const par = Page.getParent(state.Page)
+  if (type === 'Chapter' && Page.getType(par.body) === 'Novel') {
+    const chapter = Page.getTag(state.Page.curr.body, 'Chapter', true)
+    if (chapter) {
+      title = `${par.title} - Chapter ${chapter} - ${title}`
+    } else {
+      title = `${par.title} - ${title}`
+    }
+  }
+
   const meta = {
     title,
     description,

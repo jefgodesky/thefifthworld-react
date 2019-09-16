@@ -3,7 +3,8 @@ nav.sequence {
     @extend %unformatted-list;
   }
 
-  a {
+  a,
+  .next.notyet {
     background: $brown13;
     color: $black;
     display: block;
@@ -35,6 +36,7 @@ nav.sequence {
 
   .prev a::before { content: 'Previous'; }
   .next a::before { content: 'Next'; }
+  .next.notyet::before { content: 'Next'; }
 
   .prev a::after {
     border-color: $white transparent transparent $white;
@@ -44,12 +46,23 @@ nav.sequence {
     top: 0;
   }
 
-  .next a::after {
+  .next a::after,
+  .next.notyet::after {
     border-color: transparent $white $white transparent;
     border-style: solid;
     border-width: 0 0 2.041em .509em;
     bottom: 0;
     right: 0;
+  }
+
+  .next.notyet {
+    font-weight: bold;
+    margin: ms(-1) 0;
+    opacity: 0.618;
+
+    &::after {
+      color: desaturate($brown, 100%);
+    }
   }
 
   @supports (display: grid) {

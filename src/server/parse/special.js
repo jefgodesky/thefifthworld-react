@@ -301,7 +301,8 @@ const parseTags = wikitext => {
     /\[\[Owner:(.*?)\]\]/g,
     /\[\[Knower:(.*?)\]\]/g,
     /\[\[Author:(.*?)\]\]/g,
-    /\[\[Artist:(.*?)\]\]/g
+    /\[\[Artist:(.*?)\]\]/g,
+    /\[\[Chapter:(.*?)\]\]/g
   ]
   for (const regex of regexes) {
     wikitext = wikitext.replace(regex, '').replace(/\ +/g, ' ').trim()

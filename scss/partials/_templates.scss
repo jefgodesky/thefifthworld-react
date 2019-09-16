@@ -58,7 +58,7 @@ nav.sequence {
   .next.notyet {
     font-weight: bold;
     margin: ms(-1) 0;
-    opacity: 0.618;
+    opacity: .618;
 
     &::after {
       color: desaturate($brown, 100%);

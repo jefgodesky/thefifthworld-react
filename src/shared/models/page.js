@@ -2,6 +2,7 @@ import slugify from '../slugify'
 import plainParse from '../../server/parse/plain'
 import { updateVals, SQLEscape } from '../../server/utils'
 import { checkPermissions, canRead, canWrite } from '../permissions'
+import { isPopulatedArray } from '../utils'
 
 /**
  * This model handles dealing with pages in the database.
@@ -272,6 +273,21 @@ class Page {
     } else {
       return false
     }
+  }
+
+  /**
+   * Returns latest changes for page's parent.
+   * @param page {Object} - An object representation of a page.
+   * @returns {Object|undefined} - Latest changes for page's parent, or
+   *   undefined if it doesn't have any.
+   */
+
+  static getParent (page) {
+    return isPopulatedArray(page.lineage) && isPopulatedArray(page.lineage[0].changes)
+      ? page.lineage[0].changes[0] && page.lineage[0].changes[0].content
+        ? page.lineage[0].changes[0].content
+        : undefined
+      : undefined
   }
 
   /**

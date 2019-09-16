@@ -29,6 +29,44 @@ export class Page extends React.Component {
   }
 
   /**
+   * Returns the string to display for credit in the header. If this is a
+   * Chapter and its parent is a Novel, then that's the Author tag found in the
+   * Novel. Otherwise, it's the Author tag or the Artist tag (Author taking
+   * precedence over Artist. That's not a value judgment, we just need one to
+   * win out. Really, you shouldn't have both on the same page, right?).
+   * @returns {string|null}
+   */
+
+  getCredit () {
+    const { page } = this.props
+    const p = PageModel.getParent(page)
+    const author = page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel'
+      ? PageModel.getTag(p.body, 'Author', true)
+      : page && page.curr && page.curr.body
+        ? PageModel.getTag(page.curr.body, 'Author', true)
+        : null
+    const artist = page && page.curr && page.curr.body
+      ? PageModel.getTag(page.curr.body, 'Artist', true)
+      : null
+    return author || artist
+  }
+
+  /**
+   * Returns the title to be displayed in the header. This is normally the
+   * page's title, but if it's a Chapter and its parent is a Novel, it's the
+   * Novel's title.
+   * @returns {string} - The title to display in the header.
+   */
+
+  getTitle () {
+    const { page } = this.props
+    let title = page.title
+    const p = PageModel.getParent(page)
+    if (page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel') title = p.title
+    return title
+  }
+
+  /**
    * Renders the page breadcrumbs.
    * @returns {*} - JSX for the breadcrumbs for the page.
    */
@@ -77,13 +115,6 @@ export class Page extends React.Component {
           component = (<View />)
         }
 
-        const author = page && page.curr && page.curr.body
-          ? PageModel.getTag(page.curr.body, 'Author', true)
-          : null
-        const artist = page && page.curr && page.curr.body
-          ? PageModel.getTag(page.curr.body, 'Artist', true)
-          : null
-        const credit = author || artist
         const breadcrumbs = this.renderBreadcrumbs()
         const type = page.type ? slugify(page.type) : null
         const cmd = page.command ? page.command : 'view'
@@ -94,8 +125,8 @@ export class Page extends React.Component {
             <Header
               header={page.header ? page.header : null}
               name={loggedInMember ? loggedInMember.name : null}
-              credit={credit}
-              title={page.title} />
+              credit={this.getCredit()}
+              title={this.getTitle()} />
             <main className={classes.join(' ')}>
               <Messages />
               {breadcrumbs}

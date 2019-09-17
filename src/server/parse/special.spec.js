@@ -4,7 +4,6 @@ import Member from '../../shared/models/member'
 import Page from '../../shared/models/page'
 import {
   escapeCodeBlockMarkdown,
-  reescapeCodeBlockMarkdown,
   listChildren,
   listOtherNames,
   listNamesKnown,
@@ -333,18 +332,16 @@ describe('unwrapDivs', () => {
 
 describe('escapeCodeBlockMarkdown', () => {
   it('escapes Markdown characters inside of code blocks', () => {
-    const wikitext = '```\n    Code block\n```\n\nNot in code block.'
+    const wikitext = '<pre><code>Inside block</code></pre> Outside block'
     const actual = escapeCodeBlockMarkdown(wikitext)
-    const expected = '```\n&#32;&#32;&#32;&#32;&#67;&#111;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;\n```\n\nNot in code block.'
+    const expected = '<pre><code>&#73;&#110;&#115;&#105;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;</code></pre> Outside block'
     expect(actual).toEqual(expected)
   })
-})
 
-describe('reescapeCodeBlockMarkdown', () => {
-  it('makes sure characters in code blocks are only escaped once', () => {
-    const wikitext = '<pre><code>&amp;#32;</code></pre> &amp;cetera'
-    const actual = reescapeCodeBlockMarkdown(wikitext)
-    const expected = '<pre><code>&#32;</code></pre> &amp;cetera'
+  it('works over multiple lines', () => {
+    const wikitext = '<pre>\r\n  <code>\r\n    Inside block\r\n  </code>\r\n</pre>\r\n\r\nOutside block'
+    const actual = escapeCodeBlockMarkdown(wikitext)
+    const expected = '<pre><code>&#73;&#110;&#115;&#105;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;</code></pre>\r\n\r\nOutside block'
     expect(actual).toEqual(expected)
   })
 })

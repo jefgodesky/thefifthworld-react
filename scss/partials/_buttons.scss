@@ -70,6 +70,21 @@ a.button,
 .actions,
 .actions-elaboration {
   text-align: center;
+
+  button,
+  button,
+  input[type='submit'],
+  input[type='button'],
+  a.button,
+  & > a {
+    margin: ms(-2) 0;
+    width: 100%;
+
+    @media (min-width: 30em) {
+      margin: ms(-2);
+      width: auto;
+    }
+  }
 }
 
 .actions-elaboration {

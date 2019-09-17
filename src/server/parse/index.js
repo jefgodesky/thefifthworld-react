@@ -3,7 +3,6 @@ import parseTemplates from './template'
 import parseLinks from './links'
 import {
   escapeCodeBlockMarkdown,
-  reescapeCodeBlockMarkdown,
   listChildren,
   listArtists,
   listOtherNames,
@@ -47,15 +46,14 @@ const parse = async (wikitext, db, path = null) => {
     // Removing stuff that shouldn't be rendered...
     wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
-    wikitext = escapeCodeBlockMarkdown(wikitext)
 
     // Render templates.
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
+    wikitext = escapeCodeBlockMarkdown(wikitext)
     wikitext = parseForm(wikitext)
-    wikitext = reescapeCodeBlockMarkdown(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
 

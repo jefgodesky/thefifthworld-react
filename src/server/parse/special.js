@@ -337,6 +337,39 @@ const parseForm = wikitext => {
 }
 
 /**
+ * ?
+ * @param wikitext
+ * @param db
+ * @returns {Promise<void>}
+ */
+
+const parseNovelListing = async (wikitext, db) => {
+  const matches = wikitext.match(/{{ListNovels(.*?)}}/g) || []
+  const res = matches && matches.length > 0
+    ? await db.run('SELECT n.title, n.path, f.name AS src FROM pages n, pages c, files f WHERE n.type=\'Novel\' AND c.type=\'Art\' AND c.path=n.path+\'/cover\' AND c.parent=n.id AND f.page=c.id;')
+    : null
+
+  let markup = ''
+  if (isPopulatedArray(res)) {
+    markup = '<ul class="novel-listing">\n'
+    for (const novel of res) {
+      markup += '  <li>\n'
+      markup += `    <a href="${novel.path}">\n`
+      markup += `      <img src="${getURL(novel.src)}" alt="${novel.title}" />`
+      markup += '    </a>\n'
+      markup += '  </li>\n'
+    }
+    markup += '</ul>'
+  }
+
+  for (const match of matches) {
+    wikitext = wikitext.replace(match, markup)
+  }
+
+  return wikitext
+}
+
+/**
  * Unwraps <div> tags that are wrapped in <p> tags.
  * @param wikitext {string} - Wikitext to parse.
  * @returns {string} - A copy of the wikitext, but in each instance where one
@@ -373,5 +406,6 @@ export {
   parseArt,
   parseTags,
   parseForm,
+  parseNovelListing,
   unwrapDivs
 }

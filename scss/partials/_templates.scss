@@ -90,3 +90,25 @@ div.main {
   font-size: ms(-1);
   margin: ms(0) 0;
 }
+
+.wiki-body .novel-listing {
+  @extend %unformatted-list;
+
+  @supports (display: grid) {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-columns: 50% 50%;
+
+    li {
+      margin: 0;
+    }
+
+    @media (min-width: 50em) {
+      grid-template-columns: 33% 33% 33%;
+    }
+
+    @media (min-width: 70em) {
+      grid-template-columns: 25% 25% 25% 25%;
+    }
+  }
+}

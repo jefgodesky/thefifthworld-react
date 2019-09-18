@@ -12,6 +12,7 @@ import {
   parseArt,
   parseForm,
   parseTags,
+  parseNovelListing,
   unwrapDivs
 } from './special'
 
@@ -63,6 +64,7 @@ const parse = async (wikitext, db, path = null) => {
     if (db) {
       wikitext = await parseDownload(wikitext, db)
       wikitext = await parseArt(wikitext, db)
+      wikitext = await parseNovelListing(wikitext, db)
       wikitext = await listChildren(wikitext, path, db, true)
       wikitext = await listChildren(wikitext, path, db)
       wikitext = await listOtherNames(wikitext, path, db)

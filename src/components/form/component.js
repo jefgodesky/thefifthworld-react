@@ -494,6 +494,7 @@ export class Form extends React.Component {
             this.setState({ isLoading: false })
           }
         } catch (err) {
+          this.setState({ isLoading: false })
           console.error(err)
         }
       }

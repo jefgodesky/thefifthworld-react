@@ -1,8 +1,12 @@
 import * as types from './action-types'
 import { clone } from '../../shared/utils'
+import { convertCoords } from '../../shared/utils.geo'
 
 const init = {
-  step: 0
+  step: 0,
+  territory: {},
+  chronicle: [],
+  people: []
 }
 
 /**
@@ -16,9 +20,14 @@ const init = {
 
 export default function CommunityCreation (state = init, action = {}) {
   const newState = clone(state || init)
+  let coords
   switch (action.type) {
     case types.CC_SET_STEP:
       newState.step = action.payload
+      break
+    case types.CC_SET_CENTER:
+      coords = convertCoords(action.payload)
+      newState.territory.center = [ coords.lat, coords.lon ]
       break
   }
   return newState

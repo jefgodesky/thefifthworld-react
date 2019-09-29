@@ -5,6 +5,7 @@ import Footer from '../footer/component'
 import Messages from '../messages/component'
 
 import CommunityCreationIntro from './steps/intro'
+import CommunityCreationLocate from './steps/locate'
 
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
@@ -38,14 +39,14 @@ export class CommunityCreation extends React.Component {
    */
 
   render () {
-    const { loggedInMember, step } = this.props
+    const { dispatch, loggedInMember, step } = this.props
+    const { js } = this.state
 
     let body = null
 
     switch (step) {
-      default:
-        body = (<CommunityCreationIntro js={this.state.js} />)
-        break
+      case 1: body = (<CommunityCreationLocate dispatch={dispatch} js={js} />); break
+      default: body = (<CommunityCreationIntro dispatch={dispatch} js={js} />); break
     }
 
     return (
@@ -78,6 +79,7 @@ const mapStateToProps = state => {
 }
 
 CommunityCreation.propTypes = {
+  dispatch: PropTypes.func,
   loggedInMember: PropTypes.object,
   step: PropTypes.number
 }

@@ -2,7 +2,8 @@
 
 import {
   convertLat,
-  convertLon
+  convertLon,
+  convertCoords
 } from './utils.geo'
 
 describe('convertLat', () => {
@@ -78,5 +79,33 @@ describe('convertLonn', () => {
     const lon = '80°W'
     const actual = convertLon(lon)
     expect(actual).toBeCloseTo(-80.000, 3)
+  })
+})
+
+describe('convertCoords', () => {
+  it('will keep a decimal format latitude', () => {
+    const coords = { lat: 40.441810, lon: -80.012770 }
+    const actual = convertCoords(coords)
+    expect(actual).toEqual(coords)
+  })
+
+  it('will turn a string into a decimal value', () => {
+    const coords = { lat: '40.441810', lon: '-80.012770' }
+    const actual = convertCoords(coords)
+    expect(actual).toEqual({ lat: 40.441810, lon: -80.012770 })
+  })
+
+  it('will turn a latitude in degrees, minutes, and seconds into a decimal value', () => {
+    const coords = { lat: '40°26\'30.5"N', lon: '80°00\'46.0"W' }
+    const actual = convertCoords(coords)
+    expect(actual.lat).toBeCloseTo(40.441794, 3)
+    expect(actual.lon).toBeCloseTo(-80.012770, 3)
+  })
+
+  it('works with ticks', () => {
+    const coords = { lat: '40`26\'30.5"N', lon: '80`00\'46.0"W' }
+    const actual = convertCoords(coords)
+    expect(actual.lat).toBeCloseTo(40.441794, 3)
+    expect(actual.lon).toBeCloseTo(-80.012770, 3)
   })
 })

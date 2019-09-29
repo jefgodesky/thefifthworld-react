@@ -40,6 +40,14 @@ CREATE TABLE `communities` (
 ) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `communities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `complete` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,

@@ -1,5 +1,6 @@
 /* global __isClient__ */
 
+import CommunityCreation from '../components/community-creation/component'
 import Create from '../components/create/component'
 import Dashboard from '../components/dashboard/component'
 import Explore from '../components/explore/component'
@@ -82,6 +83,11 @@ const routes = [
     path: '/explore',
     exact: true,
     component: Explore
+  },
+  {
+    path: '/create-community',
+    exact: true,
+    component: CommunityCreation
   }
 ]
 

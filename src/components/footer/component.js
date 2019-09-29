@@ -1,12 +1,11 @@
 import React from 'react'
 import autoBind from 'react-autobind'
-import { connect } from 'react-redux'
 
 /**
  * This component handles the home page.
  */
 
-export class Footer extends React.Component {
+export default class Footer extends React.Component {
   constructor (props) {
     super(props)
     autoBind(this)
@@ -41,14 +40,3 @@ export class Footer extends React.Component {
     )
   }
 }
-
-/**
- * Maps Redux state to the component's props.
- * @returns {Object} - The component's new props.
- */
-
-const mapStateToProps = () => {
-  return {}
-}
-
-export default connect(mapStateToProps)(Footer)

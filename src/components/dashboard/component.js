@@ -88,7 +88,7 @@ export class Dashboard extends React.Component {
             <p>Add something new to the Fifth World.</p>
             <ul>
               <li><a href='/new' className='button'>Add a Page</a></li>
-              <li><a disabled title='Coming soon' className='button'>Add a Family</a></li>
+              <li><a href='/create-community' className='button'>Add a Community</a></li>
               <li><a disabled title='Coming soon' className='button'>Add a Character</a></li>
               <li><a disabled title='Coming soon' className='button'>Add a Place</a></li>
               <li><a disabled title='Coming soon' className='button'>Write a Story</a></li>

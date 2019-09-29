@@ -1,7 +1,8 @@
 /* global describe, it, expect */
 
 import {
-  convertLat
+  convertLat,
+  convertLon
 } from './utils.geo'
 
 describe('convertLat', () => {
@@ -39,5 +40,43 @@ describe('convertLat', () => {
     const lat = '40°N'
     const actual = convertLat(lat)
     expect(actual).toBeCloseTo(40, 3)
+  })
+})
+
+describe('convertLonn', () => {
+  it('will keep a decimal format latitude', () => {
+    const lon = -80.012770
+    const actual = convertLon(lon)
+    expect(actual).toEqual(lon)
+  })
+
+  it('will turn a string into a decimal value', () => {
+    const lon = '-80.012770'
+    const actual = convertLon(lon)
+    expect(actual).toEqual(-80.012770)
+  })
+
+  it('will turn a latitude in degrees, minutes, and seconds into a decimal value', () => {
+    const lon = '80°00\'46.0"W'
+    const actual = convertLon(lon)
+    expect(actual).toBeCloseTo(-80.012770, 3)
+  })
+
+  it('works with ticks', () => {
+    const lon = '80`00\'46.0"W'
+    const actual = convertLon(lon)
+    expect(actual).toBeCloseTo(-80.012770, 3)
+  })
+
+  it('works with just degrees and minutes', () => {
+    const lon = '80°00\'W'
+    const actual = convertLon(lon)
+    expect(actual).toBeCloseTo(-80.000, 3)
+  })
+
+  it('works with just degrees', () => {
+    const lon = '80°W'
+    const actual = convertLon(lon)
+    expect(actual).toBeCloseTo(-80.000, 3)
   })
 })

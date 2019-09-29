@@ -68,7 +68,23 @@ const convertLon = lon => {
   return convertLatLon(lon, 'lon')
 }
 
+/**
+ *
+ * @param coords {Object} - An object with properties named `lat` and `lon`
+ *   containing latitude and longitude for a coordinate.
+ * @returns {Object|boolean} - An object with properties named `lat` and `lon`
+ *   containing latitude and longitude for a coordinate, where each has been
+ *   parsed into a decimal value. Returns `false` if either value could not be
+ *   parsed.
+ */
+const convertCoords = coords => {
+  const lat = convertLatLon(coords.lat, 'lat')
+  const lon = convertLatLon(coords.lon, 'lon')
+  return lat && lon ? { lat, lon } : false
+}
+
 export {
   convertLat,
-  convertLon
+  convertLon,
+  convertCoords
 }

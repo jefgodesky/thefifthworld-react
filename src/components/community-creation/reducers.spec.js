@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import {setCenter, setStep} from './actions'
+import { setCenter, setStep } from './actions'
 import CommunityCreation from './reducers'
 
 describe('CommunityCreation', () => {

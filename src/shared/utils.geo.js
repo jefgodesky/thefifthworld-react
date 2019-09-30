@@ -36,7 +36,7 @@ const convertLatLon = (str, dir = 'lon') => {
       val = degrees
     } else {
       parse = parseFloat(val)
-      return parse === NaN ? false : parse
+      return isNaN(parse) ? false : parse
     }
   }
   return val

@@ -9,7 +9,6 @@ import CommunityCreationLocate from './steps/locate'
 
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
-import { get } from '../../shared/utils'
 
 /**
  * This component handles the community creation page.
@@ -40,13 +39,12 @@ export class CommunityCreation extends React.Component {
    */
 
   render () {
-    const { dispatch, loggedInMember, match, step } = this.props
+    const { dispatch, loggedInMember, step } = this.props
     const { js } = this.state
-    const param = get(match, 'params.step') || 0
-    const curr = Math.max(step, param)
 
     let body = null
-    switch (curr) {
+
+    switch (step) {
       case 1: body = (<CommunityCreationLocate dispatch={dispatch} js={js} />); break
       default: body = (<CommunityCreationIntro dispatch={dispatch} js={js} />); break
     }
@@ -83,7 +81,6 @@ const mapStateToProps = state => {
 CommunityCreation.propTypes = {
   dispatch: PropTypes.func,
   loggedInMember: PropTypes.object,
-  match: PropTypes.object,
   step: PropTypes.number
 }
 

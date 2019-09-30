@@ -10,6 +10,7 @@ import CommunityCreationLocate from './steps/locate'
 
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
+import { get } from '../../shared/utils'
 
 import { parseParams } from '../../server/utils'
 
@@ -44,6 +45,8 @@ export class CommunityCreation extends React.Component {
   render () {
     const { dispatch, location, loggedInMember } = this.props
     const { js } = this.state
+    const param = get(match, 'params.step') || 0
+    const curr = Math.max(step, param)
 
     let body = null
     const params = location && location.search ? parseParams(location.search) : {}
@@ -87,6 +90,7 @@ CommunityCreation.propTypes = {
   dispatch: PropTypes.func,
   location: PropTypes.object,
   loggedInMember: PropTypes.object,
+  match: PropTypes.object,
   step: PropTypes.number
 }
 

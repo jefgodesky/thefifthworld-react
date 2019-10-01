@@ -57,6 +57,13 @@ describe('SQLEscape', () => {
   })
 })
 
+describe('parseParams', () => {
+  it('extracts param values', () => {
+    const q = '?param=1'
+    expect(utils.parseParams(q)).toEqual({ param: '1' })
+  })
+})
+
 afterAll(() => {
   db.end()
 })

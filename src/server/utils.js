@@ -73,8 +73,27 @@ const generateInvitationCode = async db => {
   return code
 }
 
+/**
+ * Parse the query string of a URL into an object where each parameter is a
+ * property with a value set to that parameter's value.
+ * @param str {string} - The query string of a URL.
+ * @returns {Object} - An object representation of the query string provided.
+ */
+
+const parseParams = str => {
+  const o = str.substr(0, 1) === '?' ? str.substr(1) : str
+  const p = o.split('&')
+  const pairs = p.map(p => p.split('='))
+  const obj = {}
+  pairs.forEach(pair => {
+    if (pair.length === 2) obj[pair[0]] = pair[1]
+  })
+  return obj
+}
+
 export {
   updateVals,
   generateInvitationCode,
-  SQLEscape
+  SQLEscape,
+  parseParams
 }

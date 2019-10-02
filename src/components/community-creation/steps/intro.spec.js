@@ -12,9 +12,4 @@ describe('CommunityCreationIntro', () => {
     const wrapper = shallow(<CommunityCreationIntro />)
     expect(wrapper.find('p').length).toEqual(4)
   })
-
-  it('should render the button', () => {
-    const wrapper = shallow(<CommunityCreationIntro />)
-    expect(wrapper.find('button').length).toEqual(1)
-  })
 })

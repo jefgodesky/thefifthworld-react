@@ -10,6 +10,8 @@ import CommunityCreationLocate from './steps/locate'
 import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 
+import { parseParams } from '../../server/utils'
+
 /**
  * This component handles the community creation page.
  */
@@ -39,13 +41,15 @@ export class CommunityCreation extends React.Component {
    */
 
   render () {
-    const { dispatch, loggedInMember, step } = this.props
+    const { dispatch, location, loggedInMember } = this.props
     const { js } = this.state
 
     let body = null
+    const params = location && location.search ? parseParams(location.search) : {}
+    const step = params.step ? parseInt(params.step) : this.props.step
 
     switch (step) {
-      case 1: body = (<CommunityCreationLocate dispatch={dispatch} js={js} />); break
+      case 1: body = (<CommunityCreationLocate dispatch={dispatch} js={js} params={params} />); break
       default: body = (<CommunityCreationIntro dispatch={dispatch} js={js} />); break
     }
 
@@ -80,6 +84,7 @@ const mapStateToProps = state => {
 
 CommunityCreation.propTypes = {
   dispatch: PropTypes.func,
+  location: PropTypes.object,
   loggedInMember: PropTypes.object,
   step: PropTypes.number
 }

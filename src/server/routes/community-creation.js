@@ -1,7 +1,7 @@
 import express from 'express'
 import { convertLat, convertLon } from '../../shared/utils.geo'
-// import { escape as SQLEscape } from 'sqlstring'
-// import db from '../db'
+import { escape as SQLEscape } from 'sqlstring'
+import db from '../db'
 
 const CommunityCreationRouter = express.Router()
 
@@ -15,8 +15,14 @@ CommunityCreationRouter.post('/1', async (req, res) => {
     const error = errorLat && errorLon ? 'both' : errorLat ? 'lat' : 'lon'
     res.redirect(`/create-community?step=1&error=${error}&lat=${encodeURIComponent(req.body.lat)}&lon=${encodeURIComponent(req.body.lon)}`)
   } else {
-    console.log([ lat, lon ])
-    res.redirect('/create-community?step=1')
+    const data = {
+      step: 2,
+      territory: { center: [ lat, lon ] },
+      chronicle: [],
+      people: []
+    }
+    await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(data))});`)
+    res.redirect('/create-community?step=2')
   }
 })
 

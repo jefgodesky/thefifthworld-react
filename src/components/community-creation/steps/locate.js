@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { setCenter, setStep } from '../actions'
+
 import Map from '../../map/component'
 
 /**
@@ -18,6 +20,7 @@ export class CommunityCreationLocate extends React.Component {
     }
 
     this.handleClick = this.handleClick.bind(this)
+    this.next = this.next.bind(this)
   }
 
   /**
@@ -33,19 +36,38 @@ export class CommunityCreationLocate extends React.Component {
   }
 
   /**
+   * Called when the user clicks the button to proceed to the next step.
+   */
+
+  next () {
+    const { lat, lon } = this.state
+    if (lat !== undefined && lon !== undefined) {
+      this.props.dispatch(setCenter(lat, lon))
+      this.props.dispatch(setStep(2))
+    }
+  }
+
+  /**
    * Function to render the map when JS works.
    * @returns {*} - JSX for the map when JS works.
    */
 
   renderMap () {
+    const { lat, lon } = this.state
+    const disableNext = lat === undefined || lon === undefined
+
     return (
       <React.Fragment>
         <h2>Where does your community dwell?</h2>
+        <p>Click on the map where your community dwells. A circle will appear highlighting your approximate territory. When it looks right, click <em>Next</em>, below.</p>
         <div className='map-frame'>
           <Map
             mode='locateCommunity'
             onClick={this.handleClick} />
         </div>
+        <p className='actions'>
+          <button onClick={this.next} disabled={disableNext}>Next</button>
+        </p>
       </React.Fragment>
     )
   }

@@ -47,13 +47,22 @@ export default class Map extends React.Component {
    */
 
   async requestUserLocation () {
-    if (!this.props.place && navigator && 'geolocation' in navigator) {
+    const { mode, onClick, place } = this.props
+    if (!place && navigator && 'geolocation' in navigator) {
       const pos = await requestLocation()
+      const { latitude, longitude } = pos.coords
       this.setState({
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
+        lat: latitude,
+        lon: longitude,
         zoom: 12
       })
+
+      if (mode === 'locateCommunity') {
+        this.setState({
+          showTerritory: true
+        })
+        if (onClick) onClick({ latlng: { lat: latitude, lng: longitude } })
+      }
     }
   }
 

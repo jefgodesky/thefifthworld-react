@@ -122,12 +122,17 @@ const redirector = (req, res, next) => {
   const restricted = [
     '/dashboard',
     '/connect',
-    '/invite'
+    '/invite',
+    '/create-community'
   ]
+
+  const isRestricted = restricted.reduce((acc, curr) => {
+    return acc || req.originalUrl.startsWith(curr)
+  }, false)
 
   if (req.user && req.originalUrl === '/login') {
     res.redirect('/dashboard')
-  } else if (!req.user && restricted.indexOf(req.originalUrl) > -1) {
+  } else if (!req.user && isRestricted) {
     res.redirect('/login')
   } else {
     next()

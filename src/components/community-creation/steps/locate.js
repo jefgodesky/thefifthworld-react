@@ -9,6 +9,29 @@ import Map from '../../map/component'
  */
 
 export class CommunityCreationLocate extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      lat: undefined,
+      lon: undefined
+    }
+
+    this.handleClick = this.handleClick.bind(this)
+  }
+
+  /**
+   * Click event handler for the map.
+   * @param event {Object} - Click event.
+   */
+
+  handleClick (event) {
+    this.setState({
+      lat: event.latlng.lat,
+      lon: event.latlng.lng
+    })
+  }
+
   /**
    * Function to render the map when JS works.
    * @returns {*} - JSX for the map when JS works.
@@ -19,7 +42,9 @@ export class CommunityCreationLocate extends React.Component {
       <React.Fragment>
         <h2>Where does your community dwell?</h2>
         <div className='map-frame'>
-          <Map />
+          <Map
+            mode='locateCommunity'
+            onClick={this.handleClick} />
         </div>
       </React.Fragment>
     )
@@ -82,7 +107,6 @@ export class CommunityCreationLocate extends React.Component {
   render () {
     // Temporary BS because this is just a placeholder right now and we're not
     // yet using the props we'll need later.
-    if (this.props.js) console.log('has js')
     if (this.props.dispatch) console.log('has dispatch')
 
     return this.props.js ? this.renderMap() : this.renderManual()

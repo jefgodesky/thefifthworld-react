@@ -12,6 +12,7 @@ export default class Map extends React.Component {
   constructor (props) {
     super(props)
 
+    this.el = React.createRef()
     this.state = {
       base: `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/maps`,
       isClient: false,
@@ -21,6 +22,8 @@ export default class Map extends React.Component {
       loaded: false,
       zoom: this.props.place ? 14 : 3
     }
+
+    this.handleClick = this.handleClick.bind(this)
   }
 
   /**
@@ -99,6 +102,26 @@ export default class Map extends React.Component {
   }
 
   /**
+   * Event handler for a click on the map.
+   * @param event {Object} - The click event.
+   */
+
+  handleClick (event) {
+    const map = this.el.current
+
+    if (this.props.onClick) this.props.onClick(event)
+
+    if ((map !== null) && (this.props.mode === 'locateCommunity')) {
+      this.setState({
+        lat: event.latlng.lat,
+        lon: event.latlng.lng,
+        showTerritory: true,
+        zoom: 12
+      })
+    }
+  }
+
+  /**
    * Render markers.
    * @param Marker {Component} - The Marker component from the `react-leaflet`
    *   library.
@@ -127,6 +150,26 @@ export default class Map extends React.Component {
   }
 
   /**
+   * Renders an approximate territory around a given center. Used in
+   * `locateCommunity` mode, in the community creation wizard.
+   * @param Circle {Component} - The Circle component from the `react-leaflet`
+   *   library.
+   * @returns {null|*} - JSX for rendering territory.
+   */
+
+  renderTerritory (Circle) {
+    const { mode } = this.props
+    const { lat, lon, showTerritory } = this.state
+    if ((mode === 'locateCommunity') && showTerritory) {
+      return (
+        <Circle center={[ lat, lon ]} fillColor='#b92e52' color='#b92e52' radius={4828} />
+      )
+    } else {
+      return null
+    }
+  }
+
+  /**
    * Returns JSX to render the map.
    * @returns {*} - JSX to render the map.
    */
@@ -135,9 +178,10 @@ export default class Map extends React.Component {
     let { lat, lon, zoom } = this.state
     const leaflet = require('react-leaflet')
     const LeafletMap = leaflet.Map
-    const { TileLayer, GeoJSON, Marker, Popup } = leaflet
+    const { TileLayer, GeoJSON, Marker, Popup, Circle } = leaflet
     const sealevel = this.raiseSeaLevel(GeoJSON)
     const markers = this.renderMarkers(Marker, Popup)
+    const territory = this.renderTerritory(Circle)
     const height = this.props.place ? '300px' : '75vh'
     const loading = !this.props.place && !this.state.loaded
       ? (<div className='loading-map'>Melting ice caps&hellip;</div>)
@@ -147,17 +191,20 @@ export default class Map extends React.Component {
       <React.Fragment>
         {loading}
         <LeafletMap
+          ref={this.el}
           center={[lat, lon]}
           zoom={zoom}
           minZoom={3}
           maxZoom={15}
           dragging={!this.props.place}
           zoomControl={!this.props.place}
-          style={{ height }}>
+          style={{ height }}
+          onClick={this.handleClick}>
           <TileLayer
             attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
             url='http://b.tile.stamen.com/terrain-background/{z}/{x}/{y}.png'
             noWrap />
+          {territory}
           {sealevel}
           {markers}
         </LeafletMap>
@@ -180,6 +227,8 @@ export default class Map extends React.Component {
 }
 
 Map.propTypes = {
+  mode: PropTypes.oneOf([ 'locateCommunity' ]),
+  onClick: PropTypes.func,
   place: PropTypes.object,
   places: PropTypes.array
 }

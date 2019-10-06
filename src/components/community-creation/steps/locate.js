@@ -1,12 +1,30 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import Map from '../../map/component'
+
 /**
  * This component handles the part in community creation where you select where
  * the community's territory lies.
  */
 
 export class CommunityCreationLocate extends React.Component {
+  /**
+   * Function to render the map when JS works.
+   * @returns {*} - JSX for the map when JS works.
+   */
+
+  renderMap () {
+    return (
+      <React.Fragment>
+        <h2>Where does your community dwell?</h2>
+        <div className='map-frame'>
+          <Map />
+        </div>
+      </React.Fragment>
+    )
+  }
+
   /**
    * Function to render the form used when JS fails.
    * @returns {*} - JSX for the form used when JS fails.
@@ -67,13 +85,7 @@ export class CommunityCreationLocate extends React.Component {
     if (this.props.js) console.log('has js')
     if (this.props.dispatch) console.log('has dispatch')
 
-    const manual = this.renderManual()
-
-    return (
-      <React.Fragment>
-        {manual}
-      </React.Fragment>
-    )
+    return this.props.js ? this.renderMap() : this.renderManual()
   }
 }
 

@@ -4,9 +4,21 @@
   left: 50%;
   padding: 1em;
   position: absolute;
-  top: 45vh;
+  top: 35vh;
   transform: translate(-50%, -50%);
   z-index: 500;
+}
+
+.map-frame {
+  height: 75vh;
+  margin: ms(2) 0;
+
+  .leaflet-container {
+    height: 75vh;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
 }
 
 .place.view .map {

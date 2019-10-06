@@ -117,9 +117,15 @@ const respond = (req, res, store) => {
 }
 
 const redirector = (req, res, next) => {
+  const restricted = [
+    '/dashboard',
+    '/connect',
+    '/invite'
+  ]
+
   if (req.user && req.originalUrl === '/login') {
     res.redirect('/dashboard')
-  } else if (!req.user && req.originalUrl === '/dashboard') {
+  } else if (!req.user && restricted.indexOf(req.originalUrl) > -1) {
     res.redirect('/login')
   } else {
     next()

@@ -1,7 +1,14 @@
 import express from 'express'
-import { convertLat, convertLon } from '../../shared/utils.geo'
 import { escape as SQLEscape } from 'sqlstring'
+import intersect from '@turf/intersect'
 import db from '../db'
+
+import {
+  convertLat,
+  convertLon,
+  loadCoastlines,
+  drawCircle
+} from '../../shared/utils.geo'
 
 const CommunityCreationRouter = express.Router()
 
@@ -15,9 +22,27 @@ CommunityCreationRouter.post('/1', async (req, res) => {
     const error = errorLat && errorLon ? 'both' : errorLat ? 'lat' : 'lon'
     res.redirect(`/create-community?step=1&error=${error}&lat=${encodeURIComponent(req.body.lat)}&lon=${encodeURIComponent(req.body.lon)}`)
   } else {
+    // Is it coastal?
+    let coastal = false
+    const range = drawCircle(lat, lon)
+    const coastlines = await loadCoastlines()
+    while (!coastal && coastlines.length > 0) {
+      const coll = coastlines.shift()
+      if (coll) {
+        while (!coastal && coll.features.length > 0) {
+          const feature = coll.features.shift()
+          if (intersect(range, feature) !== null) coastal = true
+        }
+      }
+    }
+
+    // Save data
     const data = {
       step: 2,
-      territory: { center: [ lat, lon ] },
+      territory: {
+        center: [ lat, lon ],
+        coastal
+      },
       chronicle: [],
       people: []
     }

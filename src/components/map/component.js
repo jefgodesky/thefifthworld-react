@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import axios from 'axios'
 import { isPopulatedArray, requestLocation } from '../../shared/utils'
+import { loadCoastlines } from '../../shared/utils.geo'
 import config from '../../../config'
 
 /**
@@ -73,12 +73,7 @@ export default class Map extends React.Component {
    */
 
   async loadGeoJSON () {
-    const { base } = this.state
-    const json = []
-    for (let i = 1; i <= 54; i++) {
-      const res = await axios.get(`${base}/5_json/ShapesNew_${i}.geojson`)
-      json[i] = res.data
-    }
+    const json = await loadCoastlines()
     this.setState({ json, loaded: true })
   }
 

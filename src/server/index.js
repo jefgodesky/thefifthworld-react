@@ -33,6 +33,7 @@ import Page from '../shared/models/page'
 import MemberRouter from './routes/member'
 import PageRouter from './routes/page'
 import FormRouter from './routes/form'
+import CommunityCreationRouter from './routes/community-creation'
 import Router from '../components/router/component'
 
 // Initialize server
@@ -71,6 +72,7 @@ server.use(passport.session())
 auth(passport)
 
 // Other-than-GET responses
+server.use('/create-community', CommunityCreationRouter)
 server.use('/', MemberRouter)
 server.use('/', FormRouter)
 server.use('/', PageRouter)
@@ -120,12 +122,17 @@ const redirector = (req, res, next) => {
   const restricted = [
     '/dashboard',
     '/connect',
-    '/invite'
+    '/invite',
+    '/create-community'
   ]
+
+  const isRestricted = restricted.reduce((acc, curr) => {
+    return acc || req.originalUrl.startsWith(curr)
+  }, false)
 
   if (req.user && req.originalUrl === '/login') {
     res.redirect('/dashboard')
-  } else if (!req.user && restricted.indexOf(req.originalUrl) > -1) {
+  } else if (!req.user && isRestricted) {
     res.redirect('/login')
   } else {
     next()

@@ -1,15 +1,5 @@
-#
-# SQL Export
-# Created by Querious (201054)
-# Created: June 17, 2019 at 7:24:35 PM EDT
-# Encoding: Unicode (UTF-8)
-#
-
-
 CREATE DATABASE IF NOT EXISTS `thefifthworld` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE `thefifthworld`;
-
-
 
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
@@ -34,7 +24,15 @@ CREATE TABLE `changes` (
   `msg` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `json` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `communities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `complete` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `files` (
@@ -47,7 +45,7 @@ CREATE TABLE `files` (
   `timestamp` int(32) unsigned DEFAULT '0',
   `uploader` int(11) unsigned DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `invitations` (
@@ -57,7 +55,7 @@ CREATE TABLE `invitations` (
   `inviteCode` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `accepted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `likes` (
@@ -66,7 +64,7 @@ CREATE TABLE `likes` (
   `page` int(11) unsigned NOT NULL DEFAULT '0',
   `member` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `members` (
@@ -85,7 +83,7 @@ CREATE TABLE `members` (
   `invitations` int(11) unsigned NOT NULL DEFAULT '5',
   `reset` int(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1004 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `messages` (
@@ -94,7 +92,7 @@ CREATE TABLE `messages` (
   `type` enum('warning','error','info','confirmation') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'info',
   `message` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `names` (
@@ -123,6 +121,14 @@ CREATE TABLE `pages` (
   `lon` decimal(10,5) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`)
+) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `responses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 

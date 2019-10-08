@@ -46,8 +46,8 @@ CommunityCreationRouter.post('/1', async (req, res) => {
       chronicle: [],
       people: []
     }
-    await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(data))});`)
-    res.redirect('/create-community?step=2')
+    const community = await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(data))});`)
+    res.redirect(`/create-community/${community.insertId}`)
   }
 })
 

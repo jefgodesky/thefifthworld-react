@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import axios from 'axios'
 
-import { setCenter, setStep } from '../actions'
+import { get, isPopulatedArray } from '../../../shared/utils'
 
 import Map from '../../map/component'
 
@@ -16,7 +17,8 @@ export class CommunityCreationLocate extends React.Component {
 
     this.state = {
       lat: undefined,
-      lon: undefined
+      lon: undefined,
+      loading: undefined
     }
 
     this.handleClick = this.handleClick.bind(this)
@@ -39,11 +41,21 @@ export class CommunityCreationLocate extends React.Component {
    * Called when the user clicks the button to proceed to the next step.
    */
 
-  next () {
+  async next () {
     const { lat, lon } = this.state
     if (lat !== undefined && lon !== undefined) {
-      this.props.dispatch(setCenter(lat, lon))
-      this.props.dispatch(setStep(2))
+      this.setState({ loading: 0 })
+      try {
+        await axios.post('/create-community/1', { lat, lon })
+      } catch (err) {
+        const url = get(err, 'response.request.responseURL')
+        const match = url ? url.match(/^.*?\/create-community\/\d*$/gm) : null
+        if (isPopulatedArray(match)) {
+          window.location.href = url
+        } else {
+          this.setState({ loading: undefined })
+        }
+      }
     }
   }
 
@@ -53,8 +65,24 @@ export class CommunityCreationLocate extends React.Component {
    */
 
   renderMap () {
-    const { lat, lon } = this.state
-    const disableNext = lat === undefined || lon === undefined
+    const loadingMessages = [
+      'Exploring territory',
+      'Uncovering secrets',
+      'Consulting trees',
+      'Singing with birds',
+      'Negotiating with the earth',
+      'Almost done'
+    ]
+
+    const { lat, lon, loading } = this.state
+    const disableNext = lat === undefined || lon === undefined || loading !== undefined
+    const buttonText = loading !== undefined ? `${loadingMessages[loading]}…` : 'Next'
+
+    if (loading < loadingMessages.length - 1) {
+      setTimeout(() => {
+        this.setState({ loading: loading + 1 })
+      }, 5000)
+    }
 
     return (
       <React.Fragment>
@@ -66,7 +94,9 @@ export class CommunityCreationLocate extends React.Component {
             onClick={this.handleClick} />
         </div>
         <p className='actions'>
-          <button onClick={this.next} disabled={disableNext}>Next</button>
+          <button onClick={this.next} disabled={disableNext}>
+            {buttonText}
+          </button>
         </p>
       </React.Fragment>
     )
@@ -127,16 +157,11 @@ export class CommunityCreationLocate extends React.Component {
    */
 
   render () {
-    // Temporary BS because this is just a placeholder right now and we're not
-    // yet using the props we'll need later.
-    if (this.props.dispatch) console.log('has dispatch')
-
     return this.props.js ? this.renderMap() : this.renderManual()
   }
 }
 
 CommunityCreationLocate.propTypes = {
-  dispatch: PropTypes.func,
   params: PropTypes.object,
   js: PropTypes.bool
 }

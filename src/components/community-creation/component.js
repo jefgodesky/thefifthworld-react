@@ -49,7 +49,7 @@ export class CommunityCreation extends React.Component {
     const step = params.step ? parseInt(params.step) : this.props.step
 
     switch (step) {
-      case 1: body = (<CommunityCreationLocate dispatch={dispatch} js={js} params={params} />); break
+      case 1: body = (<CommunityCreationLocate js={js} params={params} />); break
       default: body = (<CommunityCreationIntro dispatch={dispatch} js={js} />); break
     }
 

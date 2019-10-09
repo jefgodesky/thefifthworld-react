@@ -88,6 +88,11 @@ const routes = [
     path: '/create-community',
     exact: true,
     component: CommunityCreation
+  },
+  {
+    path: '/create-community/:id',
+    exact: true,
+    component: CommunityCreation
   }
 ]
 

@@ -1,14 +1,20 @@
+/* global __isClient__ */
+
 import React from 'react'
 import PropTypes from 'prop-types'
+import RouteParser from 'route-parser'
+import autoBind from 'react-autobind'
+import { connect } from 'react-redux'
+import { escape as SQLEscape } from 'sqlstring'
+
+import * as actions from './actions'
+
 import Header from '../header/component'
 import Footer from '../footer/component'
 import Messages from '../messages/component'
 
 import CommunityCreationIntro from './steps/intro'
 import CommunityCreationLocate from './steps/locate'
-
-import autoBind from 'react-autobind'
-import { connect } from 'react-redux'
 
 import { parseParams } from '../../server/utils'
 
@@ -27,10 +33,35 @@ export class CommunityCreation extends React.Component {
   }
 
   /**
+   * This is a static function used on the server to load data from the
+   * database for the create community page.
+   * @param req {Object} - The request object from Express.
+   * @param db {Pool} - A database connection to query.
+   * @param store {Object} - A Redux store object.
+   */
+
+  static async load (req, db, store) {
+    if (!__isClient__ && this.path && req.originalUrl && store.dispatch && (typeof store.dispatch === 'function')) {
+      const routeParser = new RouteParser(this.path)
+      const params = routeParser.match(req.originalUrl)
+      if (params.id) {
+        const r = await db.run(`SELECT data FROM communities WHERE id = ${SQLEscape(params.id)}`)
+        try {
+          const c = JSON.parse(r[0].data)
+          store.dispatch(actions.load(c))
+        } catch (err) {
+          console.error(err)
+        }
+      }
+    }
+  }
+
+  /**
    * Called when the component mounts. This is not used in server-side
    * rendering, only on the client, so we can use this to know if JS is
    * working as expected.
    */
+
   componentDidMount () {
     this.setState({ js: true })
   }

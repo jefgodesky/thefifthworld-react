@@ -19,9 +19,12 @@ const init = {
  */
 
 export default function CommunityCreation (state = init, action = {}) {
-  const newState = clone(state || init)
+  let newState = clone(state || init)
   let coords
   switch (action.type) {
+    case types.CC_LOAD:
+      newState = action.payload
+      break
     case types.CC_SET_STEP:
       newState.step = action.payload
       break

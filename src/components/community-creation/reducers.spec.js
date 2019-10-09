@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { setCenter, setStep } from './actions'
+import { load, setCenter, setStep } from './actions'
 import CommunityCreation from './reducers'
 
 describe('CommunityCreation', () => {
@@ -12,6 +12,11 @@ describe('CommunityCreation', () => {
       chronicle: [],
       people: []
     })
+  })
+
+  it('should load state', () => {
+    const actual = CommunityCreation(undefined, load(true))
+    expect(actual).toEqual(true)
   })
 
   it('should set step', () => {

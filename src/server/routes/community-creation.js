@@ -3,6 +3,8 @@ import { escape as SQLEscape } from 'sqlstring'
 import intersect from '@turf/intersect'
 import db from '../db'
 
+import specialtyData from '../../components/community-creation/data/specialties'
+
 import {
   convertLat,
   convertLon,
@@ -72,7 +74,11 @@ const saveSpecialties = async (community, id, req, res) => {
   if (specialty) {
     const specialties = Array.isArray(specialty) ? specialty : [ specialty ]
     if (specialties.length <= 4) {
-      community.traditions = { specialties }
+      let village = false
+      for (let i = 0; i < specialties.length; i++) {
+        if (specialtyData.village.indexOf(specialties[i]) > -1) village = true
+      }
+      community.traditions = { village, specialties }
       await db.run(`UPDATE communities SET data=${SQLEscape(JSON.stringify(community))} WHERE id=${SQLEscape(id)};`)
       res.redirect(`/create-community/${id}`)
     } else {

@@ -43,11 +43,11 @@ const saveCenter = async (req, res) => {
 
     // Save data
     const data = {
-      step: 'specialize',
       territory: {
         center: [ lat, lon ],
         coastal
       },
+      traditions: {},
       chronicle: [],
       people: []
     }
@@ -68,7 +68,19 @@ const saveCenter = async (req, res) => {
  */
 
 const saveSpecialties = async (community, id, req, res) => {
-  res.redirect(`/create-community/${id}`)
+  const { specialty } = req.body
+  if (specialty) {
+    const specialties = Array.isArray(specialty) ? specialty : [ specialty ]
+    if (specialties.length <= 4) {
+      community.traditions = { specialties }
+      await db.run(`UPDATE communities SET data=${SQLEscape(JSON.stringify(community))} WHERE id=${SQLEscape(id)};`)
+      res.redirect(`/create-community/${id}`)
+    } else {
+      res.redirect(`/create-community/${id}?error=toomany&specialties=${encodeURIComponent(specialties.join(';'))}`)
+    }
+  } else {
+    res.redirect(`/create-community/${id}`)
+  }
 }
 
 const CommunityCreationRouter = express.Router()
@@ -78,13 +90,9 @@ CommunityCreationRouter.post('/', async (req, res) => {
   const id = req.body.community
   const r = await db.run(`SELECT data FROM communities WHERE id=${SQLEscape(id)}`)
   if (r && r.length > 0 && r[0] && r[0].data) {
-    const community = r[0].data
-    switch (community.step) {
-      case 'specialize':
-        await saveSpecialties(community, id, req, res)
-        break
-      default:
-        res.redirect(`/create-community/${id}`)
+    const community = JSON.parse(r[0].data)
+    if (!community.traditions || !community.traditions.specialties) {
+      await saveSpecialties(community, id, req, res)
     }
   } else {
     await saveCenter(req, res)

@@ -24,4 +24,10 @@ describe('CommunityCreationSpecialties', () => {
     const wrapper = shallow(<CommunityCreationSpecialties options={options} />)
     expect(wrapper.find('#specialty-carrot-cake').length).toEqual(1)
   })
+
+  it('should display an error if too many options were selected', () => {
+    const params = { error: 'toomany' }
+    const wrapper = shallow(<CommunityCreationSpecialties params={params} />)
+    expect(wrapper.find('.error').length).toEqual(1)
+  })
 })

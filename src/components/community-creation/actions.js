@@ -20,3 +20,10 @@ export function setCenter (lat, lon) {
     payload: { lat, lon }
   }
 }
+
+export function setSpecialties (payload) {
+  return {
+    type: types.CC_SET_SPECIALTIES,
+    payload
+  }
+}

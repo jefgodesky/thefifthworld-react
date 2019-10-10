@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import { load, setCenter, setStep } from './actions'
+import {load, setCenter, setSpecialties, setStep} from './actions'
 import CommunityCreation from './reducers'
 
 describe('CommunityCreation', () => {
@@ -9,6 +9,7 @@ describe('CommunityCreation', () => {
     expect(actual).toEqual({
       step: 0,
       territory: {},
+      traditions: {},
       chronicle: [],
       people: []
     })
@@ -24,6 +25,7 @@ describe('CommunityCreation', () => {
     expect(actual).toEqual({
       step: 1,
       territory: {},
+      traditions: {},
       chronicle: [],
       people: []
     })
@@ -35,6 +37,20 @@ describe('CommunityCreation', () => {
       step: 0,
       territory: {
         center: [ 40.441810, -80.012770 ]
+      },
+      traditions: {},
+      chronicle: [],
+      people: []
+    })
+  })
+
+  it('should set specialties', () => {
+    const actual = CommunityCreation(undefined, setSpecialties([ 'Apples', 'Bananas', 'Carrots' ]))
+    expect(actual).toEqual({
+      step: 0,
+      territory: {},
+      traditions: {
+        specialties: [ 'Apples', 'Bananas', 'Carrots' ]
       },
       chronicle: [],
       people: []

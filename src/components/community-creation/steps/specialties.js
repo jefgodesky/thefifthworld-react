@@ -21,7 +21,7 @@ export class CommunityCreationSpecialties extends React.Component {
         const slug = slugify(option)
         return (
           <li key={slug}>
-            <input type='checkbox' id={`specialty-${slug}`} name='specialty' />
+            <input type='checkbox' id={`specialty-${slug}`} name='specialty' value={option} />
             <label htmlFor={`specialty-${slug}`}>
               {option}
             </label>

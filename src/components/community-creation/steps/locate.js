@@ -46,15 +46,18 @@ export class CommunityCreationLocate extends React.Component {
     if (lat !== undefined && lon !== undefined) {
       this.setState({ loading: 0 })
       try {
-        await axios.post('/create-community/1', { lat, lon })
-      } catch (err) {
-        const url = get(err, 'response.request.responseURL')
+        const res = await axios.post('/create-community', { lat, lon })
+        const url = get(res, 'request.responseURL')
         const match = url ? url.match(/^.*?\/create-community\/\d*$/gm) : null
+        console.log({ res, url, match })
         if (isPopulatedArray(match)) {
+          console.log(`Navigate to ${url}`)
           window.location.href = url
         } else {
           this.setState({ loading: undefined })
         }
+      } catch (err) {
+        console.error(err)
       }
     }
   }
@@ -128,7 +131,7 @@ export class CommunityCreationLocate extends React.Component {
       <React.Fragment>
         <h2>Where does your community dwell?</h2>
         <p>Provide latitude and longitude for a place near the center of your community&rsquo;s territory. Normally, wherever you find yourself right now would make for an excellent place to start.</p>
-        <form action='/create-community/1' method='POST'>
+        <form action='/create-community' method='POST'>
           <label htmlFor='lat' className={latErrorClass}>Latitude</label>
           <input
             type='text'

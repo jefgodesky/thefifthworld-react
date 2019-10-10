@@ -10,10 +10,15 @@ import {
   drawCircle
 } from '../../shared/utils.geo'
 
-const CommunityCreationRouter = express.Router()
+/**
+ * Saves a new community with the center of its territory specified.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves with the community saved
+ *   to the database and a redirect issued to the next page.
+ */
 
-// POST /create-community/1
-CommunityCreationRouter.post('/1', async (req, res) => {
+const saveCenter = async (req, res) => {
   const lat = convertLat(req.body.lat)
   const lon = convertLon(req.body.lon)
   const errorLat = !lat
@@ -38,7 +43,7 @@ CommunityCreationRouter.post('/1', async (req, res) => {
 
     // Save data
     const data = {
-      step: 2,
+      step: 'specialize',
       territory: {
         center: [ lat, lon ],
         coastal
@@ -48,6 +53,41 @@ CommunityCreationRouter.post('/1', async (req, res) => {
     }
     const community = await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(data))});`)
     res.redirect(`/create-community/${community.insertId}`)
+  }
+}
+
+/**
+ * Save a community's specialties to the database.
+ * @param community {Object} - The community data object, containing everything
+ *   decided about it to this point.
+ * @param id {number} - The ID number for the community record in the database.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves with the community saved
+ *   to the database and a redirect issued to the next page.
+ */
+
+const saveSpecialties = async (community, id, req, res) => {
+  res.redirect(`/create-community/${id}`)
+}
+
+const CommunityCreationRouter = express.Router()
+
+// POST /create-community
+CommunityCreationRouter.post('/', async (req, res) => {
+  const id = req.body.community
+  const r = await db.run(`SELECT data FROM communities WHERE id=${SQLEscape(id)}`)
+  if (r && r.length > 0 && r[0] && r[0].data) {
+    const community = r[0].data
+    switch (community.step) {
+      case 'specialize':
+        await saveSpecialties(community, id, req, res)
+        break
+      default:
+        res.redirect(`/create-community/${id}`)
+    }
+  } else {
+    await saveCenter(req, res)
   }
 })
 

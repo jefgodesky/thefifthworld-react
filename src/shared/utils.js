@@ -128,6 +128,20 @@ const requestLocation = opts => {
   })
 }
 
+/**
+ * Sort an array of strings into alphabetical order.
+ * @param arr {[string]} - An array of strings.
+ * @returns {*} - The array sorted into alphabetical order.
+ */
+
+const alphabetize = arr => {
+  return arr.sort((a, b) => {
+    if (a < b) return -1
+    if (b < a) return 1
+    return 0
+  })
+}
+
 export {
   checkExists,
   isPopulatedArray,
@@ -136,5 +150,6 @@ export {
   dedupe,
   getFileSizeStr,
   clone,
-  requestLocation
+  requestLocation,
+  alphabetize
 }

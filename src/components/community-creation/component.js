@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { escape as SQLEscape } from 'sqlstring'
 
 import * as actions from './actions'
+import specialties from './data/specialties'
 
 import Header from '../header/component'
 import Footer from '../footer/component'
@@ -14,7 +15,9 @@ import Messages from '../messages/component'
 
 import CommunityCreationIntro from './steps/intro'
 import CommunityCreationLocate from './steps/locate'
+import CommunityCreationSpecialties from './steps/specialties'
 
+import { alphabetize } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
 
 /**
@@ -71,7 +74,7 @@ export class CommunityCreation extends React.Component {
    */
 
   render () {
-    const { dispatch, location, loggedInMember } = this.props
+    const { dispatch, location, loggedInMember, territory } = this.props
     const { js } = this.state
 
     let body = null
@@ -79,8 +82,18 @@ export class CommunityCreation extends React.Component {
     const step = params.step ? parseInt(params.step) : this.props.step
 
     switch (step) {
-      case 1: body = (<CommunityCreationLocate js={js} params={params} />); break
-      default: body = (<CommunityCreationIntro dispatch={dispatch} js={js} />); break
+      case 1:
+        body = (<CommunityCreationLocate js={js} params={params} />)
+        break
+      case 2:
+        const arr = territory.coastal
+          ? alphabetize([ ...specialties.base, ...specialties.coastal ])
+          : alphabetize(specialties.base)
+        body = (<CommunityCreationSpecialties options={arr} />)
+        break
+      default:
+        body = (<CommunityCreationIntro dispatch={dispatch} js={js} />)
+        break
     }
 
     return (
@@ -108,7 +121,8 @@ const mapStateToProps = state => {
   const { CommunityCreation } = state
   return {
     loggedInMember: state.MemberLogin,
-    step: CommunityCreation.step
+    step: CommunityCreation.step,
+    territory: CommunityCreation.territory
   }
 }
 
@@ -116,7 +130,8 @@ CommunityCreation.propTypes = {
   dispatch: PropTypes.func,
   location: PropTypes.object,
   loggedInMember: PropTypes.object,
-  step: PropTypes.number
+  step: PropTypes.number,
+  territory: PropTypes.object
 }
 
 export default connect(mapStateToProps)(CommunityCreation)

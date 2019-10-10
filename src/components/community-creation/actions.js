@@ -7,13 +7,6 @@ export function load (payload) {
   }
 }
 
-export function setStep (payload) {
-  return {
-    type: types.CC_SET_STEP,
-    payload
-  }
-}
-
 export function setCenter (lat, lon) {
   return {
     type: types.CC_SET_CENTER,

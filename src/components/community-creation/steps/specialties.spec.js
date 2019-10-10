@@ -10,7 +10,7 @@ configure({ adapter: new Adapter() })
 describe('CommunityCreationSpecialties', () => {
   it('should render the page', () => {
     const wrapper = shallow(<CommunityCreationSpecialties />)
-    expect(wrapper.find('p').length).toEqual(1)
+    expect(wrapper.find('h2').length).toEqual(1)
   })
 
   it('should display the options provided', () => {

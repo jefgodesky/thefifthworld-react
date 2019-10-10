@@ -39,19 +39,27 @@ export class CommunityCreationSpecialties extends React.Component {
    */
 
   render () {
+    const { id } = this.props
     return (
       <React.Fragment>
         <h2>What does your community eat?</h2>
         <p>Nearly every community in the Fifth World hunts, gathers, and cultivates to one degree or another an enormous variety of plants, animals, and fungi for food, but they still have their favorites. <a href='/honey'>Honey</a> tops the list for almost everyone, and nearly goes without saying. What else does your family specialize in? You have a reputation when it comes to these food sources as local experts in how to hunt, gather, cultivate, or prepare them. Your neighbors come to you, often offering to trade their specialties for yours. Pick four.</p>
-        <ul className='options very-short'>
-          {this.renderOptions()}
-        </ul>
+        <form action='/create-community' method='POST'>
+          <input type='hidden' name='community' value={id} />
+          <ul className='options very-short'>
+            {this.renderOptions()}
+          </ul>
+          <p className='actions'>
+            <button>Next</button>
+          </p>
+        </form>
       </React.Fragment>
     )
   }
 }
 
 CommunityCreationSpecialties.propTypes = {
+  id: PropTypes.string,
   options: PropTypes.array
 }
 

@@ -17,7 +17,7 @@ import CommunityCreationIntro from './steps/intro'
 import CommunityCreationLocate from './steps/locate'
 import CommunityCreationSpecialties from './steps/specialties'
 
-import { alphabetize } from '../../shared/utils'
+import { alphabetize, get } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
 
 /**
@@ -69,33 +69,38 @@ export class CommunityCreation extends React.Component {
   }
 
   /**
+   * Render the appropriate step in the wizard, based on what we need to figure
+   * out next.
+   * @returns {*} - JSX for the body of the next step.
+   */
+
+  renderStep () {
+    const { location, match, territory, traditions } = this.props
+    const { js } = this.state
+    const id = get(match, 'params.id')
+    const params = location && location.search ? parseParams(location.search) : {}
+
+    if (!id && !params.begin) {
+      return (<CommunityCreationIntro js={js} />)
+    } else if (!territory || !territory.center) {
+      return (<CommunityCreationLocate js={js} params={params} />)
+    } else if (!traditions || !traditions.specialties) {
+      const arr = territory && territory.coastal
+        ? alphabetize([ ...specialties.base, ...specialties.coastal ])
+        : alphabetize(specialties.base)
+      return (<CommunityCreationSpecialties options={arr} id={id} />)
+    } else {
+      return (<CommunityCreationIntro js={js} />)
+    }
+  }
+
+  /**
    * The render function
    * @returns {string} - The rendered output.
    */
 
   render () {
-    const { dispatch, location, loggedInMember, territory } = this.props
-    const { js } = this.state
-
-    let body = null
-    const params = location && location.search ? parseParams(location.search) : {}
-    const step = params.step ? parseInt(params.step) : this.props.step
-
-    switch (step) {
-      case 1:
-        body = (<CommunityCreationLocate js={js} params={params} />)
-        break
-      case 2:
-        const arr = territory.coastal
-          ? alphabetize([ ...specialties.base, ...specialties.coastal ])
-          : alphabetize(specialties.base)
-        body = (<CommunityCreationSpecialties options={arr} />)
-        break
-      default:
-        body = (<CommunityCreationIntro dispatch={dispatch} js={js} />)
-        break
-    }
-
+    const { loggedInMember } = this.props
     return (
       <React.Fragment>
         <Header
@@ -103,7 +108,7 @@ export class CommunityCreation extends React.Component {
           title='Create a community' />
         <main className='community-creation'>
           <Messages />
-          {body}
+          {this.renderStep()}
         </main>
         <Footer />
       </React.Fragment>
@@ -121,17 +126,17 @@ const mapStateToProps = state => {
   const { CommunityCreation } = state
   return {
     loggedInMember: state.MemberLogin,
-    step: CommunityCreation.step,
-    territory: CommunityCreation.territory
+    territory: CommunityCreation.territory,
+    traditions: CommunityCreation.traditions
   }
 }
 
 CommunityCreation.propTypes = {
-  dispatch: PropTypes.func,
   location: PropTypes.object,
   loggedInMember: PropTypes.object,
-  step: PropTypes.number,
-  territory: PropTypes.object
+  match: PropTypes.object,
+  territory: PropTypes.object,
+  traditions: PropTypes.object
 }
 
 export default connect(mapStateToProps)(CommunityCreation)

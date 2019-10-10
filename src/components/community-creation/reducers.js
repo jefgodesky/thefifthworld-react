@@ -3,7 +3,6 @@ import { clone } from '../../shared/utils'
 import { convertCoords } from '../../shared/utils.geo'
 
 const init = {
-  step: 0,
   territory: {},
   traditions: {},
   chronicle: [],
@@ -26,9 +25,6 @@ export default function CommunityCreation (state = init, action = {}) {
   switch (type) {
     case types.CC_LOAD:
       newState = payload
-      break
-    case types.CC_SET_STEP:
-      newState.step = payload
       break
     case types.CC_SET_CENTER:
       coords = convertCoords(payload)

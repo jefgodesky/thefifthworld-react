@@ -116,3 +116,37 @@ textarea {
     width: 1em;
   }
 }
+
+.options {
+  @extend %unformatted-list;
+
+  li {
+    margin-top: ms(-2);
+  }
+
+  input {
+    margin-right: ms(-1);
+    vertical-align: middle;
+  }
+
+  label {
+    display: inline;
+    font-weight: normal;
+  }
+
+  @media (min-width: 60em) {
+    &.very-short {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 80em) {
+    &.short {
+      columns: 2;
+    }
+
+    &.very-short {
+      columns: 3;
+    }
+  }
+}

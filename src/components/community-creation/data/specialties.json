@@ -1,0 +1,47 @@
+{
+  "base": [
+    "Bananas",
+    "Berries",
+    "Cassava",
+    "Chickens",
+    "Chili peppers",
+    "Cocoa",
+    "Coconuts",
+    "Coffee",
+    "Cows",
+    "Deer",
+    "Fruits",
+    "Garlic",
+    "Ginger",
+    "Lemongrass",
+    "Lizards",
+    "Monkeys",
+    "Nuts",
+    "Onion",
+    "Pigs",
+    "Potatoes",
+    "Sheep",
+    "Sweet potatoes",
+    "Three Sisters",
+    "Tomatoes",
+    "Vanilla"
+
+  ],
+  "coastal": [
+    "Squid",
+    "Cuttlefish",
+    "Octopi",
+    "Jellyfish",
+    "Sharks"
+  ],
+  "horticulture": [
+    "Bananas",
+    "Cassava",
+    "Cows",
+    "Pigs",
+    "Potatoes",
+    "Sheep",
+    "Sweet potatoes",
+    "Three Sisters"
+  ]
+}

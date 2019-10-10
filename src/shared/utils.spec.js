@@ -7,7 +7,8 @@ import {
   formatDate,
   dedupe,
   getFileSizeStr,
-  clone
+  clone,
+  alphabetize
 } from './utils'
 
 describe('checkExists', () => {
@@ -127,5 +128,12 @@ describe('clone', () => {
     ]
     const c = clone(arr)
     expect(c).toEqual(arr)
+  })
+})
+
+describe('alphabetize', () => {
+  it('can alphabetize an array of strings', () => {
+    const actual = alphabetize([ 'banana', 'apple', 'carrot' ])
+    expect(actual).toEqual([ 'apple', 'banana', 'carrot' ])
   })
 })

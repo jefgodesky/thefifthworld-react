@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import slugify from '../../../shared/slugify'
-import { isPopulatedArray } from '../../../shared/utils'
+import { get, isPopulatedArray } from '../../../shared/utils'
 
 /**
  * This component handles the part in community creation where you select which
@@ -9,14 +9,44 @@ import { isPopulatedArray } from '../../../shared/utils'
  */
 
 export class CommunityCreationSpecialties extends React.Component {
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      specialties: []
+    }
+
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  /**
+   * Called when the component mounts.
+   */
+
+  componentDidMount () {
+    const specialties = get(this.props, 'params.specialties')
+    if (specialties) this.setState({ specialties })
+  }
+
+  /**
+   * Handles the change event on checkboxes to ensure that only the last four
+   * are checked.
+   * @param event {Object} - The change event.
+   */
+
+  handleChange (event) {
+    const specialties = [ ...this.state.specialties, event.target.value ].slice(-4)
+    this.setState({ specialties })
+  }
+
   /**
    * Renders JSX for options to present.
    * @returns {null|*} - JSX for options to present.
    */
 
   renderOptions () {
-    const { options, params } = this.props
-    const checked = params && params.specialties ? params.specialties : []
+    const { options } = this.props
+    const { specialties } = this.state
     if (isPopulatedArray(options)) {
       return options.map(option => {
         const slug = slugify(option)
@@ -27,7 +57,8 @@ export class CommunityCreationSpecialties extends React.Component {
               id={`specialty-${slug}`}
               name='specialty'
               value={option}
-              defaultChecked={checked.indexOf(option) > -1} />
+              checked={specialties.indexOf(option) > -1}
+              onChange={this.handleChange} />
             <label htmlFor={`specialty-${slug}`}>
               {option}
             </label>

@@ -89,6 +89,10 @@ export class CommunityCreation extends React.Component {
       const arr = territory && territory.coastal
         ? alphabetize([ ...specialties.base, ...specialties.coastal ])
         : alphabetize(specialties.base)
+      if (params.specialties) {
+        params.specialties = params.specialties.split(';')
+        params.specialties = params.specialties.map(s => decodeURIComponent(s))
+      }
       return (<CommunityCreationSpecialties options={arr} params={params} id={id} />)
     } else {
       return (<CommunityCreationIntro js={js} />)

@@ -16,9 +16,11 @@ export default class CommunityCreationSpecialtiesQuestions extends React.Compone
   render () {
     const { id, specialty } = this.props
     const question = data.questions[specialty] || ''
-    const prompt = data.collective.indexOf(specialty) < 0
-      ? `have ${specialty.toLowerCase()}`
-      : `has ${specialty.toLowerCase()}`
+    const prompt = specialty === 'Three Sisters'
+      ? 'have the Three Sisters'
+      : data.collective.indexOf(specialty) < 0
+        ? `have ${specialty.toLowerCase()}`
+        : `has ${specialty.toLowerCase()}`
 
     return (
       <React.Fragment>

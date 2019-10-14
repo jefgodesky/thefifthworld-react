@@ -1,5 +1,6 @@
 import express from 'express'
 import { escape as SQLEscape } from 'sqlstring'
+import { clone } from '../../shared/utils'
 import intersect from '@turf/intersect'
 import db from '../db'
 
@@ -11,6 +12,19 @@ import {
   loadCoastlines,
   drawCircle
 } from '../../shared/utils.geo'
+
+/**
+ * Update community data in the database.
+ * @param data {Object} - An object with the current state of the community
+ *   data.
+ * @param id {number} - The primary key for the community to update.
+ * @returns {Promise<unknown>} - A Promise that resolves when the database has
+ *   been updated.
+ */
+
+const update = async (data, id) => {
+  return db.run(`UPDATE communities SET data=${SQLEscape(JSON.stringify(data))} WHERE id=${SQLEscape(id)};`)
+}
 
 /**
  * Saves a new community with the center of its territory specified.
@@ -78,8 +92,8 @@ const saveSpecialties = async (community, id, req, res) => {
       for (let i = 0; i < specialties.length; i++) {
         if (specialtyData.village.indexOf(specialties[i]) > -1) village = true
       }
-      community.traditions = { village, specialties }
-      await db.run(`UPDATE communities SET data=${SQLEscape(JSON.stringify(community))} WHERE id=${SQLEscape(id)};`)
+      community.traditions = { village, specialties, answers: {} }
+      await update(community, id)
       res.redirect(`/create-community/${id}`)
     } else {
       res.redirect(`/create-community/${id}?error=toomany&specialties=${encodeURIComponent(specialties.join(';'))}`)
@@ -87,6 +101,30 @@ const saveSpecialties = async (community, id, req, res) => {
   } else {
     res.redirect(`/create-community/${id}`)
   }
+}
+
+/**
+ * Save a response to a prompt concerning a specialty.
+ * @param community {Object} - An object containing the current data for the
+ *   community being created.
+ * @param id {number} - THe primary key of the commmunity record in the
+ *   database.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the database has
+ *   been updated and the user has been redirected to the next step.
+ */
+
+const saveSpecialtyAnswer = async (community, id, req, res) => {
+  const { specialty, response } = req.body
+  let { specialties, answers } = community.traditions
+  answers[specialty] = response
+  if (specialties.length === Object.keys(answers).length) {
+    community.traditions.specialties = clone(answers)
+    delete community.traditions.answers
+  }
+  await update(community, id)
+  res.redirect(`/create-community/${id}`)
 }
 
 const CommunityCreationRouter = express.Router()
@@ -99,6 +137,8 @@ CommunityCreationRouter.post('/', async (req, res) => {
     const community = JSON.parse(r[0].data)
     if (!community.traditions || !community.traditions.specialties) {
       await saveSpecialties(community, id, req, res)
+    } else if (req.body.specialty) {
+      await saveSpecialtyAnswer(community, id, req, res)
     }
   } else {
     await saveCenter(req, res)

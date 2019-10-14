@@ -39,6 +39,6 @@ export default class CommunityCreationSpecialtiesQuestions extends React.Compone
 }
 
 CommunityCreationSpecialtiesQuestions.propTypes = {
-  id: PropTypes.number,
+  id: PropTypes.string,
   specialty: PropTypes.string
 }

@@ -11,7 +11,7 @@ import Map from '../../map/component'
  * the community's territory lies.
  */
 
-export class CommunityCreationLocate extends React.Component {
+export default class CommunityCreationLocate extends React.Component {
   constructor (props) {
     super(props)
 
@@ -168,5 +168,3 @@ CommunityCreationLocate.propTypes = {
   params: PropTypes.object,
   js: PropTypes.bool
 }
-
-export default CommunityCreationLocate

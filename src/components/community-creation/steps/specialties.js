@@ -8,7 +8,7 @@ import { get, isPopulatedArray } from '../../../shared/utils'
  * food sources your communities focuses on.
  */
 
-export class CommunityCreationSpecialties extends React.Component {
+export default class CommunityCreationSpecialties extends React.Component {
   constructor (props) {
     super(props)
 
@@ -105,5 +105,3 @@ CommunityCreationSpecialties.propTypes = {
   options: PropTypes.array,
   params: PropTypes.object
 }
-
-export default CommunityCreationSpecialties

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
  * This component handles the community creation introduction.
  */
 
-export class CommunityCreationIntro extends React.Component {
+export default class CommunityCreationIntro extends React.Component {
   /**
    * The render function
    * @returns {string} - The rendered output.
@@ -33,5 +33,3 @@ export class CommunityCreationIntro extends React.Component {
 CommunityCreationIntro.propTypes = {
   js: PropTypes.bool
 }
-
-export default CommunityCreationIntro

@@ -50,6 +50,14 @@
       "Pigs"
     ]
   },
+  "collective": [
+    "Cassava",
+    "Cocoa",
+    "Coffee",
+    "Lemongrass",
+    "Taro",
+    "Vanilla"
+  ],
   "questions": {
     "Bananas": "Bananas require rich, fertile soil, so you must practice slash-and-burn techniques to get the nutrients out of the trees and into the soil. This requires a delicate dance of shifting gardens and village sites, or you&rsquo;ll risk depleting the land faster than it can regenerate. What does your community do to ensure that doesn&rsquo;t happen?",
     "Berries": "You can find so many sweet berries in your territory, but others will make you sick, and still others can kill. Your community must have a treasure trove of ethnobotanical knowledge encoded in its oral tradition. How do your stories help you encode and organize all of that knowledge?",

@@ -16,6 +16,7 @@ import Messages from '../messages/component'
 import CommunityCreationIntro from './steps/intro'
 import CommunityCreationLocate from './steps/locate'
 import CommunityCreationSpecialties from './steps/specialties'
+import CommunityCreationSpecialtiesQuestions from './steps/specialties-questions'
 
 import { alphabetize, get } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
@@ -86,13 +87,17 @@ export class CommunityCreation extends React.Component {
       return (<CommunityCreationLocate js={js} params={params} />)
     } else if (!traditions || !traditions.specialties) {
       const arr = territory && territory.coastal
-        ? alphabetize([ ...specialties.base, ...specialties.coastal ])
+        ? alphabetize([...specialties.base, ...specialties.coastal])
         : alphabetize(specialties.base)
       if (params.specialties) {
         params.specialties = params.specialties.split(';')
         params.specialties = params.specialties.map(s => decodeURIComponent(s))
       }
       return (<CommunityCreationSpecialties options={arr} params={params} id={id} />)
+    } else if (traditions && traditions.specialties && Array.isArray(traditions.specialties)) {
+      const answered = traditions.answers ? Object.keys(traditions.answers) : []
+      const questions = traditions.specialties.filter(s => answered.indexOf(s) < 0)
+      return (<CommunityCreationSpecialtiesQuestions specialty={questions[0]} id={id} />)
     } else {
       return (<CommunityCreationIntro js={js} />)
     }

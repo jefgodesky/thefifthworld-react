@@ -2,6 +2,7 @@ import express from 'express'
 import { escape as SQLEscape } from 'sqlstring'
 import { clone } from '../../shared/utils'
 import intersect from '@turf/intersect'
+import distance from '@turf/distance'
 import db from '../db'
 
 import specialtyData from '../../data/specialties'
@@ -12,6 +13,18 @@ import {
   loadCoastlines,
   drawCircle
 } from '../../shared/utils.geo'
+
+/**
+ * Transforms the key/value pairs of an object into suitable GET parameters.
+ * @param body {Object} - An object with key/value pairs.
+ * @returns {string} - A string suitable for use as GET parameters.
+ */
+
+const returnBody = body => {
+  const keys = Object.keys(body)
+  const pairs = keys.map(key => `${key}=${encodeURIComponent(body[key])}`)
+  return pairs.join('&')
+}
 
 /**
  * Update community data in the database.
@@ -46,7 +59,7 @@ const requiresCoords = (req, res, base) => {
   const errorLon = !lon
   if (errorLat || errorLon) {
     const error = errorLat && errorLon ? 'both' : errorLat ? 'lat' : 'lon'
-    res.redirect(`${base}error=${error}&lat=${encodeURIComponent(req.body.lat)}&lon=${encodeURIComponent(req.body.lon)}`)
+    res.redirect(`${base}error=${error}&${returnBody(req.body)}`)
   } else {
     return { lat, lon }
   }
@@ -147,7 +160,7 @@ const saveSpecialties = async (community, id, req, res) => {
  * Save a response to a prompt concerning a specialty.
  * @param community {Object} - An object containing the current data for the
  *   community being created.
- * @param id {number} - THe primary key of the commmunity record in the
+ * @param id {number} - THe primary key of the community record in the
  *   database.
  * @param req {Object} - The Express request object.
  * @param res {Object} - The Express response object.
@@ -167,11 +180,44 @@ const saveSpecialtyAnswer = async (community, id, req, res) => {
   res.redirect(`/create-community/${id}`)
 }
 
+/**
+ * Save a response to a prompt to name a place in your territory.
+ * @param community {Object} - An object containing the current data for the
+ *   community being created.
+ * @param id {number} - THe primary key of the community record in the
+ *   database.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the database has
+ *   been updated and the user has been redirected to the next step.
+ */
+
 const savePlace = async (community, id, req, res) => {
-  const coords = requiresCoords(req, res, `/create-community/${id}?name=${encodeURIComponent(req.body.name)}&`)
+  const coords = requiresCoords(req, res, `/create-community/${id}?`)
   if (coords) {
-    console.log(coords)
-    res.redirect(`/create-community/${id}`)
+    const center = clone(community.territory.center)
+    const place = [ coords.lon, coords.lat ]
+    const d = distance(center.reverse(), place)
+    const limit = req.body.card === 'C10' ? 225 : community.traditions.village ? 6.25 : 12.5
+    if (d > limit) {
+      res.redirect(`/create-community/${id}?error=toofar&${returnBody(req.body)}`)
+    } else {
+      const { card, name, intro } = req.body
+      if (!name || name.length <= 0) {
+        res.redirect(`/create-community/${id}?error=noname&${returnBody(req.body)}`)
+      } else if (!intro || intro.length <= 0) {
+        res.redirect(`/create-community/${id}?error=nointro&${returnBody(req.body)}`)
+      } else {
+        community.territory.places[card] = {
+          lat: coords.lat,
+          lon: coords.lon,
+          name,
+          intro
+        }
+        await update(community, id)
+        res.redirect(`/create-community/${id}`)
+      }
+    }
   }
 }
 

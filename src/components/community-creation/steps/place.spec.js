@@ -68,4 +68,22 @@ describe('CommunityCreationPlace', () => {
     const wrapper = shallow(<CommunityCreationPlace card={card} params={{ error: 'lon' }} />)
     expect(wrapper.find('#lon + p.error').length).toEqual(1)
   })
+
+  it('should indicate that a point is too far away when told to', () => {
+    const card = places.filter(p => p.card === 'C10').shift()
+    const wrapper = shallow(<CommunityCreationPlace card={card} params={{ error: 'toofar' }} />)
+    expect(wrapper.find('label.error').length).toEqual(2)
+  })
+
+  it('should show an error when you haven\'t provided a name', () => {
+    const card = places.filter(p => p.card === 'C10').shift()
+    const wrapper = shallow(<CommunityCreationPlace card={card} params={{ error: 'noname' }} />)
+    expect(wrapper.find('input[name="name"].error').length).toEqual(1)
+  })
+
+  it('should show an error when you haven\'t provided an answer', () => {
+    const card = places.filter(p => p.card === 'C10').shift()
+    const wrapper = shallow(<CommunityCreationPlace card={card} params={{ error: 'nointro' }} />)
+    expect(wrapper.find('textarea.error').length).toEqual(1)
+  })
 })

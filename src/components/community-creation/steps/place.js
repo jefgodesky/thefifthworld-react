@@ -145,30 +145,51 @@ export default class CommunityCreationPlace extends React.Component {
    */
 
   renderManual () {
-    const { card, id, params } = this.props
-    const { error, lat, lon, name } = params
+    const { card, id, isVillage, params } = this.props
+    const { error, lat, lon, name, intro } = params
 
     let latVal = lat ? decodeURIComponent(lat) : ''
-    const latError = error && [ 'both', 'lat' ].indexOf(error) > -1
+    const latError = error && [ 'toofar', 'both', 'lat' ].indexOf(error) > -1
     const latErrorClass = latError ? 'error' : null
-    const latErrorText = latError
+    const latErrorText = latError && error !== 'toofar'
       ? (<p className='error'>Sorry, we couldn&rsquo;t parse that as a latitude. You can enter it in a decimal format (like <em>19.692293</em>), or using degrees, minutes, and seconds (like <em>19&deg;41'32.3"N</em>.</p>)
       : null
 
     let lonVal = lon ? decodeURIComponent(lon) : ''
-    const lonError = error && [ 'both', 'lon' ].indexOf(error) > -1
+    const lonError = error && [ 'toofar', 'both', 'lon' ].indexOf(error) > -1
     const lonErrorClass = lonError ? 'error' : null
-    const lonErrorText = lonError
+    const lonErrorText = lonError && error !== 'toofar'
       ? (<p className='error'>Sorry, we couldn&rsquo;t parse that as a longitude. You can enter it in a decimal format (like <em>-98.843654</em>), or using degrees, minutes, and seconds (like <em>98&deg;50'37.2"W</em>.</p>)
       : null
 
     let nameVal = name ? decodeURIComponent(name) : ''
+    const nameError = error && error === 'noname'
+    const nameErrorClass = nameError ? 'error' : null
+    const nameErrorText = nameError
+      ? (<p className='error'>What do they call it?</p>)
+      : null
+
+    let introVal = intro ? decodeURIComponent(intro) : ''
+    const introError = error && error === 'nointro'
+    const introErrorClass = introError ? 'error' : null
+    const introErrorText = introError
+      ? (<p className='error'>Answer the prompt above.</p>)
+      : null
+
+    const tooFarError = error && error === 'toofar'
+      ? card && card.card && card.card === 'C10'
+        ? (<p className='error'>Your axis mundi might not lie within your community&rsquo;s territory, but if it lies too far away then something closer will become the center of your world. Pick a place within 225 kilometers (less than 140 miles) from the center of your territory. It would take someone in the Fifth World about five days to make such a journey, or ten days to go there and then come home.</p>)
+        : isVillage
+          ? (<p className='error'>Your community claims a territory of about 78 square kilometers or 30 square miles. Pick a place not much more than 5 kilometers (about 3 miles) from the center of your territory.</p>)
+          : (<p className='error'>Your community claims a territory of about 315 square kilometers or 90 square miles. Pick a place not much more than 10 kilometers (about 6 miles) from the center of your territory.</p>)
+      : null
 
     return (
       <React.Fragment>
         <h2>{this.getLabel()}</h2>
         {this.getDesc()}
         <p>Provide latitude and longitude for this place.</p>
+        {tooFarError}
         <form action='/create-community' method='POST'>
           <input type='hidden' name='community' value={id} />
           <input type='hidden' name='card' value={card.card} />
@@ -190,12 +211,19 @@ export default class CommunityCreationPlace extends React.Component {
           {lonErrorText}
           <br />
           {this.getNameDesc()}
-          <label htmlFor='name'>Name</label>
+          <label htmlFor='name' className={nameErrorClass}>Name</label>
           <input
             type='text'
             name='name'
             id='name'
-            defaultValue={nameVal} />
+            defaultValue={nameVal}
+            className={nameErrorClass} />
+          {nameErrorText}
+          <label dangerouslySetInnerHTML={{ __html: card.intro }} htmlFor='intro' className={introErrorClass} />
+          <textarea id='intro' defaultValue={introVal} name='intro' className={introErrorClass} />
+          <p className='note'>We&rsquo;ll use your answer here to create a wiki page for this place, or add to an existing page if it already has one, so you may want to write it with that in mind. You can use <a href='/markdown'>Markdown</a> here.</p>
+          {introErrorText}
+          <br />
           <button>Next</button>
         </form>
       </React.Fragment>

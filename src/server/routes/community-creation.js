@@ -4,7 +4,7 @@ import { clone } from '../../shared/utils'
 import intersect from '@turf/intersect'
 import db from '../db'
 
-import specialtyData from '../../components/community-creation/data/specialties'
+import specialtyData from '../../data/specialties'
 
 import {
   convertLat,
@@ -93,6 +93,11 @@ const saveSpecialties = async (community, id, req, res) => {
         if (specialtyData.village.indexOf(specialties[i]) > -1) village = true
       }
       community.traditions = { village, specialties, answers: {} }
+      if (village) {
+        community.territory.places = { C10: null, D7: null, H7: null, S7: null }
+      } else {
+        community.territory.places = { C10: null, D5: null, H7: null, S7: null }
+      }
       await update(community, id)
       res.redirect(`/create-community/${id}`)
     } else {

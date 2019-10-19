@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import data from '../data/specialties'
+import data from '../../../data/specialties'
 
 /**
  * This component handles the part in community creation where you answer

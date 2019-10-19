@@ -27,6 +27,62 @@ const update = async (data, id) => {
 }
 
 /**
+ * Tries to extract `lat` and `lon` values from `req.body` and convert them to
+ * latitude and longitude. If this fails (either because the values don't exist
+ * in `req.body`, or they aren't valid latitude or longitude values, or for any
+ * other odd reason), a redirect is issued with error information. Otherwise,
+ * an object is returned with the latitude and longitude as numbers.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @param base {string} - A base URL to use when reporting an error.
+ * @returns {{lon: *, lat: *}} - An object including the latitude (`lat`) and
+ *   longitude (`lon`) values derived as numbers.
+ */
+
+const requiresCoords = (req, res, base) => {
+  const lat = convertLat(req.body.lat)
+  const lon = convertLon(req.body.lon)
+  const errorLat = !lat
+  const errorLon = !lon
+  if (errorLat || errorLon) {
+    const error = errorLat && errorLon ? 'both' : errorLat ? 'lat' : 'lon'
+    res.redirect(`${base}error=${error}&lat=${encodeURIComponent(req.body.lat)}&lon=${encodeURIComponent(req.body.lon)}`)
+  } else {
+    return { lat, lon }
+  }
+}
+
+/**
+ * Returns `true` if the coordinates provided are within 45 kilometers of a
+ * coast (in the Fifth World, with sea levels 65 meters higher) — meaning
+ * that someone could walk from there to the coast in a day — or `false` if
+ * it lies further away than that.
+ * @param coords {Object} - An object with two properties: `lat` (a numerical
+ *   representation of a valid latitude) and `lon` (a numerical representation
+ *   of a valid longitude).
+ * @returns {Promise<boolean>} - A Promise that resolves with `true` or `false`
+ *   depending on whether or not the point provided in `coords` is within 45
+ *   kilometers of a coast (`true`) or not.
+ */
+
+const isCoastal = async coords => {
+  let coastal = false
+  const { lat, lon } = coords
+  const range = drawCircle(lat, lon)
+  const coastlines = await loadCoastlines()
+  while (!coastal && coastlines.length > 0) {
+    const coll = coastlines.shift()
+    if (coll) {
+      while (!coastal && coll.features.length > 0) {
+        const feature = coll.features.shift()
+        if (intersect(range, feature) !== null) coastal = true
+      }
+    }
+  }
+  return coastal
+}
+
+/**
  * Saves a new community with the center of its territory specified.
  * @param req {Object} - The Express request object.
  * @param res {Object} - The Express response object.
@@ -35,33 +91,12 @@ const update = async (data, id) => {
  */
 
 const saveCenter = async (req, res) => {
-  const lat = convertLat(req.body.lat)
-  const lon = convertLon(req.body.lon)
-  const errorLat = !lat
-  const errorLon = !lon
-  if (errorLat || errorLon) {
-    const error = errorLat && errorLon ? 'both' : errorLat ? 'lat' : 'lon'
-    res.redirect(`/create-community?step=1&error=${error}&lat=${encodeURIComponent(req.body.lat)}&lon=${encodeURIComponent(req.body.lon)}`)
-  } else {
-    // Is it coastal?
-    let coastal = false
-    const range = drawCircle(lat, lon)
-    const coastlines = await loadCoastlines()
-    while (!coastal && coastlines.length > 0) {
-      const coll = coastlines.shift()
-      if (coll) {
-        while (!coastal && coll.features.length > 0) {
-          const feature = coll.features.shift()
-          if (intersect(range, feature) !== null) coastal = true
-        }
-      }
-    }
-
-    // Save data
+  const coords = requiresCoords(req, res, '/create-community?step=1&')
+  if (coords) {
     const data = {
       territory: {
-        center: [ lat, lon ],
-        coastal
+        center: [ coords.lat, coords.lon ],
+        coastal: await isCoastal(coords)
       },
       traditions: {},
       chronicle: [],
@@ -132,6 +167,14 @@ const saveSpecialtyAnswer = async (community, id, req, res) => {
   res.redirect(`/create-community/${id}`)
 }
 
+const savePlace = async (community, id, req, res) => {
+  const coords = requiresCoords(req, res, `/create-community/${id}?name=${encodeURIComponent(req.body.name)}&`)
+  if (coords) {
+    console.log(coords)
+    res.redirect(`/create-community/${id}`)
+  }
+}
+
 const CommunityCreationRouter = express.Router()
 
 // POST /create-community
@@ -144,6 +187,8 @@ CommunityCreationRouter.post('/', async (req, res) => {
       await saveSpecialties(community, id, req, res)
     } else if (req.body.specialty) {
       await saveSpecialtyAnswer(community, id, req, res)
+    } else if (req.body.card) {
+      await savePlace(community, id, req, res)
     }
   } else {
     await saveCenter(req, res)

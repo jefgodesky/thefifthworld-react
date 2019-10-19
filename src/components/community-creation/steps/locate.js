@@ -49,9 +49,7 @@ export default class CommunityCreationLocate extends React.Component {
         const res = await axios.post('/create-community', { lat, lon })
         const url = get(res, 'request.responseURL')
         const match = url ? url.match(/^.*?\/create-community\/\d*$/gm) : null
-        console.log({ res, url, match })
         if (isPopulatedArray(match)) {
-          console.log(`Navigate to ${url}`)
           window.location.href = url
         } else {
           this.setState({ loading: undefined })

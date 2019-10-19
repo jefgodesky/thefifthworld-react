@@ -7,7 +7,8 @@ import { connect } from 'react-redux'
 import { escape as SQLEscape } from 'sqlstring'
 
 import * as actions from './actions'
-import specialties from './data/specialties'
+import specialties from '../../data/specialties'
+import places from '../../data/places'
 
 import Header from '../header/component'
 import Footer from '../footer/component'
@@ -17,6 +18,7 @@ import CommunityCreationIntro from './steps/intro'
 import CommunityCreationLocate from './steps/locate'
 import CommunityCreationSpecialties from './steps/specialties'
 import CommunityCreationSpecialtiesQuestions from './steps/specialties-questions'
+import CommunityCreationPlace from './steps/place'
 
 import { alphabetize, get } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
@@ -80,6 +82,9 @@ export class CommunityCreation extends React.Component {
     const { js } = this.state
     const id = get(match, 'params.id')
     const params = location && location.search ? parseParams(location.search) : {}
+    const placesDone = territory && territory.places && Object.keys(territory.places) > 0
+      ? Object.keys(territory.places).filter(k => territory.places[k] !== null).length
+      : 0
 
     if (!id && !params.begin) {
       return (<CommunityCreationIntro js={js} />)
@@ -98,6 +103,14 @@ export class CommunityCreation extends React.Component {
       const answered = traditions.answers ? Object.keys(traditions.answers) : []
       const questions = traditions.specialties.filter(s => answered.indexOf(s) < 0)
       return (<CommunityCreationSpecialtiesQuestions specialty={questions[0]} id={id} />)
+    } else if (territory && territory.places && placesDone < 4) {
+      const { center } = territory
+      const { village } = traditions
+      const unplotted = Object.keys(territory.places).filter(k => territory.places[k] === null)
+      const card = unplotted.length > 0
+        ? places.filter(p => p.card === unplotted[0]).shift()
+        : null
+      return (<CommunityCreationPlace card={card} center={center} id={id} isVillage={village} js={js} params={params} />)
     } else {
       return (<CommunityCreationIntro js={js} />)
     }

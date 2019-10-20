@@ -1,24 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { setStep } from '../actions'
 
 /**
  * This component handles the community creation introduction.
  */
 
-export class CommunityCreationIntro extends React.Component {
+export default class CommunityCreationIntro extends React.Component {
   /**
    * The render function
    * @returns {string} - The rendered output.
    */
 
   render () {
-    const { dispatch } = this.props
+    const button = (<p className='actions'><a href='/create-community?begin' className='button'>Begin</a></p>)
     const advance = this.props.js
-      ? (<p className='actions'><button onClick={() => dispatch(setStep(1))}>Begin</button></p>)
+      ? button
       : (<React.Fragment>
         <p>We highly recommend having JavaScript enabled for this process. You can do it without JavaScript, but you&rsquo;ll have a much harder time. In particular, you&rsquo;ll have to enter some latitude and longitude coordinates throughout, rather than just clicking on a map. If you&rsquo;ve turned JavaScript off, you might want to turn it on for this. If you haven&rsquo;t disabled JavaSCript, something else might have gone wrong to prevent it from working correctly. Try reloading the page &mdash; sometimes that can fix it.</p>
-        <p className='actions'><a href='/create-community?step=1' className='button'>Begin</a></p>
+        {button}
       </React.Fragment>)
 
     return (
@@ -32,8 +31,5 @@ export class CommunityCreationIntro extends React.Component {
 }
 
 CommunityCreationIntro.propTypes = {
-  dispatch: PropTypes.func,
   js: PropTypes.bool
 }
-
-export default CommunityCreationIntro

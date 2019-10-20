@@ -1,0 +1,362 @@
+[
+  {
+    "suit": "Clubs",
+    "value": 2,
+    "card": "C2",
+    "name": "Portal to the Other World",
+    "intro": "To what other world does this place connect?",
+    "unlock": "What does the other world want from you?",
+    "set": "An Otherworldly Place",
+    "prompt": "Make a promise to someone who lives here to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 3,
+    "card": "C3",
+    "name": "The Magician’s Hut",
+    "intro": "What kind of power dwells here?",
+    "unlock": "What debt do you owe?",
+    "set": "An Otherworldly Place",
+    "prompt": "Make a promise to someone who lives here to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 4,
+    "card": "C4",
+    "name": "Place of Restless Spirits",
+    "intro": "What haunts this place?",
+    "unlock": "What torments you?",
+    "set": "An Otherworldly Place",
+    "prompt": "Make a promise to someone who lives here to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 5,
+    "card": "C5",
+    "name": "Abode of the Spirits",
+    "intro": "What manner of spirits make their home here?",
+    "unlock": "What do the spirits want from you?",
+    "set": "An Honored Place",
+    "prompt": "Make an offering to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 6,
+    "card": "C6",
+    "name": "Natural Wonder",
+    "intro": "What makes this place so astonishing?",
+    "unlock": "What do you believe in?",
+    "set": "An Honored Place",
+    "prompt": "Make an offering to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 7,
+    "card": "C7",
+    "name": "Shrine",
+    "intro": "What do you honor at this shrine?",
+    "unlock": "Whom do you serve?",
+    "set": "An Honored Place",
+    "prompt": "Make an offering to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 8,
+    "card": "C8",
+    "name": "Heart of the Wild",
+    "intro": "How did this survive the old world unscathed?",
+    "unlock": "What do you fear in yourself?",
+    "set": "A Sacred Place",
+    "prompt": "Perform a religious ceremony to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 9,
+    "card": "C9",
+    "name": "Consecrated Ground",
+    "intro": "What makes this place sacred?",
+    "unlock": "What do you hold sacred?",
+    "set": "A Sacred Place",
+    "prompt": "Perform a religious ceremony to gather awareness."
+  },
+  {
+    "suit": "Clubs",
+    "value": 10,
+    "card": "C10",
+    "name": "Axis Mundi",
+    "intro": "What marks this as the center of the universe?",
+    "unlock": "What does your life revolve around?",
+    "set": "A Sacred Place",
+    "prompt": "Perform a religious ceremony to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 2,
+    "card": "H2",
+    "name": "Desolation",
+    "intro": "Why does so little grow here?",
+    "unlock": "What do you grieve for?",
+    "set": "A Melancholy Place",
+    "prompt": "Express your sadness to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 3,
+    "card": "H3",
+    "name": "Solitude",
+    "intro": "What makes this place so secluded?",
+    "unlock": "When do you feel alone?",
+    "set": "A Melancholy Place",
+    "prompt": "Express your sadness to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 4,
+    "card": "H4",
+    "name": "Ruin",
+    "intro": "What stood here before it fell into ruin?",
+    "unlock": "What have you lost?",
+    "set": "A Melancholy Place",
+    "prompt": "Express your sadness to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 5,
+    "card": "H5",
+    "name": "Watchtower",
+    "intro": "What here does your family keep vigil over?",
+    "unlock": "What makes you wary?",
+    "set": "An Unquiet Place",
+    "prompt": "Spot an impending danger to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 6,
+    "card": "H6",
+    "name": "An Ominous Place",
+    "intro": "What frightens you about this place?",
+    "unlock": "What do you fear?",
+    "set": "An Unquiet Place",
+    "prompt": "Spot an impending danger to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 7,
+    "card": "H7",
+    "name": "Scout’s Nest",
+    "intro": "Why do your scouts camp here?",
+    "unlock": "What worries you?",
+    "set": "An Unquiet Place",
+    "prompt": "Spot an impending danger to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 8,
+    "card": "H8",
+    "name": "Playground",
+    "intro": "What sort of games do you play here?",
+    "unlock": "What brings you joy?",
+    "set": "A Joyful Place",
+    "prompt": "Express your joy to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 9,
+    "card": "H9",
+    "name": "Overlook",
+    "intro": "What can you see from here?",
+    "unlock": "What fills you with awe?",
+    "set": "A Joyful Place",
+    "prompt": "Express your joy to gather awareness."
+  },
+  {
+    "suit": "Hearts",
+    "value": 10,
+    "card": "H10",
+    "name": "Tryst",
+    "intro": "Whom would you hope to meet here?",
+    "unlock": "Whom do you love?",
+    "set": "A Joyful Place",
+    "prompt": "Express your joy to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 2,
+    "card": "D2",
+    "name": "A Predator’s Territory",
+    "intro": "What predator claims this place?",
+    "unlock": "Do you think of yourself as predator or prey?",
+    "set": "A Dangerous Place",
+    "prompt": "Take a risk to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 3,
+    "card": "D3",
+    "name": "Ambush Site",
+    "intro": "What makes this a good spot for an ambush?",
+    "unlock": "What threatens you?",
+    "set": "A Dangerous Place",
+    "prompt": "Take a risk to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 4,
+    "card": "D4",
+    "name": "Contested Ground",
+    "intro": "What disagreement revolves around this place?",
+    "unlock": "What enemies do you have?",
+    "set": "A Dangerous Place",
+    "prompt": "Take a risk to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 5,
+    "card": "D5",
+    "name": "Hunting Ground",
+    "intro": "What sort of animals do you hunt here?",
+    "unlock": "What nourishes you?",
+    "set": "An Abundant Place",
+    "prompt": "Eat or drink to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 6,
+    "card": "D6",
+    "name": "Watering Hole",
+    "intro": "Where does the water here come from?",
+    "unlock": "What sustains you?",
+    "set": "An Abundant Place",
+    "prompt": "Eat or drink to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 7,
+    "card": "D7",
+    "name": "Garden",
+    "intro": "What sort of plants do you grow here?",
+    "unlock": "What must you protect?",
+    "set": "An Abundant Place",
+    "prompt": "Eat or drink to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 8,
+    "card": "D8",
+    "name": "A Place for Making Tools",
+    "intro": "What sort of tools do you make here?",
+    "unlock": "What help do you need?",
+    "set": "A Creative Place",
+    "prompt": "Create something to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 9,
+    "card": "D9",
+    "name": "A Place for Making Art",
+    "intro": "What sort of art do you make here?",
+    "unlock": "What beauty within you must you express?",
+    "set": "A Creative Place",
+    "prompt": "Create something to gather awareness."
+  },
+  {
+    "suit": "Diamonds",
+    "value": 10,
+    "card": "D10",
+    "name": "A Place for Making Luxuries",
+    "intro": "What sort of luxuries do you make here?",
+    "unlock": "What makes you feel wealthy?",
+    "set": "A Creative Place",
+    "prompt": "Create something to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 2,
+    "card": "S2",
+    "name": "Cave",
+    "intro": "What shaped this cave?",
+    "unlock": "How do you relate to the earth?",
+    "set": "A Mysterious Place",
+    "prompt": "Explore this place to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 3,
+    "card": "S3",
+    "name": "Ancient Mystery",
+    "intro": "What mystery of the old world do you find here?",
+    "unlock": "What do you wish you knew about the past?",
+    "set": "A Mysterious Place",
+    "prompt": "Explore this place to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 4,
+    "card": "S4",
+    "name": "Natural Mystery",
+    "intro": "What do you find here out of the ordinary?",
+    "unlock": "What makes you curious?",
+    "set": "A Mysterious Place",
+    "prompt": "Explore this place to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 5,
+    "card": "S5",
+    "name": "Archive",
+    "intro": "How does this place record your family’s history?",
+    "unlock": "What do you think of your family’s history?",
+    "set": "An Unforgotten Place",
+    "prompt": "Learn something new to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 6,
+    "card": "S6",
+    "name": "Burial Site",
+    "intro": "Who lies buried here?",
+    "unlock": "What does death mean to you?",
+    "set": "An Unforgotten Place",
+    "prompt": "Learn something new to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 7,
+    "card": "S7",
+    "name": "Monument",
+    "intro": "What does this monument commemorate?",
+    "unlock": "How would you like others to remember you?",
+    "set": "An Unforgotten Place",
+    "prompt": "Learn something new to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 8,
+    "card": "S8",
+    "name": "A Secret Meeting Place",
+    "intro": "What secret society convenes here?",
+    "unlock": "How do you relate to this secret society?",
+    "set": "A Storied Place",
+    "prompt": "Hear a story told to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 9,
+    "card": "S9",
+    "name": "Historical Site",
+    "intro": "What happened here?",
+    "unlock": "What does the past mean to you?",
+    "set": "A Storied Place",
+    "prompt": "Hear a story told to gather awareness."
+  },
+  {
+    "suit": "Spades",
+    "value": 10,
+    "card": "S10",
+    "name": "A Gallery",
+    "intro": "What sort of paintings do you find here?",
+    "unlock": "What does this art mean to you?",
+    "set": "A Storied Place",
+    "prompt": "Hear a story told to gather awareness."
+  }
+]

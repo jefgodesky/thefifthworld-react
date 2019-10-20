@@ -1,0 +1,90 @@
+{
+  "base": [
+    "Bananas",
+    "Berries",
+    "Cassava",
+    "Chickens",
+    "Chili peppers",
+    "Cocoa",
+    "Coconuts",
+    "Coffee",
+    "Cows",
+    "Deer",
+    "Fruits",
+    "Goats",
+    "Lemongrass",
+    "Lizards",
+    "Monkeys",
+    "Nuts",
+    "Pigs",
+    "Potatoes",
+    "Sheep",
+    "Sweet potatoes",
+    "Taro",
+    "Three Sisters",
+    "Vanilla"
+  ],
+  "coastal": [
+    "Cuttlefish",
+    "Jellyfish",
+    "Octopi",
+    "Sharks",
+    "Squid"
+  ],
+  "village": {
+    "yes": [
+      "Bananas",
+      "Cassava",
+      "Cuttlefish",
+      "Octopi",
+      "Potatoes",
+      "Squid",
+      "Sweet potatoes",
+      "Taro",
+      "Three Sisters"
+    ],
+    "maybe": [
+      "Chickens",
+      "Goats",
+      "Nuts",
+      "Pigs"
+    ]
+  },
+  "collective": [
+    "Cassava",
+    "Cocoa",
+    "Coffee",
+    "Lemongrass",
+    "Taro",
+    "Vanilla"
+  ],
+  "questions": {
+    "Bananas": "Bananas require rich, fertile soil, so you must practice slash-and-burn techniques to get the nutrients out of the trees and into the soil. This requires a delicate dance of shifting gardens and village sites, or you&rsquo;ll risk depleting the land faster than it can regenerate. What does your community do to ensure that doesn&rsquo;t happen?",
+    "Berries": "You can find so many sweet berries in your territory, but others will make you sick, and still others can kill. Your community must have a treasure trove of ethnobotanical knowledge encoded in its oral tradition. How do your stories help you encode and organize all of that knowledge?",
+    "Cassava": "As soon as you cut the tubers, cassava begins to deteriorate, but you still need to treat it before you can eat it. Usually, this means fermenting it over several days. What traditions has your community developed around this process?",
+    "Chickens": "Chickens have gone feral. You can find them in the forest, but you won&rsquo;t catch them as easily as their domesticated ancestors. Do you hunt chickens or trap them? How?",
+    "Chili peppers": "Do you specialize in bell peppers, sweet peppers, or hot peppers? What do your neighbors say about your particular cultivar? How do peppers fit into your traditions and stories?",
+    "Cocoa": "You probably don&rsquo;t have access to milk, but you can create a wide variety of dark chocolate, or you can use it as the first cocoa growers did: in beverages. Have you developed your reputation by growing a special variety of cocoa beans, or because of the things you make with them?",
+    "Coconuts": "How do you harvest your coconuts? Some communities climb the trees, mastering the art of scaling the tall trees with nothing but their hands and feet. Some communities forge an alliance with the local monkeys, teaching them to harvest the coconuts in exchange for human help in getting to their pulp. Or you might use another method altogether. How do you do it?",
+    "Coffee": "For the perpetually sleep-deprived, few things matter more than coffee. Your community sleeps whenever they want, though, so you don&rsquo;t grow and brew coffee because you need it &mdash; you grow it and brew it because you love it. What does coffee mean to your community?",
+    "Cows": "Feral cows have as much in common with the ancient aurochs as domesticated cows. They live in herds, grow quite large, and exhibit noticeable intelligence. You don&rsquo;t keep them, but you live closely with them. Even if some of your community lives in a village, several of you must live as nomads, following the cows. Who among you lives closest to them? How does someone join that group? What most defines them?",
+    "Cuttlefish": "Cuttlefish love flashing colors like orange, red, purple, and green, and bright, colorful lures provide some of the best means of catching them. How do you produce your lures? How has this influenced other aspects of your community?",
+    "Deer": "Every year, you conduct a controlled burn that clears out the forest understory and creates the sort of open grazing area that deer prefer. Despite your efforts to control it, though, the burn has its risks. In return, the deer allow you to take a certain number of them to sustain you. How does your community understand this relationship? How do you honor the sacrifices that the deer make for you? Do you do anything else to help the deer?",
+    "Fruits": "You gather a wide variety of fruits throughout your territory. Which fruits do you like best? What do you do to ensure their abundance? How do you prepare them? How have they influenced your traditions and beliefs?",
+    "Goats": "Feral goats exhibit incredible curiosity and agility. You can easily find them by looking for the areas where they&rsquo;ve grazed down the underbrush. How does your community understand its relationship with them?",
+    "Jellyfish": "Jellyfish thrive in the warmer, more acidic oceans of the Fifth World. While fascinating and beautiful, their stings cause terrible pain, and can even kill a human being. You can eat some species, though, sometimes by boiling them into a stew, or by pressing and salting them. How does your community catch jellyfish? How do you prepare them?",
+    "Lemongrass": "Many accord religious and magical significance to lemongrass, in particular its power to ward off evil. Perhaps this has something to do with the oil you can press out of it, which seems to keep away mosquitoes and other biting insects. You can also process it into a powder used to season food. How does your community use lemongrass? What stories or beliefs have you developed about it?",
+    "Lizards": "The mass extinctions of previous centuries hit lizards particularly hard. As the world grew warmer, they found it more and more difficult to avoid overheating. While mammals &mdash; including humans &mdash; grew smaller to better dissipate body heat, the increased oxygen in the air allowed lizards to grow larger. Many lizards took this as their answer, to avoid overexertion and overheating by growing large enough to simply overpower their prey. How does your community hunt such fearsome beasts? And how do you ensure that you don&rsquo;t hunt them to extinction?",
+    "Monkeys": "You cannot deny the close family resemblance between monkeys and humans. You maintain the same taboo against cannibalism found in any other community, but every community also defines the precise boundaries and rationale of that taboo in different ways. How does your community delineate what you may eat from what you may not? What puts monkeys on one side of that line and humans on the other?",
+    "Nuts": "What kind of nuts do you gather? Do you process them in any way &mdash; perhaps by salting or blanching them, or by pounding them into a flour? How do you serve and eat them?",
+    "Octopi": "Octopi possess a startling but alien intelligence. Once held back by their short lifespans, their proliferation in the warmer ocean waters and the increased rate of evolution that such short lifespans afford, longer-lived varieties have appeared. You likely know of the octopus cities on the ocean floor. What does your community think of octopi? How do you hunt them? How do you prepare them? Do you do anything with their ink or beaks?",
+    "Pigs": "Feral pigs possess incredible intelligence, enormous size, and terrible strength. Hunting them involves substantial risk. How do you go about hunting them? How is the meat shared out?",
+    "Potatoes": "In ages past, your ancestors&rsquo; love of potatoes made them harder to govern. They could grow their potatoes secretly in the ground and evade exploitation by the collapsing state. Your community still grows a lot of potatoes. How do you assign responsibility for planting and harvesting? How do you distribute the potatoes that you harvest?",
+    "Sharks": "Sharks have hunted the oceans for countless eons. These primordial creatures have evolved into nearly perfect predators. Hunting them involves no small amount of danger. In a simple, violent contest, things would not go well for you. What special kinship do you share with sharks? Why do you kill and eat them? What do you owe them in exchange for their lives?",
+    "Squid": "Squid have become some of the most common creatures to find in the sea, and squidding one of the most common ways to make a living from it. What do you do that gives you such a special reputation among your other coastal neighbors? What do you give back to the squid to ensure a sustainable harvest?",
+    "Sweet potatoes": "In ages past, your ancestors&rsquo; love of sweet potatoes made them harder to govern. They could grow their sweet potatoes secretly in the ground and evade exploitation by the collapsing state. Your community still grows a lot of sweet potatoes. How do you assign responsibility for planting and harvesting? How do you distribute the sweet potatoes that you harvest?",
+    "Taro": "In ages past, your ancestors&rsquo; love of taro made them harder to govern. They could grow their taro secretly in the ground and evade exploitation by the collapsing state. Your community still grows a lot of taro. How do you assign responsibility for planting and harvesting? How do you distribute the taro that you harvest?",
+    "Three Sisters": "Corn, beans, and squash support each other, allowing each to grow better than any would alone. Do you also plant bee balm or sunflowers alongside them? How do you assign responsibility for planting and harvesting? How do you process your crop? How do you distribute it?",
+    "Vanilla": "To produce the vanilla that your community loves, you must pollinate the orchids by hand. Have you developed your reputation by growing a special variety of vanilla pods, or because of the things you make with them?"
+  }
+}

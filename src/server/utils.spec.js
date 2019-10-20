@@ -62,6 +62,11 @@ describe('parseParams', () => {
     const q = '?param=1'
     expect(utils.parseParams(q)).toEqual({ param: '1' })
   })
+
+  it('gets valueless params', () => {
+    const q = '?param'
+    expect(utils.parseParams(q)).toEqual({ param: true })
+  })
 })
 
 afterAll(() => {

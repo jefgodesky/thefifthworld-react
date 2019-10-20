@@ -86,7 +86,11 @@ const parseParams = str => {
   const pairs = p.map(p => p.split('='))
   const obj = {}
   pairs.forEach(pair => {
-    if (pair.length === 2) obj[pair[0]] = pair[1]
+    if (pair.length === 2) {
+      obj[pair[0]] = pair[1]
+    } else if (pair.length === 1) {
+      obj[pair[0]] = true
+    }
   })
   return obj
 }

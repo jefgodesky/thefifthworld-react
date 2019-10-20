@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { isPopulatedArray, requestLocation } from '../../shared/utils'
+import destination from '@turf/destination'
+import { isPopulatedArray, requestLocation, clone } from '../../shared/utils'
 import { loadCoastlines } from '../../shared/utils.geo'
 import config from '../../../config'
 
@@ -12,6 +13,9 @@ export default class Map extends React.Component {
   constructor (props) {
     super(props)
 
+    const { mode } = this.props
+    const showTerritoryModes = [ 'locatePlace' ]
+    const showTerritory = showTerritoryModes.indexOf(mode) > -1
     this.el = React.createRef()
     this.state = {
       base: `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/maps`,
@@ -20,7 +24,8 @@ export default class Map extends React.Component {
       lat: this.props.place ? this.props.place.lat : 0,
       lon: this.props.place ? this.props.place.lon : 0,
       loaded: false,
-      zoom: this.props.place ? 14 : 3
+      showTerritory,
+      zoom: this.props.place || showTerritory ? 14 : 3
     }
 
     this.handleClick = this.handleClick.bind(this)
@@ -33,9 +38,12 @@ export default class Map extends React.Component {
    */
 
   componentDidMount () {
+    const { mode } = this.props
+    const doNotRequestModes = [ 'locatePlace' ]
+
     this.setState({ isClient: true })
     this.loadGeoJSON()
-    this.requestUserLocation()
+    if (doNotRequestModes.indexOf(mode) === -1) this.requestUserLocation()
   }
 
   /**
@@ -106,6 +114,28 @@ export default class Map extends React.Component {
   }
 
   /**
+   * Generate bounds for map based on `center` and `radius` props.
+   * @returns {null|*[]} - Array to be used for bounds if the instance has
+   *   props for `center` and `radius`, or `null` if it doesn't.
+   */
+
+  getBounds () {
+    const { center, radius } = this.props
+    if (center && radius) {
+      const coords = clone(center).reverse()
+      const dist = radius * 1.25
+      const ne = destination(coords, dist, 45)
+      const sw = destination(coords, dist, -135)
+      return [
+        clone(ne.geometry.coordinates).reverse(),
+        clone(sw.geometry.coordinates).reverse()
+      ]
+    } else {
+      return null
+    }
+  }
+
+  /**
    * Event handler for a click on the map.
    * @param event {Object} - The click event.
    */
@@ -162,11 +192,15 @@ export default class Map extends React.Component {
    */
 
   renderTerritory (Circle) {
-    const { mode } = this.props
+    const { center, mode, radius } = this.props
     const { lat, lon, showTerritory } = this.state
-    if ((mode === 'locateCommunity') && showTerritory) {
+    const modes = [ 'locateCommunity', 'locatePlace' ]
+    const r = radius ? radius * 1000 : 4828
+    const c = center || [ lat, lon ]
+
+    if (modes.indexOf(mode) > -1 && showTerritory) {
       return (
-        <Circle center={[ lat, lon ]} fillColor='#b92e52' color='#b92e52' radius={4828} />
+        <Circle center={c} fillColor='#2eb950' fillOpacity={0.3} color='#2eb950' stroke={false} radius={r} />
       )
     } else {
       return null
@@ -179,7 +213,10 @@ export default class Map extends React.Component {
    */
 
   renderMap () {
+    const { center } = this.props
     let { lat, lon, zoom } = this.state
+    const bounds = this.getBounds()
+    const z = bounds ? null : zoom
     const leaflet = require('react-leaflet')
     const LeafletMap = leaflet.Map
     const { TileLayer, GeoJSON, Marker, Popup, Circle } = leaflet
@@ -190,14 +227,16 @@ export default class Map extends React.Component {
     const loading = !this.props.place && !this.state.loaded
       ? (<div className='loading-map'>Melting ice caps&hellip;</div>)
       : null
+    const c = bounds ? null : center || [ lat, lon ]
 
     return (
       <React.Fragment>
         {loading}
         <LeafletMap
           ref={this.el}
-          center={[lat, lon]}
-          zoom={zoom}
+          center={c}
+          bounds={bounds}
+          zoom={z}
           minZoom={3}
           maxZoom={15}
           dragging={!this.props.place}
@@ -231,8 +270,10 @@ export default class Map extends React.Component {
 }
 
 Map.propTypes = {
-  mode: PropTypes.oneOf([ 'locateCommunity' ]),
+  center: PropTypes.array,
+  mode: PropTypes.oneOf([ 'locateCommunity', 'locatePlace' ]),
   onClick: PropTypes.func,
   place: PropTypes.object,
-  places: PropTypes.array
+  places: PropTypes.array,
+  radius: PropTypes.number
 }

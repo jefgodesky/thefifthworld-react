@@ -21,8 +21,8 @@ export default class Map extends React.Component {
       base: `https://s3.${config.aws.region}.amazonaws.com/${config.aws.bucket}/website/maps`,
       isClient: false,
       json: [],
-      lat: this.props.place ? this.props.place.lat : 0,
-      lon: this.props.place ? this.props.place.lon : 0,
+      lat: this.props.place ? this.props.place.lat : undefined,
+      lon: this.props.place ? this.props.place.lon : undefined,
       loaded: false,
       showTerritory,
       zoom: this.props.place || showTerritory ? 14 : 3
@@ -141,17 +141,26 @@ export default class Map extends React.Component {
    */
 
   handleClick (event) {
+    const { mode, onClick } = this.props
     const map = this.el.current
 
-    if (this.props.onClick) this.props.onClick(event)
+    console.log({ mode, map, event })
+    if (onClick) onClick(event)
 
-    if ((map !== null) && (this.props.mode === 'locateCommunity')) {
-      this.setState({
-        lat: event.latlng.lat,
-        lon: event.latlng.lng,
-        showTerritory: true,
-        zoom: 12
-      })
+    if (map !== null) {
+      if (mode === 'locateCommunity') {
+        this.setState({
+          lat: event.latlng.lat,
+          lon: event.latlng.lng,
+          showTerritory: true,
+          zoom: 12
+        })
+      } else if (mode === 'locatePlace') {
+        this.setState({
+          lat: event.latlng.lat,
+          lon: event.latlng.lng
+        })
+      }
     }
   }
 
@@ -165,7 +174,8 @@ export default class Map extends React.Component {
    */
 
   renderMarkers (Marker, Popup) {
-    const { place, places } = this.props
+    const { place, places, mode } = this.props
+    const { lat, lon } = this.state
     if (place && place.lat && place.lon) {
       return (<Marker position={[place.lat, place.lon]} />)
     } else if (isPopulatedArray(places)) {
@@ -180,6 +190,8 @@ export default class Map extends React.Component {
         )
       })
       return jsx
+    } else if (mode === 'locatePlace' && lat && lon) {
+      return (<Marker position={[lat, lon]} />)
     }
   }
 

@@ -144,7 +144,6 @@ export default class Map extends React.Component {
     const { mode, onClick } = this.props
     const map = this.el.current
 
-    console.log({ mode, map, event })
     if (onClick) onClick(event)
 
     if (map !== null) {

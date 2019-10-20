@@ -18,8 +18,9 @@ export default class CommunityCreationPlace extends React.Component {
     this.state = {
       lat: undefined,
       lon: undefined,
-      loading: undefined,
-      name: undefined
+      loading: false,
+      name: '',
+      intro: ''
     }
 
     this.handleClick = this.handleClick.bind(this)
@@ -88,22 +89,36 @@ export default class CommunityCreationPlace extends React.Component {
   }
 
   /**
+   * Returns `true` if the component has everything in state that is needed
+   * to advance, or `false` if it does not.
+   * @returns {boolean} - Returns `true` if the component has everything in
+   *   state that is needed to advance, or `false` if it does not.
+   */
+
+  ready () {
+    const { lat, lon, name, intro } = this.state
+    const hasName = name && name.length > 0
+    const hasIntro = intro && intro.length > 0
+    return !isNaN(lat) && !isNaN(lon) && hasName && hasIntro
+  }
+
+  /**
    * Called when the user clicks the button to proceed to the next step.
    */
 
   async next () {
-    const { card } = this.props
-    const { lat, lon, name } = this.state
-    if (lat !== undefined && lon !== undefined) {
+    const { card, id } = this.props
+    const { lat, lon, name, intro } = this.state
+    if (this.ready()) {
       this.setState({ loading: 0 })
       try {
-        const res = await axios.post('/create-community', { card, lat, lon, name })
+        const res = await axios.post('/create-community', { community: id, card: card.card, lat, lon, name, intro })
         const url = get(res, 'request.responseURL')
-        const match = url ? url.match(/^.*?\/create-community\/\d*$/gm) : null
+        const match = url ? url.match(/error=/gm) : null
         if (isPopulatedArray(match)) {
-          window.location.href = url
-        } else {
           this.setState({ loading: undefined })
+        } else {
+          window.location.href = url
         }
       } catch (err) {
         console.error(err)
@@ -117,7 +132,10 @@ export default class CommunityCreationPlace extends React.Component {
    */
 
   renderMap () {
-    const { center, isVillage } = this.props
+    const { card, center, isVillage } = this.props
+    const { name, intro, loading } = this.state
+    const isDisabled = !this.ready() || loading
+    const buttonText = loading ? 'Saving...' : 'Next'
 
     return (
       <React.Fragment>
@@ -132,8 +150,22 @@ export default class CommunityCreationPlace extends React.Component {
             onClick={this.handleClick} />
         </div>
         {this.getNameDesc()}
+        <label htmlFor='name'>Name</label>
+        <input
+          type='text'
+          name='name'
+          id='name'
+          value={name}
+          onChange={e => { this.setState({ name: e.target.value }) }} />
+        <label dangerouslySetInnerHTML={{ __html: card.intro }} htmlFor='intro' />
+        <textarea
+          id='intro'
+          name='intro'
+          value={intro}
+          onChange={e => { this.setState({ intro: e.target.value }) }} />
+        <p className='note'>We&rsquo;ll use your answer here to create a wiki page for this place, or add to an existing page if it already has one, so you may want to write it with that in mind. You can use <a href='/markdown'>Markdown</a> here.</p>
         <p className='actions'>
-          <button onClick={this.next}>Next</button>
+          <button onClick={this.next} disabled={isDisabled}>{buttonText}</button>
         </p>
       </React.Fragment>
     )

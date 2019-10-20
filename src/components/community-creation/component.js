@@ -83,9 +83,9 @@ export class CommunityCreation extends React.Component {
     const { js } = this.state
     const id = get(match, 'params.id')
     const params = location && location.search ? parseParams(location.search) : {}
-    const placesDone = territory && territory.places && Object.keys(territory.places) > 0
-      ? Object.keys(territory.places).filter(k => territory.places[k] !== null).length
-      : 0
+    const unplotted = territory && territory.places
+      ? Object.keys(territory.places).filter(k => territory.places[k] === null)
+      : []
 
     if (!id && !params.begin) {
       return (<CommunityCreationIntro js={js} />)
@@ -104,10 +104,9 @@ export class CommunityCreation extends React.Component {
       const answered = traditions.answers ? Object.keys(traditions.answers) : []
       const questions = traditions.specialties.filter(s => answered.indexOf(s) < 0)
       return (<CommunityCreationSpecialtiesQuestions specialty={questions[0]} id={id} />)
-    } else if (territory && territory.places && placesDone < 4) {
+    } else if (territory && territory.places && unplotted.length > 0) {
       const { center } = territory
       const { village } = traditions
-      const unplotted = Object.keys(territory.places).filter(k => territory.places[k] === null)
       const card = unplotted.length > 0
         ? places.filter(p => p.card === unplotted[0]).shift()
         : null

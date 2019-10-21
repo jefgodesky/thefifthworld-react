@@ -11,3 +11,4 @@ public/*
 server.js
 coverage
 coverage/*
+update.*.sql

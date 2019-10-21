@@ -1,20 +1,8 @@
-#
-# SQL Export
-# Created by Querious (201054)
-# Created: June 17, 2019 at 7:24:35 PM EDT
-# Encoding: Unicode (UTF-8)
-#
-
-
 CREATE DATABASE IF NOT EXISTS `thefifthworld` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 USE `thefifthworld`;
 
-
-
-
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
-
 
 CREATE TABLE `authorizations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -24,7 +12,6 @@ CREATE TABLE `authorizations` (
   `oauth2_token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `changes` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -36,6 +23,12 @@ CREATE TABLE `changes` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `communities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `complete` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -49,7 +42,6 @@ CREATE TABLE `files` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `invitations` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `inviteFrom` int(11) unsigned NOT NULL,
@@ -59,7 +51,6 @@ CREATE TABLE `invitations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `likes` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `path` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
@@ -67,7 +58,6 @@ CREATE TABLE `likes` (
   `member` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `members` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -87,7 +77,6 @@ CREATE TABLE `members` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `messages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `member` int(10) unsigned NOT NULL DEFAULT '0',
@@ -96,14 +85,12 @@ CREATE TABLE `messages` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `names` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(256) NOT NULL DEFAULT '0',
   `knower` varchar(256) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `pages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -117,14 +104,24 @@ CREATE TABLE `pages` (
   `type` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `permissions` smallint(5) unsigned NOT NULL DEFAULT '777',
   `owner` int(11) unsigned DEFAULT '0',
-  `claim` int(11) unsigned DEFAULT NULL,
   `depth` tinyint(3) unsigned DEFAULT '0',
-  `lat` decimal(10,5) DEFAULT NULL,
-  `lon` decimal(10,5) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `places` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `page` int(11) NOT NULL DEFAULT '0',
+  `coords` point NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `responses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `data` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `sessions` (
   `session_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
@@ -133,9 +130,12 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
+CREATE TABLE `tags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `page` int(11) DEFAULT '0',
+  `tag` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `value` varchar(240) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
-
-

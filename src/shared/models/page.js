@@ -165,6 +165,29 @@ class Page {
     }
   }
 
+  static getTags (str) {
+    const bracketed = str.match(/\[\[(.+?)\]\]/gm)
+    if (bracketed) {
+      const tags = {}
+      const matches = bracketed.map(m => m.match(/\[\[(.+?):(.+?)\]\]/)).filter(m => m !== null)
+      matches.forEach(m => {
+        const tag = m[1]
+        const val = m[2]
+        const existing = tags[tag]
+        if (existing === undefined) {
+          tags[tag] = val
+        } else if (typeof existing === 'string') {
+          tags[tag] = [ existing, val ]
+        } else if (Array.isArray(existing)) {
+          tags[tag] = [ ...existing, val ]
+        }
+      })
+      return tags
+    } else {
+      return false
+    }
+  }
+
   /**
    * Returns the value of the first tag in the string, or all tags in the
    * string.
@@ -358,8 +381,8 @@ class Page {
     } else if (id) {
       // Query db with either an ID or a path (string)
       const pages = (typeof id === 'string')
-        ? await db.run(`SELECT * FROM pages WHERE path='${id}';`)
-        : await db.run(`SELECT * FROM pages WHERE id=${id};`)
+        ? await db.run(`CALL getPageByPath('${id}');`)
+        : await db.run(`CALL getPageByID(${id});`)
       if (pages.length === 1) {
         // We found a page, so get its changes...
         const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)

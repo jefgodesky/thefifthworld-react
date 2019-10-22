@@ -187,6 +187,17 @@ describe('Page', () => {
 
     expect(page.owner).toEqual(1)
   })
+
+  // Move this over to its own test page before you commit it!
+  it('can report all of its tags', () => {
+    const actual = Page.getTags('This is text. [[Tag1:Value1]] [[Tag1:Value2]] [[Tag2:Value]] [[Tag3:Val]]')
+    const expected = {
+      Tag1: [ 'Value1', 'Value2' ],
+      Tag2: 'Value',
+      Tag3: 'Val'
+    }
+    expect(actual).toEqual(expected)
+  })
 })
 
 afterEach(async () => {

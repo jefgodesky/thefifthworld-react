@@ -112,7 +112,8 @@ CREATE TABLE `pages` (
 CREATE TABLE `places` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `page` int(11) NOT NULL DEFAULT '0',
-  `coords` point NOT NULL,
+  `location` POINT NOT NULL SRID 4326,
+  SPATIAL INDEX(`location`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

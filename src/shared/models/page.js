@@ -383,17 +383,20 @@ class Page {
       const pages = (typeof id === 'string')
         ? await db.run(`CALL getPageByPath('${id}');`)
         : await db.run(`CALL getPageByID(${id});`)
-      if (pages.length === 1) {
+      const page = Array.isArray(pages) && pages.length === 2 && Array.isArray(pages[0]) && pages[0].length === 1
+        ? pages[0][0]
+        : false
+      if (page) {
         // We found a page, so get its changes...
-        const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${pages[0].id} ORDER BY c.timestamp DESC;`)
+        const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${page.id} ORDER BY c.timestamp DESC;`)
         changes.reverse()
         // And see if it has any files...
-        const files = await db.run(`SELECT * FROM files WHERE page=${pages[0].id} ORDER BY timestamp DESC;`)
-        if (files) pages[0].file = files[0]
+        const files = await db.run(`SELECT * FROM files WHERE page=${page.id} ORDER BY timestamp DESC;`)
+        if (files) page.file = files[0]
         // And find out who likes it...
-        const likes = await db.run(`SELECT member FROM likes WHERE page=${pages[0].id};`)
-        if (likes) pages[0].likes = likes.map(like => like.member)
-        return new Page(pages[0], changes)
+        const likes = await db.run(`SELECT member FROM likes WHERE page=${page.id};`)
+        if (likes) page.likes = likes.map(like => like.member)
+        return new Page(page, changes)
       } else {
         // Either no pages found, or too many (which should never happen).
         return null

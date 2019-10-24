@@ -28,7 +28,6 @@ CREATE TABLE `changes` (
   PRIMARY KEY (`id`),
   KEY `changeEditor` (`editor`),
   KEY `changePage` (`page`),
-  CONSTRAINT `changeEditor` FOREIGN KEY (`editor`) REFERENCES `members` (`id`),
   CONSTRAINT `changePage` FOREIGN KEY (`page`) REFERENCES `pages` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;
 
@@ -83,9 +82,7 @@ CREATE TABLE `invitations` (
   `accepted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `inviteTo` (`inviteTo`),
-  KEY `inviteFrom` (`inviteFrom`),
-  CONSTRAINT `inviteFrom` FOREIGN KEY (`inviteFrom`) REFERENCES `members` (`id`),
-  CONSTRAINT `inviteTo` FOREIGN KEY (`inviteTo`) REFERENCES `members` (`id`)
+  KEY `inviteFrom` (`inviteFrom`)
 ) ENGINE=InnoDB AUTO_INCREMENT=998 DEFAULT CHARSET=utf8;
 
 
@@ -96,9 +93,7 @@ CREATE TABLE `likes` (
   `member` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `likePage` (`page`),
-  KEY `likeMember` (`member`),
-  CONSTRAINT `likeMember` FOREIGN KEY (`member`) REFERENCES `members` (`id`),
-  CONSTRAINT `likePage` FOREIGN KEY (`page`) REFERENCES `pages` (`id`)
+  KEY `likeMember` (`member`)
 ) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
 
 
@@ -128,8 +123,7 @@ CREATE TABLE `pages` (
   `depth` tinyint(3) unsigned DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`),
-  KEY `pageOwner` (`owner`),
-  CONSTRAINT `pageOwner` FOREIGN KEY (`owner`) REFERENCES `members` (`id`)
+  KEY `pageOwner` (`owner`)
 ) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8;
 
 
@@ -139,9 +133,7 @@ CREATE TABLE `names` (
   `knower` varchar(256) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `nameKnown` (`name`),
-  KEY `nameKnower` (`knower`),
-  CONSTRAINT `nameKnower` FOREIGN KEY (`knower`) REFERENCES `pages` (`path`),
-  CONSTRAINT `nameKnown` FOREIGN KEY (`name`) REFERENCES `pages` (`path`)
+  KEY `nameKnower` (`knower`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
@@ -151,8 +143,7 @@ CREATE TABLE `places` (
   `location` point NOT NULL /*!80003 SRID 4326 */,
   PRIMARY KEY (`id`),
   SPATIAL KEY `location` (`location`),
-  KEY `placePage` (`page`),
-  CONSTRAINT `placePage` FOREIGN KEY (`page`) REFERENCES `pages` (`id`)
+  KEY `placePage` (`page`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 

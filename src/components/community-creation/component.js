@@ -1,4 +1,5 @@
- * @param state - The state from Redux.
+/* global __isClient__ */
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import RouteParser from 'route-parser'

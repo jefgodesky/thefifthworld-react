@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import Thumbnailer from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should render a ReactCrop component', () => {
-  const wrapper = shallow(<Thumbnailer file='test' />)
-  expect(wrapper.find('ReactCrop').length).toEqual(1)
+describe('thumbnailer component', () => {
+  it('should render a ReactCrop component', () => {
+    const wrapper = shallow(<Thumbnailer file='test' />)
+    expect(wrapper.find('ReactCrop').length).toEqual(1)
+  })
 })

@@ -14,6 +14,7 @@ import FormUpload from '../form-upload/component'
 
 import config from '../../../config'
 import { isPopulatedArray, get } from '../../shared/utils'
+import { parseType } from '../../server/parse/tags'
 import { addError, resolveError, getErrorsFor } from '../../components/error/utils'
 import slugify from '../../shared/slugify'
 
@@ -129,7 +130,7 @@ export class Form extends React.Component {
   checkValidTemplate (changes) {
     const title = changes.title || this.state.title
     const body = changes.body || this.state.body
-    const type = this.state.type || Page.getType(body)
+    const type = this.state.type || parseType(body)
     if (Page.isReservedTemplate(type, title)) {
       this.setState({ errors: addError({
         field: 'title',
@@ -463,7 +464,7 @@ export class Form extends React.Component {
     if (!this.state.isLoading) {
       this.setState({ isLoading: true })
       const { errors, title, path, parent, body, file, thumbnail, message, description, image, header } = this.state
-      const type = this.state.type ? this.state.type : Page.getType(body)
+      const type = this.state.type ? this.state.type : parseType(body)
       const existingPath = get(this.props, 'page.path')
       const action = existingPath || '/new'
 

@@ -5,12 +5,6 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'names' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -150,7 +144,7 @@ describe('Page', () => {
       permissions: 740
     }, member, 'Initial text', db)
 
-    page.update({
+    await page.update({
       type: 'group',
       title: 'New Group',
       body: 'This is a new group.',
@@ -178,7 +172,7 @@ describe('Page', () => {
       body: 'This is a new group.'
     }, member, 'Initial text', db)
 
-    page.update({
+    await page.update({
       type: 'group',
       title: 'New Group',
       body: 'This is a new group.',
@@ -190,7 +184,7 @@ describe('Page', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'names' ]
+  const tables = [ 'changes', 'tags', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

@@ -8,6 +8,8 @@ config/development.json
 config/production.json
 config/test.json
 public/*
-server.js
 coverage
 coverage/*
+server.js
+update.js
+update.*.sql

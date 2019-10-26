@@ -5,8 +5,6 @@ import Page from '../../shared/models/page'
 import {
   escapeCodeBlockMarkdown,
   listChildren,
-  listOtherNames,
-  listNamesKnown,
   parseTags,
   parseForm,
   unwrapDivs
@@ -14,12 +12,6 @@ import {
 import db from '../db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'names' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -178,73 +170,6 @@ describe('listChildren', () => {
   })
 })
 
-describe('listOtherNames', () => {
-  it('lists other names', async () => {
-    expect.assertions(1)
-    const member = await Member.get(2, db)
-    await Page.create({
-      title: 'Alice',
-      body: 'This is Alice\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Bob',
-      body: 'This is Bob\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Abba Zabba',
-      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
-      parent: '/alice'
-    }, member, 'Initial text', db)
-    const actual = await listOtherNames('{{OtherNames}}', '/alice', db)
-    const expected = '<section><h3>Abba Zabba</h3><p class="known-to">Known to <a href="/bob">Bob</a>.</p><p>This is a name that <a href="/bob">Bob</a> knows. </p></section>'
-    expect(actual).toEqual(expected)
-  })
-})
-
-describe('listNamesKnown', () => {
-  it('lists names known', async () => {
-    expect.assertions(1)
-    const member = await Member.get(2, db)
-    await Page.create({
-      title: 'Alice',
-      body: 'This is Alice\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Bob',
-      body: 'This is Bob\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Abba Zabba',
-      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
-      parent: '/alice'
-    }, member, 'Initial text', db)
-    const actual = await listNamesKnown('{{NamesKnown}}', '/bob', db)
-    const expected = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody><tr><td><a href="/alice">Alice</a></td><td><a href="/alice/abba-zabba">Abba Zabba</a></td></tr></tbody></table>'
-    expect(actual).toEqual(expected)
-  })
-
-  it('listens to tag attributes', async () => {
-    expect.assertions(1)
-    const member = await Member.get(2, db)
-    await Page.create({
-      title: 'Alice',
-      body: 'This is Alice\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Bob',
-      body: 'This is Bob\'s page. [[Type:Person]]'
-    }, member, 'Initial text', db)
-    await Page.create({
-      title: 'Abba Zabba',
-      body: 'This is a name that [[Bob]] knows. [[Type:Name]] [[Knower:/bob]]',
-      parent: '/alice'
-    }, member, 'Initial text', db)
-    const actual = await listNamesKnown('{{NamesKnown path="/bob"}}', '/alice', db)
-    const expected = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody><tr><td><a href="/alice">Alice</a></td><td><a href="/alice/abba-zabba">Abba Zabba</a></td></tr></tbody></table>'
-    expect(actual).toEqual(expected)
-  })
-})
-
 describe('parseTags', () => {
   it('hides tags in wikitext', () => {
     const actual = parseTags('This has [[Knower:2]] some text. [[Location:40.441848, -80.012827]] [[Owner:2]] [[Author:Me]] [[Artist:Someone else]] And some more text after it, too. [[Type:Test]]')
@@ -347,7 +272,7 @@ describe('escapeCodeBlockMarkdown', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'names' ]
+  const tables = [ 'changes', 'tags', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

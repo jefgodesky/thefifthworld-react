@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { Error404 } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should display a 404 error', () => {
-  const wrapper = shallow(<Error404 />)
-  expect(wrapper.find('h2').text()).toEqual('Error 404')
+describe('error 404 component', () => {
+  it('should display a 404 error', () => {
+    const wrapper = shallow(<Error404 />)
+    expect(wrapper.find('h2').text()).toEqual('Error 404')
+  })
 })

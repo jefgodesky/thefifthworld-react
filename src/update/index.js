@@ -33,7 +33,7 @@ const updatePage = async (page) => {
         return addPlace(page.id, val)
       case 'Type':
         // This will continue to be kept in the pages table.
-        break;
+        break
       default:
         return addTag(page.id, tag, val)
     }

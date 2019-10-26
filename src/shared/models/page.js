@@ -1,5 +1,6 @@
 import slugify from '../slugify'
 import plainParse from '../../server/parse/plain'
+import { parseTags, parseLocation, parseType } from '../../server/parse/tags'
 import { updateVals, SQLEscape } from '../../server/utils'
 import { checkPermissions, canRead, canWrite } from '../permissions'
 import { isPopulatedArray } from '../utils'
@@ -19,15 +20,15 @@ class Page {
     this.path = page.path
     this.parent = page.parent
     this.type = page.type
-    this.file = page.file
     this.permissions = page.permissions.toString()
     this.owner = page.owner
-    this.claim = page.claim
     this.depth = page.depth
+    this.file = page.file
     this.lat = page.lat
     this.lon = page.lon
     this.likes = page.likes
     this.changes = []
+    this.tags = {}
 
     changes.forEach(change => {
       this.changes.unshift({
@@ -45,6 +46,8 @@ class Page {
         }
       })
     })
+
+    Object.keys(page.tags).forEach(key => { this.tags[key] = page.tags[key] })
   }
 
   /**
@@ -165,116 +168,6 @@ class Page {
     }
   }
 
-  static getTags (str) {
-    const bracketed = str.match(/\[\[(.+?)\]\]/gm)
-    if (bracketed) {
-      const tags = {}
-      const matches = bracketed.map(m => m.match(/\[\[(.+?):(.+?)\]\]/)).filter(m => m !== null)
-      matches.forEach(m => {
-        const tag = m[1]
-        const val = m[2]
-        const existing = tags[tag]
-        if (existing === undefined) {
-          tags[tag] = val
-        } else if (typeof existing === 'string') {
-          tags[tag] = [ existing, val ]
-        } else if (Array.isArray(existing)) {
-          tags[tag] = [ ...existing, val ]
-        }
-      })
-      return tags
-    } else {
-      return false
-    }
-  }
-
-  /**
-   * Returns the value of the first tag in the string, or all tags in the
-   * string.
-   * @param str {string} - A string of wikitext to search.
-   * @param tag {string} - The tag to search for.
-   * @param first {Boolean} - If `true`, returns the value of the first tag
-   *   found. Otherwise, returns an array of the values of all tags found.
-   * @returns {string|Array} - Either the value of the first tag found, or an
-   *   array of the values of all tags found.
-   */
-
-  static getTag (str, tag, first = false) {
-    if (str) {
-      const rx = new RegExp(`\\[\\[${tag}:(.+?)\\]\\]`, 'g')
-      const matches = str.match(rx)
-      if (matches && matches.length > 0) {
-        if (first) {
-          // Just get the first match
-          const match = matches.shift()
-          const pair = match.substr(2, match.length - 4).split(':')
-          return pair[0] === tag ? pair[1] : null
-        } else {
-          // Return an array of all matches
-          return matches
-            .map(match => match.substr(2, match.length - 4).split(':'))
-            .filter(match => match[0] === tag)
-            .map(match => match[1])
-        }
-      }
-    }
-  }
-
-  /**
-   * If the string includes a location tag, this returns an object with the
-   * latitude and longitude specified by the last tag.
-   * @param str {string} - A string of wikitext.
-   * @returns {boolean|{lon: number, lat: number}} - `false` if the text does
-   *   not include any location tags. If it does, it returns an object with two
-   *   properties: `lat` (containing a float with the latitude specified by the
-   *   last location tag in the wikitext) and `lon` (containing a float with
-   *   the longitude specified by the last location tag in the wikitext).
-   */
-
-  static getLocation (str) {
-    let coords = Page.getTag(str, 'Location', true)
-    if (coords) {
-      coords = coords.split(',')
-      return coords.length === 2
-        ? {
-          lat: parseFloat(coords[0].trim()),
-          lon: parseFloat(coords[1].trim())
-        }
-        : false
-    } else {
-      return false
-    }
-  }
-
-  /**
-   * Returns the value of the first [[Type:X]] tag in the string provided, or
-   * null if no such tag is found.
-   * @param str {string} - The string to find the type tags in.
-   * @returns {*} - If the given string str includes one or more tags formatted
-   *   as [[Type:X]], it returns the string "X" for the first such tag. If such
-   *   a tag could not be found, returns a null.
-   */
-
-  static getType (str) {
-    const coords = Page.getLocation(str)
-    const type = Page.getTag(str, 'Type', true)
-    return coords ? 'Place' : type || null
-  }
-
-  /**
-   * Return the value of the first claim tag ([[Owner:X]]) inn the string
-   * provided.
-   * @param str {string} - A string of wikitext.
-   * @returns {null|number} - Either the value of the first claim tag or null
-   *   if no claim tag could be found.
-   */
-
-  static getClaim (str) {
-    let claim = Page.getTag(str, 'Owner', true)
-    claim = parseInt(claim)
-    return isNaN(claim) ? null : claim
-  }
-
   /**
    * Returns a path for a page by combining the path of its parent
    * concatenated with its own slug.
@@ -314,6 +207,29 @@ class Page {
   }
 
   /**
+   * Saves the page's place record to the database.
+   * @param coords {Object} - An object containing a `lat` property, containing
+   *   the latitude as a float, and a `lon` property, containing the longitude
+   *   as a float.
+   * @param id {number} - The page ID.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<void>} - A Promise that resolves when the place record
+   *   has been updated (if it already existed) or inserted.
+   */
+
+  static async setPlace (coords, id, db) {
+    if (coords && coords.lat && coords.lon) {
+      const { lat, lon } = coords
+      const check = await db.run(`SELECT COUNT(id) AS count FROM places WHERE page = ${id};`)
+      const geom = `ST_GeomFromText('POINT(${lat} ${lon})', 4326)`
+      const sql = check && check[0] && check[0].count > 0
+        ? `UPDATE places SET location=${geom} WHERE page=${id};`
+        : `INSERT INTO places (page, location) VALUES (${id}, ${geom});`
+      await db.run(sql)
+    }
+  }
+
+  /**
    * Creates a new page.
    * @param data {Object} - An object defining the data for the page. Expected
    *   properties include `path` (for the page's path), `title` (for the page's
@@ -336,11 +252,10 @@ class Page {
     const description = data.description ? data.description : await Page.getDescription(data.body)
     const image = data.image
     const header = data.header ? data.header : null
-    const claim = data.body ? Page.getClaim(data.body) : null
     const permissions = data.permissions ? data.permissions : 774
     const depth = parent ? parent.depth + 1 : 0
-    const type = data.type ? data.type : Page.getType(data.body)
-    const coords = Page.getLocation(data.body)
+    const type = data.type ? data.type : parseType(data.body)
+    const coords = parseLocation(data.body)
 
     // Add to database
     if (Page.isReservedPath(path)) {
@@ -349,18 +264,111 @@ class Page {
       throw new Error(`{{${title}}} is used internally. You cannot create a template with that name.`)
     } else {
       try {
-        const ins = coords
-          ? `INSERT INTO pages (slug, path, parent, type, title, description, image, header, permissions, owner, claim, depth, lat, lon) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${SQLEscape(header)}, ${permissions}, ${editor.id}, ${claim}, ${depth}, ${coords.lat}, ${coords.lon});`
-          : `INSERT INTO pages (slug, path, parent, type, title, description, image, header, permissions, owner, claim, depth) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${SQLEscape(header)}, ${permissions}, ${editor.id}, ${claim}, ${depth});`
-        const res = await db.run(ins)
+        const res = await db.run(`INSERT INTO pages (slug, path, parent, type, title, description, image, header, permissions, owner, depth) VALUES (${SQLEscape(slug)}, ${SQLEscape(path)}, ${pid}, ${SQLEscape(type)}, ${SQLEscape(title)}, ${SQLEscape(description)}, ${SQLEscape(image)}, ${SQLEscape(header)}, ${permissions}, ${editor.id}, ${depth});`)
         const id = res.insertId
         await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${id}, ${editor.id}, ${Math.floor(Date.now() / 1000)}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-        if (type === 'Name') await Page.linkName(path, data.body, db)
+        if (coords) await Page.setPlace(coords, id, db)
+        await Page.createTags(id, data.body, db)
         return Page.get(id, db)
       } catch (err) {
         throw err
       }
     }
+  }
+
+  /**
+   * Delete all tags associated with the given page ID from the database. This
+   * is used each time the page is updated because it's possible to have
+   * multiple values for the same tag, so if we didn't clear the tags each time
+   * we save the page we might end up with a separate copy of the tag record
+   * for each time that the page was saved.
+   * @param id {number} - The page ID.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<void>} - A Promise that resolves when all of the tags
+   *   for the specified page ID have been deleted from the database.
+   */
+
+  static async clearTags (id, db) {
+    await db.run(`DELETE FROM tags WHERE page=${id};`)
+  }
+
+  /**
+   * Creates a single tag record.
+   * @param id {number} - The ID of the page in the database.
+   * @param tag {string} - The name of the tag.
+   * @param val {string} - The value of the tag.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<void>} - A Promise that resolves when the tag has been
+   *   created in the database.
+   */
+
+  static async createTag (id, tag, val, db) {
+    const sqlTag = SQLEscape(tag)
+    const sqlVal = SQLEscape(val)
+    const check = await db.run(`SELECT COUNT(id) AS count FROM tags WHERE page=${id} AND tag=${sqlTag} AND value=${sqlVal};`)
+    if (check && check[0] && check[0].count <= 0) await db.run(`INSERT INTO tags (page, tag, value) VALUES (${id}, ${sqlTag}, ${sqlVal});`)
+  }
+
+  /**
+   * Creates tags in the database for all of the tags specified in the given
+   * wikitext.
+   * @param id {number} - The ID of the page in the database.
+   * @param body {string} - The current wikitext of the page.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<void>} - A Promise that resolves when all tag records
+   *   have been created in the database.
+   */
+
+  static async createTags (id, body, db) {
+    await Page.clearTags(id, db)
+    const tags = parseTags(body)
+    for (let key in tags) {
+      const val = tags[key]
+      if (Array.isArray(val)) {
+        for (let v of val) {
+          await Page.createTag(id, key, v, db)
+        }
+      } else {
+        await Page.createTag(id, key, val, db)
+      }
+    }
+  }
+
+  /**
+   * Fetches all tag records associated with a page ID from the database.
+   * @param id {number} - The page ID.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<object>} - A Promise that resolves with an object, with
+   *   each property set to one of the name/value pairs (tags) retrieved from
+   *   the database for the page.
+   */
+
+  static async getTags (id, db) {
+    const tags = {}
+    const records = await db.run(`SELECT tag, value FROM tags WHERE page=${id};`)
+    if (records && records.length > 0) {
+      records.forEach(record => {
+        tags[record.tag] = record.value
+      })
+    }
+    return tags
+  }
+
+  /**
+   * Returns an object with the latitude and longitude of the first place found
+   * in the database associated with the given page ID.
+   * @param id {number} - The page ID.
+   * @param db {Pool} - The database connection.
+   * @returns {Promise<Object|null>} - A Promise that resolves with an object
+   *   containing the latitude and longitude of the place, or `null` if no
+   *   place could be found.
+   */
+
+  static async getPlace (id, db) {
+    const record = await db.run(`SELECT ST_Latitude(location) AS lat, ST_Longitude(location) AS lon FROM places WHERE page=${id};`)
+    return record && Array.isArray(record) && record.length > 0
+      ? record[0]
+      : null
   }
 
   /**
@@ -380,16 +388,18 @@ class Page {
       return id
     } else if (id) {
       // Query db with either an ID or a path (string)
-      const pages = (typeof id === 'string')
-        ? await db.run(`CALL getPageByPath('${id}');`)
-        : await db.run(`CALL getPageByID(${id});`)
-      const page = Array.isArray(pages) && pages.length === 2 && Array.isArray(pages[0]) && pages[0].length === 1
-        ? pages[0][0]
-        : false
+      const column = (typeof id === 'string') ? 'path' : 'id'
+      const pages = await db.run(`SELECT * FROM pages WHERE ${column}=${SQLEscape(id)};`)
+      const page = Array.isArray(pages) && pages.length === 1 ? pages[0] : false
       if (page) {
         // We found a page, so get its changes...
         const changes = await db.run(`SELECT c.id AS id, c.timestamp AS timestamp, c.msg AS msg, c.json AS json, m.name AS editorName, m.email AS editorEmail, m.id AS editorID FROM changes c, members m WHERE c.editor=m.id AND c.page=${page.id} ORDER BY c.timestamp DESC;`)
         changes.reverse()
+        // Fetch its tags...
+        page.tags = await Page.getTags(page.id, db)
+        // And its location...
+        const coords = await Page.getPlace(page.id, db)
+        if (coords) Object.assign(page, coords)
         // And see if it has any files...
         const files = await db.run(`SELECT * FROM files WHERE page=${page.id} ORDER BY timestamp DESC;`)
         if (files) page.file = files[0]
@@ -491,16 +501,11 @@ class Page {
     }
 
     if (data.body) {
-      const type = data.type ? data.type : Page.getType(data.body)
-      const claim = Page.getClaim(data.body)
-      if (type && this.type !== type) update.type = type
-      if (this.claim !== claim) update.claim = claim
+      const location = parseLocation(data.body)
+      if (location) update.location = location
 
-      const coords = Page.getLocation(data.body)
-      if (coords) {
-        update.lat = coords.lat
-        update.lon = coords.lon
-      }
+      const type = data.type ? data.type : parseType(data.body)
+      if (type && this.type !== type) update.type = type
     }
 
     // Check to make sure we're not trying to use a reserved path or template
@@ -530,10 +535,7 @@ class Page {
         { name: 'type', type: 'string' },
         { name: 'permissions', type: 'number' },
         { name: 'owner', type: 'number' },
-        { name: 'claim', type: 'number' },
-        { name: 'depth', type: 'number' },
-        { name: 'lat', type: 'number' },
-        { name: 'lon', type: 'number' }
+        { name: 'depth', type: 'number' }
       ]
       const vals = updateVals(fields, update)
 
@@ -543,13 +545,6 @@ class Page {
         // Track changes
         const timestamp = Math.floor(Date.now() / 1000)
         const res = await db.run(`INSERT INTO changes (page, editor, timestamp, msg, json) VALUES (${this.id}, ${editor.id}, ${timestamp}, ${SQLEscape(msg)}, ${SQLEscape(JSON.stringify(data))});`)
-
-        // It might be a name
-        if (data.body && this.type === 'Name') {
-          await Page.linkName(this.path, data.body, db)
-        } else if (this.type !== 'Name') {
-          await Page.unlinkName(this.path, db)
-        }
 
         // Add change to this instance
         this.changes.unshift({
@@ -562,123 +557,20 @@ class Page {
             id: editor.id
           }
         })
+
+        // Update tags
+        await Page.createTags(this.id, data.body, db)
+
+        // If it's a place, update that
+        if (update.location) {
+          await Page.setPlace(update.location, this.id, db)
+          this.lat = update.location.lat
+          this.lon = update.location.lon
+        }
       } catch (err) {
         throw err
       }
     }
-  }
-
-  /**
-   * Records links between pages created by a name.
-   * @param path {string} - The path of the name page.
-   * @param body {string} - The body of the name page, which should include
-   *   [[Knower]] tags for the people who know this name.
-   * @param db {Pool} - A database connection.
-   * @returns {Promise<void>} - A Promise that resolves when the necessary
-   *   database records have been added.
-   */
-
-  static async linkName (path, body, db) {
-    const knowers = Page.getTag(body, 'Knower')
-    for (const knower of knowers) {
-      const check = await db.run(`SELECT id FROM names WHERE name = ${SQLEscape(path)} AND knower = ${SQLEscape(knower)};`)
-      if (check.length === 0) {
-        await db.run(`INSERT INTO names (name, knower) VALUES (${SQLEscape(path)}, ${SQLEscape(knower)});`)
-      }
-    }
-  }
-
-  /**
-   * Removes links between pages when a page is no longer a name.
-   * @param path {string} - Path of the former name page.
-   * @param db {Pool} - A database connection.
-   * @returns {Promise<void>} - A Promise that resolves once all of the
-   *   database records that are no longer needed have been deleted.
-   */
-
-  static async unlinkName (path, db) {
-    await db.run(`DELETE FROM names WHERE name = ${SQLEscape(path)};`)
-  }
-
-  /**
-   * Fetches information about a name, who it refers to, and who knows it.
-   * @param page {string|Page} - The path of the name's page, or the Page
-   *   object itself.
-   * @param db {Pool} - A database connection.
-   * @returns {Promise<null|{path: *, known: {path, name: *}, name: *,
-   *   knowers: Array}>} - An object with the following properties:
-   *     - name:     The name in question.
-   *     - path:     The path to the name's page.
-   *     - body:     The current body of the name page.
-   *     - known:    An object identifying who the name refers to, with
-   *                 properties `name` and `path`.
-   *     - knowers:  An array of objects, each one referring to someone who
-   *                 knows this name. Each object includes the properties
-   *                 `name` and `path`.
-   */
-
-  static async getName (page, db) {
-    const p = (page && page.constructor && page.constructor.name === 'Page')
-      ? page
-      : await Page.get(page, db)
-    if (p) {
-      const known = await Page.get(p.parent, db)
-      const content = p.getContent()
-      const body = content.body ? content.body : null
-      const knowerPaths = body ? Page.getTag(body, 'Knower') : []
-      const knowers = []
-      for (const path of knowerPaths) {
-        const knower = await Page.get(path, db)
-        if (knower) knowers.push({ name: knower.title, path })
-      }
-
-      return {
-        name: p.title,
-        path: p.path,
-        body,
-        known: {
-          name: known.title,
-          path: known.path
-        },
-        knowers
-      }
-    } else {
-      return null
-    }
-  }
-
-  /**
-   * Returns names that refer to a person or place.
-   * @param db {Pool} - A database connection.
-   * @returns {Promise<Array>} - An array of objects. Each object is structured
-   *   with the `getName` method.
-   */
-
-  async getNames (db) {
-    const names = []
-    const pages = await this.getChildren(db, 'Name')
-    for (const page of pages) {
-      const name = await Page.getName(page.path, db)
-      names.push(name)
-    }
-    return names
-  }
-
-  /**
-   * Returns name that are known by a person.
-   * @param db {Pool} - A database connnection.
-   * @returns {Promise<Array>} - An array of objects. Each object is structured
-   *   with the `getName` method.
-   */
-
-  async getNamesKnown (db) {
-    const names = []
-    const paths = await db.run(`SELECT name FROM names WHERE knower = ${SQLEscape(this.path)};`)
-    for (const record of paths) {
-      const name = await Page.getName(record.name, db)
-      names.push(name)
-    }
-    return names
   }
 
   /**

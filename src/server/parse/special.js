@@ -2,7 +2,6 @@ import Page from '../../shared/models/page'
 import { getURL, getProps } from './utils'
 import { isPopulatedArray, getFileSizeStr } from '../../shared/utils'
 import slugify from '../../shared/slugify'
-import parse from './index'
 
 /**
  * Escapes all of the characters inside of a <pre><code> block.
@@ -190,73 +189,6 @@ const listArtists = async (wikitext, db) => {
 }
 
 /**
- * Searches wikitext for incidents of the string `{{OtherNames}}`. If any are
- * found, shows all the names for the current page and replaces the template
- * with that content.
- * @param wikitext {string} - The wikitext string to parse.
- * @param path {string} - The path of the page being parsed.
- * @param db {Pool} - A database connection.
- * @returns {Promise<*>} - A Promise that resolves with the updated wikitext.
- */
-
-const listOtherNames = async (wikitext, path, db) => {
-  const page = await Page.get(path, db)
-  if (page) {
-    const names = await page.getNames(db)
-    let markup = ''
-    for (const n of names) {
-      const knowers = n.knowers.map(knower => `<a href="${knower.path}">${knower.name}</a>`)
-      let k = ''
-      switch (knowers.length) {
-        case 0:
-          k = false
-          break
-        case 1:
-          k = knowers[0]
-          break
-        case 2:
-          k = `${knowers[0]} and ${knowers[1]}`
-          break
-        default:
-          const last = k.pop()
-          k = `${knowers.join(', ')}, and ${last}`
-          break
-      }
-
-      markup += '<section>'
-      markup += `<h3>${n.name}</h3>`
-      if (k) markup += `<p class="known-to">Known to ${k}.</p>`
-      markup += await parse(n.body, db)
-      markup += '</section>'
-
-      wikitext = wikitext.replace(/{{OtherNames}}/gi, markup)
-    }
-  }
-  return wikitext
-}
-
-const listNamesKnown = async (wikitext, path, db) => {
-  const matches = wikitext.match(/{{NamesKnown(.*?)}}/g)
-  if (matches) {
-    for (let match of matches) {
-      const props = getProps(match)
-      const p = props.path ? props.path : path
-      const page = await Page.get(p, db)
-      if (page) {
-        const names = await page.getNamesKnown(db)
-        let markup = '<table><thead><tr><th>Person or place</th><th>Known as</th></tr></thead><tbody>'
-        for (const name of names) {
-          markup += `<tr><td><a href="${name.known.path}">${name.known.name}</a></td><td><a href="${name.path}">${name.name}</a></td></tr>`
-        }
-        markup += '</tbody></table>'
-        wikitext = wikitext.replace(match, markup)
-      }
-    }
-  }
-  return wikitext
-}
-
-/**
  * Removes all mailto: links from a string of markup, replacing each with the
  * text of the link.
  * @param markup {string} - A string of markup.
@@ -399,8 +331,6 @@ export {
   escapeCodeBlockMarkdown,
   listChildren,
   listArtists,
-  listOtherNames,
-  listNamesKnown,
   doNotEmail,
   parseDownload,
   parseArt,

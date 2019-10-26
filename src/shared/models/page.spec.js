@@ -5,12 +5,6 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'changes', 'names', 'members', 'pages' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -150,7 +144,7 @@ describe('Page', () => {
       permissions: 740
     }, member, 'Initial text', db)
 
-    page.update({
+    await page.update({
       type: 'group',
       title: 'New Group',
       body: 'This is a new group.',
@@ -178,7 +172,7 @@ describe('Page', () => {
       body: 'This is a new group.'
     }, member, 'Initial text', db)
 
-    page.update({
+    await page.update({
       type: 'group',
       title: 'New Group',
       body: 'This is a new group.',
@@ -187,21 +181,10 @@ describe('Page', () => {
 
     expect(page.owner).toEqual(1)
   })
-
-  // Move this over to its own test page before you commit it!
-  it('can report all of its tags', () => {
-    const actual = Page.getTags('This is text. [[Tag1:Value1]] [[Tag1:Value2]] [[Tag2:Value]] [[Tag3:Val]]')
-    const expected = {
-      Tag1: [ 'Value1', 'Value2' ],
-      Tag2: 'Value',
-      Tag3: 'Val'
-    }
-    expect(actual).toEqual(expected)
-  })
 })
 
 afterEach(async () => {
-  const tables = [ 'changes', 'names', 'members', 'pages' ]
+  const tables = [ 'changes', 'tags', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

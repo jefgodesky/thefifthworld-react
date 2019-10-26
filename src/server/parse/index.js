@@ -5,8 +5,6 @@ import {
   escapeCodeBlockMarkdown,
   listChildren,
   listArtists,
-  listOtherNames,
-  listNamesKnown,
   doNotEmail,
   parseDownload,
   parseArt,
@@ -67,8 +65,6 @@ const parse = async (wikitext, db, path = null) => {
       wikitext = await parseNovelListing(wikitext, db)
       wikitext = await listChildren(wikitext, path, db, true)
       wikitext = await listChildren(wikitext, path, db)
-      wikitext = await listOtherNames(wikitext, path, db)
-      wikitext = await listNamesKnown(wikitext, path, db)
       wikitext = await parseLinks(wikitext, db)
     }
 

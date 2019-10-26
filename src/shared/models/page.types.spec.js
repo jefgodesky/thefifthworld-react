@@ -5,22 +5,11 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
 
 describe('Page', () => {
-  it('extracts types', () => {
-    const type = Page.getType('[[Type:Page]] [[Type:Something Else]]')
-    expect(type).toEqual('Page')
-  })
-
   it('tags a page\'s type', async () => {
     expect.assertions(1)
     const member = await Member.get(2, db)
@@ -49,7 +38,7 @@ describe('Page', () => {
       title: 'Page 1',
       body: 'This is a page. [[Type:Page]]'
     }, member, 'Initial text', db)
-    page.update({
+    await page.update({
       type: 'Other'
     }, member, 'Changing type', db)
     expect(page.type).toEqual('Other')
@@ -62,7 +51,7 @@ describe('Page', () => {
       title: 'Page 1',
       body: 'This is a page. [[Type:Page]]'
     }, member, 'Initial text', db)
-    page.update({
+    await page.update({
       body: 'This is a page. [[Type:Other]]'
     }, member, 'Changing type', db)
     expect(page.type).toEqual('Other')
@@ -70,7 +59,7 @@ describe('Page', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'changes', 'tags', 'places', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

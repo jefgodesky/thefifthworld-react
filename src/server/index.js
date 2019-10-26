@@ -27,6 +27,7 @@ import { login } from '../components/member-login/actions'
 import { load as loadPage } from '../components/page/actions'
 import { load } from '../components/messages/actions'
 import { throwError } from '../components/error/actions'
+import { parseTag } from './parse/tags'
 
 import Member from '../shared/models/member'
 import Page from '../shared/models/page'
@@ -92,8 +93,8 @@ const respond = (req, res, store) => {
   // If this is a chapter in a novel, concatenate novel and chapter info to
   // generate the page title.
   const par = Page.getParent(state.Page)
-  if (type === 'Chapter' && Page.getType(par.body) === 'Novel') {
-    const chapter = Page.getTag(state.Page.curr.body, 'Chapter', true)
+  if (type === 'Chapter' && par.type === 'Novel') {
+    const chapter = parseTag(state.Page.curr.body, 'Chapter', true)
     if (chapter) {
       title = `${par.title} - Chapter ${chapter} - ${title}`
     } else {

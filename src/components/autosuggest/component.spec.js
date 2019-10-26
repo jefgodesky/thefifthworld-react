@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -16,16 +16,19 @@ const testTransform = results => {
   })
 }
 
-it('should render a text input', () => {
-  const wrapper = shallow(<Autosuggest
-    defaultValue=''
-    endpoint='/autocomplete/title'
-    id='parent'
-    label='Parent'
-    name='parent'
-    note={`Should this page belong to a different page?`}
-    onChange={value => {}}
-    threshold={3}
-    transform={testTransform} />)
-  expect(wrapper.find('input[id="parent"]').length).toEqual(1)
+describe('autosuggest component', () => {
+  it('should render a text input', () => {
+    const wrapper = shallow(<Autosuggest
+      defaultValue=''
+      endpoint='/autocomplete/title'
+      id='parent'
+      label='Parent'
+      name='parent'
+      note={`Should this page belong to a different page?`}
+      onChange={value => {
+      }}
+      threshold={3}
+      transform={testTransform} />)
+    expect(wrapper.find('input[id="parent"]').length).toEqual(1)
+  })
 })

@@ -8,12 +8,6 @@ import db from '../../server/db'
 import config from '../../../config'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'files', 'pages', 'changes' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
 
@@ -74,7 +68,7 @@ describe('File', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'files', 'pages', 'changes' ]
+  const tables = [ 'changes', 'tags', 'members', 'files', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

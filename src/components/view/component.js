@@ -204,8 +204,10 @@ export class View extends React.Component {
   render () {
     const { loggedInMember, page } = this.props
     const par = Page.getParent(page)
-    const chapter = page && page.curr && page.curr.body
-      ? Page.getTag(page.curr.body, 'Chapter', true)
+    const chapter = page && page.tag && page.tag.Chapter
+      ? Array.isArray(page.tag.Chapter) && page.tag.Chapter.length > 0
+        ? page.tag.Chapter[0]
+        : `${page.tag.Chapter}`
       : undefined
     const __html = page.type === 'Chapter' && par.type === 'Novel'
       ? chapter

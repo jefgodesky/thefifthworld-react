@@ -519,9 +519,8 @@ class Member {
    */
 
   async getClaims (type, db) {
-    const q = type
-      ? `SELECT id FROM pages WHERE claim = ${this.id} AND type = ${SQLEscape(type)};`
-      : `SELECT id FROM pages WHERE claim = ${this.id};`
+    const base = `SELECT p.id FROM pages p, tags t WHERE t.tag='Owner' AND t.value=${this.id} AND t.page=p.id`
+    const q = type ? `${base} AND p.type=${SQLEscape(type)};` : `${base};`
     const ids = await db.run(q)
     const pages = []
     for (const p of ids) {

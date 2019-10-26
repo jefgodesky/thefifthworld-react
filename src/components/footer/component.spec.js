@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { Footer } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should return a footer', () => {
-  const wrapper = shallow(<Footer />)
-  expect(wrapper.find('footer').length).toEqual(1)
+describe('footer component', () => {
+  it('should return a footer', () => {
+    const wrapper = shallow(<Footer />)
+    expect(wrapper.find('footer').length).toEqual(1)
+  })
 })

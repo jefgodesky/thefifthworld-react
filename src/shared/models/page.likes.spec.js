@@ -5,12 +5,6 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'likes' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -47,7 +41,7 @@ describe('Page', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes', 'likes' ]
+  const tables = [ 'changes', 'likes', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

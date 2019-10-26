@@ -7,7 +7,7 @@ import FormUpload from './component'
 
 configure({ adapter: new Adapter() })
 
-describe('FormUpload', () => {
+describe('form upload component', () => {
   it('should render a file input component', () => {
     const wrapper = shallow(<FormUpload page={{ type: 'File' }} />)
     expect(wrapper.find('input[type="file"]').length).toEqual(1)

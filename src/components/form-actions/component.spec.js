@@ -7,7 +7,7 @@ import FormActions from './component'
 
 configure({ adapter: new Adapter() })
 
-describe('Form', () => {
+describe('form actions component', () => {
   it('should offer an admin lock and hide buttons on a 777 page', () => {
     const admin = { admin: true }
     const page = {

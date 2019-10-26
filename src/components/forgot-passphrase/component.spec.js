@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { ForgotPassphrase } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should include a form', () => {
-  const wrapper = shallow(<ForgotPassphrase />)
-  expect(wrapper.find('form').length).toEqual(1)
+describe('forgot passphrase component', () => {
+  it('should include a form', () => {
+    const wrapper = shallow(<ForgotPassphrase />)
+    expect(wrapper.find('form').length).toEqual(1)
+  })
 })

@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { Home } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should return a page', () => {
-  const wrapper = shallow(<Home />)
-  expect(wrapper.find('main').length).toEqual(1)
+describe('home component', () => {
+  it('should return a page', () => {
+    const wrapper = shallow(<Home />)
+    expect(wrapper.find('main').length).toEqual(1)
+  })
 })

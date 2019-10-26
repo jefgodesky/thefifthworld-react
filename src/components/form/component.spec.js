@@ -7,7 +7,7 @@ import { Form } from './component'
 
 configure({ adapter: new Adapter() })
 
-describe('Form', () => {
+describe('form component', () => {
   it('should render a form', () => {
     const wrapper = shallow(<Form loggedInMember={{}} page={{}} />)
     expect(wrapper.find('form.wiki').length).toEqual(1)

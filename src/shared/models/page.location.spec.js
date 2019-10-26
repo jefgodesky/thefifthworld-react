@@ -5,12 +5,6 @@ import Page from './page'
 import db from '../../server/db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -24,7 +18,7 @@ describe('Page', () => {
       body: '**The Point** is where the [[Allegheny River]] and the [[Monongahela River]] meet to form the [[Ohio River]]. [[Location:40.441848, -80.012827]]'
     }, member, 'Initial text', db)
     const actual = [ page.lat, page.lon ]
-    const expected = [ 40.44185, -80.01283 ]
+    const expected = [ 40.441848, -80.012827 ]
     expect(actual).toEqual(expected)
   })
 
@@ -80,7 +74,7 @@ describe('Page', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'changes', 'places', 'tags', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import DragDrop from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should render a droppable area', () => {
-  const wrapper = shallow(<DragDrop />)
-  expect(wrapper.find('.droppable').length).toEqual(1)
+describe('drag and drop upload component', () => {
+  it('should render a droppable area', () => {
+    const wrapper = shallow(<DragDrop />)
+    expect(wrapper.find('.droppable').length).toEqual(1)
+  })
 })

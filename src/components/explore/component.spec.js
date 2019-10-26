@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { Explore } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should show a Map component', () => {
-  const wrapper = shallow(<Explore places={[]} />)
-  expect(wrapper.find('Map').length).toEqual(1)
+describe('explore component', () => {
+  it('should show a Map component', () => {
+    const wrapper = shallow(<Explore places={[]} />)
+    expect(wrapper.find('Map').length).toEqual(1)
+  })
 })

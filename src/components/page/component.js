@@ -17,6 +17,7 @@ import autoBind from 'react-autobind'
 import { connect } from 'react-redux'
 import { canRead } from '../../shared/permissions'
 import slugify from '../../shared/slugify'
+import { parseTags } from '../../server/parse/tags'
 
 /**
  * This component handles the member profile page.
@@ -39,16 +40,21 @@ export class Page extends React.Component {
 
   getCredit () {
     const { page } = this.props
-    const p = PageModel.getParent(page)
-    const author = page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel'
-      ? PageModel.getTag(p.body, 'Author', true)
-      : page && page.curr && page.curr.body
-        ? PageModel.getTag(page.curr.body, 'Author', true)
+    if (page) {
+      const { tags } = page
+      const p = PageModel.getParent(page)
+      const pTags = p && p.body ? parseTags(p.body) : false
+      const authorSrc = pTags && pTags.Author ? pTags.Author : tags && tags.Author ? tags.Author : null
+      const author = Array.isArray(authorSrc)
+        ? `${authorSrc.slice(0, authorSrc.length - 1).join(', ')} &amp; ${authorSrc[authorSrc.length - 1]}`
+        : authorSrc
+      const artist = tags && tags.Artist
+        ? tags.Artist
         : null
-    const artist = page && page.curr && page.curr.body
-      ? PageModel.getTag(page.curr.body, 'Artist', true)
-      : null
-    return author || artist
+      return author || artist
+    } else {
+      return null
+    }
   }
 
   /**
@@ -62,7 +68,7 @@ export class Page extends React.Component {
     const { page } = this.props
     let title = page.title
     const p = PageModel.getParent(page)
-    if (page.type === 'Chapter' && PageModel.getType(p.body) === 'Novel') title = p.title
+    if (page.type === 'Chapter' && p.type === 'Novel') title = p.title
     return title
   }
 

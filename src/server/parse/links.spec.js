@@ -6,12 +6,6 @@ import parseLinks from './links'
 import db from '../db'
 
 beforeEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
-  for (const table of tables) {
-    await db.run(`DELETE FROM ${table};`)
-    await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)
-  }
-
   await db.run('INSERT INTO members (name, email, admin) VALUES (\'Admin\', \'admin@thefifthworld.com\', 1);')
   await db.run('INSERT INTO members (name, email) VALUES (\'Normal\', \'normal@thefifthworld.com\');')
 })
@@ -75,7 +69,7 @@ describe('parseLinks', () => {
 })
 
 afterEach(async () => {
-  const tables = [ 'members', 'pages', 'changes' ]
+  const tables = [ 'changes', 'tags', 'members', 'pages' ]
   for (const table of tables) {
     await db.run(`DELETE FROM ${table};`)
     await db.run(`ALTER TABLE ${table} AUTO_INCREMENT=1;`)

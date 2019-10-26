@@ -56,4 +56,24 @@ const client = {
   }
 }
 
-module.exports = [server, client]
+const update = {
+  entry: './src/update/index.js',
+  target: 'node',
+  externals: [nodeExternals()],
+  output: {
+    path: __dirname,
+    filename: 'update.js',
+    publicPath: '/'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: 'babel-loader'
+      }
+    ]
+  }
+}
+
+module.exports = [server, client, update]

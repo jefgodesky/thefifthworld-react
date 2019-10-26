@@ -1,4 +1,4 @@
-/* global it, expect */
+/* global describe, it, expect */
 
 import React from 'react'
 import { shallow, configure } from 'enzyme'
@@ -7,7 +7,9 @@ import { Join } from './component'
 
 configure({ adapter: new Adapter() })
 
-it('should return a form', () => {
-  const wrapper = shallow(<Join />)
-  expect(wrapper.find('form').length).toEqual(1)
+describe('join component', () => {
+  it('should return a form', () => {
+    const wrapper = shallow(<Join />)
+    expect(wrapper.find('form').length).toEqual(1)
+  })
 })

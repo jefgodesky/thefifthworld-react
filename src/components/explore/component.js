@@ -76,7 +76,7 @@ export class Explore extends React.Component {
 
   static async load (req, db, store) {
     if (!__isClient__) {
-      const records = await db.run('SELECT title, path, lat, lon FROM pages WHERE type="Place" AND lat IS NOT NULL and lon IS NOT NULL')
+      const records = await db.run('SELECT pg.title, pg.path, ST_X(pl.location) AS lat, ST_Y(pl.location) AS lon FROM pages pg, places pl WHERE pg.type="Place" AND pl.page=pg.id;')
       store.dispatch(actions.load(records))
     }
   }

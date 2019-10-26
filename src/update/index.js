@@ -1,4 +1,5 @@
 import Page from '../shared/models/page'
+import { parseTags } from '../server/parse/tags'
 import { SQLEscape } from '../server/utils'
 import db from '../server/db'
 
@@ -24,7 +25,7 @@ const addTag = async (id, tag, val) => {
 
 const updatePage = async (page) => {
   const content = page.getContent()
-  const tags = Page.getTags(content.body)
+  const tags = parseTags(content.body)
   for (let tag of Object.keys(tags)) {
     const val = tags[tag]
 

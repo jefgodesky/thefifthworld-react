@@ -322,14 +322,17 @@ class Page {
   static async createTags (id, body, db) {
     await Page.clearTags(id, db)
     const tags = parseTags(body)
+    const doNotSave = [ 'Type', 'Location' ]
     for (let key in tags) {
-      const val = tags[key]
-      if (Array.isArray(val)) {
-        for (let v of val) {
-          await Page.createTag(id, key, v, db)
+      if (doNotSave.indexOf(key) < 0) {
+        const val = tags[key]
+        if (Array.isArray(val)) {
+          for (let v of val) {
+            await Page.createTag(id, key, v, db)
+          }
+        } else {
+          await Page.createTag(id, key, val, db)
         }
-      } else {
-        await Page.createTag(id, key, val, db)
       }
     }
   }

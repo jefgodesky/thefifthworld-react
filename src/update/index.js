@@ -45,8 +45,10 @@ const update = async () => {
   const ids = await db.run('SELECT id FROM pages;')
   for (let r of ids) {
     const page = await Page.get(r.id, db)
-    updatePage(page)
+    await updatePage(page)
   }
 }
 
 update()
+  .then(() => { console.log('Update complete') })
+  .catch(err => { console.error(err) })

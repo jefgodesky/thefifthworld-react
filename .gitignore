@@ -7,6 +7,7 @@ npm-debug.log.*
 config/development.json
 config/production.json
 config/test.json
+config/test.live.json
 public/*
 coverage
 coverage/*

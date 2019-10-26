@@ -136,10 +136,12 @@ const saveSpecialties = async (community, id, req, res) => {
   if (specialty) {
     const specialties = Array.isArray(specialty) ? specialty : [ specialty ]
     if (specialties.length <= 4) {
-      let village = false
+      let village = 0
       for (let i = 0; i < specialties.length; i++) {
-        if (specialtyData.village.indexOf(specialties[i]) > -1) village = true
+        if (specialtyData.village.yes.indexOf(specialties[i]) > -1) village += 100
+        if (specialtyData.village.maybe.indexOf(specialties[i]) > -1) village += 50
       }
+      village = (village >= 100)
       community.traditions = { village, specialties, answers: {} }
       if (village) {
         community.territory.places = { C10: null, D7: null, H7: null, S7: null }

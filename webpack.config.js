@@ -56,6 +56,7 @@ const client = {
   }
 }
 
+/**
 const update = {
   entry: './src/update/index.js',
   target: 'node',
@@ -75,5 +76,6 @@ const update = {
     ]
   }
 }
+ **/
 
-module.exports = [server, client, update]
+module.exports = [ server, client ]

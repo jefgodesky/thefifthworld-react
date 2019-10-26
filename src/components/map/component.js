@@ -224,8 +224,9 @@ export default class Map extends React.Component {
    */
 
   renderMap () {
-    const { center } = this.props
+    let { center } = this.props
     let { lat, lon, zoom } = this.state
+    if (!center) center = lat && lon ? [ lat, lon ] : [ 0, 0 ]
     const bounds = this.getBounds()
     const z = bounds ? null : zoom
     const leaflet = require('react-leaflet')
@@ -238,7 +239,7 @@ export default class Map extends React.Component {
     const loading = !this.props.place && !this.state.loaded
       ? (<div className='loading-map'>Melting ice caps&hellip;</div>)
       : null
-    const c = bounds ? null : center || [ lat, lon ]
+    const c = bounds ? null : center
 
     return (
       <React.Fragment>

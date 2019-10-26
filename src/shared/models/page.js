@@ -368,7 +368,7 @@ class Page {
    */
 
   static async getPlace (id, db) {
-    const record = await db.run(`SELECT ST_Latitude(location) AS lat, ST_Longitude(location) AS lon FROM places WHERE page=${id};`)
+    const record = await db.run(`SELECT ST_X(location) AS lat, ST_Y(location) AS lon FROM places WHERE page=${id};`)
     return record && Array.isArray(record) && record.length > 0
       ? record[0]
       : null

@@ -1,0 +1,404 @@
+[
+  {
+    "name": "Acting",
+    "expert": [ "actress", "actor", "actor" ],
+    "names": [ "Mask", "Stage", "Pathos" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Basket weaving",
+    "expert": "basket weaver",
+    "names": [ "Coil", "Plait", "Weaver" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Boat building",
+    "expert": "boat builder",
+    "names": [ "Hull", "Clinker", "Oar" ],
+    "category": "Construction"
+  },
+  {
+    "name": "Bridge building",
+    "expert": "bridge builder",
+    "names": [ "Bridger", "Span", "Vine" ],
+    "category": "Construction"
+  },
+  {
+    "name": "House building",
+    "expert": "house builder",
+    "names": [ "Roofer", "Thatcher", "Post" ],
+    "category": "Construction"
+  }
+  {
+    "name": "Clothes making",
+    "expert": "clothier",
+    "names": [ "Tailor", "Outfitter", "Mode" ]
+  },
+  {
+    "name": "Communication",
+    "expert": "orator",
+    "names": [ "Silver Tongue", "Eloquent", "Word Wise" ]
+  },
+  {
+    "name": "Cooking",
+    "expert": "cook",
+    "names": [ "Roast", "Chef", "Gourmand" ]
+  },
+  {
+    "name": "Dancing",
+    "expert": "dancer",
+    "names": [ "Trance", "Flame", "Flow" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Deception",
+    "expert": "liar",
+    "names": [ "Viper", "Spider", "Sly" ],
+    "discouraged": true
+  },
+  {
+    "name": "Deescalation",
+    "expert": "peacemaker",
+    "names": [ "Gentle", "Serene", "Nobel" ]
+  },
+  {
+    "name": "History",
+    "expert": "historian",
+    "names": [ "Sage", "Memory", "Reciter" ]
+  },
+  {
+    "name": "Magic",
+    "expert": "magician",
+    "names": [ "Cat", "Raven", "Python" ],
+    "specializations": [
+      {
+        "name": "Healing",
+        "expert": [ "medicine woman", "medicine man", "medicine person" ],
+        "names": [ "Snake", "Quartz", "Hummingbird"  ]
+      },
+      {
+        "name": "Shapeshifting",
+        "expert": "shapeshifter",
+        "names": [ "Wolf", "Moon", "Butterfly" ]
+      },
+      {
+        "name": "Sleight of hand",
+        "expert": "illusionist",
+        "names": [ "Juggler", "Quick Fingers", "Light Hand" ]
+      },
+      {
+        "name": "Sorcery",
+        "expert": [ "witch", "sorcerer" ],
+        "names": [ "Jaguar", "Owl", "Cobra" ],
+        "discouraged": true
+      }
+    ]
+  },
+  {
+    "name": "Medicine",
+    "expert": "healer",
+    "names": [ "Senna", "Noni", "Snakewood" ],
+    "specializations": [
+      {
+        "name": "Herbal remedies",
+        "expert": "herbalist",
+        "names": [ "Weed", "Poppy", "Lapacho" ]
+      },
+      {
+        "name": "Midwifery",
+        "expert": "midwife",
+        "names": [ "Rain", "Red", "Dirt" ]
+      },
+      {
+        "name": "First aid",
+        "expert": "medic",
+        "names": [ "Binder", "Setter", "Bones" ]
+      }
+    ]
+  },
+  {
+    "name": "Painting",
+    "expert": "painter",
+    "names": [ "Ochre", "Indigo", "Charcoal" ],
+    "category": "Arts",
+    "specializations": [
+      {
+        "name": "Body painting",
+        "expert": "body painter",
+        "names": [ "Face", "Sacristy", "Bones" ]
+      },
+      {
+        "name": "Rock painting",
+        "expert": "rock painter",
+        "names": [ "Red Hand", "Summoner", "Chronicler" ]
+      },
+      {
+        "name": "Tattooing",
+        "expert": "tattoo artist",
+        "names": [ "Needle", "Ink", "Carver" ]
+      }
+    ]
+  },
+  {
+    "name": "Philosophy",
+    "expert": "philosopher",
+    "names": [ "Deep", "Ponder", "Savant" ],
+    "specializations": [
+      {
+        "name": "Epistemology",
+        "expert": "epistemologist",
+        "names": [ "Truth", "Knower", "Skeptic" ],
+        "rare": true
+      },
+      {
+        "name": "Logic",
+        "expert": "logician",
+        "names": [ "Basalt", "Highway", "Iffer" ],
+        "rare": true
+      },
+      {
+        "name": "Moral philosophy",
+        "expert": "ethicist",
+        "names": [ "Virtue", "Bond", "Good" ],
+        "rare": true
+      },
+      {
+        "name": "Religion",
+        "expert": "theologian",
+        "names": [ "Godsman", "Preacher", "Rite" ],
+        "rare": true
+      }
+    ]
+  },
+  {
+    "name": "Playing the drum",
+    "expert": "drummer",
+    "names": [ "Beat", "Heart", "Thunder" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Playing the flute",
+    "expert": "flutist",
+    "names": [ "Wind", "Pierce", "Bird" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Poetry",
+    "expert": "poet",
+    "names": [ "Word Weaver", "Song Speaker", "Meter" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Reading",
+    "expert": "reader",
+    "names": [ "Booker", "Ancient", "Ghost" ],
+    "discouraged": true,
+    "rare": true
+  },
+  {
+    "name": "Running",
+    "expert": "runner",
+    "names": [ "Swift", "Peregrine", "Hare" ],
+    "younger": true
+  },
+  {
+    "name": "Science",
+    "expert": "scientist",
+    "names": [ "Seeker", "Pathfinder", "Searcher" ],
+    "specializations": [
+      {
+        "name": "Astronomy",
+        "expert": "astronomer",
+        "names": [ "Stargazer", "Midnight", "Dawn" ]
+      },
+      {
+        "name": "Botany",
+        "expert": "botanist",
+        "names": [ "Petal", "Leaf", "Root" ]
+      },
+      {
+        "name": "Chemistry",
+        "expert": "chemist",
+        "names": [ "Blaze", "Boom", "Burns" ],
+        "rare": true
+      },
+      {
+        "name": "Ecology",
+        "expert": "ecologist",
+        "names": [ "Web", "Cycle", "Rover" ]
+      },
+      {
+        "name": "Geology",
+        "expert": "geologist",
+        "names": [ "Rock", "Stone", "Dig" ],
+        "rare": true
+      },
+      {
+        "name": "Physics",
+        "expert": "physicist",
+        "names": [ "Mover", "Tinker", "Ant" ],
+        "rare": true
+      },
+      {
+        "name": "Meteorology",
+        "expert": "meteorologist",
+        "names": [ "Frog", "Bird", "Cow" ]
+      },
+      {
+        "name": "Mycology",
+        "expert": "mycologist",
+        "names": [ "Stinkhorn", "Puffball", "Longneck" ]
+      },
+      {
+        "name": "Zoology",
+        "expert": "zoologist",
+        "names": [ "Sitter", "Whisper", "Lore" ]
+      }
+    ]
+  },
+  {
+    "name": "Scouting",
+    "expert": "scout",
+    "names": [ "Shadow", "Ninja", "Sentinel" ],
+    "younger": true
+  },
+  {
+    "name": "Singing",
+    "expert": "singer",
+    "names": [ "Songbird", "Nightingale", "Warbler" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Storytelling",
+    "expert": "storyteller",
+    "names": [ "Bard", "Teller", "Griot" ],
+    "category": "Arts"
+  },
+  {
+    "name": "Making arrows",
+    "expert": "fletcher",
+    "names": [ "Fletcher", "Feather", "Broadhead" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making atlatls",
+    "expert": "atlatl maker",
+    "names": [ "Bannerstone", "Zip", "Woof" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making axes",
+    "expert": "axe maker",
+    "names": [ "Hafter", "Bit", "Poll" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making blowguns",
+    "expert": "blowgun maker",
+    "names": [ "Cane", "Hollow", "Glue" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making bow drills",
+    "expert": "bow drill maker",
+    "names": [ "Hearth", "Ember", "Coal" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making bowls",
+    "expert": "bowl maker",
+    "names": [ "Smolder", "Sander", "Basin" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making bows",
+    "expert": "bowyer",
+    "names": [ "Stringer", "Limb", "Sapling" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making squid hooks",
+    "expert": "squid hook maker",
+    "names": [ "Bonecarver", "Lure", "Charmer" ],
+    "category": "Tool-making",
+    "coastal": true
+  },
+  {
+    "name": "Making hammers",
+    "expert": "hammer maker",
+    "names": [ "Hammerhead", "Handle", "Lash" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making knives",
+    "expert": "knife maker",
+    "names": [ "Glassknapper", "Obsidian", "Flint" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making mortars and pestles",
+    "expert": "mortar and pestle maker",
+    "names": [ "Grinder", "Millstone", "Crush" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making needles",
+    "expert": "needle maker",
+    "names": [ "Thorn", "Spike", "Quill" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making rope",
+    "expert": "rope maker",
+    "names": [ "Cord", "Braid", "Twine" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making scrapers",
+    "expert": "scraper maker",
+    "names": [ "Edge", "Sharp", "Rasp" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Making spears",
+    "expert": "spear maker",
+    "names": [ "Shelf", "Hafter", "Pole" ],
+    "category": "Tool-making"
+  },
+  {
+    "name": "Archery",
+    "expert": "archer",
+    "names": [ "Archer", "Arrow", "Hawkeye" ],
+    "category": "Weapons mastery"
+  },
+  {
+    "name": "Throwing atlatl darts",
+    "expert": "atlatlist",
+    "names": [ "Dart", "Deadeye", "Mark" ],
+    "category": "Weapons mastery"
+  },
+  {
+    "name": "Shooting a blowgun",
+    "expert": "blowgun sniper",
+    "names": [ "Sniper", "Lungs", "Silent" ],
+    "category": "Weapons mastery"
+  },
+  {
+    "name": "Throwing a bola",
+    "expert": "bola expert",
+    "names": [ "Catcher", "Snare", "Swing" ],
+    "category": "Weapons mastery"
+  },
+  {
+    "name": "Shooting a sling",
+    "expert": "slinger",
+    "names": [ "Bullet", "Sling", "Ammo" ],
+    "category": "Weapons mastery"
+  },
+  {
+    "name": "Using a spear",
+    "expert": [ "spearwoman", "spearman", "spearperson" ]
+    "names": [ "Lance", "Pike", "Harpoon" ],
+    "category": "Weapons mastery"
+  }
+]

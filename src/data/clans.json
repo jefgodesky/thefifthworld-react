@@ -1,0 +1,25 @@
+{
+  "base": [
+    [ "Bear", "Bears" ],
+    [ "Capybara", "Capybaras" ],
+    [ "Cat", "Cats" ],
+    [ "Crow", "Crows" ],
+    [ "Deer", "Deer" ],
+    [ "Eagle", "Eagles" ],
+    [ "Hawk", "Hawks" ],
+    [ "Heron", "Herons" ],
+    [ "Kingfisher", "Kingfishers" ],
+    [ "Lion", "Lions" ],
+    [ "Peccary", "Peccaries" ],
+    [ "Rabbit", "Rabbits" ],
+    [ "Raven", "Ravens" ],
+    [ "Snake", "Snakes" ],
+    [ "Tapir", "Tapirs" ],
+    [ "Tiger", "Tigers" ],
+    [ "Turtle", "Turtles" ],
+    [ "Wolf", "Wolves" ]
+  ],
+  "coastal": [
+    [ "Shark", "Sharks" ]
+  ]
+}

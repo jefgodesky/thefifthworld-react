@@ -216,6 +216,9 @@ const saveChoice = async (community, id, req, res) => {
     case 'magic':
       community.traditions.magic = req.body.magic
       break
+    case 'skill':
+      community.traditions.skill = req.body.skill
+      break
     default:
       break
   }

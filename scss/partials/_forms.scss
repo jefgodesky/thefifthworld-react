@@ -50,6 +50,13 @@ input[type='radio'] + label {
   vertical-align: middle;
 }
 
+select {
+  display: block;
+  margin: 1em 0;
+  padding: .5em;
+  width: 100%;
+}
+
 ul.checkboxes {
   @extend %unformatted-list;
 

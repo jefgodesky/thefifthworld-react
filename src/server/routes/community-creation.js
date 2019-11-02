@@ -138,7 +138,7 @@ const saveSpecialties = async (community, id, req, res) => {
  * Save a response to a prompt concerning a specialty.
  * @param community {Object} - An object containing the current data for the
  *   community being created.
- * @param id {number} - THe primary key of the community record in the
+ * @param id {number} - The primary key of the community record in the
  *   database.
  * @param req {Object} - The Express request object.
  * @param res {Object} - The Express response object.
@@ -162,7 +162,7 @@ const saveSpecialtyAnswer = async (community, id, req, res) => {
  * Save a response to a prompt to name a place in your territory.
  * @param community {Object} - An object containing the current data for the
  *   community being created.
- * @param id {number} - THe primary key of the community record in the
+ * @param id {number} - The primary key of the community record in the
  *   database.
  * @param req {Object} - The Express request object.
  * @param res {Object} - The Express response object.
@@ -199,6 +199,31 @@ const savePlace = async (community, id, req, res) => {
   }
 }
 
+/**
+ * Saves a choice.
+ * @param community {Object} - An object containing the current data for the
+ *   community being created.
+ * @param id {number} - The primary key of the community record in the
+ *   database.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the database has
+ *   been updated and the user has been redirected to the next step.
+ */
+
+const saveChoice = async (community, id, req, res) => {
+  switch (req.body.choice) {
+    case 'magic':
+      community.traditions.magic = req.body.magic
+      break
+    default:
+      break
+  }
+
+  await update(community, id)
+  res.redirect(`/create-community/${id}`)
+}
+
 const CommunityCreationRouter = express.Router()
 
 // POST /create-community
@@ -213,6 +238,8 @@ CommunityCreationRouter.post('/', async (req, res) => {
       await saveSpecialtyAnswer(community, id, req, res)
     } else if (req.body.card) {
       await savePlace(community, id, req, res)
+    } else if (req.body.choice) {
+      await saveChoice(community, id, req, res)
     }
   } else {
     await saveCenter(req, res)

@@ -28,7 +28,7 @@
     "expert": "house builder",
     "names": [ "Roofer", "Thatcher", "Post" ],
     "category": "Construction"
-  }
+  },
   {
     "name": "Clothes making",
     "expert": "clothier",
@@ -397,7 +397,7 @@
   },
   {
     "name": "Using a spear",
-    "expert": [ "spearwoman", "spearman", "spearperson" ]
+    "expert": [ "spearwoman", "spearman", "spearperson" ],
     "names": [ "Lance", "Pike", "Harpoon" ],
     "category": "Weapons mastery"
   }

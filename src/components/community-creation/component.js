@@ -20,6 +20,8 @@ import CommunityCreationLocate from './steps/locate'
 import CommunityCreationSpecialties from './steps/specialties'
 import CommunityCreationSpecialtiesQuestions from './steps/specialties-questions'
 import CommunityCreationPlace from './steps/place'
+import CommunityCreationChoiceMagic from './steps/choice-magic'
+import CommunityCreationChoiceSkill from './steps/choice-skill'
 
 import { alphabetize, get } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
@@ -111,6 +113,10 @@ export class CommunityCreation extends React.Component {
         ? places.filter(p => p.card === unplotted[0]).shift()
         : null
       return (<CommunityCreationPlace card={card} center={center} id={id} isVillage={village} js={js} params={params} />)
+    } else if (!traditions.magic) {
+      return (<CommunityCreationChoiceMagic id={id} />)
+    } else if (!traditions.skill) {
+      return (<CommunityCreationChoiceSkill id={id} />)
     } else {
       return (<CommunityCreationIntro js={js} />)
     }

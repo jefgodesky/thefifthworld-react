@@ -1,17 +1,16 @@
 import express from 'express'
+import axios from 'axios'
 import { escape as SQLEscape } from 'sqlstring'
 import { clone } from '../../shared/utils'
-import intersect from '@turf/intersect'
 import distance from '@turf/distance'
+import config from '../../../config'
 import db from '../db'
 
 import specialtyData from '../../data/specialties'
 
 import {
   convertLat,
-  convertLon,
-  loadCoastlines,
-  drawCircle
+  convertLon
 } from '../../shared/utils.geo'
 
 /**
@@ -66,36 +65,6 @@ const requiresCoords = (req, res, base) => {
 }
 
 /**
- * Returns `true` if the coordinates provided are within 45 kilometers of a
- * coast (in the Fifth World, with sea levels 65 meters higher) — meaning
- * that someone could walk from there to the coast in a day — or `false` if
- * it lies further away than that.
- * @param coords {Object} - An object with two properties: `lat` (a numerical
- *   representation of a valid latitude) and `lon` (a numerical representation
- *   of a valid longitude).
- * @returns {Promise<boolean>} - A Promise that resolves with `true` or `false`
- *   depending on whether or not the point provided in `coords` is within 45
- *   kilometers of a coast (`true`) or not.
- */
-
-const isCoastal = async coords => {
-  let coastal = false
-  const { lat, lon } = coords
-  const range = drawCircle(lat, lon)
-  const coastlines = await loadCoastlines()
-  while (!coastal && coastlines.length > 0) {
-    const coll = coastlines.shift()
-    if (coll) {
-      while (!coastal && coll.features.length > 0) {
-        const feature = coll.features.shift()
-        if (intersect(range, feature) !== null) coastal = true
-      }
-    }
-  }
-  return coastal
-}
-
-/**
  * Saves a new community with the center of its territory specified.
  * @param req {Object} - The Express request object.
  * @param res {Object} - The Express response object.
@@ -105,18 +74,25 @@ const isCoastal = async coords => {
 
 const saveCenter = async (req, res) => {
   const coords = requiresCoords(req, res, '/create-community?step=1&')
-  if (coords) {
-    const data = {
+  const r = await axios.get(`${config.api}/geo/${coords.lat},${coords.lon}`)
+  if (r && r.data && !r.data.error) {
+    const commData = {
+      parent: r.data.parent,
       territory: {
         center: [ coords.lat, coords.lon ],
-        coastal: await isCoastal(coords)
+        coastal: r.data.coastal,
+        ecozone: r.data.ecozone,
+        continent: r.data.continent,
+        region: r.data.region
       },
       traditions: {},
       chronicle: [],
       people: []
     }
-    const community = await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(data))});`)
+    const community = await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(commData))});`)
     res.redirect(`/create-community/${community.insertId}`)
+  } else {
+    res.redirect('/create-community?step=1')
   }
 }
 

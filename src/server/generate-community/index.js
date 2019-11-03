@@ -1,6 +1,6 @@
 import random from 'random'
 import { daysFromNow } from '../../shared/utils'
-import { generateFounder } from './people'
+import { generateFounder, age } from './people'
 import { check } from './check'
 
 /**
@@ -72,6 +72,7 @@ const addFounder = (community, year) => {
 
 const runYear = (community, year, founding) => {
   getCommunityStatus(community)
+  age(community, year)
   if (founding) {
     addFounder(community, year)
   }

@@ -13,7 +13,6 @@ describe('Shuffle', () => {
       actual.indexOf(4) > -1,
       actual.indexOf(5) > -1
     ]
-    console.log(actual)
     const expected = claims.reduce((acc, curr) => acc && curr)
     expect(expected).toEqual(true)
   })

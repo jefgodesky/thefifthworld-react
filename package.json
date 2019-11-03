@@ -68,6 +68,7 @@
     "passport-local": "^1.0.0",
     "passport-patreon": "^1.0.1",
     "passport-twitter": "^1.0.4",
+    "random": "^2.1.1",
     "react": "^16.8.6",
     "react-autobind": "^1.0.6",
     "react-dom": "^16.8.6",

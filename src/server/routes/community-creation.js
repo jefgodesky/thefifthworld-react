@@ -213,17 +213,37 @@ const savePlace = async (community, id, req, res) => {
 
 const saveChoice = async (community, id, req, res) => {
   switch (req.body.choice) {
+    case 'genders':
+      community.traditions.genders = req.body.genders; break
     case 'magic':
-      community.traditions.magic = req.body.magic
-      break
+      community.traditions.magic = req.body.magic; break
     case 'skill':
-      community.traditions.skill = req.body.skill
-      break
-    default:
-      break
+      community.traditions.skill = req.body.skill; break
+    default: break
   }
 
   await update(community, id)
+  res.redirect(`/create-community/${id}`)
+}
+
+/**
+ * Randomly generate a community.
+ * @param community {Object} - An object containing the current data for the
+ *   community being created.
+ * @param id {number} - The primary key of the community record in the
+ *   database.
+ * @param req {Object} - The Express request object.
+ * @param res {Object} - The Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the database has
+ *   been updated and the user has been redirected to the next step.
+ */
+
+const generate = async (community, id, req, res) => {
+  console.log({
+    community,
+    id,
+    body: req.body
+  })
   res.redirect(`/create-community/${id}`)
 }
 
@@ -243,6 +263,8 @@ CommunityCreationRouter.post('/', async (req, res) => {
       await savePlace(community, id, req, res)
     } else if (req.body.choice) {
       await saveChoice(community, id, req, res)
+    } else if (req.body.generate === 'true') {
+      await generate(community, id, req, res)
     }
   } else {
     await saveCenter(req, res)

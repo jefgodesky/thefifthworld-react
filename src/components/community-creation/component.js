@@ -20,8 +20,10 @@ import CommunityCreationLocate from './steps/locate'
 import CommunityCreationSpecialties from './steps/specialties'
 import CommunityCreationSpecialtiesQuestions from './steps/specialties-questions'
 import CommunityCreationPlace from './steps/place'
+import CommunityCreationChoiceGender from './steps/choice-gender'
 import CommunityCreationChoiceMagic from './steps/choice-magic'
 import CommunityCreationChoiceSkill from './steps/choice-skill'
+import CommunityCreationGenerate from './steps/generate'
 
 import { alphabetize, get } from '../../shared/utils'
 import { parseParams } from '../../server/utils'
@@ -81,7 +83,7 @@ export class CommunityCreation extends React.Component {
    */
 
   renderStep () {
-    const { location, match, territory, traditions } = this.props
+    const { location, match, territory, traditions, people } = this.props
     const { js } = this.state
     const id = get(match, 'params.id')
     const params = location && location.search ? parseParams(location.search) : {}
@@ -113,10 +115,14 @@ export class CommunityCreation extends React.Component {
         ? places.filter(p => p.card === unplotted[0]).shift()
         : null
       return (<CommunityCreationPlace card={card} center={center} id={id} isVillage={village} js={js} params={params} />)
+    } else if (!traditions.genders) {
+      return (<CommunityCreationChoiceGender id={id} />)
     } else if (!traditions.magic) {
       return (<CommunityCreationChoiceMagic id={id} />)
     } else if (!traditions.skill) {
       return (<CommunityCreationChoiceSkill id={id} />)
+    } else if (people.length === 0) {
+      return (<CommunityCreationGenerate id={id} />)
     } else {
       return (<CommunityCreationIntro js={js} />)
     }
@@ -154,6 +160,7 @@ const mapStateToProps = state => {
   const { CommunityCreation } = state
   return {
     loggedInMember: state.MemberLogin,
+    people: CommunityCreation.people,
     territory: CommunityCreation.territory,
     traditions: CommunityCreation.traditions
   }
@@ -163,6 +170,7 @@ CommunityCreation.propTypes = {
   location: PropTypes.object,
   loggedInMember: PropTypes.object,
   match: PropTypes.object,
+  people: PropTypes.array,
   territory: PropTypes.object,
   traditions: PropTypes.object
 }

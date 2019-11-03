@@ -1,8 +1,9 @@
 import express from 'express'
 import axios from 'axios'
 import { escape as SQLEscape } from 'sqlstring'
-import { clone } from '../../shared/utils'
 import distance from '@turf/distance'
+import { clone } from '../../shared/utils'
+import generateCommunity from '../generate-community'
 import config from '../../../config'
 import db from '../db'
 
@@ -239,11 +240,7 @@ const saveChoice = async (community, id, req, res) => {
  */
 
 const generate = async (community, id, req, res) => {
-  console.log({
-    community,
-    id,
-    body: req.body
-  })
+  console.log(generateCommunity(community))
   res.redirect(`/create-community/${id}`)
 }
 

@@ -53,6 +53,7 @@ const generateFounder = () => {
     },
     eyes,
     ears,
+    scars: [],
     achondroplasia: random.float(0, 100) < 0.004,
     psychopath: null,
     history: []
@@ -95,57 +96,185 @@ const adjustFertility = (person, year) => {
  * @param community {Object} - The community object.
  * @param person {Object} - The person object.
  * @param year {number} - The current year.
+ * @param infection {boolean} - If `true`, the illness follows from an infected
+ *   injury.
  */
 
-const getSick = (community, person, year) => {
-  const table = [
+const getSick = (community, person, year, infection) => {
+  const illness = [
     { chance: 3, event: 'death' },
     { chance: 1, event: 'deaf' },
     { chance: 1, event: 'blind' },
     { chance: 95, event: 'recovery' }
   ]
 
+  const infected = [
+    { chance: 10, event: 'death' },
+    { chance: 5, event: 'deaf' },
+    { chance: 5, event: 'blind' },
+    { chance: 80, event: 'recovery' }
+  ]
+
+  const table = infection ? infected : illness
   const prognosis = check(table, random.int(1, 100))
   switch (prognosis) {
     case 'death':
       const age = year - person.born
       person.died = year
-      person.history.push({ year, event: `Died due to illness, age ${age}` })
+      const event = infection
+        ? `Died from infection following injury, age ${age}`
+        : `Died due to illnness, age ${age}`
+      person.history.push({ year, event })
       community.discord++
       if (age < 20) community.discord++
       break
     case 'deaf':
       if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
-        person.history.push({ year, event: 'Recovered from illness' })
+        const event = infection
+          ? 'Suffered injury which became infected, but recovered'
+          : 'Recovered from illness'
+        person.history.push({ year, event })
       } else if (person.ears.left === 'Deaf') {
         person.ears.right = 'Deaf'
-        person.history.push({ year, event: 'Lost hearing in right ear due to illness, resulting in total deafness' })
+        const event = infection
+          ? 'Infected injury led to loss of hearing in right ear, resulting in total deafness'
+          : 'Lost hearing in right ear due to illness, resulting in total deafness'
+        person.history.push({ year, event })
       } else if (person.ears.right === 'Deaf') {
         person.ears.left = 'Deaf'
-        person.history.push({ year, event: 'Lost hearing in left ear due to illness, resulting in total deafness' })
+        const event = infection
+          ? 'Infected injury led to loss of hearing in left ear, resulting in total deafness'
+          : 'Lost hearing in left ear due to illness, resulting in total deafness'
+        person.history.push({ year, event })
       } else {
         const ear = random.int(0, 1) === 1 ? 'left' : 'right'
+        const event = infection
+          ? `Infected injury led to loss of hearing in ${ear} ear`
+          : `Lost hearing in ${ear} ear due to illness`
         person.ears[ear] = 'Deaf'
-        person.history.push({ year, event: `Lost hearing in ${ear} ear due to illness` })
+        person.history.push({ year, event })
       }
       break
     case 'blindness':
       if (person.eyes.left === 'Blind' && person.eyes.right === 'Blind') {
-        person.history.push({ year, event: 'Recovered from illness' })
+        const event = infection
+          ? 'Suffered injury which became infected, but recovered'
+          : 'Recovered from illness'
+        person.history.push({ year, event })
       } else if (person.eyes.left === 'Blind') {
+        const event = infection
+          ? 'Infected injury led to loss of sight in right eye, resulting in total blindness'
+          : 'Lost sight in right eye due to illness, resulting in total blindness'
         person.eyes.right = 'Blind'
-        person.history.push({ year, event: 'Lost sight in right eye due to illness, resulting in total blindness' })
+        person.history.push({ year, event })
       } else if (person.eyes.right === 'Blind') {
+        const event = infection
+          ? 'Infected injury led to loss of sight in left eye, resulting in total blindness'
+          : 'Lost sight in left eye due to illness, resulting in total blindness'
         person.eyes.left = 'Blind'
-        person.history.push({ year, event: 'Lost sight in left eye due to illness, resulting in total blindness' })
+        person.history.push({ year, event })
       } else {
         const eye = random.int(0, 1) === 1 ? 'left' : 'right'
+        const event = infection
+          ? `Infected injury led to loss of sight in ${eye} eye`
+          : `Lost sight in ${eye} ear due to illness`
         person.eyes[eye] = 'Blind'
-        person.history.push({ year, event: `Lost sight in ${eye} eye due to illness` })
+        person.history.push({ year, event })
       }
       break
     default:
       person.history.push({ year, event: 'Recovered from illness' })
+      break
+  }
+}
+
+/**
+ * What happens when someone gets injured?
+ * @param community {Object} - The community object.
+ * @param person {Object} - The person object.
+ * @param year {number} - The current year.
+ */
+
+const getInjured = (community, person, year) => {
+  const table = [
+    { chance: 6, event: 'blind' },
+    { chance: 6, event: 'deaf' },
+    { chance: 16, event: 'limb' },
+    { chance: 3, event: 'killed' },
+    { chance: 30, event: 'infection' }
+  ]
+
+  const possibleLocations = [ 'torso', 'right arm', 'right leg', 'left arm', 'left leg', 'head' ]
+  const randomScarLocation = shuffle(possibleLocations).pop()
+
+  const outcome = check(table, random.int(1, 100))
+  switch (outcome) {
+    case 'deaf':
+      if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
+        person.scars.push('head')
+        person.history.push({ year, event: 'Suffered a head wound' })
+      } else if (person.ears.left === 'Deaf') {
+        person.ears.right = 'Deaf'
+        person.scars.push('right ear')
+        person.history.push({ year, event: 'Lost hearing in right ear due to injury, resulting in total deafness' })
+      } else if (person.ears.right === 'Deaf') {
+        person.ears.left = 'Deaf'
+        person.scars.push('left ear')
+        person.history.push({ year, event: 'Lost hearing in left ear due to injury, resulting in total deafness' })
+      } else {
+        const ear = random.int(0, 1) === 1 ? 'left' : 'right'
+        person.ears[ear] = 'Deaf'
+        person.scars.push(`${ear} ear`)
+        person.history.push({ year, event: `Lost hearing in ${ear} ear due to injury` })
+      }
+      break
+    case 'blindness':
+      if (person.eyes.left === 'Blind' && person.eyes.right === 'Blind') {
+        person.scars.push('head')
+        person.history.push({ year, event: 'Suffered a head wound' })
+      } else if (person.eyes.left === 'Blind') {
+        person.eyes.right = 'Blind'
+        person.scars.push('right eye')
+        person.history.push({ year, event: 'Lost sight in right eye due to injury, resulting in total blindness' })
+      } else if (person.eyes.right === 'Blind') {
+        person.eyes.left = 'Blind'
+        person.scars.push('left eye')
+        person.history.push({ year, event: 'Lost sight in left eye due to injury, resulting in total blindness' })
+      } else {
+        const eye = random.int(0, 1) === 1 ? 'left' : 'right'
+        person.eyes[eye] = 'Blind'
+        person.scars.push(`${eye} eye`)
+        person.history.push({ year, event: `Lost sight in ${eye} eye due to injury` })
+      }
+      break
+    case 'limb':
+      const limbs = { leftarm: 'left arm', rightarm: 'right arm', leftleg: 'left leg', rightleg: 'right leg' }
+      const candidates = Object.keys(limbs).filter(limb => person.limbs[limb] === 'Healthy')
+      const shuffledCandidates = shuffle(candidates)
+      if (shuffledCandidates.length > 0) {
+        const limb = shuffledCandidates.pop()
+        person.scars.push(limbs[limb])
+        person.limbs[limb] = 'Missing'
+        person.history.push({ year, event: `Lost ${limbs[limb]} due to injury` })
+      } else {
+        person.scars.push('torso')
+        person.history.push({ year, event: 'Suffered an injury to the torso' })
+      }
+      break
+    case 'killed':
+      const age = year - person.born
+      person.died = year
+      person.history.push({ year, event: `Suffered a fatal injury, age ${age}` })
+      community.discord += 2
+      if (age < 20) community.discord++
+      break
+    case 'infection':
+      person.scars.push(randomScarLocation)
+      getSick(community, person, year, true)
+      break
+    default:
+      person.scars.push(randomScarLocation)
+      person.history.push({ year, event: `Suffered an injury to the ${randomScarLocation}` })
       break
   }
 }
@@ -283,6 +412,7 @@ const agePerson = (community, person, year) => {
       getSick(community, person, year)
       break
     default:
+      getInjured(community, person, year)
       break
   }
 }

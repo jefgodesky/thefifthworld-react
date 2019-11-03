@@ -1,5 +1,6 @@
 import random from 'random'
 import { daysFromNow } from '../../shared/utils'
+import { generateFounder } from './people'
 import { check } from './check'
 
 /**
@@ -26,7 +27,7 @@ const getCommunityStatus = community => {
   ]
   const eventTable = overpopulated ? overpopulatedTable : normalTable
 
-  const randomizer = random.uniform(1, 100)
+  const randomizer = random.int(1, 100)
   const event = check(eventTable, randomizer())
   community.status.event = event
   switch (event) {
@@ -38,14 +39,31 @@ const getCommunityStatus = community => {
   community.status.discord = Math.max(0, community.status.discord)
 }
 
+const addFounder = community => {
+  const founders = community.traditions.village ? 50 : 10
+  const living = community.people.filter(person => !person.died)
+  const randomizer = random.int(1, 100)
+  if (living.length < founders && randomizer() < 25) {
+    const founder = generateFounder()
+    community.people.push(founder)
+  }
+}
+
 /**
  * See what happens each year.
  * @param community {Object} - The community object.
  * @param year {number} - The year being run.
+ * @param founding {boolean} - If `true`, then this is in the 'founding'
+ *   period, and we might introduce a new character ex nihilo simply because
+ *   we're not tracing this all the way back to the beginning and we need to
+ *   start somewhere.
  */
 
-const runYear = (community, year) => {
+const runYear = (community, year, founding) => {
   getCommunityStatus(community)
+  if (founding) {
+    addFounder(community)
+  }
   community.chronicle.push(Object.assign({}, { year }, community.status))
 }
 
@@ -71,7 +89,8 @@ const generateCommunity = community => {
 
   // Cycle through years
   for (let year = fromYear; year < toYear; year++) {
-    runYear(community, year)
+    const founding = year < fromYear + 25
+    runYear(community, year, founding)
   }
 }
 

@@ -242,6 +242,7 @@ const saveChoice = async (community, id, req, res) => {
 const generate = async (community, id, req, res) => {
   generateCommunity(community)
   console.log(community.chronicle)
+  console.log(`Population: ${community.people.length}`)
   res.redirect(`/create-community/${id}`)
 }
 

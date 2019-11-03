@@ -142,6 +142,25 @@ const alphabetize = arr => {
   })
 }
 
+/**
+ * Returns a date a number of days from the present equal to the days argument
+ * provided.
+ * @param days {number} - The number of days in the future.
+ * @returns {Date|boolean} - The future date specified, or `false` if given an
+ *   invalid argument for `days`.
+ */
+
+const daysFromNow = days => {
+  const d = parseInt(days)
+  if (d) {
+    let future = new Date()
+    future.setDate(future.getDate() + d)
+    return future
+  } else {
+    return false
+  }
+}
+
 export {
   checkExists,
   isPopulatedArray,
@@ -151,5 +170,6 @@ export {
   getFileSizeStr,
   clone,
   requestLocation,
-  alphabetize
+  alphabetize,
+  daysFromNow
 }

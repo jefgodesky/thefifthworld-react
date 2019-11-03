@@ -2,8 +2,13 @@ import random from 'random'
 import { check } from './check'
 import shuffle from './shuffle'
 
+/**
+ * Generate a character ex nihilo. Used for founders of the community 150-125
+ * years before the Fifth World's present.
+ * @returns {Object} - An object representing the person.
+ */
+
 const generateFounder = () => {
-  const randomPercent = random.int(1, 100)
   const randomDistributed = random.normal(0, 1)
 
   const sexes = [
@@ -14,7 +19,7 @@ const generateFounder = () => {
 
   let bodyType = ''
   for (let space = 0; space < 4; space++) {
-    const shuffled = shuffle('+0-'.split())
+    const shuffled = shuffle('+0-'.split(''))
     bodyType += shuffled[1]
   }
 
@@ -27,13 +32,33 @@ const generateFounder = () => {
       neuroticism: randomDistributed()
     },
     intelligence: randomDistributed(),
-    neurodivergent: randomPercent() === 1,
+    neurodivergent: random.int(1, 100) === 1,
     sexualOrientation: randomDistributed(),
-    sex: check(sexes, randomPercent()),
-    bodyType
+    sex: check(sexes, random.int(1, 100)),
+    fertility: 0,
+    bodyType,
+    limbs: {
+      leftarm: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy',
+      rightarm: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy',
+      leftleg: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy',
+      rightleg: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy'
+    },
+    blind: random.float(0, 100) < 0.016,
+    deaf: random.float(0, 100) < 0.2,
+    achondroplasia: random.float(0, 100) < 0.004,
+    psychopath: null
   }
 
-  console.log(founder)
+  // There's a 1% chance this person is a psychopath...
+  if (random.int(1, 100) === 1) {
+    founder.psychopath = 1
+    founder.personality.agreeableness -= 2
+    founder.personality.conscientiousness -= 2
+    founder.personality.neuroticism += 2
+    founder.personality.extraversion += 1
+    founder.personality.openness += 1
+  }
+
   return founder
 }
 

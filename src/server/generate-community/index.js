@@ -27,8 +27,7 @@ const getCommunityStatus = community => {
   ]
   const eventTable = overpopulated ? overpopulatedTable : normalTable
 
-  const randomizer = random.int(1, 100)
-  const event = check(eventTable, randomizer())
+  const event = check(eventTable, random.int(1, 100))
   community.status.event = event
   switch (event) {
     case 'conflict': community.status.discord += 3; break
@@ -39,13 +38,25 @@ const getCommunityStatus = community => {
   community.status.discord = Math.max(0, community.status.discord)
 }
 
-const addFounder = community => {
-  const founders = community.traditions.village ? 50 : 10
+/**
+ * We're only covering the last 150 years of this community's history, so we
+ * need founders to come in at staggered points in its early history. For
+ * a given year, this adds a random number of founders if we're still in the
+ * founding period.
+ * @param community {Object} - The community object.
+ * @param year {number} - The year currently being run.
+ */
+
+const addFounder = (community, year) => {
+  const founders = community.traditions.village ? 20 : 4
   const living = community.people.filter(person => !person.died)
-  const randomizer = random.int(1, 100)
-  if (living.length < founders && randomizer() < 25) {
-    const founder = generateFounder()
-    community.people.push(founder)
+  if (living.length < founders) {
+    const num = random.int(0, 1)
+    for (let i = 0; i < num; i++) {
+      const founder = generateFounder()
+      founder.born = year
+      community.people.push(founder)
+    }
   }
 }
 
@@ -62,7 +73,7 @@ const addFounder = community => {
 const runYear = (community, year, founding) => {
   getCommunityStatus(community)
   if (founding) {
-    addFounder(community)
+    addFounder(community, year)
   }
   community.chronicle.push(Object.assign({}, { year }, community.status))
 }

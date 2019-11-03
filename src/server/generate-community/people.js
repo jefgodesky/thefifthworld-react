@@ -91,6 +91,66 @@ const adjustFertility = (person, year) => {
 }
 
 /**
+ * What happens when someone gets sick?
+ * @param community {Object} - The community object.
+ * @param person {Object} - The person object.
+ * @param year {number} - The current year.
+ */
+
+const getSick = (community, person, year) => {
+  const table = [
+    { chance: 3, event: 'death' },
+    { chance: 1, event: 'deaf' },
+    { chance: 1, event: 'blind' },
+    { chance: 95, event: 'recovery' }
+  ]
+
+  const prognosis = check(table, random.int(1, 100))
+  switch (prognosis) {
+    case 'death':
+      const age = year - person.born
+      person.died = year
+      person.history.push({ year, event: `Died due to illness, age ${age}` })
+      community.discord++
+      if (age < 20) community.discord++
+      break
+    case 'deaf':
+      if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
+        person.history.push({ year, event: 'Recovered from illness' })
+      } else if (person.ears.left === 'Deaf') {
+        person.ears.right = 'Deaf'
+        person.history.push({ year, event: 'Lost hearing in right ear due to illness, resulting in total deafness' })
+      } else if (person.ears.right === 'Deaf') {
+        person.ears.left = 'Deaf'
+        person.history.push({ year, event: 'Lost hearing in left ear due to illness, resulting in total deafness' })
+      } else {
+        const ear = random.int(0, 1) === 1 ? 'left' : 'right'
+        person.ears[ear] = 'Deaf'
+        person.history.push({ year, event: `Lost hearing in ${ear} ear due to illness` })
+      }
+      break
+    case 'blindness':
+      if (person.eyes.left === 'Blind' && person.eyes.right === 'Blind') {
+        person.history.push({ year, event: 'Recovered from illness' })
+      } else if (person.eyes.left === 'Blind') {
+        person.eyes.right = 'Blind'
+        person.history.push({ year, event: 'Lost sight in right eye due to illness, resulting in total blindness' })
+      } else if (person.eyes.right === 'Blind') {
+        person.eyes.left = 'Blind'
+        person.history.push({ year, event: 'Lost sight in left eye due to illness, resulting in total blindness' })
+      } else {
+        const eye = random.int(0, 1) === 1 ? 'left' : 'right'
+        person.eyes[eye] = 'Blind'
+        person.history.push({ year, event: `Lost sight in ${eye} eye due to illness` })
+      }
+      break
+    default:
+      person.history.push({ year, event: 'Recovered from illness' })
+      break
+  }
+}
+
+/**
  * Age an individual.
  * @param community {Object} - The community object.
  * @param person {Object} - The person to age.
@@ -112,8 +172,8 @@ const agePerson = (community, person, year) => {
     { chance: 10, event: '-agreeableness' },
     { chance: 5, event: '+neuroticism' },
     { chance: 10, event: '-neuroticism' },
-    { chance: 1, event: 'sickness' },
-    { chance: 1, event: 'injury' }
+    { chance: 2, event: 'sickness' },
+    { chance: 3, event: 'injury' }
   ]
 
   const conflictTable = [
@@ -218,6 +278,9 @@ const agePerson = (community, person, year) => {
       break
     case '-neuroticism':
       if (person.personality.neuroticism > -3) person.personality.neuroticism -= 1
+      break
+    case 'sickness':
+      getSick(community, person, year)
       break
     default:
       break

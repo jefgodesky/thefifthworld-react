@@ -240,7 +240,8 @@ const saveChoice = async (community, id, req, res) => {
  */
 
 const generate = async (community, id, req, res) => {
-  console.log(generateCommunity(community))
+  generateCommunity(community)
+  console.log(community.chronicle)
   res.redirect(`/create-community/${id}`)
 }
 

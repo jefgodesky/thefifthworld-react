@@ -4,16 +4,93 @@ import shuffle from './shuffle'
 import tables from '../../data/community-creation'
 
 /**
+ * Choose sex and gender.
+ * @param community {Object} - The community object.
+ * @param gender {string} - If given a string, that will be set to the person's
+ *   gender, and a sex will be determined based on that. If not, we'll
+ *   determine sex randomly, and then determine a gender based on sex.
+ *   (Default: `null`)
+ * @returns {Object} - An object with two properties: `sex`, a string providing
+ *   the person's sex, and `gender`, a string providing the person's gender.
+ */
+
+const chooseSexGender = (community, gender = null) => {
+  const res = { sex: null, gender: null }
+  const roll = random.int(1, 100)
+  if (gender) {
+    res.gender = gender
+    switch (gender) {
+      case 'Woman': res.sex = roll <= 98 ? 'Female' : roll <= 99 ? 'Intersex' : 'Male'; break
+      case 'Man': res.sex = roll <= 98 ? 'Male' : roll <= 99 ? 'Intersex' : 'Female'; break
+      case 'Third gender': res.sex = roll <= 48 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
+      case 'Feminine woman': res.sex = roll <= 98 ? 'Female' : roll <= 99 ? 'Intersex' : 'Male'; break
+      case 'Masculine woman': res.sex = roll <= 95 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
+      case 'Masculine man': res.sex = roll <= 98 ? 'Male' : roll <= 99 ? 'Intersex' : 'Female'; break
+      case 'Feminine man': res.sex = roll <= 95 ? 'Male' : roll <= 99 ? 'Female' : 'Intersex'; break
+      case 'Fifth gender': res.sex = roll <= 49 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
+      default: res.sex = roll <= 48 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
+    }
+  } else {
+    res.sex = check(tables.sexes, random.int(1, 100))
+    switch (community.traditions.genders) {
+      case 2:
+        if (res.sex === 'Female') {
+          res.gender = roll <= 99 ? 'Woman' : 'Man'
+        } else if (res.sex === 'Male') {
+          res.gender = roll <= 99 ? 'Man' : 'Woman'
+        } else {
+          res.gender = roll <= 50 ? 'Woman' : 'Man'
+        }
+        break
+      case 4:
+        if (res.sex === 'Female') {
+          res.gender = roll <= 66 ? 'Feminine woman' : roll <= 99 ? 'Masculine woman' : 'Feminine man'
+        } else if (res.sex === 'Male') {
+          res.gender = roll <= 66 ? 'Masculine man' : roll <= 99 ? 'Feminine man' : 'Masculine woman'
+        } else {
+          res.gender = roll <= 33 ? 'Masculine woman' : roll <= 66 ? 'Feminine man' : roll <= 83 ? 'Feminine woman' : 'Masculine man'
+        }
+        break
+      case 5:
+        if (res.sex === 'Female') {
+          res.gender = roll <= 55 ? 'Feminine woman' : roll <= 92 ? 'Masculine woman' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Feminine man' : 'Masculine man'
+        } else if (res.sex === 'Male') {
+          res.gender = roll <= 55 ? 'Masculine man' : roll <= 92 ? 'Feminine man' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Masculine woman' : 'Feminine woman'
+        } else {
+          res.gender = roll <= 58 ? 'Fifth gender' : roll <= 78 ? 'Feminine man' : roll <= 98 ? 'Masculine woman' : roll <= 99 ? 'Feminine woman' : 'Masculine man'
+        }
+        break
+      default:
+        if (res.sex === 'Female') {
+          res.gender = roll <= 90 ? 'Woman' : roll <= 99 ? 'Third gender' : 'Man'
+        } else if (res.sex === 'Male') {
+          res.gender = roll <= 90 ? 'Man' : roll <= 99 ? 'Third gender' : 'Woman'
+        } else {
+          res.gender = roll <= 80 ? 'Third gender' : roll <= 90 ? 'Woman' : 'Man'
+        }
+        break
+    }
+  }
+
+  return res
+}
+
+/**
  * Generate a character ex nihilo.
  * @param community {Object} - The community object.
  * @param born {number} - The year that the character is born.
  * @param age {number} - How old the character should be (Default: 0).
+ * @param chosenGender {string} - The gender that the person should be, if
+ *   that's important (as it is when generating potential relationship
+ *   partners). Setting this to `null` means it's randomly chosen.
+ *   (Default: `null`)
  * @returns {Object} - An object representing the person.
  */
 
-const generatePerson = (community, born, age = 0) => {
+const generatePerson = (community, born, age = 0, chosenGender = null) => {
   const randomDistributed = random.normal(0, 1)
   const longevity = random.normal(90, 5)
+  const { sex, gender } = chooseSexGender(community, chosenGender)
 
   const eyes = random.float(0, 100) < 0.016
     ? { left: 'Blind', right: 'Blind' }
@@ -36,7 +113,8 @@ const generatePerson = (community, born, age = 0) => {
     intelligence: randomDistributed(),
     neurodivergent: random.int(1, 100) === 1,
     sexualOrientation: randomDistributed(),
-    sex: check(tables.sexes, random.int(1, 100)),
+    sex,
+    gender,
     fertility: 0,
     bodyType: randomDistributed(),
     limbs: {

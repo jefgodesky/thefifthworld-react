@@ -1,6 +1,6 @@
 import random from 'random'
 import { daysFromNow } from '../../shared/utils'
-import { generateFounder, age } from './people'
+import { generatePerson, age } from './people'
 import { check } from './check'
 import tables from '../../data/community-creation'
 
@@ -51,8 +51,7 @@ const addFounder = (community, year) => {
   if (living.length < founders) {
     const num = random.int(0, 2)
     for (let i = 0; i < num; i++) {
-      const founder = generateFounder()
-      founder.born = year
+      const founder = generatePerson(community, year)
       community.people.push(founder)
     }
   }
@@ -92,7 +91,7 @@ const generateCommunity = community => {
   const toYear = toDate.getFullYear()
 
   // Set initial discord
-  const randomizer = random.normal(15, 1)
+  const randomizer = random.normal(10, 1)
   community.status = {
     discord: Math.floor(randomizer())
   }

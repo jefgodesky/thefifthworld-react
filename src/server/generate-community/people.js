@@ -1,15 +1,17 @@
 import random from 'random'
-import { check } from './check'
+import { check, checkUntil } from './check'
 import shuffle from './shuffle'
 import tables from '../../data/community-creation'
 
 /**
- * Generate a character ex nihilo. Used for founders of the community 150-125
- * years before the Fifth World's present.
+ * Generate a character ex nihilo.
+ * @param community {Object} - The community object.
+ * @param born {number} - The year that the character is born.
+ * @param age {number} - How old the character should be (Default: 0).
  * @returns {Object} - An object representing the person.
  */
 
-const generateFounder = () => {
+const generatePerson = (community, born, age = 0) => {
   const randomDistributed = random.normal(0, 1)
   const longevity = random.normal(90, 5)
 
@@ -21,7 +23,8 @@ const generateFounder = () => {
     ? { left: 'Deaf', right: 'Deaf' }
     : { left: 'Healthy', right: 'Healthy' }
 
-  const founder = {
+  const person = {
+    born,
     personality: {
       openness: randomDistributed(),
       conscientiousness: randomDistributed(),
@@ -52,15 +55,20 @@ const generateFounder = () => {
 
   // There's a 1% chance this person is a psychopath...
   if (random.int(1, 100) === 1) {
-    founder.psychopath = 1
-    founder.personality.agreeableness -= 2
-    founder.personality.conscientiousness -= 2
-    founder.personality.neuroticism += 2
-    founder.personality.extraversion += 1
-    founder.personality.openness += 1
+    person.psychopath = 1
+    person.personality.agreeableness -= 2
+    person.personality.conscientiousness -= 2
+    person.personality.neuroticism += 2
+    person.personality.extraversion += 1
+    person.personality.openness += 1
   }
 
-  return founder
+  // Age up
+  for (let a = 0; a < age; a++) {
+    agePerson(community, person, born + a)
+  }
+
+  return person
 }
 
 /**
@@ -88,12 +96,17 @@ const adjustFertility = (person, year) => {
  * @param person {Object} - The person object.
  * @param year {number} - The current year.
  * @param infection {boolean} - If `true`, the illness follows from an infected
- *   injury.
+ *   injury. (Default: `false`)
+ * @param canDie {boolean} - Whether or not the character can die.  For
+ *   example, when generating candidates for marriage, they need to be
+ *   aged up, so obviously none of them should die before that can happen.
+ *   (Default: `true`)
  */
 
-const getSick = (community, person, year, infection) => {
+const getSick = (community, person, year, infection = false, canDie = true) => {
   const table = infection ? tables.infection : tables.illness
-  const prognosis = check(table, random.int(1, 100))
+  const unacceptable = canDie ? [] : [ 'death' ]
+  const prognosis = checkUntil(table, unacceptable)
   switch (prognosis) {
     case 'death':
       const age = year - person.born
@@ -102,8 +115,10 @@ const getSick = (community, person, year, infection) => {
         ? `Died from infection following injury, age ${age}`
         : `Died due to illnness, age ${age}`
       person.history.push({ year, event })
-      community.discord++
-      if (age < 20) community.discord++
+      if (community && community.status && community.status.discord) {
+        community.status.discord += 2
+        if (age < 20) community.status.discord++
+      }
       break
     case 'deaf':
       if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
@@ -170,13 +185,18 @@ const getSick = (community, person, year, infection) => {
  * @param community {Object} - The community object.
  * @param person {Object} - The person object.
  * @param year {number} - The current year.
+ * @param canDie {boolean} - Whether or not the character can die.  For
+ *   example, when generating candidates for marriage, they need to be
+ *   aged up, so obviously none of them should die before that can happen.
+ *   (Default: `true`)
  */
 
-const getInjured = (community, person, year) => {
+const getInjured = (community, person, year, canDie = true) => {
   const possibleLocations = [ 'torso', 'right arm', 'right leg', 'left arm', 'left leg', 'head' ]
   const randomScarLocation = shuffle(possibleLocations).pop()
 
-  const outcome = check(tables.injury, random.int(1, 100))
+  const unacceptable = canDie ? [] : [ 'killed' ]
+  const outcome = checkUntil(tables.injury, unacceptable)
   switch (outcome) {
     case 'deaf':
       if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
@@ -234,8 +254,10 @@ const getInjured = (community, person, year) => {
       const age = year - person.born
       person.died = year
       person.history.push({ year, event: `Suffered a fatal injury, age ${age}` })
-      community.discord += 2
-      if (age < 20) community.discord++
+      if (community && community.status && community.status.discord) {
+        community.status.discord += 2
+        if (age < 20) community.status.discord++
+      }
       break
     case 'infection':
       person.scars.push(randomScarLocation)
@@ -253,14 +275,20 @@ const getInjured = (community, person, year) => {
  * @param community {Object} - The community object.
  * @param person {Object} - The person to age.
  * @param year {number} - The current year.
+ * @param canDie {boolean} - Whether or not the character can die.  For
+ *   example, when generating candidates for marriage, they need to be
+ *   aged up, so obviously none of them should die before that can happen.
+ *   (Default: `true`)
  */
 
-const agePerson = (community, person, year) => {
+const agePerson = (community, person, year, canDie = true) => {
   adjustFertility(person, year)
-  const { event } = community.status
+  const event = community && community.status && community.status.event
+    ? community.status.event
+    : 'peace'
   const age = year - person.born
 
-  if (age > person.longevity) {
+  if (canDie && age > person.longevity) {
     const chance = (age - person.longevity) * 10
     if (random.int(1, 100) < chance) {
       person.died = year
@@ -273,7 +301,7 @@ const agePerson = (community, person, year) => {
     for (let i = 0; i < age; i++) {
       chance = Math.max(chance, random.int(1, 100))
     }
-    if (chance < 50) getSick(community, person, year)
+    if (chance < 50) getSick(community, person, year, canDie)
   } else if (!person.died) {
     let table = tables.personalEventsAtPeace
     switch (event) {
@@ -333,10 +361,10 @@ const agePerson = (community, person, year) => {
         if (person.personality.neuroticism > -3) person.personality.neuroticism -= 1
         break
       case 'sickness':
-        getSick(community, person, year)
+        getSick(community, person, year, canDie)
         break
       default:
-        getInjured(community, person, year)
+        getInjured(community, person, year, canDie)
         break
     }
   }
@@ -355,6 +383,6 @@ const age = (community, year) => {
 }
 
 export {
-  generateFounder,
+  generatePerson,
   age
 }

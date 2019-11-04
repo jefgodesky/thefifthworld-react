@@ -295,130 +295,138 @@ const agePerson = (community, person, year) => {
     }
   }
 
-  const peaceTable = [
-    { chance: 10, event: '+openness' },
-    { chance: 10, event: '-openness' },
-    { chance: 10, event: '+conscientiousness' },
-    { chance: 10, event: '-conscientiousness' },
-    { chance: 10, event: '+extraversion' },
-    { chance: 10, event: '-extraversion' },
-    { chance: 10, event: '+agreeableness' },
-    { chance: 10, event: '-agreeableness' },
-    { chance: 5, event: '+neuroticism' },
-    { chance: 10, event: '-neuroticism' },
-    { chance: 2, event: 'sickness' },
-    { chance: 3, event: 'injury' }
-  ]
+  if (!person.died && age < 5) {
+    let chance = 0
+    for (let i = 0; i < age; i++) {
+      chance = Math.max(chance, random.int(1, 100))
+    }
+    if (chance < 50) getSick(community, person, year)
+  } else if (!person.died) {
+    const peaceTable = [
+      { chance: 10, event: '+openness' },
+      { chance: 10, event: '-openness' },
+      { chance: 10, event: '+conscientiousness' },
+      { chance: 10, event: '-conscientiousness' },
+      { chance: 10, event: '+extraversion' },
+      { chance: 10, event: '-extraversion' },
+      { chance: 10, event: '+agreeableness' },
+      { chance: 10, event: '-agreeableness' },
+      { chance: 5, event: '+neuroticism' },
+      { chance: 10, event: '-neuroticism' },
+      { chance: 2, event: 'sickness' },
+      { chance: 3, event: 'injury' }
+    ]
 
-  const conflictTable = [
-    { chance: 3, event: '+openness' },
-    { chance: 3, event: '-openness' },
-    { chance: 3, event: '+conscientiousness' },
-    { chance: 3, event: '-conscientiousness' },
-    { chance: 3, event: '+extraversion' },
-    { chance: 5, event: '-extraversion' },
-    { chance: 3, event: '+agreeableness' },
-    { chance: 5, event: '-agreeableness' },
-    { chance: 5, event: '+neuroticism' },
-    { chance: 3, event: '-neuroticism' },
-    { chance: 26, event: 'sickness' },
-    { chance: 25, event: 'injury' }
-  ]
+    const conflictTable = [
+      { chance: 3, event: '+openness' },
+      { chance: 3, event: '-openness' },
+      { chance: 3, event: '+conscientiousness' },
+      { chance: 3, event: '-conscientiousness' },
+      { chance: 3, event: '+extraversion' },
+      { chance: 5, event: '-extraversion' },
+      { chance: 3, event: '+agreeableness' },
+      { chance: 5, event: '-agreeableness' },
+      { chance: 5, event: '+neuroticism' },
+      { chance: 3, event: '-neuroticism' },
+      { chance: 26, event: 'sickness' },
+      { chance: 25, event: 'injury' }
+    ]
 
-  const sicknessTable = [
-    { chance: 4, event: '+openness' },
-    { chance: 4, event: '-openness' },
-    { chance: 4, event: '+conscientiousness' },
-    { chance: 4, event: '-conscientiousness' },
-    { chance: 4, event: '+extraversion' },
-    { chance: 6, event: '-extraversion' },
-    { chance: 4, event: '+agreeableness' },
-    { chance: 6, event: '-agreeableness' },
-    { chance: 6, event: '+neuroticism' },
-    { chance: 4, event: '-neuroticism' },
-    { chance: 40, event: 'sickness' },
-    { chance: 11, event: 'injury' }
-  ]
+    const sicknessTable = [
+      { chance: 4, event: '+openness' },
+      { chance: 4, event: '-openness' },
+      { chance: 4, event: '+conscientiousness' },
+      { chance: 4, event: '-conscientiousness' },
+      { chance: 4, event: '+extraversion' },
+      { chance: 6, event: '-extraversion' },
+      { chance: 4, event: '+agreeableness' },
+      { chance: 6, event: '-agreeableness' },
+      { chance: 6, event: '+neuroticism' },
+      { chance: 4, event: '-neuroticism' },
+      { chance: 40, event: 'sickness' },
+      { chance: 11, event: 'injury' }
+    ]
 
-  const leantable = [
-    { chance: 8, event: '+openness' },
-    { chance: 8, event: '-openness' },
-    { chance: 8, event: '+conscientiousness' },
-    { chance: 8, event: '-conscientiousness' },
-    { chance: 8, event: '+extraversion' },
-    { chance: 10, event: '-extraversion' },
-    { chance: 8, event: '+agreeableness' },
-    { chance: 10, event: '-agreeableness' },
-    { chance: 10, event: '+neuroticism' },
-    { chance: 8, event: '-neuroticism' },
-    { chance: 6, event: 'sickness' },
-    { chance: 5, event: 'injury' }
-  ]
+    const leantable = [
+      { chance: 8, event: '+openness' },
+      { chance: 8, event: '-openness' },
+      { chance: 8, event: '+conscientiousness' },
+      { chance: 8, event: '-conscientiousness' },
+      { chance: 8, event: '+extraversion' },
+      { chance: 10, event: '-extraversion' },
+      { chance: 8, event: '+agreeableness' },
+      { chance: 10, event: '-agreeableness' },
+      { chance: 10, event: '+neuroticism' },
+      { chance: 8, event: '-neuroticism' },
+      { chance: 6, event: 'sickness' },
+      { chance: 5, event: 'injury' }
+    ]
 
-  const table = event === 'conflict'
-    ? conflictTable
-    : event === 'sickness'
-      ? sicknessTable
-      : event === 'lean'
-        ? leantable
-        : peaceTable
-  const personal = check(table, random.int(1, 100))
+    const table = event === 'conflict'
+      ? conflictTable
+      : event === 'sickness'
+        ? sicknessTable
+        : event === 'lean'
+          ? leantable
+          : peaceTable
+    const personal = check(table, random.int(1, 100))
 
-  switch (personal) {
-    case '+openness':
-      if (person.personality.openness < 3) {
-        person.personality.openness += 1
-        // familyEvent(community, person, year)
-      }
-      break
-    case '-openness':
-      if (person.personality.openness > -3) person.personality.openness -= 1
-      break
-    case '+conscientiousness':
-      if (person.personality.conscientiousness < 3) person.personality.conscientiousness += 1
-      break
-    case '-conscientiousness':
-      if (person.personality.conscientiousness > -3) person.personality.conscientiousness -= 1
-      break
-    case '+extraversion':
-      if (person.personality.extraversion < 3) {
-        person.personality.extraversion += 1
-        // familyEvent(community, person, year)
-      }
-      break
-    case '-extraversion':
-      if (person.personality.extraversion > -3) {
-        person.personality.extraversion -= 1
-        // breakup(community, person, year)
-      }
-      break
-    case '+agreeableness':
-      if (person.personality.agreeableness < 3) {
-        person.personality.agreeableness += 1
-        // familyEvent(community, person, year)
-      }
-      break
-    case '-agreeableness':
-      if (person.personality.agreeableness > -3) {
-        person.personality.agreeableness -= 1
-        // breakup(community, person, year)
-      }
-      break
-    case '+neuroticism':
-      if (person.personality.neuroticism < 3) {
-        person.personality.neuroticism += 1
-        // breakup(community, person, year)
-      }
-      break
-    case '-neuroticism':
-      if (person.personality.neuroticism > -3) person.personality.neuroticism -= 1
-      break
-    case 'sickness':
-      getSick(community, person, year)
-      break
-    default:
-      getInjured(community, person, year)
-      break
+    switch (personal) {
+      case '+openness':
+        if (person.personality.openness < 3) {
+          person.personality.openness += 1
+          // familyEvent(community, person, year)
+        }
+        break
+      case '-openness':
+        if (person.personality.openness > -3) person.personality.openness -= 1
+        break
+      case '+conscientiousness':
+        if (person.personality.conscientiousness < 3) person.personality.conscientiousness += 1
+        break
+      case '-conscientiousness':
+        if (person.personality.conscientiousness > -3) person.personality.conscientiousness -= 1
+        break
+      case '+extraversion':
+        if (person.personality.extraversion < 3) {
+          person.personality.extraversion += 1
+          // familyEvent(community, person, year)
+        }
+        break
+      case '-extraversion':
+        if (person.personality.extraversion > -3) {
+          person.personality.extraversion -= 1
+          // breakup(community, person, year)
+        }
+        break
+      case '+agreeableness':
+        if (person.personality.agreeableness < 3) {
+          person.personality.agreeableness += 1
+          // familyEvent(community, person, year)
+        }
+        break
+      case '-agreeableness':
+        if (person.personality.agreeableness > -3) {
+          person.personality.agreeableness -= 1
+          // breakup(community, person, year)
+        }
+        break
+      case '+neuroticism':
+        if (person.personality.neuroticism < 3) {
+          person.personality.neuroticism += 1
+          // breakup(community, person, year)
+        }
+        break
+      case '-neuroticism':
+        if (person.personality.neuroticism > -3) person.personality.neuroticism -= 1
+        break
+      case 'sickness':
+        getSick(community, person, year)
+        break
+      default:
+        getInjured(community, person, year)
+        break
+    }
   }
 }
 

@@ -10,6 +10,7 @@ import shuffle from './shuffle'
 
 const generateFounder = () => {
   const randomDistributed = random.normal(0, 1)
+  const longevity = random.normal(90, 5)
 
   const sexes = [
     { chance: 49.15, event: 'Female' },
@@ -33,6 +34,7 @@ const generateFounder = () => {
       agreeableness: randomDistributed(),
       neuroticism: randomDistributed()
     },
+    longevity: longevity(),
     intelligence: randomDistributed(),
     neurodivergent: random.int(1, 100) === 1,
     sexualOrientation: randomDistributed(),
@@ -283,6 +285,15 @@ const getInjured = (community, person, year) => {
 const agePerson = (community, person, year) => {
   adjustFertility(person, year)
   const { event } = community.status
+  const age = year - person.born
+
+  if (age > person.longevity) {
+    const chance = (age - person.longevity) * 10
+    if (random.int(1, 100) < chance) {
+      person.died = year
+      person.history.push({ year, event: `Passed away at the age of ${age}` })
+    }
+  }
 
   const peaceTable = [
     { chance: 10, event: '+openness' },

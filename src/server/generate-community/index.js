@@ -51,7 +51,7 @@ const addFounder = (community, year) => {
   const founders = community.traditions.village ? 20 : 4
   const living = community.people.filter(person => !person.died)
   if (living.length < founders) {
-    const num = random.int(0, 1)
+    const num = random.int(0, 2)
     for (let i = 0; i < num; i++) {
       const founder = generateFounder()
       founder.born = year

@@ -17,12 +17,6 @@ const generateFounder = () => {
     { chance: 1.7, event: 'Intersex' }
   ]
 
-  let bodyType = ''
-  for (let space = 0; space < 4; space++) {
-    const shuffled = shuffle('+0-'.split(''))
-    bodyType += shuffled[1]
-  }
-
   const eyes = random.float(0, 100) < 0.016
     ? { left: 'Blind', right: 'Blind' }
     : { left: 'Healthy', right: 'Healthy' }
@@ -44,7 +38,7 @@ const generateFounder = () => {
     sexualOrientation: randomDistributed(),
     sex: check(sexes, random.int(1, 100)),
     fertility: 0,
-    bodyType,
+    bodyType: randomDistributed(),
     limbs: {
       leftarm: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy',
       rightarm: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy',

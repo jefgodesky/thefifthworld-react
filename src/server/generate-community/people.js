@@ -1,6 +1,7 @@
 import random from 'random'
 import { check } from './check'
 import shuffle from './shuffle'
+import tables from '../../data/community-creation'
 
 /**
  * Generate a character ex nihilo. Used for founders of the community 150-125
@@ -11,12 +12,6 @@ import shuffle from './shuffle'
 const generateFounder = () => {
   const randomDistributed = random.normal(0, 1)
   const longevity = random.normal(90, 5)
-
-  const sexes = [
-    { chance: 49.15, event: 'Female' },
-    { chance: 49.15, event: 'Male' },
-    { chance: 1.7, event: 'Intersex' }
-  ]
 
   const eyes = random.float(0, 100) < 0.016
     ? { left: 'Blind', right: 'Blind' }
@@ -38,7 +33,7 @@ const generateFounder = () => {
     intelligence: randomDistributed(),
     neurodivergent: random.int(1, 100) === 1,
     sexualOrientation: randomDistributed(),
-    sex: check(sexes, random.int(1, 100)),
+    sex: check(tables.sexes, random.int(1, 100)),
     fertility: 0,
     bodyType: randomDistributed(),
     limbs: {
@@ -97,21 +92,7 @@ const adjustFertility = (person, year) => {
  */
 
 const getSick = (community, person, year, infection) => {
-  const illness = [
-    { chance: 3, event: 'death' },
-    { chance: 1, event: 'deaf' },
-    { chance: 1, event: 'blind' },
-    { chance: 95, event: 'recovery' }
-  ]
-
-  const infected = [
-    { chance: 10, event: 'death' },
-    { chance: 5, event: 'deaf' },
-    { chance: 5, event: 'blind' },
-    { chance: 80, event: 'recovery' }
-  ]
-
-  const table = infection ? infected : illness
+  const table = infection ? tables.infection : tables.illness
   const prognosis = check(table, random.int(1, 100))
   switch (prognosis) {
     case 'death':
@@ -192,18 +173,10 @@ const getSick = (community, person, year, infection) => {
  */
 
 const getInjured = (community, person, year) => {
-  const table = [
-    { chance: 6, event: 'blind' },
-    { chance: 6, event: 'deaf' },
-    { chance: 16, event: 'limb' },
-    { chance: 3, event: 'killed' },
-    { chance: 30, event: 'infection' }
-  ]
-
   const possibleLocations = [ 'torso', 'right arm', 'right leg', 'left arm', 'left leg', 'head' ]
   const randomScarLocation = shuffle(possibleLocations).pop()
 
-  const outcome = check(table, random.int(1, 100))
+  const outcome = check(tables.injury, random.int(1, 100))
   switch (outcome) {
     case 'deaf':
       if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
@@ -302,73 +275,12 @@ const agePerson = (community, person, year) => {
     }
     if (chance < 50) getSick(community, person, year)
   } else if (!person.died) {
-    const peaceTable = [
-      { chance: 10, event: '+openness' },
-      { chance: 10, event: '-openness' },
-      { chance: 10, event: '+conscientiousness' },
-      { chance: 10, event: '-conscientiousness' },
-      { chance: 10, event: '+extraversion' },
-      { chance: 10, event: '-extraversion' },
-      { chance: 10, event: '+agreeableness' },
-      { chance: 10, event: '-agreeableness' },
-      { chance: 5, event: '+neuroticism' },
-      { chance: 10, event: '-neuroticism' },
-      { chance: 2, event: 'sickness' },
-      { chance: 3, event: 'injury' }
-    ]
-
-    const conflictTable = [
-      { chance: 3, event: '+openness' },
-      { chance: 3, event: '-openness' },
-      { chance: 3, event: '+conscientiousness' },
-      { chance: 3, event: '-conscientiousness' },
-      { chance: 3, event: '+extraversion' },
-      { chance: 5, event: '-extraversion' },
-      { chance: 3, event: '+agreeableness' },
-      { chance: 5, event: '-agreeableness' },
-      { chance: 5, event: '+neuroticism' },
-      { chance: 3, event: '-neuroticism' },
-      { chance: 26, event: 'sickness' },
-      { chance: 25, event: 'injury' }
-    ]
-
-    const sicknessTable = [
-      { chance: 4, event: '+openness' },
-      { chance: 4, event: '-openness' },
-      { chance: 4, event: '+conscientiousness' },
-      { chance: 4, event: '-conscientiousness' },
-      { chance: 4, event: '+extraversion' },
-      { chance: 6, event: '-extraversion' },
-      { chance: 4, event: '+agreeableness' },
-      { chance: 6, event: '-agreeableness' },
-      { chance: 6, event: '+neuroticism' },
-      { chance: 4, event: '-neuroticism' },
-      { chance: 40, event: 'sickness' },
-      { chance: 11, event: 'injury' }
-    ]
-
-    const leantable = [
-      { chance: 8, event: '+openness' },
-      { chance: 8, event: '-openness' },
-      { chance: 8, event: '+conscientiousness' },
-      { chance: 8, event: '-conscientiousness' },
-      { chance: 8, event: '+extraversion' },
-      { chance: 10, event: '-extraversion' },
-      { chance: 8, event: '+agreeableness' },
-      { chance: 10, event: '-agreeableness' },
-      { chance: 10, event: '+neuroticism' },
-      { chance: 8, event: '-neuroticism' },
-      { chance: 6, event: 'sickness' },
-      { chance: 5, event: 'injury' }
-    ]
-
-    const table = event === 'conflict'
-      ? conflictTable
-      : event === 'sickness'
-        ? sicknessTable
-        : event === 'lean'
-          ? leantable
-          : peaceTable
+    let table = tables.personalEventsAtPeace
+    switch (event) {
+      case 'conflict': table = tables.personalEventsInConflict; break
+      case 'sickness': table = tables.personalEventsInSickness; break
+      case 'lean': table = tables.personalEventsInLeanTimes; break
+    }
     const personal = check(table, random.int(1, 100))
 
     switch (personal) {

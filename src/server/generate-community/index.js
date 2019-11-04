@@ -2,6 +2,7 @@ import random from 'random'
 import { daysFromNow } from '../../shared/utils'
 import { generateFounder, age } from './people'
 import { check } from './check'
+import tables from '../../data/community-creation'
 
 /**
  * Roll for the community's current status.
@@ -13,20 +14,9 @@ const getCommunityStatus = community => {
   const threshold = community.traditions.village ? 150 : 30
   const living = community.people.filter(person => !person.died)
   const overpopulated = living.length > threshold
-
-  const overpopulatedTable = [
-    { chance: 10, event: 'conflict' },
-    { chance: 25, event: 'sickness' },
-    { chance: 50, event: 'lean' },
-    { chance: 15, event: 'peace' }
-  ]
-  const normalTable = [
-    { chance: 1, event: 'conflict' },
-    { chance: 2, event: 'sickness' },
-    { chance: 4, event: 'lean' },
-    { chance: 93, event: 'peace' }
-  ]
-  const eventTable = overpopulated ? overpopulatedTable : normalTable
+  const eventTable = overpopulated
+    ? tables.overpopulatedCommunityEvents
+    : tables.normalCommunityEvents
 
   let roll = random.int(1, 100)
   for (let i = 0; i < discord; i++) {

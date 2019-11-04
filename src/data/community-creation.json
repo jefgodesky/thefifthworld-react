@@ -1,0 +1,94 @@
+{
+  "overpopulatedCommunityEvents": [
+    { "chance": 10, "event": "conflict" },
+    { "chance": 25, "event": "sickness" },
+    { "chance": 50, "event": "lean" },
+    { "chance": 15, "event": "peace" }
+  ],
+  "normalCommunityEvents": [
+    { "chance": 1, "event": "conflict" },
+    { "chance": 2, "event": "sickness" },
+    { "chance": 4, "event": "lean" },
+    { "chance": 93, "event": "peace" }
+  ],
+  "sexes": [
+    { "chance": 49.15, "event": "Female" },
+    { "chance": 49.15, "event": "Male" },
+    { "chance": 1.7, "event": "Intersex" }
+  ],
+  "illness": [
+    { "chance": 3, "event": "death" },
+    { "chance": 1, "event": "deaf" },
+    { "chance": 1, "event": "blind" },
+    { "chance": 95, "event": "recovery" }
+  ],
+  "infection": [
+    { "chance": 10, "event": "death" },
+    { "chance": 5, "event": "deaf" },
+    { "chance": 5, "event": "blind" },
+    { "chance": 80, "event": "recovery" }
+  ],
+  "injury": [
+    { "chance": 6, "event": "blind" },
+    { "chance": 6, "event": "deaf" },
+    { "chance": 16, "event": "limb" },
+    { "chance": 3, "event": "killed" },
+    { "chance": 30, "event": "infection" }
+  ],
+  "personalEventsAtPeace": [
+    { "chance": 10, "event": "+openness" },
+    { "chance": 10, "event": "-openness" },
+    { "chance": 10, "event": "+conscientiousness" },
+    { "chance": 10, "event": "-conscientiousness" },
+    { "chance": 10, "event": "+extraversion" },
+    { "chance": 10, "event": "-extraversion" },
+    { "chance": 10, "event": "+agreeableness" },
+    { "chance": 10, "event": "-agreeableness" },
+    { "chance": 5, "event": "+neuroticism" },
+    { "chance": 10, "event": "-neuroticism" },
+    { "chance": 2, "event": "sickness" },
+    { "chance": 3, "event": "injury" }
+  ],
+  "personalEventsInConflict": [
+    { "chance": 3, "event": "+openness" },
+    { "chance": 3, "event": "-openness" },
+    { "chance": 3, "event": "+conscientiousness" },
+    { "chance": 3, "event": "-conscientiousness" },
+    { "chance": 3, "event": "+extraversion" },
+    { "chance": 5, "event": "-extraversion" },
+    { "chance": 3, "event": "+agreeableness" },
+    { "chance": 5, "event": "-agreeableness" },
+    { "chance": 5, "event": "+neuroticism" },
+    { "chance": 3, "event": "-neuroticism" },
+    { "chance": 26, "event": "sickness" },
+    { "chance": 25, "event": "injury" }
+  ],
+  "personalEventsInSickness": [
+    { "chance": 4, "event": "+openness" },
+    { "chance": 4, "event": "-openness" },
+    { "chance": 4, "event": "+conscientiousness" },
+    { "chance": 4, "event": "-conscientiousness" },
+    { "chance": 4, "event": "+extraversion" },
+    { "chance": 6, "event": "-extraversion" },
+    { "chance": 4, "event": "+agreeableness" },
+    { "chance": 6, "event": "-agreeableness" },
+    { "chance": 6, "event": "+neuroticism" },
+    { "chance": 4, "event": "-neuroticism" },
+    { "chance": 40, "event": "sickness" },
+    { "chance": 11, "event": "injury" }
+  ],
+  "personalEventsInLeanTimes": [
+    { "chance": 8, "event": "+openness" },
+    { "chance": 8, "event": "-openness" },
+    { "chance": 8, "event": "+conscientiousness" },
+    { "chance": 8, "event": "-conscientiousness" },
+    { "chance": 8, "event": "+extraversion" },
+    { "chance": 10, "event": "-extraversion" },
+    { "chance": 8, "event": "+agreeableness" },
+    { "chance": 10, "event": "-agreeableness" },
+    { "chance": 10, "event": "+neuroticism" },
+    { "chance": 8, "event": "-neuroticism" },
+    { "chance": 6, "event": "sickness" },
+    { "chance": 5, "event": "injury" }
+  ]
+}

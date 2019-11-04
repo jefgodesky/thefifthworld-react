@@ -9,33 +9,41 @@ import { check } from './check'
  */
 
 const getCommunityStatus = community => {
+  const { discord } = community.status
   const threshold = community.traditions.village ? 150 : 30
   const living = community.people.filter(person => !person.died)
   const overpopulated = living.length > threshold
 
   const overpopulatedTable = [
-    { chance: 10, event: 'conflict ' },
+    { chance: 10, event: 'conflict' },
     { chance: 25, event: 'sickness' },
     { chance: 50, event: 'lean' },
     { chance: 15, event: 'peace' }
   ]
   const normalTable = [
-    { chance: 1, event: 'conflict ' },
+    { chance: 1, event: 'conflict' },
     { chance: 2, event: 'sickness' },
     { chance: 4, event: 'lean' },
     { chance: 93, event: 'peace' }
   ]
   const eventTable = overpopulated ? overpopulatedTable : normalTable
 
-  const event = check(eventTable, random.int(1, 100))
-  community.status.event = event
-  switch (event) {
-    case 'conflict': community.status.discord += 3; break
-    case 'sickness': community.status.discord += 2; break
-    case 'lean': community.status.discord += 1; break
-    case 'peace': community.status.discord -= 1; break
+  let roll = random.int(1, 100)
+  for (let i = 0; i < discord; i++) {
+    roll = Math.min(roll, random.int(1, 100))
   }
-  community.status.discord = Math.max(0, community.status.discord)
+  const event = check(eventTable, roll)
+
+  community.status.event = event
+  const maxDiscord = Math.max(discord - 1, 10)
+  let newDiscord = discord
+  switch (event) {
+    case 'conflict': newDiscord += 3; break
+    case 'sickness': newDiscord += 2; break
+    case 'lean': newDiscord += 1; break
+    case 'peace': newDiscord -= 1; break
+  }
+  community.status.discord = Math.min(Math.max(0, newDiscord), maxDiscord)
 }
 
 /**
@@ -94,7 +102,7 @@ const generateCommunity = community => {
   const toYear = toDate.getFullYear()
 
   // Set initial discord
-  const randomizer = random.normal(7, 1)
+  const randomizer = random.normal(15, 1)
   community.status = {
     discord: Math.floor(randomizer())
   }

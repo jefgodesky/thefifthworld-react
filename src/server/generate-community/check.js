@@ -1,3 +1,5 @@
+import random from 'random'
+
 /**
  * Checks for a result on a random table.
  * @param table {Array} - The random table to check. This expects an array of
@@ -23,6 +25,28 @@ const check = (table, roll) => {
   return false
 }
 
+/**
+ * Runs checks until it gets an acceptable result.
+ * @param table {Array} - The random table to check. This expects an array of
+ *   objects. Each object should have a property called `chance` with an
+ *   integer, which is the chance of this event, and a property called `event`,
+ *   which is what is returned if the event is selected.
+ * @param unacceptable
+ * @returns {null}
+ */
+
+const checkUntil = (table, unacceptable) => {
+  let result = false
+  const acceptable = table.filter(option => !unacceptable.includes(option.event))
+  if (acceptable.length > 0) {
+    while (!result || unacceptable.includes(result)) {
+      result = check(table, random.int(1, 100))
+    }
+  }
+  return result
+}
+
 export {
-  check
+  check,
+  checkUntil
 }

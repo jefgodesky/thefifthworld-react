@@ -1,6 +1,7 @@
 import random from 'random'
 import { check, checkUntil } from './check'
 import shuffle from './shuffle'
+import skills from '../../data/skills'
 import tables from '../../data/community-creation'
 
 /**
@@ -128,7 +129,10 @@ const generatePerson = (community, born, age = 0, chosenGender = null) => {
     scars: [],
     achondroplasia: random.float(0, 100) < 0.004,
     psychopath: null,
-    history: []
+    history: [],
+    skills: {
+      mastered: []
+    }
   }
 
   // There's a 1% chance this person is a psychopath...
@@ -183,16 +187,18 @@ const adjustFertility = (person, year) => {
 
 const getSick = (community, person, year, infection = false, canDie = true) => {
   const table = infection ? tables.infection : tables.illness
+  const tag = infection ? 'injury' : 'illness'
   const unacceptable = canDie ? [] : [ 'death' ]
   const prognosis = checkUntil(table, unacceptable)
+  let event = null
   switch (prognosis) {
     case 'death':
       const age = year - person.born
       person.died = year
-      const event = infection
+      event = infection
         ? `Died from infection following injury, age ${age}`
         : `Died due to illnness, age ${age}`
-      person.history.push({ year, event })
+      person.history.push({ year, event, tag })
       if (community && community.status && community.status.discord) {
         community.status.discord += 2
         if (age < 20) community.status.discord++
@@ -203,26 +209,26 @@ const getSick = (community, person, year, infection = false, canDie = true) => {
         const event = infection
           ? 'Suffered injury which became infected, but recovered'
           : 'Recovered from illness'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else if (person.ears.left === 'Deaf') {
         person.ears.right = 'Deaf'
         const event = infection
           ? 'Infected injury led to loss of hearing in right ear, resulting in total deafness'
           : 'Lost hearing in right ear due to illness, resulting in total deafness'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else if (person.ears.right === 'Deaf') {
         person.ears.left = 'Deaf'
         const event = infection
           ? 'Infected injury led to loss of hearing in left ear, resulting in total deafness'
           : 'Lost hearing in left ear due to illness, resulting in total deafness'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else {
         const ear = random.int(0, 1) === 1 ? 'left' : 'right'
         const event = infection
           ? `Infected injury led to loss of hearing in ${ear} ear`
           : `Lost hearing in ${ear} ear due to illness`
         person.ears[ear] = 'Deaf'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       }
       break
     case 'blindness':
@@ -230,30 +236,33 @@ const getSick = (community, person, year, infection = false, canDie = true) => {
         const event = infection
           ? 'Suffered injury which became infected, but recovered'
           : 'Recovered from illness'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else if (person.eyes.left === 'Blind') {
         const event = infection
           ? 'Infected injury led to loss of sight in right eye, resulting in total blindness'
           : 'Lost sight in right eye due to illness, resulting in total blindness'
         person.eyes.right = 'Blind'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else if (person.eyes.right === 'Blind') {
         const event = infection
           ? 'Infected injury led to loss of sight in left eye, resulting in total blindness'
           : 'Lost sight in left eye due to illness, resulting in total blindness'
         person.eyes.left = 'Blind'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       } else {
         const eye = random.int(0, 1) === 1 ? 'left' : 'right'
         const event = infection
           ? `Infected injury led to loss of sight in ${eye} eye`
           : `Lost sight in ${eye} ear due to illness`
         person.eyes[eye] = 'Blind'
-        person.history.push({ year, event })
+        person.history.push({ year, event, tag })
       }
       break
     default:
-      person.history.push({ year, event: 'Recovered from illness' })
+      event = infection
+        ? 'Recovered after injury became infected'
+        : 'Recovered from illness'
+      person.history.push({ year, event, tag })
       break
   }
 }
@@ -274,44 +283,45 @@ const getInjured = (community, person, year, canDie = true) => {
   const randomScarLocation = shuffle(possibleLocations).pop()
 
   const unacceptable = canDie ? [] : [ 'killed' ]
+  const tag = 'injury'
   const outcome = checkUntil(tables.injury, unacceptable)
   switch (outcome) {
     case 'deaf':
       if (person.ears.left === 'Deaf' && person.ears.right === 'Deaf') {
         person.scars.push('head')
-        person.history.push({ year, event: 'Suffered a head wound' })
+        person.history.push({ year, event: 'Suffered a head wound', tag })
       } else if (person.ears.left === 'Deaf') {
         person.ears.right = 'Deaf'
         person.scars.push('right ear')
-        person.history.push({ year, event: 'Lost hearing in right ear due to injury, resulting in total deafness' })
+        person.history.push({ year, event: 'Lost hearing in right ear due to injury, resulting in total deafness', tag })
       } else if (person.ears.right === 'Deaf') {
         person.ears.left = 'Deaf'
         person.scars.push('left ear')
-        person.history.push({ year, event: 'Lost hearing in left ear due to injury, resulting in total deafness' })
+        person.history.push({ year, event: 'Lost hearing in left ear due to injury, resulting in total deafness', tag })
       } else {
         const ear = random.int(0, 1) === 1 ? 'left' : 'right'
         person.ears[ear] = 'Deaf'
         person.scars.push(`${ear} ear`)
-        person.history.push({ year, event: `Lost hearing in ${ear} ear due to injury` })
+        person.history.push({ year, event: `Lost hearing in ${ear} ear due to injury`, tag })
       }
       break
     case 'blindness':
       if (person.eyes.left === 'Blind' && person.eyes.right === 'Blind') {
         person.scars.push('head')
-        person.history.push({ year, event: 'Suffered a head wound' })
+        person.history.push({ year, event: 'Suffered a head wound', tag })
       } else if (person.eyes.left === 'Blind') {
         person.eyes.right = 'Blind'
         person.scars.push('right eye')
-        person.history.push({ year, event: 'Lost sight in right eye due to injury, resulting in total blindness' })
+        person.history.push({ year, event: 'Lost sight in right eye due to injury, resulting in total blindness', tag })
       } else if (person.eyes.right === 'Blind') {
         person.eyes.left = 'Blind'
         person.scars.push('left eye')
-        person.history.push({ year, event: 'Lost sight in left eye due to injury, resulting in total blindness' })
+        person.history.push({ year, event: 'Lost sight in left eye due to injury, resulting in total blindness', tag })
       } else {
         const eye = random.int(0, 1) === 1 ? 'left' : 'right'
         person.eyes[eye] = 'Blind'
         person.scars.push(`${eye} eye`)
-        person.history.push({ year, event: `Lost sight in ${eye} eye due to injury` })
+        person.history.push({ year, event: `Lost sight in ${eye} eye due to injury`, tag })
       }
       break
     case 'limb':
@@ -322,10 +332,10 @@ const getInjured = (community, person, year, canDie = true) => {
         const limb = shuffledCandidates.pop()
         person.scars.push(limbs[limb])
         person.limbs[limb] = 'Missing'
-        person.history.push({ year, event: `Lost ${limbs[limb]} due to injury` })
+        person.history.push({ year, event: `Lost ${limbs[limb]} due to injury`, tag })
       } else {
         person.scars.push('torso')
-        person.history.push({ year, event: 'Suffered an injury to the torso' })
+        person.history.push({ year, event: 'Suffered an injury to the torso', tag })
       }
       break
     case 'killed':
@@ -343,9 +353,96 @@ const getInjured = (community, person, year, canDie = true) => {
       break
     default:
       person.scars.push(randomScarLocation)
-      person.history.push({ year, event: `Suffered an injury to the ${randomScarLocation}` })
+      person.history.push({ year, event: `Suffered an injury to the ${randomScarLocation}`, tag })
       break
   }
+}
+
+/**
+ * Returns whether or not the person can learn magic.
+ * @param community {Object} - The community object.
+ * @param person {Object} - The person
+ * @returns {boolean} - Returns `true` if the person has a calling to begin
+ *   learning magic, or `false` if she doesn't.
+ */
+
+const checkMagicalCalling = (community, person) => {
+  let calling = 0
+  const specialGenders = [ 'Third gender', 'Fifth gender' ]
+  const semiSpecialGenders = [ 'Masculine woman', 'Feminine man' ]
+  const isSecret = community.traditions.magic === 'secret'
+  const factors = {
+    isMotherMagic: isSecret ? 60 : 5,
+    isFatherMagic: isSecret ? 60 : 5,
+    isIntersex: isSecret ? 5 : 20,
+    isSpecialGender: isSecret ? 5 : 20,
+    isHomosexual: isSecret ? 2 : 10,
+    isNeurodivergent: isSecret ? 6 : 25,
+    isLittlePerson: isSecret ? 5 : 20,
+    perIncident: isSecret ? 1 : 5
+  }
+
+  // TODO: If mother knows magic
+  // TODO: If father knows magic
+  if (person.sex === 'Intersex') calling += factors.isIntersex
+  if (specialGenders.includes(person.gender)) calling += factors.isSpecialGender
+  if (semiSpecialGenders.includes(person.gender)) calling += factors.isSpecialGender
+  if (person.sexualOrientation > 2) calling += factors.isHomosexual
+  if (person.neurodivergent) calling += factors.isNeurodivergent
+  if (person.achondroplasia) calling += factors.isLittlePerson
+
+  const injuries = person.history.filter(entry => entry.tag === 'injury')
+  const illnesses = person.history.filter(entry => entry.tag === 'illnesses')
+  calling += (injuries.length + illnesses.length) * factors.perIncident
+
+  return random.int(1, 100) < calling
+}
+
+/**
+ * Choose a new skill to learn.
+ * @param community {Object} - The community object.
+ * @param person {Object} - The person learning.
+ * @param year {number} - The year when the person is starting to learn.
+ * @param lastSkill {string} - The last skill that the person learned. If that
+ *   skill has specializations, there's a 50% chance that the person picks up
+ *   a specialization next. (Default: `null`)
+ */
+
+const startLearning = (community, person, year, lastSkill = null) => {
+  const base = skills.map(skill => skill.name)
+
+  const specializations = {}
+  skills.forEach(skill => {
+    if (skill.specializations) {
+      specializations[skill.name] = skill.specializations.map(skill => skill.name)
+    }
+  })
+
+  const discouraged = skills.filter(skill => skill.discouraged).map(skill => skill.name)
+  const rare = skills.filter(skill => skill.rare).map(skill => skill.name)
+  const younger = skills.filter(skill => skill.younger).map(skill => skill.name)
+
+  let candidates = []
+  if (lastSkill && specializations[lastSkill] && random.int(1, 2) === 1) {
+    candidates = specializations[lastSkill]
+  } else {
+    const favored = community.traditions.skill
+    candidates = [ ...base, favored, favored, favored, favored, favored ]
+    person.skills.mastered.forEach(skill => {
+      if (specializations[skill]) candidates = [ ...candidates, ...specializations[skill] ]
+    })
+  }
+  candidates = candidates.filter(skill => !person.skills.mastered.includes(skill))
+
+  let shuffled = shuffle(candidates)
+
+  if (discouraged.includes(shuffled[0])) shuffled = shuffle(candidates)
+  if (rare.includes(shuffled[0])) shuffled = shuffle(candidates)
+  if (younger.includes(shuffled[0]) && year - person.born > 56) shuffled = shuffle(candidates)
+  if (shuffled[0] === 'Magic' && !checkMagicalCalling(community, person)) shuffled = shuffle(candidates)
+
+  person.skills.learning = shuffled[0]
+  person.skills.willMaster = Math.ceil(year + 5 - person.intelligence)
 }
 
 /**
@@ -439,12 +536,25 @@ const agePerson = (community, person, year, canDie = true) => {
         if (person.personality.neuroticism > -3) person.personality.neuroticism -= 1
         break
       case 'sickness':
+        if (person.skills.willMaster) person.skills.willMaster++
         getSick(community, person, year, canDie)
         break
-      default:
+      case 'injury':
+        if (person.skills.willMaster) person.skills.willMaster++
         getInjured(community, person, year, canDie)
         break
+      default:
+        break
     }
+  }
+
+  if (person.skills.willMaster < year) {
+    person.skills.mastered = [ ...person.skills.mastered, person.skills.learning ]
+    person.skills.learning = null
+  }
+
+  if (age > 14 && !person.skills.learning) {
+    startLearning(community, person, year)
   }
 }
 

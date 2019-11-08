@@ -161,9 +161,21 @@ export default class Community {
 
     const favoredSkill = this.traditions && this.traditions.skill ? this.traditions.skill : false
     const masteredFavoredSkill = favoredSkill
-      ? Object.values(this.people).filter(p => p.skills.mastered.includes(favoredSkill)).length
+      ? members.filter(p => p.skills.mastered.includes(favoredSkill)).length
       : 0
     const masteredFavoredSkillPercent = `${Math.round((masteredFavoredSkill / members.length) * 100)}%`
+
+    const avgOpenness = members.reduce((acc, curr) => acc + curr.personality.openness, 0) / members.length
+    const avgConscientiousness = members.reduce((acc, curr) => acc + curr.personality.conscientiousness, 0) / members.length
+    const avgExtraversion = members.reduce((acc, curr) => acc + curr.personality.extraversion, 0) / members.length
+    const avgAgreeableness = members.reduce((acc, curr) => acc + curr.personality.agreeableness, 0) / members.length
+    const avgNeuroticism = members.reduce((acc, curr) => acc + curr.personality.neuroticism, 0) / members.length
+
+    const homosexuals = members.filter(m => m.sexualOrientation > 2).length
+    const littlePeople = members.filter(m => m.body.achondroplasia).length
+    const geniuses = members.filter(m => m.intelligence > 3).length
+    const neurodivergent = members.filter(m => m.neurodivergent).length
+    const psychopaths = members.filter(m => m.psychopath).length
 
     return {
       total: members.length,
@@ -175,7 +187,17 @@ export default class Community {
       yearsSick,
       favoredSkill,
       masteredFavoredSkill,
-      masteredFavoredSkillPercent
+      masteredFavoredSkillPercent,
+      avgOpenness,
+      avgConscientiousness,
+      avgExtraversion,
+      avgAgreeableness,
+      avgNeuroticism,
+      homosexuals,
+      littlePeople,
+      geniuses,
+      neurodivergent,
+      psychopaths
     }
   }
 }

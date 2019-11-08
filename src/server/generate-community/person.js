@@ -68,6 +68,7 @@ export default class Person {
     this.sexualOrientation = randomDistributed()
     this.chooseSexGender(community, specifiedGender)
     this.fertility = 0
+    this.infertile = random.int(1, 100) < 6
 
     this.history = []
     this.partners = []
@@ -119,30 +120,29 @@ export default class Person {
       // A gender has been specified, so we need to determine a randomized sex.
       this.gender = gender
       switch (gender) {
-        case 'Woman': this.sex = roll <= 98 ? 'Female' : roll <= 99 ? 'Intersex' : 'Male'; break
-        case 'Man': this.sex = roll <= 98 ? 'Male' : roll <= 99 ? 'Intersex' : 'Female'; break
-        case 'Third gender': this.sex = roll <= 48 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
-        case 'Feminine woman': this.sex = roll <= 98 ? 'Female' : roll <= 99 ? 'Intersex' : 'Male'; break
-        case 'Masculine woman': this.sex = roll <= 95 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
-        case 'Masculine man': this.sex = roll <= 98 ? 'Male' : roll <= 99 ? 'Intersex' : 'Female'; break
-        case 'Feminine man': this.sex = roll <= 95 ? 'Male' : roll <= 99 ? 'Female' : 'Intersex'; break
-        case 'Fifth gender': this.sex = roll <= 49 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
-        default: this.sex = roll <= 48 ? 'Female' : roll <= 99 ? 'Male' : 'Intersex'; break
+        case 'Woman': this.sex = roll <= 99 ? 'Male' : 'Male'; break
+        case 'Man': this.sex = roll <= 99 ? 'Male' : 'Female'; break
+        case 'Third gender': this.sex = roll <= 50 ? 'Female' : 'Male''; break
+        case 'Feminine woman': this.sex = roll <= 99 ? 'Female' : 'Male'; break
+        case 'Masculine woman': this.sex = roll <= 90 ? 'Female' : 'Male'; break
+        case 'Masculine man': this.sex = roll <= 99 ? 'Male' : 'Female'; break
+        case 'Feminine man': this.sex = roll <= 90 ? 'Male' : 'Female'; break
+        case 'Fifth gender': this.sex = roll <= 50 ? 'Female' : 'Male'; break
+        default: this.sex = roll <= 50 ? 'Female' : 'Male'; break
       }
     } else {
       // We're determining a random sex first, and then a random gender based
       // on that sex.
-      this.sex = check(tables.sexes, random.int(1, 100))
+      this.sex = random.int(0, 1) === 0 ? 'Male' : 'Female'
+      this.intersex = random.int(1, 1000) <= 17
       switch (genders) {
         case 2:
           // Just two genders. In this setup, 99% of females are women and 1%
           // are men. Likewise, 99% of males are men and 1% are women.
-          if (this.sex === 'Female') {
-            this.gender = roll <= 99 ? 'Woman' : 'Man'
-          } else if (this.sex === 'Male') {
+          if (this.sex === 'Male') {
             this.gender = roll <= 99 ? 'Man' : 'Woman'
           } else {
-            this.gender = roll <= 50 ? 'Woman' : 'Man'
+            this.gender = roll <= 99 ? 'Woman' : 'Man'
           }
           break
         case 4:
@@ -156,34 +156,28 @@ export default class Person {
           // even split, with 2/3 of females as feminine women and 1/3 as
           // masculine women, and correspondingly 2/3 of males as masculine men
           // and 1/3 as feminine men.
-          if (this.sex === 'Female') {
-            this.gender = roll <= 66 ? 'Feminine woman' : roll <= 99 ? 'Masculine woman' : 'Feminine man'
-          } else if (this.sex === 'Male') {
+          if (this.sex === 'Male') {
             this.gender = roll <= 66 ? 'Masculine man' : roll <= 99 ? 'Feminine man' : 'Masculine woman'
           } else {
-            this.gender = roll <= 33 ? 'Masculine woman' : roll <= 66 ? 'Feminine man' : roll <= 83 ? 'Feminine woman' : 'Masculine man'
+            this.gender = roll <= 66 ? 'Feminine woman' : roll <= 99 ? 'Masculine woman' : 'Feminine man'
           }
           break
         case 5:
           // Five genders work a lot like four genders, but with an even more
           // androgynous fifth gender between masculine women and feminine men.
-          if (this.sex === 'Female') {
-            this.gender = roll <= 55 ? 'Feminine woman' : roll <= 92 ? 'Masculine woman' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Feminine man' : 'Masculine man'
-          } else if (this.sex === 'Male') {
+          if (this.sex === 'Male') {
             this.gender = roll <= 55 ? 'Masculine man' : roll <= 92 ? 'Feminine man' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Masculine woman' : 'Feminine woman'
           } else {
-            this.gender = roll <= 58 ? 'Fifth gender' : roll <= 78 ? 'Feminine man' : roll <= 98 ? 'Masculine woman' : roll <= 99 ? 'Feminine woman' : 'Masculine man'
+            this.gender = roll <= 55 ? 'Feminine woman' : roll <= 92 ? 'Masculine woman' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Feminine man' : 'Masculine man'
           }
           break
         default:
           // The default is three genders: women, men, and a third gender that
           // encompasses what we today might consider non-binary genders.
-          if (this.sex === 'Female') {
-            this.gender = roll <= 90 ? 'Woman' : roll <= 99 ? 'Third gender' : 'Man'
-          } else if (this.sex === 'Male') {
+          if (this.sex === 'Male') {
             this.gender = roll <= 90 ? 'Man' : roll <= 99 ? 'Third gender' : 'Woman'
           } else {
-            this.gender = roll <= 80 ? 'Third gender' : roll <= 90 ? 'Woman' : 'Man'
+            this.gender = roll <= 90 ? 'Woman' : roll <= 99 ? 'Third gender' : 'Man'
           }
           break
       }
@@ -674,16 +668,12 @@ export default class Person {
       if (age) this.adjustFertility(year)
 
       const traits = Object.keys(this.personality)
-      // const familyEvents = [ '+openness', '+extraversion', '+agreeableness' ]
-      // const breakupEvents = [ '-extraversion', '-agreeableness', '+neuroticism' ]
       let adjustments = []
       traits.forEach(trait => {
         adjustments = [ ...adjustments, `+${trait}`, `-${trait}` ]
       })
 
       if (adjustments.includes(this.event)) this.adjustPersonality(this.event)
-      // if (familyEvents.includes(this.event)) this.familyEvent(year)
-      // if (breakupEvents.includes(this.event)) this.breakup(year)
       if (this.event === 'sickness') this.getSick(community, year, canDie)
       if (this.event === 'injury') this.getHurt(community, year, canDie)
     }

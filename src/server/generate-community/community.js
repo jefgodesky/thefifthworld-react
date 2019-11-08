@@ -105,7 +105,18 @@ export default class Community {
 
   runYear (year, founding = false) {
     this.setStatus()
+
+    const { event } = this.status
+    const table = event === 'conflict'
+      ? tables.personalEventsInConflict
+      : event === 'sickness'
+        ? tables.personalEventsInSickness
+        : event === 'lean'
+          ? tables.personalEventsInLeanTimes
+          : tables.personalEventsAtPeace
+
     const living = this.getLivingPopulation()
+    living.forEach(id => { this.people[id].event = check(table, random.int(1, 100)) })
     living.forEach(id => this.people[id].age(this, year))
     if (founding) this.addFounder(year)
     this.chronicle.push(Object.assign({}, { year }, this.status))

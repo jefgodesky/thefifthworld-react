@@ -65,15 +65,7 @@ export default class Person {
     this.neurodivergent = random.int(1, 100) === 1
     this.psychopath = null
 
-    // Without a punishing heteronormative society, there will no doubt be a
-    // lot more gay people in the Fifth World, but 50% is a little high even
-    // so. Population dynamics would seem to require at least some skew towards
-    // heterosexuality. To reflect this, we take two random numbers and pick
-    // the lowest (lower on the Kinsey Scale, e.g., more heterosexual). This
-    // should mean a 25/75 split of homosexual and heterosexual relationships,
-    // on average, which seems about right.
-
-    this.sexualOrientation = Math.min(randomDistributed(), randomDistributed())
+    this.sexualOrientation = randomDistributed()
     this.chooseSexGender(community, specifiedGender)
     this.fertility = 0
 

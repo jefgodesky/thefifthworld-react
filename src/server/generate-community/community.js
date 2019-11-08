@@ -148,6 +148,12 @@ export default class Community {
     const yearsLean = this.chronicle.filter(y => y.event === 'lean').length
     const yearsSick = this.chronicle.filter(y => y.event === 'sickness').length
 
+    const favoredSkill = this.traditions && this.traditions.skill ? this.traditions.skill : false
+    const masteredFavoredSkill = favoredSkill
+      ? Object.values(this.people).filter(p => p.skills.mastered.includes(favoredSkill)).length
+      : 0
+    const masteredFavoredSkillPercent = `${Math.round((masteredFavoredSkill / members.length) * 100)}%`
+
     return {
       total: members.length,
       population: living.length,
@@ -155,7 +161,10 @@ export default class Community {
       yearsPeace,
       yearsConflict,
       yearsLean,
-      yearsSick
+      yearsSick,
+      favoredSkill,
+      masteredFavoredSkill,
+      masteredFavoredSkillPercent
     }
   }
 }

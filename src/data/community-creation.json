@@ -1,9 +1,9 @@
 {
   "overpopulatedCommunityEvents": [
-    { "chance": 10, "event": "conflict" },
-    { "chance": 25, "event": "sickness" },
+    { "chance": 5, "event": "conflict" },
+    { "chance": 20, "event": "sickness" },
     { "chance": 50, "event": "lean" },
-    { "chance": 15, "event": "peace" }
+    { "chance": 25, "event": "peace" }
   ],
   "normalCommunityEvents": [
     { "chance": 1, "event": "conflict" },

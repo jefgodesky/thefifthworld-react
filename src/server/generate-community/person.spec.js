@@ -203,7 +203,8 @@ describe('Person', () => {
   describe('determineSexuality', () => {
     it('establishes sexuality', () => {
       const p = new Person()
-      const actual = !isNaN(p.sexuality.androphilia) && !isNaN(p.sexuality.gynephilia) && !isNaN(p.sexuality.skoliophilia)
+      const { androphilia, gynephilia, skoliophilia } = p.sexuality
+      const actual = !isNaN(androphilia) && !isNaN(gynephilia) && !isNaN(skoliophilia)
       expect(actual).toEqual(true)
     })
 

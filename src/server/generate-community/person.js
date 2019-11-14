@@ -189,7 +189,7 @@ export default class Person {
 
   determineSexuality (mateFor) {
     const asexual = random.int(1, 100)
-    if (asexual === 100) {
+    if (!mateFor && asexual === 100) {
       this.sexuality = {
         androphilia: 0,
         gynephilia: 0,
@@ -211,22 +211,22 @@ export default class Person {
 
       if (roll < 10) {
         // Heterosexual bias
-        if (hasPenis) biases.gynephilia++
-        if (hasWomb) biases.androphilia++
-        biases.skoliophilia++
+        if (hasPenis) biases.gynephilia += random.int(1, 3)
+        if (hasWomb) biases.androphilia += random.int(1, 3)
       } else {
         // Homosexual bias
-        if (hasPenis) biases.androphilia++
-        if (hasWomb) biases.gynephilia++
+        if (hasPenis) biases.androphilia += random.int(1, 3)
+        if (hasWomb) biases.gynephilia += random.int(1, 3)
+        biases.skoliophilia += random.int(1, 3)
       }
 
       const { androphilia, gynephilia, skoliophilia } = biases
       const total = androphilia + gynephilia + skoliophilia
 
       this.sexuality = {
-        androphilia: androphilia / total,
-        gynephilia: gynephilia / total,
-        skoliophilia: skoliophilia / total
+        androphilia: total ? androphilia / total : 0,
+        gynephilia: total ? gynephilia / total : 0,
+        skoliophilia: total ? skoliophilia / total : 0
       }
     }
   }

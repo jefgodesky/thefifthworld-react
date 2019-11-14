@@ -2,7 +2,6 @@
 
 import Person from './person'
 import { clone } from '../../shared/utils'
-import tables from '../../data/community-creation'
 import skills from '../../data/skills'
 
 const isRandomlyDistributedNumber = n => {
@@ -23,7 +22,10 @@ describe('Person', () => {
     it('generates a body', () => {
       const p = new Person()
       const actual = Object.keys(p.body)
-      const expected = [ 'type', 'eyes', 'ears', 'arms', 'legs', 'scars', 'achondroplasia' ]
+      const expected = [
+        'type', 'eyes', 'ears', 'arms', 'legs', 'scars', 'achondroplasia',
+        'fertility', 'hasPenis', 'hasWomb'
+      ]
       expect(actual).toEqual(expected)
     })
 
@@ -107,14 +109,9 @@ describe('Person', () => {
       expect(p.neurodivergent === true || p.neurodivergent === false).toEqual(true)
     })
 
-    it('sets sexual orientation', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.sexualOrientation)).toEqual(true)
-    })
-
     it('sets fertility to zero', () => {
       const p = new Person()
-      expect(p.fertility).toEqual(0)
+      expect(p.body.fertility).toEqual(0)
     })
 
     it('sets history to an empty array', () => {
@@ -245,44 +242,49 @@ describe('Person', () => {
     it('increases fertility for someone who is 20', () => {
       const p = new Person()
       p.born = 1999
-      const before = p.fertility
+      const before = p.body.fertility
       p.adjustFertility(2019)
-      expect(p.fertility).toEqual(before + 20)
+      expect(p.body.fertility).toEqual(before + 20)
     })
 
     it('increases fertility for a male who is 60', () => {
       const p = new Person()
       p.born = 1959
-      p.sex = 'Male'
-      const before = p.fertility
+      p.body.hasPenis = true
+      p.body.hasWomb = false
+      const before = p.body.fertility
       p.adjustFertility(2019)
-      expect(p.fertility).toEqual(before + 20)
+      expect(p.body.fertility).toEqual(before + 20)
     })
 
     it('reduces fertility for a female who is 60', () => {
       const p = new Person()
       p.born = 1959
-      p.sex = 'Female'
-      p.fertility = 100
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.body.fertility = 100
       p.adjustFertility(2019)
-      expect(p.fertility).toEqual(80)
+      expect(p.body.fertility).toEqual(80)
     })
 
     it('will not reduce fertility below 0', () => {
       const p = new Person()
       p.born = 1959
-      p.sex = 'Female'
-      p.fertility = 10
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.body.fertility = 10
       p.adjustFertility(2019)
-      expect(p.fertility).toEqual(0)
+      expect(p.body.fertility).toEqual(0)
     })
 
     it('will not increase fertility above 100', () => {
       const p = new Person()
       p.born = 1999
-      p.fertility = 90
+      p.body.hasPenis = true
+      p.body.hasWomb = false
+      p.body.fertility = 90
       p.adjustFertility(2019)
-      expect(p.fertility).toEqual(100)
+      expect(p.body.fertility).toEqual(100)
     })
   })
 

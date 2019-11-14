@@ -110,8 +110,8 @@ export default class Person {
   chooseSex () {
     const { gender } = this
     const roll = random.int(1, 100)
-    const both = random.int(1,10000)
-    const neither = random.int(1,10000)
+    const both = random.int(1, 10000)
+    const neither = random.int(1, 10000)
 
     if (both < 85) {
       this.body.hasWomb = true
@@ -208,10 +208,13 @@ export default class Person {
   adjustFertility (year) {
     if (typeof this.born === 'number') {
       const age = year - this.born
-      if (age > 16 && (this.sex === 'Male' || age < 50)) {
-        this.fertility = Math.min(this.fertility + 20, 100)
-      } else {
-        this.fertility = Math.max(this.fertility - 20, 0)
+      const { hasPenis, hasWomb } = this.body
+      if (age > 16 && (hasPenis || hasWomb)) {
+        if (hasPenis || (hasWomb && age < 50)) {
+          this.body.fertility = Math.min(this.body.fertility + 20, 100)
+        } else {
+          this.body.fertility = Math.max(this.body.fertility - 20, 0)
+        }
       }
     }
   }

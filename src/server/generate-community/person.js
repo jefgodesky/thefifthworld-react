@@ -24,9 +24,12 @@ export default class Person {
    * @param born {number} - The year this person is born.
    * @param specifiedGender {string|null} - The gender that the person should
    *   be. (Default: `null`)
+   * @param mateFor {string|null} - The gender of the person that this person
+   *   is a potential mate for (and so must be at least nominally attracted
+   *   to). This is used when generating potential mates. (Default: `null`)
    */
 
-  random (community = null, born = null, specifiedGender = null) {
+  random (community = null, born = null, specifiedGender = null, mateFor = null) {
     const randomDistributed = random.normal(0, 1)
     const longevity = random.normal(90, 5)
 
@@ -75,6 +78,8 @@ export default class Person {
       this.chooseSex()
       this.assignGender(community)
     }
+
+    this.determineSexuality(mateFor)
 
     this.history = []
     this.partners = []
@@ -173,6 +178,57 @@ export default class Person {
       if (g === 'Man') g = 'Masculine man'
     }
     this.gender = g
+  }
+
+  /**
+   * Determines a character's sexuality.
+   * @param mateFor {string|null} - The gender of the character that this
+   *   character is being created as a potential mate for. Used when generating
+   *   potential mates for a character. (Default: `null`)
+   */
+
+  determineSexuality (mateFor) {
+    const asexual = random.int(1, 100)
+    if (asexual === 100) {
+      this.sexuality = {
+        androphilia: 0,
+        gynephilia: 0,
+        skoliophilia: 0
+      }
+    } else {
+      const biases = { androphilia: 0, gynephilia: 0, skoliophilia: 0 }
+      if (mateFor) {
+        const androphilic = [ 'Feminine man', 'Man', 'Masculine man' ]
+        const gynephilic = [ 'Masculine woman', 'Woman', 'Feminine woman' ]
+        const skoliophilic = [ 'Masculine woman', 'Feminine man', 'Third gender', 'Fifth gender' ]
+        biases.androphilia = androphilic.indexOf(mateFor) + 1
+        biases.gynephilia = gynephilic.indexOf(mateFor) + 1
+        biases.skoliophilia = skoliophilic.indexOf(mateFor) + 1
+      }
+
+      const roll = random.int(1, 10)
+      const { hasPenis, hasWomb } = this.body
+
+      if (roll < 10) {
+        // Heterosexual bias
+        if (hasPenis) biases.gynephilia++
+        if (hasWomb) biases.androphilia++
+        biases.skoliophilia++
+      } else {
+        // Homosexual bias
+        if (hasPenis) biases.androphilia++
+        if (hasWomb) biases.gynephilia++
+      }
+
+      const { androphilia, gynephilia, skoliophilia } = biases
+      const total = androphilia + gynephilia + skoliophilia
+
+      this.sexuality = {
+        androphilia: androphilia / total,
+        gynephilia: gynephilia / total,
+        skoliophilia: skoliophilia / total
+      }
+    }
   }
 
   /**

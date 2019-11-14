@@ -200,6 +200,20 @@ describe('Person', () => {
     })
   })
 
+  describe('determineSexuality', () => {
+    it('establishes sexuality', () => {
+      const p = new Person()
+      const actual = !isNaN(p.sexuality.androphilia) && !isNaN(p.sexuality.gynephilia) && !isNaN(p.sexuality.skoliophilia)
+      expect(actual).toEqual(true)
+    })
+
+    it('creates someone attracted to the gender provided', () => {
+      const p = new Person()
+      p.determineSexuality('Masculine man')
+      expect(p.sexuality.androphilia).toBeGreaterThan(0)
+    })
+  })
+
   describe('adjustPersonality', () => {
     it('applies a personality adjustment', () => {
       const p = new Person()

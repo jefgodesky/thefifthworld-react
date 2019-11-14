@@ -2,7 +2,7 @@ import random from 'random'
 import tables from '../../data/community-creation'
 import skills from '../../data/skills'
 import { clone, get } from '../../shared/utils'
-import { check, checkUntil } from './check'
+import { checkUntil } from './check'
 import shuffle from './shuffle'
 
 /**
@@ -50,7 +50,10 @@ export default class Person {
         right: random.float(0, 100) < 0.1 ? 'Disabled' : 'Healthy'
       },
       scars: [],
-      achondroplasia: random.float(0, 100) < 0.004
+      achondroplasia: random.float(0, 100) < 0.004,
+      fertility: 0,
+      hasPenis: false,
+      hasWomb: true
     }
 
     this.personality = {
@@ -65,10 +68,13 @@ export default class Person {
     this.neurodivergent = random.int(1, 100) === 1
     this.psychopath = null
 
-    this.sexualOrientation = randomDistributed()
-    this.chooseSexGender(community, specifiedGender)
-    this.fertility = 0
-    this.infertile = random.int(1, 100) < 6
+    if (specifiedGender) {
+      this.gender = specifiedGender
+      this.chooseSex()
+    } else {
+      this.chooseSex()
+      this.assignGender(community)
+    }
 
     this.history = []
     this.partners = []
@@ -98,90 +104,75 @@ export default class Person {
   }
 
   /**
-   * Choose sex and gender.
-   * @param community {Object} - The community object.
-   * @param gender {string} - If given a string, that will be set to the
-   *   person's gender, and a sex will be determined based on that. If not,
-   *   we'll determine sex randomly, and then determine a gender based on sex.
-   *   (Default: `null`)
-   * @returns {Object} - An object with two properties: `sex`, a string
-   *   providing the person's sex, and `gender`, a string providing the
-   *   person's gender.
+   * Choose sexual characteristics.
    */
 
-  chooseSexGender (community, gender = null) {
-    this.sex = null
-    this.gender = null
-
-    const genders = get(community, 'traditions.genders') || 3
+  chooseSex () {
+    const { gender } = this
     const roll = random.int(1, 100)
+    const both = random.int(1,10000)
+    const neither = random.int(1,10000)
 
-    if (gender) {
-      // A gender has been specified, so we need to determine a randomized sex.
-      this.gender = gender
-      switch (gender) {
-        case 'Woman': this.sex = roll <= 99 ? 'Male' : 'Male'; break
-        case 'Man': this.sex = roll <= 99 ? 'Male' : 'Female'; break
-        case 'Third gender': this.sex = roll <= 50 ? 'Female' : 'Male''; break
-        case 'Feminine woman': this.sex = roll <= 99 ? 'Female' : 'Male'; break
-        case 'Masculine woman': this.sex = roll <= 90 ? 'Female' : 'Male'; break
-        case 'Masculine man': this.sex = roll <= 99 ? 'Male' : 'Female'; break
-        case 'Feminine man': this.sex = roll <= 90 ? 'Male' : 'Female'; break
-        case 'Fifth gender': this.sex = roll <= 50 ? 'Female' : 'Male'; break
-        default: this.sex = roll <= 50 ? 'Female' : 'Male'; break
-      }
+    if (both < 85) {
+      this.body.hasWomb = true
+      this.body.hasPenis = true
+    } else if (neither < 85) {
+      this.body.hasWomb = false
+      this.body.hasPenis = false
     } else {
-      // We're determining a random sex first, and then a random gender based
-      // on that sex.
-      this.sex = random.int(0, 1) === 0 ? 'Male' : 'Female'
-      this.intersex = random.int(1, 1000) <= 17
-      switch (genders) {
-        case 2:
-          // Just two genders. In this setup, 99% of females are women and 1%
-          // are men. Likewise, 99% of males are men and 1% are women.
-          if (this.sex === 'Male') {
-            this.gender = roll <= 99 ? 'Man' : 'Woman'
-          } else {
-            this.gender = roll <= 99 ? 'Woman' : 'Man'
-          }
+      const condition = gender === 'Masculine man'
+        ? 'Man'
+        : gender === 'Feminine woman'
+          ? 'Woman'
+          : gender
+      switch (condition) {
+        case 'Woman':
+          this.body.hasWomb = roll <= 98
+          this.body.hasPenis = roll === 99
           break
-        case 4:
-          // Four genders separates feminine women (you might call them
-          // "femmes" if you find that easier) and masculine women (you might
-          // call them "butch") as two distinct genders. Likewise, they split
-          // masculine men ("macho"?) and feminine men (I don't know that our
-          // heteronormative society has any term for this that isn't intensely
-          // derogatory in a way that a society with four genders would utterly
-          // reject) into two distinct genders. This gives us a bit of a more
-          // even split, with 2/3 of females as feminine women and 1/3 as
-          // masculine women, and correspondingly 2/3 of males as masculine men
-          // and 1/3 as feminine men.
-          if (this.sex === 'Male') {
-            this.gender = roll <= 66 ? 'Masculine man' : roll <= 99 ? 'Feminine man' : 'Masculine woman'
-          } else {
-            this.gender = roll <= 66 ? 'Feminine woman' : roll <= 99 ? 'Masculine woman' : 'Feminine man'
-          }
+        case 'Man':
+          this.body.hasWomb = roll === 99
+          this.body.hasPenis = roll <= 98
           break
-        case 5:
-          // Five genders work a lot like four genders, but with an even more
-          // androgynous fifth gender between masculine women and feminine men.
-          if (this.sex === 'Male') {
-            this.gender = roll <= 55 ? 'Masculine man' : roll <= 92 ? 'Feminine man' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Masculine woman' : 'Feminine woman'
-          } else {
-            this.gender = roll <= 55 ? 'Feminine woman' : roll <= 92 ? 'Masculine woman' : roll <= 97 ? 'Fifth gender' : roll <= 99 ? 'Feminine man' : 'Masculine man'
-          }
+        case 'Masculine woman':
+          this.body.hasWomb = roll < 90
+          this.body.hasPenis = roll > 90
+          break
+        case 'Feminine man':
+          this.body.hasWomb = roll > 90
+          this.body.hasPenis = roll < 90
           break
         default:
-          // The default is three genders: women, men, and a third gender that
-          // encompasses what we today might consider non-binary genders.
-          if (this.sex === 'Male') {
-            this.gender = roll <= 90 ? 'Man' : roll <= 99 ? 'Third gender' : 'Woman'
-          } else {
-            this.gender = roll <= 90 ? 'Woman' : roll <= 99 ? 'Third gender' : 'Man'
-          }
+          this.body.hasWomb = roll < 50
+          this.body.hasPenis = roll > 50
           break
       }
     }
+  }
+
+  /**
+   * Assign gender.
+   * @param community {Object} - The community object.
+   */
+
+  assignGender (community) {
+    const roll = random.int(1, 100)
+    const { hasPenis, hasWomb } = this.body
+    const both = hasPenis && hasWomb
+    const neither = !hasPenis && !hasWomb
+    const intersex = both || neither
+    const genders = get(community, 'traditions.genders')
+    let g = this.body.hasWomb ? 'Woman' : this.body.hasPenis ? 'Man' : 'Woman'
+    if (genders === 3) {
+      if (roll > 90 || (intersex && roll > 10)) g = 'Third gender'
+    } else if (genders > 3) {
+      if (roll > 95 || (intersex && roll > 5)) g = 'Fifth gender'
+      if ((g === 'Woman' && intersex) || (g === 'Woman' && roll > 90)) g = 'Masculine woman'
+      if ((g === 'Man' && intersex) || (g === 'Man' && roll > 90)) g = 'Feminine man'
+      if (g === 'Woman') g = 'Feminine woman'
+      if (g === 'Man') g = 'Masculine man'
+    }
+    this.gender = g
   }
 
   /**

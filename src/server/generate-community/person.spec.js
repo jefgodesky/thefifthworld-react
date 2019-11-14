@@ -175,20 +175,31 @@ describe('Person', () => {
     })
   })
 
-  describe('chooseSexGender', () => {
-    it('assigns a sex', () => {
+  describe('chooseSex', () => {
+    it('chooses sexual characteristics', () => {
       const p = new Person()
-      const sexes = tables.sexes.map(entry => entry.event)
-      expect(sexes.includes(p.sex)).toEqual(true)
+      const actual = [
+        p.body.hasWomb === true || p.body.hasWomb === false,
+        p.body.hasPenis === true || p.body.hasPenis === false
+      ]
+      expect(actual).toEqual([ true, true ])
     })
+  })
 
+  describe('assignGender', () => {
     it('assigns a gender', () => {
       const p = new Person()
-      const genders = [
-        'Woman', 'Man', 'Third gender', 'Feminine woman', 'Masculine woman',
-        'Feminine man', 'Masculine man', 'Fifth gender'
+      const binarySociety = [ 'Woman', 'Man' ]
+      expect(binarySociety.includes(p.gender)).toEqual(true)
+    })
+
+    it('can pick from up to five genders', () => {
+      const p = new Person({ community: { traditions: { genders: 5 } } })
+      const fiveGenders = [
+        'Feminine woman', 'Masculine woman', 'Fifth gender',
+        'Feminine man', 'Masculine man'
       ]
-      expect(genders.includes(p.gender)).toEqual(true)
+      expect(fiveGenders.includes(p.gender)).toEqual(true)
     })
   })
 

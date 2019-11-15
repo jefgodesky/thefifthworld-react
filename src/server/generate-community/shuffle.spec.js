@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import shuffle from './shuffle'
+import { shuffle, pickRandom } from './shuffle'
 
 describe('Shuffle', () => {
   it('can randomly reorder an array', async () => {
@@ -15,5 +15,13 @@ describe('Shuffle', () => {
     ]
     const expected = claims.reduce((acc, curr) => acc && curr)
     expect(expected).toEqual(true)
+  })
+})
+
+describe('pickRandom', () => {
+  it('picks a random element from the array', () => {
+    const arr = [ 1, 2, 3 ]
+    const randomItem = pickRandom(arr)
+    expect(arr.includes(randomItem)).toEqual(true)
   })
 })

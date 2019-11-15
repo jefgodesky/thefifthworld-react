@@ -516,6 +516,8 @@ export default class Person {
     let calling = 0
     const specialGenders = [ 'Third gender', 'Fifth gender' ]
     const semiSpecialGenders = [ 'Masculine woman', 'Feminine man' ]
+    const maleGenders = [ 'Feminine man', 'Man', 'Masculine man' ]
+    const femaleGenders = [ 'Masculine woman', 'Woman', 'Feminine woman' ]
     const magicTradition = get(community, 'traditions.magic')
     const isSecret = magicTradition && magicTradition === 'secret'
 
@@ -541,12 +543,19 @@ export default class Person {
     const father = this.father ? community.people[this.father] : null
     if (mother && mother.skills.mastered.includes('Magic')) calling += factors.isMotherMagic
     if (father && father.skills.mastered.includes('Magic')) calling += factors.isFatherMagic
-    if (this.sex === 'Intersex') calling += factors.isIntersex
     if (specialGenders.includes(this.gender)) calling += factors.isSpecialGender
     if (semiSpecialGenders.includes(this.gender)) calling += factors.isSpecialGender / 2
-    if (this.sexualOrientation > 2) calling += factors.isHomosexual
     if (this.neurodivergent) calling += factors.isNeurodivergent
     if (this.achondroplasia) calling += factors.isLittlePerson
+
+    const { hasPenis, hasWomb } = this.body
+    const intersex = (hasPenis && hasWomb) || (!hasPenis && !hasWomb)
+    if (intersex) calling += factors.isIntersex
+
+    const { androphilia, gynephilia, skoliophilia } = this.sexuality
+    calling += maleGenders.includes(this.gender) && androphilia ? androphilia * factors.isHomosexual : 0
+    calling += femaleGenders.includes(this.gender) && gynephilia ? gynephilia * factors.isHomosexual : 0
+    calling += skoliophilia ? skoliophilia * factors.isHomosexual : 0
 
     const injuries = this.history.filter(entry => entry.tag === 'injury')
     const illnesses = this.history.filter(entry => entry.tag === 'illness')

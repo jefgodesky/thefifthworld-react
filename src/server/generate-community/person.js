@@ -3,7 +3,7 @@ import tables from '../../data/community-creation'
 import skills from '../../data/skills'
 import { clone, get } from '../../shared/utils'
 import { checkUntil } from './check'
-import shuffle from './shuffle'
+import { shuffle, pickRandom } from './shuffle'
 
 /**
  * This class defines the behavior of individuals in community creation.
@@ -229,6 +229,33 @@ export default class Person {
         skoliophilia: total ? skoliophilia / total : 0
       }
     }
+  }
+
+  /**
+   * Returns an array of strings representing the spread of genders that this
+   * character might from a relationship with, based on her sexuality.
+   * @param genders {number} - The number of genders recognized by this
+   *   person's community.
+   * @param num {number} - The number of potential partners whose genders
+   *   should be identified.
+   * @returns {[string]}
+   */
+
+  findPartnerSpread (genders, num = 10) {
+    const arr = []
+    const g = tables.genders[genders]
+    if (g) {
+      const { gynephilic, androphilic, skoliophilic } = g
+      const { gynephilia, androphilia, skoliophilia } = this.sexuality
+      const w = Math.round(gynephilia * num)
+      const m = Math.round(androphilia * num)
+      const nb = Math.round(skoliophilia * num)
+      let i = 0
+      for (i = 0; i < w; i++) arr.push(pickRandom(gynephilic))
+      for (i = 0; i < m; i++) arr.push(pickRandom(androphilic))
+      for (i = 0; i < nb; i++) arr.push(pickRandom(skoliophilic))
+    }
+    return arr
   }
 
   /**

@@ -85,5 +85,27 @@
     { "chance": 8, "event": "-neuroticism" },
     { "chance": 6, "event": "sickness" },
     { "chance": 5, "event": "injury" }
-  ]
+  ],
+  "genders": {
+    "2": {
+      "gynephilic": [ "Woman" ],
+      "androphilic": [ "Man" ],
+      "skoliophilic": []
+    },
+    "3": {
+      "gynephilic": [ "Woman" ],
+      "androphilic": [ "Man" ],
+      "skoliophilic": [ "Third gender" ]
+    },
+    "4": {
+      "gynephilic": [ "Feminine woman", "Masculine woman" ],
+      "androphilic": [ "Feminine man", "Masculine man" ],
+      "skoliophilic": [ "Feminine man", "Masculine woman" ]
+    },
+    "5": {
+      "gynephilic": [ "Feminine woman", "Masculine woman" ],
+      "androphilic": [ "Feminine man", "Masculine man" ],
+      "skoliophilic": [ "Feminine man", "Masculine woman", "Fifth gender" ]
+    }
+  }
 }

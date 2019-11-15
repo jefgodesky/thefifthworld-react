@@ -215,6 +215,17 @@ describe('Person', () => {
     })
   })
 
+  describe('findPartnerSpread', () => {
+    it('returns an array based on the person\'s sexuality', () => {
+      const p = new Person()
+      p.sexuality.androphilia = 0.5
+      p.sexuality.gynephilia = 0.5
+      p.sexuality.skoliophilia = 0
+      const actual = p.findPartnerSpread(2, 4)
+      expect(actual).toEqual([ 'Woman', 'Woman', 'Man', 'Man' ])
+    })
+  })
+
   describe('adjustPersonality', () => {
     it('applies a personality adjustment', () => {
       const p = new Person()

@@ -259,6 +259,24 @@ export default class Person {
   }
 
   /**
+   * Returns the personality distance between this person and another person.
+   * @param other {Person} - Another Person object.
+   * @returns {number} - The sum of the differences between each of the Big
+   *   Five personality traits for this person and the person provided.
+   */
+
+  personalityDistance (other) {
+    const m = this.personality
+    const y = other.personality
+    const o = Math.abs(m.openness - y.openness)
+    const c = Math.abs(m.conscientiousness - y.conscientiousness)
+    const e = Math.abs(m.extraversion - y.extraversion)
+    const a = Math.abs(m.agreeableness - y.agreeableness)
+    const n = Math.abs(m.neuroticism - y.neuroticism)
+    return o + c + e + a + n
+  }
+
+  /**
    * Make a personality adjustment.
    * @param adjustment {string} - A string specifying the type of personality
    *   adjustment to make. The first character should either be `+` (indicating

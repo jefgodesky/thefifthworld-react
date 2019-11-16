@@ -226,6 +226,30 @@ describe('Person', () => {
     })
   })
 
+  describe('personalityDistance', ()=> {
+    it('calculates the personality distance between two people', () => {
+      const p1 = new Person()
+      p1.personality = {
+        openness: 1,
+        conscientiousness: 1,
+        extraversion: 1,
+        agreeableness: 1,
+        neuroticism: 1
+      }
+
+      const p2 = new Person()
+      p2.personality = {
+        openness: 0,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 0
+      }
+
+      expect(p1.personalityDistance(p2)).toEqual(5)
+    })
+  })
+
   describe('adjustPersonality', () => {
     it('applies a personality adjustment', () => {
       const p = new Person()

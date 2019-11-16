@@ -10,9 +10,11 @@ import { check } from './check'
 
 export default class Community {
   constructor (data) {
-    Object.keys(data).forEach(key => {
-      this[key] = clone(data[key])
-    })
+    if (data) {
+      Object.keys(data).forEach(key => {
+        this[key] = clone(data[key])
+      })
+    }
 
     if (!this.people) this.people = {}
     if (!this.chronicle) this.chronicle = []

@@ -74,9 +74,10 @@ export default class Community {
    */
 
   addPerson (person) {
-    const count = Object.keys(this.people).length
-    this.people[count] = person
-    return `${count}`
+    const index = `${Object.keys(this.people).length}`
+    this.people[index] = person
+    person.communityID = index
+    return index
   }
 
   /**

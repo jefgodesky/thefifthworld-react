@@ -250,10 +250,9 @@ export default class Person {
       const w = Math.round(gynephilia * num)
       const m = Math.round(androphilia * num)
       const nb = Math.round(skoliophilia * num)
-      let i = 0
-      for (i = 0; i < w; i++) arr.push(pickRandom(gynephilic))
-      for (i = 0; i < m; i++) arr.push(pickRandom(androphilic))
-      for (i = 0; i < nb; i++) arr.push(pickRandom(skoliophilic))
+      for (let i = 0; i < w; i++) arr.push(pickRandom(gynephilic))
+      for (let i = 0; i < m; i++) arr.push(pickRandom(androphilic))
+      for (let i = 0; i < nb; i++) arr.push(pickRandom(skoliophilic))
     }
     return arr
   }

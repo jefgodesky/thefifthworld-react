@@ -13,7 +13,7 @@ export default class Person {
   constructor (args) {
     if (args === undefined) {
       this.random()
-    } else if (args && args.community) {
+    } else {
       this.random(args.community, args.born, args.gender)
     }
   }
@@ -255,6 +255,34 @@ export default class Person {
       for (let i = 0; i < nb; i++) arr.push(pickRandom(skoliophilic))
     }
     return arr
+  }
+
+  /**
+   * Finds potential partners for the character, then determines which of those
+   * partners to choose based on personality distance plus a random factor (the
+   * heart wants what the heart wants, after all). That partner is added to the
+   * community, and they are mutually added to one another's partner lists.
+   * @param community {Community} - The community object.
+   * @param year {number} - The year when the relationship forms.
+   */
+
+  findPartner (community, year) {
+    const { born } = this
+    if (born) {
+      const g = get(community, 'traditions.genders') || 3
+      const genders = this.findPartnerSpread(g)
+      const candidates = genders.map(gender => {
+        const candidateBorn = Math.min(born + random.int(-5, 5), year - 18)
+        const candidate = new Person({ born: candidateBorn, gender })
+        for (let y = candidateBorn; y < year; y++) candidate.age({}, y, false)
+        return candidate
+      })
+      const love = candidates.map(candidate => this.personalityDistance(candidate) + random.int(-5, 5))
+      const pick = love.indexOf(Math.max(...love))
+      const candidateID = community.addPerson(candidates[pick])
+      this.partners.push({ love: Math.max(...love), id: candidateID })
+      candidates[pick].partners.push({ love: Math.max(...love), id: this.communityID })
+    }
   }
 
   /**

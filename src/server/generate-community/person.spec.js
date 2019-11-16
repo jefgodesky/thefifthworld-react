@@ -1,6 +1,7 @@
 /* global describe, it, expect */
 
 import Person from './person'
+import Community from './community'
 import { clone } from '../../shared/utils'
 import skills from '../../data/skills'
 
@@ -223,6 +224,17 @@ describe('Person', () => {
       p.sexuality.skoliophilia = 0
       const actual = p.findPartnerSpread(2, 4)
       expect(actual).toEqual([ 'Woman', 'Woman', 'Man', 'Man' ])
+    })
+  })
+
+  describe('findPartner', () => {
+    it('finds a partner', () => {
+      const community = new Community()
+      const p = new Person({ community })
+      p.born = 1979
+      community.addPerson(p)
+      p.findPartner(community, 2019)
+      expect(p.partners.length).toBeGreaterThan(0)
     })
   })
 

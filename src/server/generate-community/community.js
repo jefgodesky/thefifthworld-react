@@ -1,7 +1,7 @@
 import Person from './person'
 import random from 'random'
 import tables from '../../data/community-creation'
-import { clone, daysFromNow } from '../../shared/utils'
+import { get, clone, daysFromNow } from '../../shared/utils'
 import { check } from './check'
 
 /**
@@ -22,6 +22,27 @@ export default class Community {
     this.status = {
       discord: Math.floor(randomizer())
     }
+  }
+
+  /**
+   * Return a Person object from the community, or one property of that person.
+   * @param id {number} - The ID of the person in the community's `people`
+   *   array.
+   * @param selector {string} - (Optional) A string representing the property
+   *   (or nested properties) that you would like to find for this person. For
+   *   example, Person.findParent uses `'body.fertility'` to find the fertility
+   *   of each of a person's partners so they can be sorted. (Default `null`)
+   * @returns {*} - If the ID is not present in the array, it returns
+   *   undefined. If the ID was found and no selector was given, it returns the
+   *   Person object. If the ID was found and a selector was given and present
+   *   in the Person object, it returns that property. If the ID was found and
+   *   the selector given was not present in the Person object, it returns
+   *   undefined.
+   */
+
+  get (id, selector = null) {
+    const person = this.people && this.people[id] ? this.people[id] : undefined
+    return selector ? get(person, selector) : person
   }
 
   /**

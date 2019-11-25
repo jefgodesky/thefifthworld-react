@@ -21,6 +21,38 @@ describe('Community', () => {
     })
   })
 
+  describe('get', () => {
+    it('returns undefined if there is no such person', () => {
+      const community = new Community({})
+      const actual = community.get(0)
+      expect(actual).toEqual(undefined)
+    })
+
+    it('returns a person by ID', () => {
+      const community = new Community({})
+      community.addPerson(new Person())
+      const p2 = community.addPerson(new Person())
+      const actual = community.get(p2)
+      expect(actual.constructor.name).toEqual('Person')
+    })
+
+    it('returns a datum about a person', () => {
+      const community = new Community({})
+      community.addPerson(new Person())
+      const p2 = community.addPerson(new Person())
+      const actual = community.get(p2, 'history')
+      expect(actual).toEqual([])
+    })
+
+    it('returns undefined if the person doesn\'t have that selector', () => {
+      const community = new Community({})
+      community.addPerson(new Person())
+      const p2 = community.addPerson(new Person())
+      const actual = community.get(p2, 'body.meanAirSpeed')
+      expect(actual).toEqual(undefined)
+    })
+  })
+
   describe('getLivingPopulation', () => {
     it('returns the number of people alive in the community', () => {
       const community = new Community({})

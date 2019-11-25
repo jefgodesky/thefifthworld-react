@@ -1,7 +1,7 @@
 import random from 'random'
 import tables from '../../data/community-creation'
 import skills from '../../data/skills'
-import { clone, get } from '../../shared/utils'
+import { clone, get, dedupe } from '../../shared/utils'
 import { checkUntil } from './check'
 import { shuffle, pickRandom } from './shuffle'
 
@@ -143,6 +143,10 @@ export default class Person {
       const fromFather = father.psychopath !== null && random.int(0, 1) === 1
       if (fromMother || fromFather) this.makePsychopath()
     }
+
+    // Record parents
+    this.mother = mother ? mother.id : undefined
+    this.father = father ? father.id : undefined
   }
 
   /**

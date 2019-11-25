@@ -99,7 +99,7 @@ export default class Community {
   addPerson (person) {
     const index = `${Object.keys(this.people).length}`
     this.people[index] = person
-    person.communityID = index
+    person.id = index
     return index
   }
 

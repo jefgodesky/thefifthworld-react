@@ -238,6 +238,44 @@ describe('Person', () => {
     })
   })
 
+  describe('findParent', () => {
+    it('will always return false if the person has no partners', () => {
+      const community = new Community()
+      const p = new Person({ community })
+      p.born = 1979
+      community.addPerson(p)
+      const actual = p.findParent(community)
+      expect(actual).toEqual(false)
+    })
+
+    it('will always return false if the person has no partners with whom she could conceive', () => {
+      const community = new Community()
+      const p = new Person({ community })
+      p.born = 1979
+      p.body.hasWomb = true
+      community.addPerson(p)
+      p.findPartner(community, 2019)
+      community.people[p.partners[0].id].body.hasPenis = false
+      const actual = p.findParent(community)
+      expect(actual).toEqual(false)
+    })
+
+    it('will return the other parent\'s ID if she conceives', () => {
+      const community = new Community()
+      const p = new Person({ community })
+      p.born = 1979
+      p.body.hasWomb = true
+      p.body.fertility = 200
+      community.addPerson(p)
+      p.findPartner(community, 2019)
+      const daddy = p.partners[0].id
+      community.people[daddy].body.hasPenis = true
+      community.people[daddy].body.fertility = 200
+      const actual = p.findParent(community)
+      expect(actual).toEqual(daddy)
+    })
+  })
+
   describe('personalityDistance', ()=> {
     it('calculates the personality distance between two people', () => {
       const p1 = new Person()

@@ -286,6 +286,44 @@ export default class Person {
   }
 
   /**
+   * Checks if this person might have a child with one of her partners. If so,
+   * returns that partner. If not, returns `false`.
+   * @param community {Community} - The community object.
+   * @returns {Person|boolean} - `false` if this person has no partners with
+   *   whom she could conceive a child, or if they simply won't because there's
+   *   a distinct random element involved in this. If this person can conceive,
+   *   it returns the community ID of the person she will conceive with.
+   */
+
+  findParent (community) {
+    const { fertility, hasWomb, hasPenis } = this.body
+    if (hasWomb || hasPenis) {
+      let partner = null
+      const parents = this.partners.sort((a, b) => {
+        const aFertility = community.get(a.id, 'body.fertility')
+        const bFertility = community.get(b.id, 'body.fertility')
+        return aFertility - bFertility
+      })
+
+      parents.forEach(parent => {
+        if (partner === null) {
+          const parentHasPenis = community.get(parent.id, 'body.hasPenis')
+          const parentHasWomb = community.get(parent.id, 'body.hasWomb')
+          if ((hasWomb && parentHasPenis) || (hasPenis && parentHasWomb)) partner = parent.id
+        }
+      })
+
+      if (partner) {
+        const partnerFertility = community.get(partner, 'body.fertility') || 0
+        const chance = Math.max(Math.min(fertility, partnerFertility) - 50, 0)
+        const roll = random.int(1, 100)
+        return roll < chance ? partner : false
+      }
+    }
+    return false
+  }
+
+  /**
    * Returns the personality distance between this person and another person.
    * @param other {Person} - Another Person object.
    * @returns {number} - The sum of the differences between each of the Big

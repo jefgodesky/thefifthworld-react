@@ -131,7 +131,7 @@ export default class Person {
       const fromFather = father.body.achondroplasia && random.int(0, 1) === 1
       if (fromMother || fromFather) {
         this.body.achondroplasia = true
-        if (fromMother && fromFather) this.died = born || true
+        if (fromMother && fromFather) this.die('newborn', community, born)
       } else {
         this.body.achondroplasia = false
       }
@@ -452,6 +452,7 @@ export default class Person {
       const age = typeof this.born === 'number' ? year - this.born : null
       let desc = null
       switch (tag) {
+        case 'newborn': desc = 'Died shortly after being born'; break
         case 'infection': desc = 'Died from infection following injury'; break
         case 'illness': desc = 'Died due to illnness'; break
         case 'injury': desc = 'Suffered a fatal injury'; break

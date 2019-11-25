@@ -457,6 +457,7 @@ export default class Person {
       let desc = null
       switch (tag) {
         case 'newborn': desc = 'Died shortly after being born'; break
+        case 'childbirth': desc = 'Died during childbirth'; break
         case 'infection': desc = 'Died from infection following injury'; break
         case 'illness': desc = 'Died due to illnness'; break
         case 'injury': desc = 'Suffered a fatal injury'; break
@@ -855,6 +856,46 @@ export default class Person {
     if (age && younger.includes(learnable[0]) && age > 56) learnable = shuffle(learnable)
     if (learnable[0] === 'Magic' && random.int(1, 100) > this.magicalCalling(community)) learnable = shuffle(learnable)
     this.startLearning(learnable[0], year)
+  }
+
+  /**
+   * After we assign random events, we know who might be having a baby, but we
+   * need to determine who is having a baby before we execute those events,
+   * otherwise we could wind up in some weird situations where the parents get
+   * contradictory events.
+   * @param community {Community} - The community object.
+   * @param year {number} - The year this happens.
+   */
+
+  checkBabies (community, year) {
+    const { havingBaby, event } = this
+    const possibilities = [ '+openness', '+extraversion', '+agreeableness' ]
+    if (!havingBaby && possibilities.indexOf(event) > -1) {
+      const pid = this.findParent(community)
+      if (pid) {
+        const parent = community.get(pid)
+        const partners = this.partners.map(p => p.id)
+        const polycule = [ this.id, ...partners ]
+        polycule.forEach(id => community[id].havingBaby = true)
+
+        const { hasWomb, hasPenis } = this.body
+        const mother = hasWomb ? this : parent
+        const father = hasPenis ? this : parent
+
+        let num = 1
+        let done = false
+        while (!done) { if (random.int(1, 100) <= 3) { num++ } else { done = true } }
+        for (let i = 0; i < num; i++) {
+          const baby = new Person({mother, father, community, born: year})
+          const bid = community.addPerson(baby)
+          mother.children = [...mother.children, bid]
+          father.children = [...father.children, bid]
+        }
+
+        // Chance of mother's death during childbirth
+        if (random.int(1, 150) === 1) mother.die('childbirth', community, year)
+      }
+    }
   }
 
   /**

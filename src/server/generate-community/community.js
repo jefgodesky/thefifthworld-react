@@ -141,6 +141,7 @@ export default class Community {
 
     const living = this.getLivingPopulation()
     living.forEach(id => { this.people[id].event = check(table, random.int(1, 100)) })
+    living.forEach(id => this.people[id].checkBabies(this, year))
     living.forEach(id => this.people[id].age(this, year))
     if (founding) this.addFounder(year)
     this.chronicle.push(Object.assign({}, { year }, this.status))

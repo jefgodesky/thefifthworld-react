@@ -13,6 +13,8 @@ export default class Person {
   constructor (args) {
     if (args === undefined) {
       this.random()
+    } else if (args.mother && args.father) {
+      this.makeBaby(args.mother, args.father, args.community, args.born)
     } else {
       this.random(args.community, args.born, args.gender)
     }
@@ -90,6 +92,57 @@ export default class Person {
 
     // There's a 1% chance this person is a psychopath...
     if (random.int(1, 100) === 1) this.makePsychopath()
+  }
+
+  /**
+   * Creates a child of two people. This is mostly random, but a few traits are
+   * inherited, so they'll create a value that is a cross of the mother's trait
+   * and the father's trait.
+   * @param mother {Person} - The person who contributes the egg.
+   * @param father {Person} - The person who contributes the sperm.
+   * @param community {Community} - (Optional) The community object.
+   *   (Default: `null`)
+   * @param born {number} - (Optional) The year that the child is born
+   *   (Default: `null`)
+   */
+
+  makeBaby (mother, father, community = null, born = null) {
+    const cross = (m, f) => {
+      const randomVariance = random.normal(0, 0.1)
+      const avg = (m + f) / 2
+      const diff = Math.abs(m - f)
+      const variance = diff * randomVariance()
+      return avg + variance
+    }
+
+    this.random(community, born)
+
+    this.longevity = cross(mother.longevity, father.longevity)
+    this.body.type = cross(mother.body.type, father.body.type)
+    this.intelligence = cross(mother.intelligence, father.intelligence)
+
+    // Achondroplasia pops up unexpectedly very randomly, but it is genetic,
+    // so if one or both of your parents have it, we need to calculate the odds
+    // in an altogether different way. And if you inherit the gene from both of
+    // your parents, you die.
+
+    if (mother.body.achondroplasia || father.body.achondroplasia) {
+      const fromMother = mother.body.achondroplasia && random.int(0, 1) === 1
+      const fromFather = father.body.achondroplasia && random.int(0, 1) === 1
+      if (fromMother || fromFather) {
+        this.body.achondroplasia = true
+        if (fromMother && fromFather) this.died = born || true
+      } else {
+        this.body.achondroplasia = false
+      }
+    }
+
+    // Psyvhopathy is also heritable.
+    if (mother.psychopath !== null || father.psychopath !== null) {
+      const fromMother = mother.psychopath !== null && random.int(0, 1) === 1
+      const fromFather = father.psychopath !== null && random.int(0, 1) === 1
+      if (fromMother || fromFather) this.makePsychopath()
+    }
   }
 
   /**

@@ -276,6 +276,16 @@ describe('Person', () => {
     })
   })
 
+  describe('makeBaby', () => {
+    it('will make a baby', () => {
+      const community = new Community()
+      const mother = new Person({ community })
+      const father = new Person({ community })
+      const baby = new Person({ mother, father, community })
+      expect(baby.constructor.name).toEqual('Person')
+    })
+  })
+
   describe('personalityDistance', ()=> {
     it('calculates the personality distance between two people', () => {
       const p1 = new Person()

@@ -7,9 +7,9 @@
   ],
   "normalCommunityEvents": [
     { "chance": 1, "event": "conflict" },
-    { "chance": 2, "event": "sickness" },
-    { "chance": 4, "event": "lean" },
-    { "chance": 93, "event": "peace" }
+    { "chance": 1, "event": "sickness" },
+    { "chance": 2, "event": "lean" },
+    { "chance": 96, "event": "peace" }
   ],
   "illness": [
     { "chance": 3, "event": "death" },

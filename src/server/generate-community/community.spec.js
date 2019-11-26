@@ -53,13 +53,13 @@ describe('Community', () => {
     })
   })
 
-  describe('getLivingPopulation', () => {
+  describe('getCurrentPopulation', () => {
     it('returns the number of people alive in the community', () => {
       const community = new Community({})
       const p1 = community.addPerson(new Person())
       const p2 = community.addPerson(new Person())
       community.people[p1].died = true
-      const actual = community.getLivingPopulation()
+      const actual = community.getCurrentPopulation()
       expect(actual).toEqual([ p2 ])
     })
   })
@@ -93,7 +93,7 @@ describe('Community', () => {
 
   describe('run', () => {
     it('chronicles 150 years of history', () => {
-      const community = new Community({})
+      const community = new Community({ traditions: { monogamy: true } })
       community.run()
       expect(community.chronicle.length).toEqual(150)
     })

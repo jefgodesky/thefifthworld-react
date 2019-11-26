@@ -18,7 +18,7 @@ export default class Community {
 
     if (!this.people) this.people = {}
     if (!this.chronicle) this.chronicle = []
-    const randomizer = random.normal(7, 1)
+    const randomizer = random.normal(25, 1)
     this.status = {
       discord: Math.floor(randomizer())
     }
@@ -47,16 +47,12 @@ export default class Community {
 
   /**
    * Returns an array of ID's for those members of the community who have not
-   * yet been marked as dead.
+   * yet died or left.
    * @returns {[number]} - An array of ID's.
    */
 
-  getLivingPopulation () {
-    let living = []
-    Object.keys(this.people).forEach(id => {
-      if (!this.people[id].died) living.push(id)
-    })
-    return living
+  getCurrentPopulation () {
+    return Object.keys(this.people).filter(id => !this.people[id].died && !this.people[id].left)
   }
 
   /**
@@ -66,7 +62,7 @@ export default class Community {
   setStatus () {
     const { discord } = this.status
     const threshold = this.traditions && this.traditions.village ? 150 : 30
-    const living = this.getLivingPopulation()
+    const living = this.getCurrentPopulation()
     const overpopulated = living.length > threshold
     const eventTable = overpopulated
       ? tables.overpopulatedCommunityEvents
@@ -93,14 +89,19 @@ export default class Community {
   /**
    * Adds a person to the community and returns that person's ID.
    * @param person {Person} - The person to add to the community.
-   * @returns {number} - The ID for the person added.
+   * @returns {number|boolean} - The ID for the person added, or `false` if it
+   *   was not given a valid Person object.
    */
 
   addPerson (person) {
-    const index = `${Object.keys(this.people).length}`
-    this.people[index] = person
-    person.id = index
-    return index
+    if (person && person.constructor.name === 'Person') {
+      const index = `${Object.keys(this.people).length}`
+      this.people[index] = person
+      person.id = index
+      return index
+    } else {
+      return false
+    }
   }
 
   /**
@@ -110,7 +111,7 @@ export default class Community {
 
   addFounder (year) {
     const founders = this.traditions && this.traditions.village ? 20 : 4
-    const living = this.getLivingPopulation()
+    const living = this.getCurrentPopulation()
     if (living.length < founders) {
       const num = random.int(0, founders / 4)
       for (let i = 0; i < num; i++) {
@@ -139,12 +140,17 @@ export default class Community {
           ? tables.personalEventsInLeanTimes
           : tables.personalEventsAtPeace
 
-    const living = this.getLivingPopulation()
-    living.forEach(id => { this.people[id].event = check(table, random.int(1, 100)) })
-    living.forEach(id => this.people[id].checkBabies(this, year))
-    living.forEach(id => this.people[id].age(this, year))
+    const pop = this.getCurrentPopulation()
+    pop.forEach(id => {
+      const person = this.people[id]
+      person.event = check(table, random.int(1, 100))
+      person.havingBaby = false
+    })
+    pop.forEach(id => this.people[id].checkBabies(this, year))
+    pop.forEach(id => this.people[id].age(this, year))
     if (founding) this.addFounder(year)
-    this.chronicle.push(Object.assign({}, { year }, this.status))
+    const current = this.getCurrentPopulation()
+    this.chronicle.push(Object.assign({}, { year, population: current.length }, this.status))
   }
 
   /**
@@ -175,9 +181,14 @@ export default class Community {
 
   analyze () {
     const members = Object.values(this.people)
-    const living = this.getLivingPopulation()
+    const current = this.getCurrentPopulation()
     const agesAtDeath = members.filter(p => p.born && p.died).map(p => p.died - p.born)
     const avgLifeExpectancy = agesAtDeath.reduce((acc, curr) => acc + curr, 0) / agesAtDeath.length
+    const numKids = members.map(m => m.children.length)
+    const avgNumKids = numKids.reduce((acc, curr) => acc + curr, 0) / numKids.length
+    const howManyHaveKids = members.filter(m => m.children.length > 0).length
+    const howManyHavePartners = members.filter(m => m.partners.length > 0).length
+    const howManyLeft = members.filter(m => m.left).length
 
     const yearsPeace = this.chronicle.filter(y => y.event === 'peace').length
     const yearsConflict = this.chronicle.filter(y => y.event === 'conflict').length
@@ -196,15 +207,36 @@ export default class Community {
     const avgAgreeableness = members.reduce((acc, curr) => acc + curr.personality.agreeableness, 0) / members.length
     const avgNeuroticism = members.reduce((acc, curr) => acc + curr.personality.neuroticism, 0) / members.length
 
-    const homosexuals = members.filter(m => m.sexualOrientation > 2).length
     const littlePeople = members.filter(m => m.body.achondroplasia).length
     const geniuses = members.filter(m => m.intelligence > 3).length
     const neurodivergent = members.filter(m => m.neurodivergent).length
     const psychopaths = members.filter(m => m.psychopath).length
 
+    const countGenerations = person => {
+      if (!person.mother || !person.father) {
+        return 1
+      } else {
+        const mother = person.mother ? countGenerations(this.people[person.mother]) : 0
+        const father = person.father ? countGenerations(this.people[person.father]) : 0
+        return Math.max(mother, father) + 1
+      }
+    }
+
+    const generations = members.map(m => countGenerations(m))
+    const deepestGeneration = generations.reduce((acc, curr) => Math.max(acc, curr), 0)
+
+    this.chronicle.forEach(rec => {
+      console.log(`${rec.year}\t${rec.population}\t${rec.discord}`)
+    })
+
     return {
       total: members.length,
-      population: living.length,
+      population: current.length,
+      avgNumKids,
+      howManyHaveKids,
+      howManyHavePartners,
+      howManyLeft,
+      deepestGeneration,
       avgLifeExpectancy,
       yearsPeace,
       yearsConflict,
@@ -218,7 +250,6 @@ export default class Community {
       avgExtraversion,
       avgAgreeableness,
       avgNeuroticism,
-      homosexuals,
       littlePeople,
       geniuses,
       neurodivergent,

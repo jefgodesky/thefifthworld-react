@@ -232,6 +232,7 @@ describe('Person', () => {
       const community = new Community()
       const p = new Person({ community })
       p.born = 1979
+      p.sexuality = { androphilia: 0.4, gynephilia: 0.4, skoliophilia: 0.2 }
       community.addPerson(p)
       p.findPartner(community, 2019)
       expect(p.partners.length).toBeGreaterThan(0)
@@ -253,9 +254,11 @@ describe('Person', () => {
       const p = new Person({ community })
       p.born = 1979
       p.body.hasWomb = true
+      p.sexuality = { androphilia: 1, gynephilia: 0, skoliophilia: 0 }
       community.addPerson(p)
-      p.findPartner(community, 2019)
-      community.people[p.partners[0].id].body.hasPenis = false
+      const id = p.findPartner(community, 2019)
+      const daddy = community.get(id)
+      daddy.body.hasPenis = false
       const actual = p.findParent(community)
       expect(actual).toEqual(false)
     })
@@ -266,9 +269,9 @@ describe('Person', () => {
       p.born = 1979
       p.body.hasWomb = true
       p.body.fertility = 200
+      p.sexuality = { androphilia: 1, gynephilia: 0, skoliophilia: 0 }
       community.addPerson(p)
-      p.findPartner(community, 2019)
-      const daddy = p.partners[0].id
+      const daddy = p.findPartner(community, 2019)
       community.people[daddy].body.hasPenis = true
       community.people[daddy].body.fertility = 200
       const actual = p.findParent(community)
@@ -286,7 +289,7 @@ describe('Person', () => {
     })
   })
 
-  describe('personalityDistance', ()=> {
+  describe('personalityDistance', () => {
     it('calculates the personality distance between two people', () => {
       const p1 = new Person()
       p1.personality = {
@@ -337,7 +340,7 @@ describe('Person', () => {
     it('does nothing if the person has no birth year defined', () => {
       const p = new Person()
       const before = p.fertility
-      p.adjustFertility(2019)
+      p.adjustFertility('peace', 2019)
       expect(p.fertility).toEqual(before)
     })
 
@@ -345,16 +348,17 @@ describe('Person', () => {
       const p = new Person()
       p.born = 2018
       const before = p.fertility
-      p.adjustFertility(2019)
+      p.adjustFertility('peace', 2019)
       expect(p.fertility).toEqual(before)
     })
 
     it('increases fertility for someone who is 20', () => {
       const p = new Person()
       p.born = 1999
+      p.body.hasWomb = true
       const before = p.body.fertility
-      p.adjustFertility(2019)
-      expect(p.body.fertility).toEqual(before + 20)
+      p.adjustFertility('peace', 2019)
+      expect(p.body.fertility).toEqual(before + 30)
     })
 
     it('increases fertility for a male who is 60', () => {
@@ -363,8 +367,8 @@ describe('Person', () => {
       p.body.hasPenis = true
       p.body.hasWomb = false
       const before = p.body.fertility
-      p.adjustFertility(2019)
-      expect(p.body.fertility).toEqual(before + 20)
+      p.adjustFertility('peace', 2019)
+      expect(p.body.fertility).toEqual(before + 30)
     })
 
     it('reduces fertility for a female who is 60', () => {
@@ -373,7 +377,7 @@ describe('Person', () => {
       p.body.hasPenis = false
       p.body.hasWomb = true
       p.body.fertility = 100
-      p.adjustFertility(2019)
+      p.adjustFertility('peace', 2019)
       expect(p.body.fertility).toEqual(80)
     })
 
@@ -383,7 +387,7 @@ describe('Person', () => {
       p.body.hasPenis = false
       p.body.hasWomb = true
       p.body.fertility = 10
-      p.adjustFertility(2019)
+      p.adjustFertility('peace', 2019)
       expect(p.body.fertility).toEqual(0)
     })
 
@@ -393,7 +397,7 @@ describe('Person', () => {
       p.body.hasPenis = true
       p.body.hasWomb = false
       p.body.fertility = 90
-      p.adjustFertility(2019)
+      p.adjustFertility('peace', 2019)
       expect(p.body.fertility).toEqual(100)
     })
   })
@@ -418,13 +422,6 @@ describe('Person', () => {
       p.die('other', {}, 2019)
       const death = p.history.filter(entry => entry.year === 2019).pop()
       expect(death).toEqual({ year: 2019, entry: 'Died, age 60', tag: 'other' })
-    })
-
-    it('adds to the community discord', () => {
-      const p = new Person()
-      const community = { status: { discord: 0 } }
-      p.die('other', community, 2019)
-      expect(community.status.discord).toEqual(1)
     })
   })
 

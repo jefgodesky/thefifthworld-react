@@ -147,6 +147,9 @@ export default class Person {
     // Record parents
     this.mother = mother ? mother.id : undefined
     this.father = father ? father.id : undefined
+
+    // Mother's fertility will take a bit to recover
+    mother.body.fertility = -20
   }
 
   /**
@@ -321,25 +324,32 @@ export default class Person {
    * community, and they are mutually added to one another's partner lists.
    * @param community {Community} - The community object.
    * @param year {number} - The year when the relationship forms.
+   * @returns {string|boolean} - The community ID of the partner created, or
+   *   `false` if something went wrong.
    */
 
   findPartner (community, year) {
-    const { born } = this
+    const { born, id } = this
     if (born) {
       const g = get(community, 'traditions.genders') || 3
       const genders = this.findPartnerSpread(g)
-      const candidates = genders.map(gender => {
-        const candidateBorn = Math.min(born + random.int(-5, 5), year - 18)
-        const candidate = new Person({ born: candidateBorn, gender })
-        for (let y = candidateBorn; y < year; y++) candidate.age({}, y, false)
-        return candidate
-      })
-      const love = candidates.map(candidate => this.personalityDistance(candidate) + random.int(-5, 5))
-      const pick = love.indexOf(Math.max(...love))
-      const candidateID = community.addPerson(candidates[pick])
-      this.partners.push({ love: Math.max(...love), id: candidateID })
-      candidates[pick].partners.push({ love: Math.max(...love), id: this.communityID })
+      if (genders.length > 0) {
+        const candidates = genders.map(gender => {
+          const candidateBorn = Math.min(born + random.int(-5, 5), year - 18)
+          const candidate = new Person({ born: candidateBorn, gender })
+          for (let y = candidateBorn; y < year; y++) candidate.age({}, y, false)
+          return candidate
+        })
+        const love = candidates.map(candidate => this.personalityDistance(candidate) - random.int(-5, 5))
+        const mostLoved = Math.max(...love)
+        const candidate = candidates[love.indexOf(mostLoved)]
+        const partnerId = community.addPerson(candidate)
+        this.partners.push({ love: mostLoved, id: partnerId })
+        candidate.partners.push({ love: mostLoved, id })
+        return partnerId
+      }
     }
+    return false
   }
 
   /**
@@ -359,7 +369,7 @@ export default class Person {
       const parents = this.partners.sort((a, b) => {
         const aFertility = community.get(a.id, 'body.fertility')
         const bFertility = community.get(b.id, 'body.fertility')
-        return aFertility - bFertility
+        return bFertility - aFertility
       })
 
       parents.forEach(parent => {
@@ -371,8 +381,8 @@ export default class Person {
       })
 
       if (partner) {
-        const partnerFertility = community.get(partner, 'body.fertility') || 0
-        const chance = Math.max(Math.min(fertility, partnerFertility) - 50, 0)
+        const partnerFertility = community.get(partner, 'body.fertility')
+        const chance = Math.max(Math.min(fertility, partnerFertility), 0)
         const roll = random.int(1, 100)
         return roll < chance ? partner : false
       }
@@ -421,25 +431,139 @@ export default class Person {
   }
 
   /**
+   * Relationships change as characters do.
+   * @param community {Community} - The community object.
+   * @param event {string} - The personal event that the character is going
+   *   through.
+   * @param year {number} - The year in which this is happening.
+   */
+
+  adjustRelationships (community, event, year) {
+    const warmer = [ '+openness', '+extraversion', '+agreeableness' ]
+    const colder = [ '-extraversion', '-agreeableness', '+neuroticism' ]
+    if (warmer.includes(event)) {
+      // You've become a warmer person. You might start a new relationship
+      // or deepen an existing one.
+
+      const { discord, overpopulated } = community.status
+      const { monogamy } = community.traditions
+      const baseChance = (1 / 3) ^ this.partners.length + 1
+      const chance = random.int(1, 10) < Math.ceil((baseChance / discord) * 10)
+
+      // If you have a chance, will you take it? If your community doesn't have
+      // a norm of monogamy, sure. Or if it does, but you're not the type to
+      // abide by rules like that. Or if this is your first partner.
+
+      const firstPartner = this.partners.length === 0
+      const poly = monogamy && this.partners.length > 0 && this.personality.agreeableness < 0
+
+      if (chance && (!monogamy || poly || (monogamy && firstPartner))) {
+        // You've gained a new partner.
+        const willLeave = this.partners.length === 0 && (overpopulated || random.int(1, 10) < discord)
+        if (willLeave) {
+          this.leave(community, year, 'live with a new partner')
+        } else {
+          this.findPartner(community, year)
+        }
+      } else if (this.partners.length > 0) {
+        // You grow closer to one of your existing partners.
+        const shuffled = shuffle(this.partners)
+        shuffled[0].love--
+        const otherId = shuffled[0].id
+        community.people[otherId].partners.forEach(p => {
+          if (p.id === this.id) p.love = shuffled[0].love
+        })
+      }
+    } else if (colder.includes(event)) {
+      // You've become colder or harder to relate to. Your partners will be
+      // re-evaluating their relationships with you.
+      this.reevaluateRelationships(community, year)
+    }
+  }
+
+  /**
+   * When someone grows more difficult (less extraverted, less agreeable, or
+   * more neurotic), we re-evaluate their relationships. We add the new
+   * personality distance to their love score. We then do a random check using
+   * their new love score as the probability that they stay together. If they
+   * break up, there's a 50% chance that they simply break up, but there's also
+   * a 50% chance that it's an affair (even in a polygamous society, there's a
+   * right way and a wrong way to go about this), which increases discord in
+   * the community.
+   * @param community {Community} - The community object.
+   * @param year {number} - The year this happens in.
+   */
+
+  reevaluateRelationships (community, year) {
+    const { id } = this
+    this.partners.forEach(relationship => {
+      const partner = community.people[relationship.id]
+      relationship.love += this.personalityDistance(partner)
+      if (random.int(1, 10) > relationship.love) {
+        // The relationship ends...
+        this.partners = this.partners.filter(relationship => relationship.id !== partner.id)
+        partner.partners = partner.partners.filter(relationship => relationship.id !== id)
+        const history = { year, entry: 'Ended relationship', people: [ id, relationship.id ] }
+
+        if (random.int(0, 1) === 1) {
+          // ...in an affair!
+          const otherId = partner.findPartner(community, year)
+          if (otherId) {
+            history.people.push()
+            history.entry += ' in an affair'
+            community.status.discord++
+          }
+        }
+
+        history.people.forEach(id => community.people[id].history.push(history))
+      }
+    })
+  }
+
+  /**
    * Adjust an individual's fertility. Men over the age of 16 and women between
    * the ages of 16 and 50 will see their fertility increase (or rebound from an
    * event like giving birth) each year. Women over the age of 50 will see their
    * fertility decrease each year.
-   * @param year {number} - The current year, used to calculate the person's age.
+   * @param event {string} - What's going on in the community at present (valid
+   *   values are `peace`, `lean`, `sickness`, and `conflict`.
+   * @param year {number} - The current year, used to calculate the person's
+   *   age.
    */
 
-  adjustFertility (year) {
+  adjustFertility (event, year) {
     if (typeof this.born === 'number') {
       const age = year - this.born
       const { hasPenis, hasWomb } = this.body
-      if (age > 16 && (hasPenis || hasWomb)) {
-        if (hasPenis || (hasWomb && age < 50)) {
-          this.body.fertility = Math.min(this.body.fertility + 20, 100)
-        } else {
-          this.body.fertility = Math.max(this.body.fertility - 20, 0)
-        }
+
+      const peace = event === 'peace'
+      const canReproduce = hasPenis || hasWomb
+      const prime = canReproduce && (age > 16 && (hasPenis || (hasWomb && age < 52)))
+      const healthy = this.event !== 'sickness' && this.event !== 'injury'
+
+      if (peace && prime && healthy) {
+        this.body.fertility = Math.min(this.body.fertility + 30, 100)
+      } else {
+        this.body.fertility = Math.max(this.body.fertility - 20, 0)
       }
     }
+  }
+
+  /**
+   * Have someone leave the community.
+   * @param community {Community} - The community object.
+   * @param year {number} - The year this person leaves the community.
+   * @param reason {string} (Optional) A string explaining why this person left
+   *   the community.
+   */
+
+  leave (community, year, reason) {
+    this.history.push({
+      year,
+      entry: `Left the community to ${reason}`,
+      tag: 'leave'
+    })
+    this.left = true
   }
 
   /**
@@ -469,11 +593,6 @@ export default class Person {
       this.history.push({ year, entry, tag })
     } else {
       this.died = true
-    }
-
-    if (community && community.status && typeof community.status.discord === 'number') {
-      let disturbance = 1
-      community.status.discord += disturbance
     }
   }
 
@@ -612,6 +731,7 @@ export default class Person {
     const unacceptable = canDie ? [] : [ 'death' ]
     const prognosis = checkUntil(table, unacceptable)
     const tag = infection ? 'infection' : 'illness'
+    this.body.fertility = -20
 
     switch (prognosis) {
       case 'death': this.die(tag, community, year); break
@@ -868,15 +988,21 @@ export default class Person {
    */
 
   checkBabies (community, year) {
-    const { havingBaby, event } = this
-    const possibilities = [ '+openness', '+extraversion', '+agreeableness' ]
-    if (!havingBaby && possibilities.indexOf(event) > -1) {
+    const { havingBaby } = this
+    const isVillage = get(community, 'traditions.village') || false
+    const carryingCapacity = isVillage ? 150 : 30
+    const population = community && community.getCurrentPopulation ? community.getCurrentPopulation().length : 2
+    const chance = carryingCapacity > population ? 1 : (population - carryingCapacity) / carryingCapacity
+    if (!havingBaby && random.int(1, 100) < Math.round(chance * 100)) {
       const pid = this.findParent(community)
       if (pid) {
         const parent = community.get(pid)
-        const partners = this.partners.map(p => p.id)
-        const polycule = [ this.id, ...partners ]
-        polycule.forEach(id => community[id].havingBaby = true)
+        const myPartners = this.partners.map(p => p.id)
+        const otherPartners = parent.partners.map(p => p.id)
+        const polycule = dedupe([ this.id, ...myPartners, ...otherPartners ])
+        polycule.forEach(id => {
+          community.people[id].havingBaby = true
+        })
 
         const { hasWomb, hasPenis } = this.body
         const mother = hasWomb ? this : parent
@@ -884,12 +1010,18 @@ export default class Person {
 
         let num = 1
         let done = false
-        while (!done) { if (random.int(1, 100) <= 3) { num++ } else { done = true } }
+        while (!done) {
+          if (random.int(1, 100) <= 3) {
+            num++
+          } else {
+            done = true
+          }
+        }
         for (let i = 0; i < num; i++) {
-          const baby = new Person({mother, father, community, born: year})
+          const baby = new Person({ mother, father, community, born: year })
           const bid = community.addPerson(baby)
-          mother.children = [...mother.children, bid]
-          father.children = [...father.children, bid]
+          mother.children = [ ...mother.children, bid ]
+          father.children = [ ...father.children, bid ]
         }
 
         // Chance of mother's death during childbirth
@@ -933,7 +1065,8 @@ export default class Person {
     // died of old age.
 
     if (!this.died) {
-      if (age) this.adjustFertility(year)
+      const communityEvent = get(community, 'status.event') || 'peace'
+      if (age) this.adjustFertility(communityEvent, year)
 
       const traits = Object.keys(this.personality)
       let adjustments = []
@@ -942,6 +1075,7 @@ export default class Person {
       })
 
       if (adjustments.includes(this.event)) this.adjustPersonality(this.event)
+      if (!this.havingBaby) this.adjustRelationships(community, this.event, year)
       if (this.event === 'sickness') this.getSick(community, year, canDie)
       if (this.event === 'injury') this.getHurt(community, year, canDie)
     }

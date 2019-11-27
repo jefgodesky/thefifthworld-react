@@ -227,18 +227,6 @@ describe('Person', () => {
     })
   })
 
-  describe('findPartner', () => {
-    it('finds a partner', () => {
-      const community = new Community()
-      const p = new Person({ community })
-      p.born = 1979
-      p.sexuality = { androphilia: 0.4, gynephilia: 0.4, skoliophilia: 0.2 }
-      community.addPerson(p)
-      p.findPartner(community, 2019)
-      expect(p.partners.length).toBeGreaterThan(0)
-    })
-  })
-
   describe('findParent', () => {
     it('will always return false if the person has no partners', () => {
       const community = new Community()

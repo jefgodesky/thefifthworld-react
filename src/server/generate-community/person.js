@@ -341,12 +341,14 @@ export default class Person {
           return candidate
         })
         const love = candidates.map(candidate => this.personalityDistance(candidate) - random.int(-5, 5))
-        const mostLoved = Math.max(...love)
-        const candidate = candidates[love.indexOf(mostLoved)]
-        const partnerId = community.addPerson(candidate)
-        this.partners.push({ love: mostLoved, id: partnerId })
-        candidate.partners.push({ love: mostLoved, id })
-        return partnerId
+        const mostLoved = Math.min(...love)
+        if (mostLoved < 5) {
+          const candidate = candidates[love.indexOf(mostLoved)]
+          const partnerId = community.addPerson(candidate)
+          this.partners.push({ love: mostLoved, id: partnerId })
+          candidate.partners.push({ love: mostLoved, id })
+          return partnerId
+        }
       }
     }
     return false

@@ -15,9 +15,17 @@ export default class Community {
         this[key] = clone(data[key])
       })
     }
+    this.init()
+  }
 
-    if (!this.people) this.people = {}
-    if (!this.chronicle) this.chronicle = []
+  /**
+   * Initializes the community, either when it's created by the constructor, or
+   * when it needs to run a second simulation because the first one failed.
+   */
+
+  init () {
+    this.people = {}
+    this.chronicle = []
     const randomizer = random.normal(25, 1)
     this.status = {
       discord: Math.floor(randomizer())
@@ -158,6 +166,8 @@ export default class Community {
    */
 
   run () {
+    this.init()
+
     // The present of the Fifth World is 144,000 days from today (one b'ak'tun in
     // the Maya Long Count calendar). Our simulation begins 150 years before that
     // (144000 - (150 * 365)).
@@ -171,6 +181,11 @@ export default class Community {
       const founding = year < fromYear + 25
       this.runYear(year, founding)
     }
+
+    // If we end up with a community that isn't viable, run it again.
+    const carryingCapacity = this.traditions && this.traditions.village ? 150 : 30
+    const pop = this.getCurrentPopulation()
+    if (pop.length < carryingCapacity / 2) this.run()
   }
 
   /**
@@ -189,6 +204,31 @@ export default class Community {
     const howManyHaveKids = members.filter(m => m.children.length > 0).length
     const howManyHavePartners = members.filter(m => m.partners.length > 0).length
     const howManyLeft = members.filter(m => m.left).length
+    const howManyDeadKids = members.filter(m => m.died && m.died - m.born < 10).length
+    const oldestPerson = members.reduce((acc, curr) => {
+      if (!curr.left) {
+        const end = curr && curr.died ? curr.died : daysFromNow(144000).getFullYear()
+        const age = end - curr.born
+        return Math.max(acc, age)
+      } else {
+        return acc
+      }
+    }, 0)
+
+    const community = this
+    const avgPartnerDistance = members.map(m => {
+      if (m.partners.length > 0) {
+        const partners = m.partners.map(p => community.get(p.id) || null)
+        return partners.length > 0
+          ? partners
+            .filter(p => p !== null)
+            .map(p => m.personalityDistance(p))
+            .reduce((acc, curr) => acc + curr, 0) / partners.length
+          : null
+      } else {
+        return null
+      }
+    }).filter(p => p !== null).reduce((acc, curr) => acc + curr, 0) / members.length
 
     const yearsPeace = this.chronicle.filter(y => y.event === 'peace').length
     const yearsConflict = this.chronicle.filter(y => y.event === 'conflict').length
@@ -236,8 +276,11 @@ export default class Community {
       howManyHaveKids,
       howManyHavePartners,
       howManyLeft,
+      howManyDeadKids,
       deepestGeneration,
       avgLifeExpectancy,
+      avgPartnerDistance,
+      oldestPerson,
       yearsPeace,
       yearsConflict,
       yearsLean,

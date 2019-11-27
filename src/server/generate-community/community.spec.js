@@ -14,11 +14,6 @@ describe('Community', () => {
       ]
       expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
     })
-
-    it('sets a random starting discord', () => {
-      const community = new Community({})
-      expect(community.status.discord).toBeGreaterThan(0)
-    })
   })
 
   describe('get', () => {

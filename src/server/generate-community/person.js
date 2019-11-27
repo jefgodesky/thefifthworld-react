@@ -1055,9 +1055,9 @@ export default class Person {
     }
 
     // Infant mortality
-    if (age && age < 5) {
+    if (age && age < 2) {
       let flip = 0
-      for (let i = 0; i < age; i++) flip = Math.max(flip, random.int(1, 100))
+      for (let i = 0; i < 2 - age; i++) flip = Math.max(flip, random.int(1, 100))
       if (flip < 50) this.event = 'sickness'
     }
 

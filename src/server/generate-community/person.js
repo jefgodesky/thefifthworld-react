@@ -33,7 +33,7 @@ export default class Person {
 
   random (community = null, born = null, specifiedGender = null, mateFor = null) {
     const randomDistributed = random.normal(0, 1)
-    const longevity = random.normal(90, 5)
+    const longevity = random.normal(100, 5)
 
     this.born = born
     this.longevity = longevity()

@@ -12,22 +12,22 @@
     { "chance": 96, "event": "peace" }
   ],
   "illness": [
-    { "chance": 3, "event": "death" },
+    { "chance": 1, "event": "death" },
     { "chance": 1, "event": "deaf" },
     { "chance": 1, "event": "blind" },
-    { "chance": 95, "event": "recovery" }
+    { "chance": 97, "event": "recovery" }
   ],
   "infection": [
-    { "chance": 10, "event": "death" },
-    { "chance": 5, "event": "deaf" },
-    { "chance": 5, "event": "blind" },
-    { "chance": 80, "event": "recovery" }
+    { "chance": 1, "event": "death" },
+    { "chance": 1, "event": "deaf" },
+    { "chance": 1, "event": "blind" },
+    { "chance": 97, "event": "recovery" }
   ],
   "injury": [
-    { "chance": 6, "event": "blind" },
-    { "chance": 6, "event": "deaf" },
-    { "chance": 16, "event": "limb" },
-    { "chance": 3, "event": "killed" },
+    { "chance": 1, "event": "blind" },
+    { "chance": 1, "event": "deaf" },
+    { "chance": 1, "event": "limb" },
+    { "chance": 1, "event": "killed" },
     { "chance": 30, "event": "infection" }
   ],
   "personalEventsAtPeace": [

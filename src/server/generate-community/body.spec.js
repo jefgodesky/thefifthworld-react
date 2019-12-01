@@ -89,6 +89,17 @@ describe('Body', () => {
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual).toEqual(true)
     })
+
+    it('can make a copy', () => {
+      const b = new Body()
+      const c = new Body({ copy: b })
+      const actual = [
+        c.constructor.name === 'Body',
+        c.type === b.type,
+        typeof c.getAge === 'function'
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual).toEqual(true)
+    })
   })
 
   describe('makeBaby', () => {

@@ -1,8 +1,13 @@
 import random from 'random'
+import { clone } from '../../shared/utils'
 
 export default class Body {
   constructor (args) {
-    if (args && args.parents) {
+    if (args && args.copy) {
+      Object.keys(args.copy).forEach(key => {
+        this[key] = clone(args.copy[key])
+      })
+    } else if (args && args.parents) {
       const { born, specifiedGender } = args
       const baby = Body.makeBaby(born, specifiedGender)
       return baby

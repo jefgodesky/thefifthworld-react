@@ -3,15 +3,29 @@ import random from 'random'
 export default class Body {
   constructor (args) {
     if (args && args.parents) {
-      return Body.makeBaby(args.parents)
+      const { born, specifiedGender } = args
+      const baby = Body.makeBaby(born, specifiedGender)
+      return baby
     } else {
       const specifiedGender = args ? args.specifiedGender : undefined
-      this.random(specifiedGender)
+      const born = args ? args.born : undefined
+      this.random(born, specifiedGender)
     }
   }
 
-  random (specifiedGender) {
+  /**
+   * Generate a random body.
+   * @param born {number} - (Optional) The year this body is born.
+   * @param specifiedGender {string} - (Optional) The gender that this person
+   *   will eventually grow into (unrealistic, but helpful for when we're
+   *   generating random people that an established member of the community
+   *   might form a relationship with, to get the people who might join the
+   *   community).
+   */
+
+  random (born = undefined, specifiedGender = undefined) {
     const rand = random.normal(0, 1)
+    if (born && typeof born === 'number') this.born = born
     this.type = rand()
     this.eyes = random.float(0, 100) < 0.016
       ? { left: 'Blind', right: 'Blind' }
@@ -36,8 +50,24 @@ export default class Body {
     this.determineSex(specifiedGender)
   }
 
+  /**
+   * Create a baby from two bodies.
+   * @param parents {[Body]} - An array of at least two `Body` objects. Only
+   *   the first two are considered; all other elements are completely ignored.
+   *   One of those first two elements must have `hasWomb` equal to `true`, and
+   *   the other must have `hasPenis` equal to `true`. If these conditions are
+   *   met, a new `Body` object, with probabilities determined by its parents,
+   *   is produced. If not, this method returns `undefined`.
+   * @param born {number} - (Optional) The year in which this child is born.
+   * @returns {Body|undefined} - If two viable parents are provided, a child is
+   *   created that blends their traits. If not, it returns `undefined`. There
+   *   is a 25% chance of infant mortality, indicated by the `died` property
+   *   being set either to the same year as the `born` property (if the `born`
+   *   argument was provided) or simply `true` (if no `born` argument was
+   *   provided).
+   */
 
-  static makeBaby (parents) {
+  static makeBaby (parents, born) {
     let baby
     if (parents && Array.isArray(parents) && parents.length > 1) {
       const bothBodies = parents.slice(0, 1).map(p => p.constructor && p.constructor.name === 'Body').reduce((acc, curr) => acc && curr, true)
@@ -57,6 +87,8 @@ export default class Body {
           // Start off by seeding our baby with random values.
 
           baby = new Body()
+          if (born && typeof born === 'number') baby.born = born
+          const imr = baby.born ? baby.born : true
 
           // We're using a random value from a normal distribution to represent
           // body type (a lower number is more ectomorphic, a higher number is
@@ -133,14 +165,14 @@ export default class Body {
             const fromFather = father.achondroplasia && random.boolean() === true
             if (fromMother || fromFather) {
               this.achondroplasia = true
-              if (fromMother && fromFather) this.dead = true
+              if (fromMother && fromFather) this.dead = imr
             } else {
               this.achondroplasia = false
             }
           }
 
           // 25% infant mortality rate
-          if (random.int(1, 4) === 1) this.dead = true
+          if (random.int(1, 4) === 1) this.dead = imr
         }
       }
     }

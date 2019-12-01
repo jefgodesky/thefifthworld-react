@@ -19,7 +19,6 @@ describe('BigFiveTrait', () => {
     })
   })
 
-
   describe('decr', () => {
     it('decreases the value', () => {
       const trait = new BigFiveTrait()

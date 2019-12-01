@@ -238,4 +238,31 @@ export default class Body {
       }
     }
   }
+
+  /**
+   * Returns the person's age in a particular year.
+   * @param year {number} - The year in which we're asking for the person's
+   *   age.
+   * @returns {number|undefined} - If the person has died and we have the year
+   *   of her birth and death, and you're asking for her age after she died, it
+   *   returns her age at death. If we have the year of her birth, it returns
+   *   her age in the year provided. If either there is no year of birth
+   *   recorded, or if the year provided is not valid, it returns `undefined`.
+   */
+
+  getAge (year) {
+    const { born, died } = this
+    const ageAtDeath = born && typeof born === 'number' && died && typeof died === 'number' ? died - born : null
+    const ageAtYear = born && typeof born === 'number' && year && typeof year === 'number' ? year - born : null
+
+    if (ageAtDeath && ageAtYear) {
+      return Math.min(ageAtDeath, ageAtYear)
+    } else if (ageAtYear && !ageAtDeath) {
+      return ageAtYear
+    } else if (ageAtDeath && !ageAtYear) {
+      return ageAtDeath
+    } else {
+      return undefined
+    }
+  }
 }

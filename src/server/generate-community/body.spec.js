@@ -177,4 +177,32 @@ describe('Body', () => {
       expect(baby.born).toEqual(undefined)
     })
   })
+
+  describe('getAge', () => {
+    it('reports age', () => {
+      const b = new Body({ born: 1979 })
+      expect(b.getAge(2019)).toEqual(40)
+    })
+
+    it('reports age at death if asking after she died', () => {
+      const b = new Body({ born: 1979 })
+      b.died = 2009
+      expect(b.getAge(2019)).toEqual(30)
+    })
+
+    it('reports a negative number if it\'s before her birth', () => {
+      const b = new Body({ born: 1979 })
+      expect(b.getAge(1969)).toEqual(-10)
+    })
+
+    it('returns undefined if she has no birth year recorded', () => {
+      const b = new Body()
+      expect(b.getAge(2019)).toEqual(undefined)
+    })
+
+    it('returns undefined if an invalid year is given', () => {
+      const b = new Body({ born: 1979 })
+      expect(b.getAge('today')).toEqual(undefined)
+    })
+  })
 })

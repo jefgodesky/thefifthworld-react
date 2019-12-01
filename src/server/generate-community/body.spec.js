@@ -132,5 +132,18 @@ describe('Body', () => {
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual).toEqual(true)
     })
+
+    it('can use the constructor', () => {
+      const mama = new Body()
+      mama.hasPenis = false
+      mama.hasWomb = true
+
+      const papa = new Body()
+      papa.hasPenis = true
+      papa.hasWomb = false
+
+      const baby = new Body({ parents: [ mama, papa ] })
+      expect(baby.constructor.name).toEqual('Body')
+    })
   })
 })

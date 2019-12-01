@@ -1,7 +1,16 @@
 import random from 'random'
 
 export default class Body {
-  constructor (specifiedGender) {
+  constructor (args) {
+    if (args && args.parents) {
+      return Body.makeBaby(args.parents)
+    } else {
+      const specifiedGender = args ? args.specifiedGender : undefined
+      this.random(specifiedGender)
+    }
+  }
+
+  random (specifiedGender) {
     const rand = random.normal(0, 1)
     this.type = rand()
     this.eyes = random.float(0, 100) < 0.016

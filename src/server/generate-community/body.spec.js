@@ -80,4 +80,57 @@ describe('Body', () => {
       expect(actual).toEqual(true)
     })
   })
+
+  describe('makeBaby', () => {
+    it('creates a baby', () => {
+      const mama = new Body()
+      mama.hasWomb = true
+      const papa = new Body()
+      papa.hasPenis = true
+      const baby = Body.makeBaby([ mama, papa ])
+      expect(baby.constructor.name).toEqual('Body')
+    })
+
+    it('requires two parents', () => {
+      const baby = Body.makeBaby()
+      expect(baby).toEqual(undefined)
+    })
+
+    it('requires two parents', () => {
+      const baby = Body.makeBaby()
+      expect(baby).toEqual(undefined)
+    })
+
+    it('accepts parents with matching bits', () => {
+      const p1 = new Body()
+      p1.hasPenis = false
+      p1.hasWomb = true
+
+      const p2 = new Body()
+      p2.hasPenis = false
+      p2.hasWomb = true
+
+      const baby = Body.makeBaby([ p1, p2 ])
+      expect(baby).toEqual(undefined)
+    })
+
+    it('returns a baby with a body type between its mother and father', () => {
+      const mama = new Body()
+      mama.type = 0
+      mama.hasPenis = false
+      mama.hasWomb = true
+
+      const papa = new Body()
+      papa.type = 1
+      papa.hasPenis = true
+      papa.hasWomb = false
+
+      const baby = Body.makeBaby([ mama, papa ])
+      const actual = [
+        baby.type >= 0,
+        baby.type <= 1
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual).toEqual(true)
+    })
+  })
 })

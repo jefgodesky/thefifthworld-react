@@ -7,6 +7,33 @@ export default class BigFiveTrait {
   }
 
   /**
+   * Reports whether or not the trait value is less than the given threshold.
+   * @param x {number} - (Optional) The threshold to compare against. If left
+   *   undefined, this defaults to `0`, which is the average value, so that
+   *   `isBelow()` can be read as "is below average." (Default: `0`)
+   * @returns {boolean} - `true` if the trait value is less than the given
+   *   threshold, or `false` if it is greater than or equal to the threshold.
+   */
+
+  isBelow (x = 0) {
+    return this.value < x
+  }
+
+  /**
+   * Reports whether or not the trait value is greater than the given
+   * threshold.
+   * @param x {number} - (Optional) The threshold to compare against. If left
+   *   undefined, this defaults to `0`, which is the average value, so that
+   *   `isAbove()` can be read as "is above average." (Default: `0`)
+   * @returns {boolean} - `true` if the trait value is greater than the given
+   *   threshold, or `false` if it is less than or equal to the threshold.
+   */
+
+  isAbove (x = 0) {
+    return this.value > x
+  }
+
+  /**
    * Increase or decrease the value by a random amount.
    * @param dir {number} - If given a number greater than zero, a random amount
    *   is added to the value. Otherwise, a random amount is subtracted from the

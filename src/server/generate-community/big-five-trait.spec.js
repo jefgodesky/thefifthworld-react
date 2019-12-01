@@ -10,6 +10,46 @@ describe('BigFiveTrait', () => {
     })
   })
 
+  describe('isBelow', () => {
+    it('returns true if the value is less than the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isBelow(1)).toEqual(true)
+    })
+
+    it('returns false if the value is not less than the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isBelow(-1)).toEqual(false)
+    })
+
+    it('returns false if the value is equal to the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isBelow(0)).toEqual(false)
+    })
+  })
+
+  describe('isAbove', () => {
+    it('returns true if the value is greater than the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isAbove(-1)).toEqual(true)
+    })
+
+    it('returns false if the value is not greater than the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isAbove(1)).toEqual(false)
+    })
+
+    it('returns false if the value is equal to the given number', () => {
+      const trait = new BigFiveTrait()
+      trait.value = 0
+      expect(trait.isAbove(0)).toEqual(false)
+    })
+  })
+
   describe('incr', () => {
     it('increases the value', () => {
       const trait = new BigFiveTrait()

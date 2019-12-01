@@ -157,8 +157,8 @@ export default class Body {
 
   determineSex (specifiedGender) {
     const roll = random.int(1, 100)
-    const both = random.int(1, 10000)
-    const neither = random.int(1, 10000)
+    const both = random.int(1, 10000) < 85
+    const neither = random.int(1, 10000) < 85
 
     if (both) {
       this.hasPenis = true

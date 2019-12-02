@@ -410,4 +410,12 @@ describe('Body', () => {
       expect(valid.includes(actual))
     })
   })
+
+  describe('getHurt', () => {
+    it('returns an outcome', () => {
+      const b = new Body()
+      const actual = b.getHurt()
+      expect(typeof actual).toEqual('string')
+    })
+  })
 })

@@ -375,7 +375,7 @@ export default class Body {
   /**
    * Checks the person's prognosis when she gets sick.
    * @param canDie {boolean} (Optional) A flag that can indicate that this
-   *   person cannot die from this disease.
+   *   person cannot die from this disease. (Default: `true`)
    * @returns {string} - A string indicating the person's prognosis (one of
    *   `death`, `deaf`, `blind`, or `recovery`).
    */
@@ -395,5 +395,72 @@ export default class Body {
     }
 
     return prognosis
+  }
+
+  /**
+   * Sustain a random injury.
+   * @param canDie {boolean} (Optional) A flag that can indicate that this
+   *   person cannot die from this injury. (Default: `true`)
+   * @returns {string} - A string indicating the outcome of the person's
+   *   injury  (one of `death`, `face`, `left arm`, `right arm`, `left leg`,
+   *   `right leg`, `infection`, or `recovery`).
+   */
+
+  getHurt (canDie = false) {
+    const unacceptable = canDie ? [] : [ 'death' ]
+    let outcome = checkUntil(tables.injury, unacceptable)
+    const roll = random.int(1, 8)
+
+    switch (outcome) {
+      case 'face':
+        switch (roll) {
+          case 1: this.eyes.left = 'Missing'; outcome = 'lost left eye'; break
+          case 2: this.eyes.right = 'Missing'; outcome = 'lost right eye'; break
+          case 3: this.ears.left = 'Missing'; outcome = 'lost left ear'; break
+          case 4: this.ears.right = 'Missing'; outcome = 'lost left ear'; break
+          default: this.takeScar('face'); outcome = 'took a scar to the face'; break
+        }
+        break
+      case 'left arm':
+        if (roll < 2) {
+          this.arms.left = 'Missing'
+          outcome = 'lost left arm'
+        } else {
+          this.takeScar('left arm')
+          outcome = 'took a scar to the left arm'
+        }
+        break
+      case 'right arm':
+        if (roll < 2) {
+          this.arms.right = 'Missing'
+          outcome = 'lost right arm'
+        } else {
+          this.takeScar('right arm')
+          outcome = 'took a scar to the right arm'
+        }
+        break
+      case 'left leg':
+        if (roll < 2) {
+          this.legs.left = 'Missing'
+          outcome = 'lost left leg'
+        } else {
+          this.takeScar('left leg')
+          outcome = 'took a scar to the left leg'
+        }
+        break
+      case 'right leg':
+        if (roll < 2) {
+          this.legs.right = 'Missing'
+          outcome = 'lost right leg'
+        } else {
+          this.takeScar('right leg')
+          outcome = 'took a scar to the right leg'
+        }
+        break
+      case 'torso': this.takeScar('torso'); outcome = 'took a scar to the torso'; break
+      default: break
+    }
+
+    return outcome
   }
 }

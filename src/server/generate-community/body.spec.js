@@ -347,4 +347,12 @@ describe('Body', () => {
       expect(b.isGone('legs', 'right')).toEqual(false)
     })
   })
+
+  describe('takeScar', () => {
+    it('adds a scar', () => {
+      const b = new Body()
+      b.takeScar('face')
+      expect(b.scars).toEqual([ 'face' ])
+    })
+  })
 })

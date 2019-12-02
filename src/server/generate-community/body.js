@@ -320,4 +320,13 @@ export default class Body {
     const gone = [ 'Disabled', 'Missing', 'Blind', 'Deaf' ]
     return gone.includes(this[key][side])
   }
+
+  /**
+   * Adds a scar.
+   * @param location {string} - Where the scar is located.
+   */
+
+  takeScar (location) {
+    this.scars.push(location)
+  }
 }

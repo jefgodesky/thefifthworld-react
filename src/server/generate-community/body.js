@@ -32,8 +32,10 @@ export default class Body {
 
   random (born = undefined, specifiedGender = undefined) {
     const rand = random.normal(0, 1)
+    const randomLongevity = random.normal(100, 5)
     if (born && typeof born === 'number') this.born = born
     this.type = rand()
+    this.longevity = randomLongevity()
     this.eyes = random.float(0, 100) < 0.016
       ? { left: 'Blind', right: 'Blind' }
       : { left: 'Healthy', right: 'Healthy' }
@@ -99,19 +101,21 @@ export default class Body {
           if (born && typeof born === 'number') baby.born = born
           const imr = baby.born ? baby.born : true
 
-          // We're using a random value from a normal distribution to represent
-          // body type (a lower number is more ectomorphic, a higher number is
-          // more endomorphic, and 0 is perfectly mesomorphic), so here we're
-          // trying for "descent with variation" by taking the average of your
-          // mother's value and your father's value and then adding a random
-          // variance based on their difference, so you're still somewhere
-          // between those two.
+          // We're trying for "descent with variation" by taking the average of
+          // your mother's value and your father's value and then adding a
+          // random variance based on their difference, so you're still
+          // somewhere between those two.
 
-          const avgType = (father.type + mother.type) / 2
-          const diffType = Math.abs(father.type - mother.type)
-          const swingType = diffType * (random.int(1, 50) / 100)
-          const variationType = random.boolean() === true ? swingType : swingType * -1
-          baby.type = avgType + variationType
+          const descent = (m, f) => {
+            const avg = (m + f) / 2
+            const diff = Math.abs(m - f)
+            const swing = diff * (random.int(1, 50) / 100)
+            const variation = random.boolean() === true ? swing : swing * -1
+            return avg + variation
+          }
+
+          baby.type = descent(mother.type, father.type)
+          baby.longevity = descent(mother.longevity, father.longevity)
 
           // We started off with random values for eyes, ears, and limbs, but
           // if either of your parents were born blind, then there's a much

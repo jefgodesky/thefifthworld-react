@@ -19,6 +19,11 @@ describe('Body', () => {
       expect(typeof b.type).toEqual('number')
     })
 
+    it('assigns a maximum longevity', () => {
+      const b = new Body()
+      expect(b.longevity).toBeGreaterThan(50)
+    })
+
     it('determines if both eyes can see', () => {
       const b = new Body()
       const actual = [
@@ -145,6 +150,25 @@ describe('Body', () => {
       const actual = [
         baby.type >= 0,
         baby.type <= 1
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+
+    it('returns a baby with a maximum longevity between its mother and father', () => {
+      const mama = new Body()
+      mama.longevity = 80
+      mama.hasPenis = false
+      mama.hasWomb = true
+
+      const papa = new Body()
+      papa.longevity = 70
+      papa.hasPenis = true
+      papa.hasWomb = false
+
+      const baby = Body.makeBaby([ mama, papa ])
+      const actual = [
+        baby.longevity >= 70,
+        baby.longevity <= 80
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
     })

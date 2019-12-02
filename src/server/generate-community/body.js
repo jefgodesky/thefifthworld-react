@@ -129,32 +129,32 @@ export default class Body {
           }
 
           const blindRoll = random.int(1, 4)
-          const blind = both('eyes') && blindRoll < 4 ||
-            either('eyes') && blindRoll === 1
+          const blind = (both('eyes') && blindRoll < 4) ||
+            (either('eyes') && blindRoll === 1)
           if (blind) {
             baby.eyes.left = 'Blind'
             baby.eyes.right = 'Blind'
           }
 
           const deafRoll = random.int(1, 4)
-          const deaf = both('ears') && deafRoll < 4 ||
-            either('ears') && deafRoll === 1
+          const deaf = (both('ears') && deafRoll < 4) ||
+            (either('ears') && deafRoll === 1)
           if (deaf) {
             baby.ears.left = 'Deaf'
             baby.ears.right = 'Deaf'
           }
 
           const armsRoll = random.int(1, 4)
-          const arms = both('arms') && armsRoll < 4 ||
-            either('arms') && armsRoll === 1
+          const arms = (both('arms') && armsRoll < 4) ||
+            (either('arms') && armsRoll === 1)
           if (arms) {
             baby.arms.left = 'Disabled'
             baby.arms.right = 'Disabled'
           }
 
           const legsRoll = random.int(1, 4)
-          const legs = both('arms') && legsRoll < 4 ||
-            either('arms') && legsRoll === 1
+          const legs = (both('arms') && legsRoll < 4) ||
+            (either('arms') && legsRoll === 1)
           if (legs) {
             baby.legs.left = 'Disabled'
             baby.legs.right = 'Disabled'

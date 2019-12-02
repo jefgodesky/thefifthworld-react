@@ -86,4 +86,31 @@ describe('Personality', () => {
       expect(before).not.toEqual(after)
     })
   })
+
+  describe('willConform', () => {
+    it('returns a boolean', () => {
+      const p = new Personality()
+      expect(typeof p.willConform()).toEqual('boolean')
+    })
+
+    it('returns true more often for a more agreeable person', () => {
+      const p = new Personality()
+      p.agreeableness.value = 3
+      const actual = []
+      for (let i = 0; i < 100; i++) actual.push(p.willConform())
+      const yes = actual.filter(r => r === true).length
+      const no = actual.filter(r => r === false).length
+      expect(yes).toBeGreaterThan(no)
+    })
+
+    it('returns false more often for a less agreeable person', () => {
+      const p = new Personality()
+      p.agreeableness.value = -3
+      const actual = []
+      for (let i = 0; i < 100; i++) actual.push(p.willConform())
+      const yes = actual.filter(r => r === true).length
+      const no = actual.filter(r => r === false).length
+      expect(no).toBeGreaterThan(yes)
+    })
+  })
 })

@@ -1,4 +1,5 @@
 import BigFiveTrait from './big-five-trait'
+import random from 'random'
 import { pickRandom } from './shuffle'
 
 export default class Personality {
@@ -55,5 +56,18 @@ export default class Personality {
 
     // Make that change.
     this[trait].change(dir)
+  }
+
+  /**
+   * Uses this person's agreeableness to create a probability that she will
+   * conform to social norms, and then makes a random check against that
+   * probability.
+   * @returns {boolean} - `true` if the person will conform to social norms in
+   *   this instance, or `false` if she won't.
+   */
+
+  willConform () {
+    const probability = (this.agreeableness.value + 2) * 19
+    return random.int(1, 100) < probability
   }
 }

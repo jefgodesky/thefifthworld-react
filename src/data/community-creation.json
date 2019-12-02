@@ -17,12 +17,6 @@
     { "chance": 1, "event": "blind" },
     { "chance": 97, "event": "recovery" }
   ],
-  "infection": [
-    { "chance": 1, "event": "death" },
-    { "chance": 1, "event": "deaf" },
-    { "chance": 1, "event": "blind" },
-    { "chance": 97, "event": "recovery" }
-  ],
   "injury": [
     { "chance": 1, "event": "blind" },
     { "chance": 1, "event": "deaf" },

@@ -25,7 +25,7 @@ describe('Body', () => {
         b.eyes.left === 'Blind' || b.eyes.left === 'Healthy',
         b.eyes.right === 'Blind' || b.eyes.right === 'Healthy'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('determines if both ears can hear', () => {
@@ -34,7 +34,7 @@ describe('Body', () => {
         b.ears.left === 'Deaf' || b.ears.left === 'Healthy',
         b.ears.right === 'Deaf' || b.ears.right === 'Healthy'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('determines if both arms are healthy', () => {
@@ -43,7 +43,7 @@ describe('Body', () => {
         b.arms.left === 'Disabled' || b.arms.left === 'Healthy',
         b.arms.right === 'Disabled' || b.arms.right === 'Healthy'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('determines if both legs are healthy', () => {
@@ -52,7 +52,7 @@ describe('Body', () => {
         b.legs.left === 'Disabled' || b.legs.left === 'Healthy',
         b.legs.right === 'Disabled' || b.legs.right === 'Healthy'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('sets achondroplasia', () => {
@@ -78,7 +78,7 @@ describe('Body', () => {
     it('can record scars', () => {
       const b = new Body()
       const { scars } = b
-      expect(scars && Array.isArray(scars) && scars.length === 0).toEqual(true)
+      expect(scars && Array.isArray(scars) && scars.length === 0)
     })
 
     it('can have a specified gender', () => {
@@ -87,7 +87,7 @@ describe('Body', () => {
         typeof b.hasPenis === 'boolean',
         typeof b.hasWomb === 'boolean'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('can make a copy', () => {
@@ -98,7 +98,7 @@ describe('Body', () => {
         c.type === b.type,
         typeof c.getAge === 'function'
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
   })
 
@@ -146,7 +146,7 @@ describe('Body', () => {
         baby.type >= 0,
         baby.type <= 1
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      expect(actual)
     })
 
     it('can use the constructor', () => {
@@ -290,61 +290,61 @@ describe('Body', () => {
     it('returns true if an eye is blind', () => {
       const b = new Body()
       b.eyes.right = 'Blind'
-      expect(b.isGone('eyes', 'right')).toEqual(true)
+      expect(b.isGone('eyes', 'right'))
     })
 
     it('returns false if an eye is healthy', () => {
       const b = new Body()
       b.eyes.right = 'Healthy'
-      expect(b.isGone('eyes', 'right')).toEqual(false)
+      expect(b.isGone('eyes', 'right')).not
     })
 
     it('returns true if an ear is deaf', () => {
       const b = new Body()
       b.ears.right = 'Deaf'
-      expect(b.isGone('ears', 'right')).toEqual(true)
+      expect(b.isGone('ears', 'right'))
     })
 
     it('returns false if an ear is healthy', () => {
       const b = new Body()
       b.ears.right = 'Healthy'
-      expect(b.isGone('ears', 'right')).toEqual(false)
+      expect(b.isGone('ears', 'right')).not
     })
 
     it('returns true if an arm is disabled', () => {
       const b = new Body()
       b.arms.right = 'Disabled'
-      expect(b.isGone('arms', 'right')).toEqual(true)
+      expect(b.isGone('arms', 'right'))
     })
 
     it('returns true if an arm is missing', () => {
       const b = new Body()
       b.arms.right = 'Missing'
-      expect(b.isGone('arms', 'right')).toEqual(true)
+      expect(b.isGone('arms', 'right'))
     })
 
     it('returns false if an arm is healthy', () => {
       const b = new Body()
       b.arms.right = 'Healthy'
-      expect(b.isGone('arms', 'right')).toEqual(false)
+      expect(b.isGone('arms', 'right')).not
     })
 
     it('returns true if a leg is disabled', () => {
       const b = new Body()
       b.legs.right = 'Disabled'
-      expect(b.isGone('legs', 'right')).toEqual(true)
+      expect(b.isGone('legs', 'right'))
     })
 
     it('returns true if a leg is missing', () => {
       const b = new Body()
       b.legs.right = 'Missing'
-      expect(b.isGone('legs', 'right')).toEqual(true)
+      expect(b.isGone('legs', 'right'))
     })
 
     it('returns false if a leg is healthy', () => {
       const b = new Body()
       b.legs.right = 'Healthy'
-      expect(b.isGone('legs', 'right')).toEqual(false)
+      expect(b.isGone('legs', 'right')).not
     })
   })
 
@@ -353,6 +353,61 @@ describe('Body', () => {
       const b = new Body()
       b.takeScar('face')
       expect(b.scars).toEqual([ 'face' ])
+    })
+  })
+
+  describe('deafen', () => {
+    it('will mark one ear as deaf', () => {
+      const b = new Body()
+      b.ears = { left: 'Healthy', right: 'Healthy' }
+      const actual = b.deafen()
+      expect(actual && (b.ears.left === 'Deaf' || b.ears.right === 'Deaf'))
+    })
+
+    it('will mark both ears as deaf if called twice', () => {
+      const b = new Body()
+      b.ears = { left: 'Healthy', right: 'Healthy' }
+      const d1 = b.deafen()
+      const d2 = b.deafen()
+      expect(d1 && d2 && b.ears.left === 'Deaf' && b.ears.right === 'Deaf')
+    })
+
+    it('will return false if both ears are already deaf', () => {
+      const b = new Body()
+      b.ears = { left: 'Deaf', right: 'Deaf' }
+      expect(b.deafen()).not
+    })
+  })
+
+  describe('blind', () => {
+    it('will mark one eye as blind', () => {
+      const b = new Body()
+      b.eyes = { left: 'Healthy', right: 'Healthy' }
+      const actual = b.blind()
+      expect(actual && (b.eyes.left === 'Blind' || b.eyes.right === 'Blind'))
+    })
+
+    it('will mark both eyes as blind if called twice', () => {
+      const b = new Body()
+      b.eyes = { left: 'Healthy', right: 'Healthy' }
+      const d1 = b.blind()
+      const d2 = b.blind()
+      expect(d1 && d2 && b.eyes.left === 'Blind' && b.eyes.right === 'Blind')
+    })
+
+    it('will return false if both eyes are already blind', () => {
+      const b = new Body()
+      b.eyes = { left: 'Blind', right: 'Blind' }
+      expect(b.blind()).not
+    })
+  })
+
+  describe('getSick', () => {
+    it('returns a prognosis', () => {
+      const valid = [ 'death', 'deaf', 'blind', 'recovery' ]
+      const b = new Body()
+      const actual = b.getSick()
+      expect(valid.includes(actual))
     })
   })
 })

@@ -1,5 +1,7 @@
 import random from 'random'
 import { clone } from '../../shared/utils'
+import { checkUntil } from './check'
+import tables from '../../data/community-creation'
 
 export default class Body {
   constructor (args) {
@@ -328,5 +330,70 @@ export default class Body {
 
   takeScar (location) {
     this.scars.push(location)
+  }
+
+  /**
+   * Makes the person deaf in one ear.
+   * @returns {boolean} - `true` if the person is made deaf in one ear, or
+   *   `false` if it failed (because she was already deaf in both ears).
+   */
+
+  deafen () {
+    const check = `${this.ears.left} ${this.ears.right}`
+    const side = random.boolean() ? 'right' : 'left'
+    const other = side === 'right' ? 'left' : 'right'
+
+    if (this.ears[side] === 'Deaf') {
+      this.ears[other] = 'Deaf'
+    } else {
+      this.ears[side] = 'Deaf'
+    }
+
+    return `${this.ears.left} ${this.ears.right}` !== check
+  }
+
+  /**
+   * Makes the person blind in one eye.
+   * @returns {boolean} - `true` if the person is made blind in one eye, or
+   *   `false` if it failed (because she was already blind in both eyes).
+   */
+
+  blind () {
+    const check = `${this.eyes.left} ${this.eyes.right}`
+    const side = random.boolean() ? 'right' : 'left'
+    const other = side === 'right' ? 'left' : 'right'
+
+    if (this.eyes[side] === 'Blind') {
+      this.eyes[other] = 'Blind'
+    } else {
+      this.eyes[side] = 'Blind'
+    }
+
+    return `${this.eyes.left} ${this.eyes.right}` !== check
+  }
+
+  /**
+   * Checks the person's prognosis when she gets sick.
+   * @param canDie {boolean} (Optional) A flag that can indicate that this
+   *   person cannot die from this disease.
+   * @returns {string} - A string indicating the person's prognosis (one of
+   *   `death`, `deaf`, `blind`, or `recovery`).
+   */
+
+  getSick (canDie = true) {
+    const unacceptable = canDie ? [] : [ 'death' ]
+    let prognosis = checkUntil(tables.illness, unacceptable)
+
+    switch (prognosis) {
+      case 'deaf':
+        if (!this.deafen()) prognosis = 'recovery'
+        break
+      case 'blind':
+        if (!this.blind()) prognosis = 'recovery'
+        break
+      default: break
+    }
+
+    return prognosis
   }
 }

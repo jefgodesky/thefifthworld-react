@@ -216,4 +216,73 @@ describe('Body', () => {
       expect(b.getAge('today')).toEqual(undefined)
     })
   })
+
+  describe('adjustFertility', () => {
+    it('sets fertility to zero if you\'re 16 or younger', () => {
+      const b = new Body()
+      b.adjustFertility('peace', 16)
+      expect(b.fertility).toEqual(0)
+    })
+
+    it('peaks at age 20', () => {
+      const b = new Body()
+      b.fertility = 90
+      b.infertile = false
+      b.adjustFertility('peace', 20)
+      expect(b.fertility).toEqual(100)
+    })
+
+    it('goes down after 20', () => {
+      const b = new Body()
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility('peace', 20)
+      const before = b.fertility
+      b.adjustFertility('peace', 25)
+      expect(b.fertility).toBeLessThan(before)
+    })
+
+    it('drops below 50% for a female at age 45', () => {
+      const b = new Body()
+      b.hasWomb = true
+      b.hasPenis = false
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility('peace', 45)
+      expect(b.fertility).toBeLessThan(50)
+    })
+
+    it('drops below 50% for a male at age 56', () => {
+      const b = new Body()
+      b.hasWomb = false
+      b.hasPenis = true
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility('peace', 56)
+      expect(b.fertility).toBeLessThan(50)
+    })
+
+    it('adds 20% up to the maximum in times of peace and plenty', () => {
+      const b = new Body()
+      b.fertility = 0
+      b.infertile = false
+      b.adjustFertility('peace', 20)
+      expect(b.fertility).toEqual(20)
+    })
+
+    it('reduces 10% in times of want, sickness, or conflict', () => {
+      const b = new Body()
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility('lean', 20)
+      expect(b.fertility).toEqual(90)
+    })
+
+    it('does nothing if you\'re infertile', () => {
+      const b = new Body()
+      b.makeInfertile()
+      b.adjustFertility('peace', 20)
+      expect(b.fertility).toEqual(0)
+    })
+  })
 })

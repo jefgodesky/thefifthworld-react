@@ -52,6 +52,8 @@ export default class Body {
     this.fertility = 0
     this.scars = []
 
+    if (random.int(1, 10) === 1) this.makeInfertile()
+
     this.determineSex(specifiedGender)
   }
 
@@ -268,6 +270,40 @@ export default class Body {
       return ageAtDeath
     } else {
       return undefined
+    }
+  }
+
+  /**
+   * Flag this person as infertile and reduce her fertility to zero.
+   */
+
+  makeInfertile () {
+    this.fertility = 0
+    this.infertile = true
+  }
+
+  /**
+   * Set fertility for a given age.
+   * @param event {string} - A string representing what's going on in the
+   *   community. If this is `'peace'`, then it's a time of peace and
+   *   prosperity, causing fertility to increase. If it's any other value
+   *   (expected values are `'lean'`, `'sickness'`, or `'conflict'`), then
+   *   it's a time of want or stress, causing fertility to decrease.
+   * @param age {number} - The person's age in years.
+   */
+
+  adjustFertility (event, age) {
+    const { hasWomb, hasPenis, fertility, infertile } = this
+    if (!infertile) {
+      const mod = event === 'peace' ? 20 : -10
+      const max = age <= 20
+        ? Math.max(100 + (-1) * Math.pow(60 + (-3 * age), 2), 0)
+        : age > 20 && hasWomb
+          ? Math.max(100 + (-1) * Math.pow(6.5 + (-0.325 * age), 2), 0)
+          : age > 20 && hasPenis
+            ? Math.max(100 + (-1) * Math.pow(4 + (-0.2 * age), 2), 0)
+            : 0
+      this.fertility = Math.min(Math.max(fertility + mod, 0), max)
     }
   }
 }

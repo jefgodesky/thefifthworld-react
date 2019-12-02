@@ -285,4 +285,66 @@ describe('Body', () => {
       expect(b.fertility).toEqual(0)
     })
   })
+
+  describe('isGone', () => {
+    it('returns true if an eye is blind', () => {
+      const b = new Body()
+      b.eyes.right = 'Blind'
+      expect(b.isGone('eyes', 'right')).toEqual(true)
+    })
+
+    it('returns false if an eye is healthy', () => {
+      const b = new Body()
+      b.eyes.right = 'Healthy'
+      expect(b.isGone('eyes', 'right')).toEqual(false)
+    })
+
+    it('returns true if an ear is deaf', () => {
+      const b = new Body()
+      b.ears.right = 'Deaf'
+      expect(b.isGone('ears', 'right')).toEqual(true)
+    })
+
+    it('returns false if an ear is healthy', () => {
+      const b = new Body()
+      b.ears.right = 'Healthy'
+      expect(b.isGone('ears', 'right')).toEqual(false)
+    })
+
+    it('returns true if an arm is disabled', () => {
+      const b = new Body()
+      b.arms.right = 'Disabled'
+      expect(b.isGone('arms', 'right')).toEqual(true)
+    })
+
+    it('returns true if an arm is missing', () => {
+      const b = new Body()
+      b.arms.right = 'Missing'
+      expect(b.isGone('arms', 'right')).toEqual(true)
+    })
+
+    it('returns false if an arm is healthy', () => {
+      const b = new Body()
+      b.arms.right = 'Healthy'
+      expect(b.isGone('arms', 'right')).toEqual(false)
+    })
+
+    it('returns true if a leg is disabled', () => {
+      const b = new Body()
+      b.legs.right = 'Disabled'
+      expect(b.isGone('legs', 'right')).toEqual(true)
+    })
+
+    it('returns true if a leg is missing', () => {
+      const b = new Body()
+      b.legs.right = 'Missing'
+      expect(b.isGone('legs', 'right')).toEqual(true)
+    })
+
+    it('returns false if a leg is healthy', () => {
+      const b = new Body()
+      b.legs.right = 'Healthy'
+      expect(b.isGone('legs', 'right')).toEqual(false)
+    })
+  })
 })

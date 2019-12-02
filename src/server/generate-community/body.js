@@ -306,4 +306,18 @@ export default class Body {
       this.fertility = Math.min(Math.max(fertility + mod, 0), max)
     }
   }
+
+  /**
+   * Returns `true` if the specified part is disabled, missing, blind, or deaf,
+   * or `false` if it is not.
+   * @param key {string} - One of `arms`, `legs`, `ears`, or `eyes`.
+   * @param side {string} - Either `left` or `right`.
+   * @returns {boolean} - `true` if that part is missing or impaired, or
+   *   `false` if it is not.
+   */
+
+  isGone (key, side) {
+    const gone = [ 'Disabled', 'Missing', 'Blind', 'Deaf' ]
+    return gone.includes(this[key][side])
+  }
 }

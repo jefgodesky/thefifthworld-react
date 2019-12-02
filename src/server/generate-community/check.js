@@ -27,12 +27,15 @@ const check = (table, roll) => {
 
 /**
  * Runs checks until it gets an acceptable result.
- * @param table {Array} - The random table to check. This expects an array of
+ * @param table {[Object]} - The random table to check. This expects an array of
  *   objects. Each object should have a property called `chance` with an
  *   integer, which is the chance of this event, and a property called `event`,
  *   which is what is returned if the event is selected.
- * @param unacceptable
- * @returns {null}
+ * @param unacceptable {[*]} - An array of values that are not acceptable. If
+ *   an unacceptable value is found, it will simply try again until it finds an
+ *   acceptable one. Returns `false` if there are no unacceptable responses
+ *   possible.
+ * @returns {*} - A randomly chosen value from the table.
  */
 
 const checkUntil = (table, unacceptable) => {

@@ -467,4 +467,18 @@ export default class Body {
 
     return outcome
   }
+
+  /**
+   * Checks if this person dies of old age at a particular age.
+   * @param age {number} - The age at which we're checking.
+   * @returns {boolean} - `true` if the person dies of old age, or `false` if
+   *   she doesn't.
+   */
+
+  checkForDyingOfOldAge (age) {
+    const chance = (age - this.longevity) * 10
+    const check = random.int(1, 100) < chance
+    if (check && this.born) this.died = this.born + age
+    return check
+  }
 }

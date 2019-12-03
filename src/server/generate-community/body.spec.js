@@ -442,4 +442,18 @@ describe('Body', () => {
       expect(typeof actual).toEqual('string')
     })
   })
+
+  describe('checkForDyingOfOldAge', () => {
+    it('will always return false before longevity', () => {
+      const b = new Body()
+      b.longevity = 90
+      expect(b.checkForDyingOfOldAge(80)).not
+    })
+
+    it('will always return true 10 years after longevity', () => {
+      const b = new Body()
+      b.longevity = 90
+      expect(b.checkForDyingOfOldAge(100))
+    })
+  })
 })

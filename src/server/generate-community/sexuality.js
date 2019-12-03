@@ -1,4 +1,6 @@
 import random from 'random'
+import tables from '../../data/community-creation'
+import { pickRandom } from './shuffle'
 
 export default class Sexuality {
   constructor(body, mateFor) {
@@ -53,5 +55,33 @@ export default class Sexuality {
       this.gynephilia = total ? gynephilia / total : 0
       this.skoliophilia = total ? skoliophilia / total : 0
     }
+  }
+
+  /**
+   * Returns an array of strings representing the spread of genders that this
+   * character might from a relationship with, based on her sexuality.
+   * @param genders {number} - (Optional) The number of genders recognized by
+   *   this person's community. (Default: `3`)
+   * @param num {number} - (Optional) The number of potential partners whose
+   *   genders should be identified. (Default: `10`)
+   * @returns {[string]} - An array of strings identifying the genders that
+   *   this person would prefer to form a relationship with, which can be used
+   *   to generate an array of individuals representative of the people that
+   *   this person would be attracted to.
+   */
+
+  getGenderPreferences (genders = 3, num = 10) {
+    const arr = []
+    const g = tables.genders[genders]
+    if (g) {
+      const { gynephilic, androphilic, skoliophilic } = g
+      const w = Math.round(this.gynephilia * num)
+      const m = Math.round(this.androphilia * num)
+      const nb = Math.round(this.skoliophilia * num)
+      for (let i = 0; i < w; i++) arr.push(pickRandom(gynephilic))
+      for (let i = 0; i < m; i++) arr.push(pickRandom(androphilic))
+      for (let i = 0; i < nb; i++) arr.push(pickRandom(skoliophilic))
+    }
+    return arr
   }
 }

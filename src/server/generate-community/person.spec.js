@@ -1,661 +1,136 @@
 /* global describe, it, expect */
 
 import Person from './person'
-import Community from './community'
-import { clone } from '../../shared/utils'
-import skills from '../../data/skills'
-
-const isRandomlyDistributedNumber = n => {
-  return typeof n === 'number' && n < 10 && n > -10
-}
-
-const isEmptyArray = arr => {
-  return Array.isArray(arr) && arr.length === 0
-}
 
 describe('Person', () => {
-  describe('random', () => {
-    it('assigns longevity', () => {
+  describe('constructor', () => {
+    it('creates a genotype', () => {
       const p = new Person()
-      expect(p.longevity).toBeGreaterThan(50)
+      expect(p.genotype.constructor.name).toEqual('Body')
     })
 
-    it('generates a body', () => {
+    it('creates a body', () => {
       const p = new Person()
-      const actual = Object.keys(p.body)
-      const expected = [
-        'type', 'eyes', 'ears', 'arms', 'legs', 'scars', 'achondroplasia',
-        'fertility', 'hasPenis', 'hasWomb'
+      expect(p.body.constructor.name).toEqual('Body')
+    })
+
+    it('creates a personality', () => {
+      const p = new Person()
+      expect(p.personality.constructor.name).toEqual('Personality')
+    })
+
+    it('creates a sexuality', () => {
+      const p = new Person()
+      expect(p.sexuality.constructor.name).toEqual('Sexuality')
+    })
+
+    it('assigns a gender', () => {
+      const genders = [
+        'Feminine woman', 'Woman', 'Masculine woman',
+        'Third gender', 'Fifth gender',
+        'Feminine man', 'Man', 'Masculine man'
       ]
-      expect(actual).toEqual(expected)
-    })
-
-    it('sets eyes', () => {
       const p = new Person()
-      const { left, right } = p.body.eyes
-      const actual = (left === 'Blind' && right === 'Blind') || (left === 'Healthy' && right === 'Healthy')
-      expect(actual).toEqual(true)
+      expect(genders.includes(p.gender))
     })
 
-    it('sets ears', () => {
+    it('assigns intelligence', () => {
       const p = new Person()
-      const { left, right } = p.body.ears
-      const actual = (left === 'Deaf' && right === 'Deaf') || (left === 'Healthy' && right === 'Healthy')
-      expect(actual).toEqual(true)
+      expect(typeof p.intelligence).toEqual('number')
     })
 
-    it('sets arms', () => {
+    it('determines neurodivergence', () => {
       const p = new Person()
-      const { left, right } = p.body.arms
-      const actual = [
-        left === 'Disabled' || left === 'Healthy',
-        right === 'Disabled' || right === 'Healthy'
-      ]
-      expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
+      expect(typeof p.neurodivergent).toEqual('boolean')
     })
 
-    it('sets legs', () => {
+    it('determines psychopathy', () => {
+      const options = [ null, 1 ]
       const p = new Person()
-      const { left, right } = p.body.legs
-      const actual = [
-        left === 'Disabled' || left === 'Healthy',
-        right === 'Disabled' || right === 'Healthy'
-      ]
-      expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
-    })
-
-    it('initializes an array of scars', () => {
-      const p = new Person()
-      expect(isEmptyArray(p.body.scars)).toEqual(true)
-    })
-
-    it('sets achondroplasia', () => {
-      const p = new Person()
-      const { achondroplasia } = p.body
-      expect(achondroplasia === true || achondroplasia === false).toEqual(true)
-    })
-
-    it('sets openness to experience', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.personality.openness)).toEqual(true)
-    })
-
-    it('sets conscientiousness', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.personality.conscientiousness)).toEqual(true)
-    })
-
-    it('sets extraversion', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.personality.extraversion)).toEqual(true)
-    })
-
-    it('sets agreeableness', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.personality.agreeableness)).toEqual(true)
-    })
-
-    it('sets neuroticism', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.personality.neuroticism)).toEqual(true)
-    })
-
-    it('sets intelligence', () => {
-      const p = new Person()
-      expect(isRandomlyDistributedNumber(p.intelligence)).toEqual(true)
-    })
-
-    it('sets neurodivergence', () => {
-      const p = new Person()
-      expect(p.neurodivergent === true || p.neurodivergent === false).toEqual(true)
-    })
-
-    it('sets fertility to zero', () => {
-      const p = new Person()
-      expect(p.body.fertility).toEqual(0)
-    })
-
-    it('sets history to an empty array', () => {
-      const p = new Person()
-      expect(isEmptyArray(p.history)).toEqual(true)
-    })
-
-    it('sets partners to an empty array', () => {
-      const p = new Person()
-      expect(isEmptyArray(p.partners)).toEqual(true)
-    })
-
-    it('sets children to an empty array', () => {
-      const p = new Person()
-      expect(isEmptyArray(p.children)).toEqual(true)
-    })
-
-    it('sets mastered skills to an empty array', () => {
-      const p = new Person()
-      expect(isEmptyArray(p.skills.mastered)).toEqual(true)
-    })
-
-    it('can set a specific gender', () => {
-      const p = new Person({ community: {}, year: 2019, gender: 'Woman' })
-      expect(p.gender === 'Woman')
-    })
-  })
-
-  describe('makePsychopath', () => {
-    it('makes a person a psychopath', () => {
-      let p = null
-      while (!(p && !p.psychopath)) p = new Person()
-      const before = clone(p.personality)
-
-      p.makePsychopath()
-      const after = clone(p.personality)
-
-      const actual = [
-        p.psychopath === 1,
-        after.agreeableness === before.agreeableness - 2,
-        after.conscientiousness === before.conscientiousness - 2,
-        after.neuroticism === before.neuroticism + 2,
-        after.extraversion === before.extraversion + 1,
-        after.openness === before.openness + 1
-      ]
-
-      expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
-    })
-
-    it('does nothing when the person is already a psychopath', () => {
-      const p = new Person()
-      p.makePsychopath()
-      const before = clone(p.personality)
-      p.makePsychopath()
-      const after = clone(p.personality)
-
-      expect(JSON.stringify(before)).toEqual(JSON.stringify(after))
-    })
-  })
-
-  describe('chooseSex', () => {
-    it('chooses sexual characteristics', () => {
-      const p = new Person()
-      const actual = [
-        p.body.hasWomb === true || p.body.hasWomb === false,
-        p.body.hasPenis === true || p.body.hasPenis === false
-      ]
-      expect(actual).toEqual([ true, true ])
+      expect(options.includes(p.psychopath))
     })
   })
 
   describe('assignGender', () => {
     it('assigns a gender', () => {
+      const genders = [ 'Woman', 'Third gender', 'Man' ]
       const p = new Person()
-      const binarySociety = [ 'Woman', 'Man' ]
-      expect(binarySociety.includes(p.gender)).toEqual(true)
+      p.gender = null
+      p.assignGender()
+      expect(genders.includes(p.gender))
     })
 
-    it('can pick from up to five genders', () => {
-      const p = new Person({ community: { traditions: { genders: 5 } } })
-      const fiveGenders = [
-        'Feminine woman', 'Masculine woman', 'Fifth gender',
-        'Feminine man', 'Masculine man'
+    it('assigns a gender in a four-gender system', () => {
+      const genders = [
+        'Feminine woman', 'Woman', 'Masculine woman',
+        'Feminine man', 'Man', 'Masculine man'
       ]
-      expect(fiveGenders.includes(p.gender)).toEqual(true)
+      const p = new Person()
+      p.gender = null
+      p.assignGender(4)
+      expect(genders.includes(p.gender))
+    })
+
+    it('assigns a gender in a five-gender system', () => {
+      const genders = [
+        'Feminine woman', 'Woman', 'Masculine woman', 'Fifth gender',
+        'Feminine man', 'Man', 'Masculine man'
+      ]
+      const p = new Person()
+      p.gender = null
+      p.assignGender(4)
+      expect(genders.includes(p.gender))
+    })
+
+    it('assigns a gender in a two-gender system', () => {
+      const genders = [ 'Man', 'Woman' ]
+      const p = new Person()
+      p.gender = null
+      p.assignGender(2)
+      expect(genders.includes(p.gender))
     })
   })
 
-  describe('determineSexuality', () => {
-    it('establishes sexuality', () => {
+  describe('makePsychopath', () => {
+    it('tracks the severity of the psychopath\'s behavior', () => {
       const p = new Person()
-      const { androphilia, gynephilia, skoliophilia } = p.sexuality
-      const actual = !isNaN(androphilia) && !isNaN(gynephilia) && !isNaN(skoliophilia)
-      expect(actual).toEqual(true)
+      p.makePsychopath()
+      expect(p.psychopath).toEqual(1)
     })
 
-    it('creates someone attracted to the gender provided', () => {
+    it('does nothing if you\'re already a psychopath', () => {
       const p = new Person()
-      p.determineSexuality('Masculine man')
-      expect(p.sexuality.androphilia).toBeGreaterThan(0)
+      p.makePsychopath()
+      const before = [
+        p.personality.openness.value,
+        p.personality.conscientiousness.value,
+        p.personality.extraversion.value,
+        p.personality.agreeableness.value,
+        p.personality.neuroticism.value
+      ]
+      p.makePsychopath()
+      const after = [
+        p.personality.openness.value,
+        p.personality.conscientiousness.value,
+        p.personality.extraversion.value,
+        p.personality.agreeableness.value,
+        p.personality.neuroticism.value
+      ]
+      expect(before).toEqual(after)
     })
-  })
 
-  describe('findPartnerSpread', () => {
-    it('returns an array based on the person\'s sexuality', () => {
+    it('adjusts personality traits', () => {
       const p = new Person()
-      p.sexuality.androphilia = 0.5
-      p.sexuality.gynephilia = 0.5
-      p.sexuality.skoliophilia = 0
-      const actual = p.findPartnerSpread(2, 4)
-      expect(actual).toEqual([ 'Woman', 'Woman', 'Man', 'Man' ])
-    })
-  })
-
-  describe('findParent', () => {
-    it('will always return false if the person has no partners', () => {
-      const community = new Community()
-      const p = new Person({ community })
-      p.born = 1979
-      community.addPerson(p)
-      const actual = p.findParent(community)
-      expect(actual).toEqual(false)
-    })
-
-    it('will always return false if the person has no partners with whom she could conceive', () => {
-      const community = new Community()
-      const p = new Person({ community })
-      p.born = 1979
-      p.body.hasWomb = true
-      p.sexuality = { androphilia: 1, gynephilia: 0, skoliophilia: 0 }
-      community.addPerson(p)
-      const id = p.findPartner(community, 2019)
-      const daddy = community.get(id)
-      daddy.body.hasPenis = false
-      const actual = p.findParent(community)
-      expect(actual).toEqual(false)
-    })
-
-    it('will return the other parent\'s ID if she conceives', () => {
-      const community = new Community()
-      const p = new Person({ community })
-      p.born = 1979
-      p.body.hasWomb = true
-      p.body.fertility = 200
-      p.sexuality = { androphilia: 1, gynephilia: 0, skoliophilia: 0 }
-      community.addPerson(p)
-      const daddy = p.findPartner(community, 2019)
-      community.people[daddy].body.hasPenis = true
-      community.people[daddy].body.fertility = 200
-      const actual = p.findParent(community)
-      expect(actual).toEqual(daddy)
-    })
-  })
-
-  describe('makeBaby', () => {
-    it('will make a baby', () => {
-      const community = new Community()
-      const mother = new Person({ community })
-      const father = new Person({ community })
-      const baby = new Person({ mother, father, community })
-      expect(baby.constructor.name).toEqual('Person')
-    })
-  })
-
-  describe('personalityDistance', () => {
-    it('calculates the personality distance between two people', () => {
-      const p1 = new Person()
-      p1.personality = {
-        openness: 1,
-        conscientiousness: 1,
-        extraversion: 1,
-        agreeableness: 1,
-        neuroticism: 1
-      }
-
-      const p2 = new Person()
-      p2.personality = {
-        openness: 0,
-        conscientiousness: 0,
-        extraversion: 0,
-        agreeableness: 0,
-        neuroticism: 0
-      }
-
-      expect(p1.personalityDistance(p2)).toEqual(5)
-    })
-  })
-
-  describe('adjustPersonality', () => {
-    it('applies a personality adjustment', () => {
-      const p = new Person()
-      p.personality.openness = 0
-      p.adjustPersonality('+openness')
-      expect(p.personality.openness).toEqual(1)
-    })
-
-    it('won\'t drop a trait below -3', () => {
-      const p = new Person()
-      p.personality.openness = -2
-      p.adjustPersonality('-openness')
-      expect(p.personality.openness).toEqual(-3)
-    })
-
-    it('won\'t raise a trait above 3', () => {
-      const p = new Person()
-      p.personality.openness = 2
-      p.adjustPersonality('+openness')
-      expect(p.personality.openness).toEqual(3)
-    })
-  })
-
-  describe('adjustFertility', () => {
-    it('does nothing if the person has no birth year defined', () => {
-      const p = new Person()
-      const before = p.fertility
-      p.adjustFertility('peace', 2019)
-      expect(p.fertility).toEqual(before)
-    })
-
-    it('does nothing if the person is below 16', () => {
-      const p = new Person()
-      p.born = 2018
-      const before = p.fertility
-      p.adjustFertility('peace', 2019)
-      expect(p.fertility).toEqual(before)
-    })
-
-    it('increases fertility for someone who is 20', () => {
-      const p = new Person()
-      p.born = 1999
-      p.body.hasWomb = true
-      const before = p.body.fertility
-      p.adjustFertility('peace', 2019)
-      expect(p.body.fertility).toEqual(before + 30)
-    })
-
-    it('increases fertility for a male who is 60', () => {
-      const p = new Person()
-      p.born = 1959
-      p.body.hasPenis = true
-      p.body.hasWomb = false
-      const before = p.body.fertility
-      p.adjustFertility('peace', 2019)
-      expect(p.body.fertility).toEqual(before + 30)
-    })
-
-    it('reduces fertility for a female who is 60', () => {
-      const p = new Person()
-      p.born = 1959
-      p.body.hasPenis = false
-      p.body.hasWomb = true
-      p.body.fertility = 100
-      p.adjustFertility('peace', 2019)
-      expect(p.body.fertility).toEqual(80)
-    })
-
-    it('will not reduce fertility below 0', () => {
-      const p = new Person()
-      p.born = 1959
-      p.body.hasPenis = false
-      p.body.hasWomb = true
-      p.body.fertility = 10
-      p.adjustFertility('peace', 2019)
-      expect(p.body.fertility).toEqual(0)
-    })
-
-    it('will not increase fertility above 100', () => {
-      const p = new Person()
-      p.born = 1999
-      p.body.hasPenis = true
-      p.body.hasWomb = false
-      p.body.fertility = 90
-      p.adjustFertility('peace', 2019)
-      expect(p.body.fertility).toEqual(100)
-    })
-  })
-
-  describe('die', () => {
-    it('marks the character as dead', () => {
-      const p = new Person()
-      p.die()
-      expect(p.died !== undefined).toEqual(true)
-    })
-
-    it('adds a death record if given a year', () => {
-      const p = new Person()
-      p.die('other', {}, 2019)
-      const death = p.history.filter(entry => entry.year === 2019)
-      expect(death.length).toBeGreaterThan(0)
-    })
-
-    it('adds an age of death if the person has a birth year recorded', () => {
-      const p = new Person()
-      p.born = 1959
-      p.die('other', {}, 2019)
-      const death = p.history.filter(entry => entry.year === 2019).pop()
-      expect(death).toEqual({ year: 2019, entry: 'Died, age 60', tag: 'other' })
-    })
-  })
-
-  describe('takeRandomScar', () => {
-    it('adds a random scar', () => {
-      const p = new Person()
-      p.takeRandomScar()
-      expect(p.body.scars.length).toEqual(1)
-    })
-
-    it('will add to history if given a year', () => {
-      const p = new Person()
-      p.takeRandomScar(2019)
-      const injury = p.history.filter(entry => entry.tag === 'injury').pop()
-      expect(injury.year).toEqual(2019)
-    })
-  })
-
-  describe('isGone', () => {
-    it('describes missing as gone', () => {
-      const p = new Person()
-      p.body.arms.right = 'Missing'
-      expect(p.isGone('arms', 'right')).toEqual(true)
-    })
-
-    it('describes disabled as gone', () => {
-      const p = new Person()
-      p.body.arms.right = 'Disabled'
-      expect(p.isGone('arms', 'right')).toEqual(true)
-    })
-
-    it('describes deaf as gone', () => {
-      const p = new Person()
-      p.body.ears.right = 'Deaf'
-      expect(p.isGone('ears', 'right')).toEqual(true)
-    })
-
-    it('describes blind as gone', () => {
-      const p = new Person()
-      p.body.eyes.right = 'Blind'
-      expect(p.isGone('eyes', 'right')).toEqual(true)
-    })
-
-    it('does not describe healthy else as gone', () => {
-      const p = new Person()
-      p.body.arms.right = 'Healthy'
-      expect(p.isGone('arms', 'right')).toEqual(false)
-    })
-  })
-
-  describe('leftOrRight', () => {
-    it('picks either the left or right', () => {
-      const p = new Person()
-      const actual = p.leftOrRight('arms')
-      expect(actual === 'left' || actual === 'right').toEqual(true)
-    })
-
-    it('picks the left when the right is already impaired', () => {
-      const p = new Person()
-      p.body.arms.right = 'Missing'
-      const actual = p.leftOrRight('arms')
-      expect(actual).toEqual('left')
-    })
-
-    it('picks the right when the left is already impaired', () => {
-      const p = new Person()
-      p.body.arms.left = 'Missing'
-      const actual = p.leftOrRight('arms')
-      expect(actual).toEqual('right')
-    })
-
-    it('returns null when both are already impaired', () => {
-      const p = new Person()
-      p.body.arms.left = 'Missing'
-      p.body.arms.right = 'Disabled'
-      const actual = p.leftOrRight('arms')
-      expect(actual).toEqual(null)
-    })
-  })
-
-  describe('loseEarOrEye', () => {
-    it('will pick left or right eye', () => {
-      const p = new Person()
-      p.body.eyes.left = 'Healthy'
-      p.body.eyes.right = 'Healthy'
-      p.loseEarOrEye('eyes')
-      const { left, right } = p.body.eyes
-      expect(left === 'Blind' || right === 'Blind').toEqual(true)
-    })
-
-    it('will note recovery if both sides are already disabled', () => {
-      const p = new Person()
-      p.body.eyes.left = 'Blind'
-      p.body.eyes.right = 'Blind'
-      p.loseEarOrEye('eyes', 'injury', 2019)
-      const entry = p.history.filter(entry => entry.year === 2019).pop()
-      expect(entry).toEqual({ year: 2019, entry: 'Suffered a head wound', tag: 'injury' })
-    })
-
-    it('will note if this resulted in total loss of faculty', () => {
-      const p = new Person()
-      p.body.eyes.left = 'Blind'
-      p.loseEarOrEye('eyes', 'injury', 2019)
-      const actual = p.history.filter(entry => entry.year === 2019).pop()
-      const expected = {
-        year: 2019,
-        entry: 'Lost sight in right eye due to injury, resulting in total blindness',
-        tag: 'injury'
-      }
+      p.personality.openness.value = 0
+      p.personality.conscientiousness.value = 0
+      p.personality.extraversion.value = 0
+      p.personality.agreeableness.value = 0
+      p.personality.neuroticism.value = 0
+      p.makePsychopath()
+      const { openness, conscientiousness, extraversion, agreeableness, neuroticism } = p.personality
+      const actual = [ openness.value, conscientiousness.value, extraversion.value, agreeableness.value, neuroticism.value ]
+      const expected = [ 1, -2, 1, -2, 2 ]
       expect(actual).toEqual(expected)
-    })
-  })
-
-  describe('loseLimb', () => {
-    it('will remove a limb', () => {
-      const p = new Person()
-      p.body.arms.left = 'Healthy'
-      p.body.arms.right = 'Healthy'
-      p.body.legs.left = 'Healthy'
-      p.body.legs.right = 'Healthy'
-      p.loseLimb()
-      const { arms, legs } = p.body
-      const actual = [ arms.left, arms.right, legs.left, legs.right ]
-      const notExpected = [ 'Healthy', 'Healthy', 'Healthy', 'Healthy' ]
-      expect(actual).not.toEqual(notExpected)
-    })
-
-    it('will note when it happened', () => {
-      const p = new Person()
-      p.loseLimb(2019)
-      const injury = p.history.filter(entry => entry.tag === 'injury').pop()
-      expect(injury.year).toEqual(2019)
-    })
-  })
-
-  describe('getSick', () => {
-    it('will make a character sick', () => {
-      const p = new Person()
-      p.getSick({}, 2019)
-      expect(p.history.length).toEqual(1)
-    })
-
-    it('handles infection', () => {
-      const p = new Person()
-      p.getSick({}, 2019, true)
-      const infections = p.history.filter(entry => entry.tag === 'infection')
-      expect(infections.length).toEqual(1)
-    })
-
-    it('will delay her skill learning', () => {
-      const p = new Person()
-      p.skills.willMaster = 2019
-      p.getSick()
-      expect(p.skills.willMaster).toEqual(2020)
-    })
-  })
-
-  describe('getHurt', () => {
-    it('will injure a character', () => {
-      const p = new Person()
-      p.getHurt({}, 2019)
-      expect(p.history.length).toEqual(1)
-    })
-
-    it('will delay her skill learning', () => {
-      const p = new Person()
-      p.skills.willMaster = 2019
-      p.getHurt(2019)
-      expect(p.skills.willMaster).toEqual(2020)
-    })
-  })
-
-  describe('skillsToLearn', () => {
-    it('returns a list of skills you can learn', () => {
-      const p = new Person()
-      const expected = skills.map(skill => skill.name).sort()
-      const actual = p.skillsToLearn().sort()
-      expect(actual).toEqual(expected)
-    })
-
-    it('can specialize', () => {
-      const p = new Person()
-      const main = 'Philosophy'
-      p.skills.mastered = [ main ]
-      const broad = skills.filter(skill => skill.name === main).pop()
-      const expected = broad.specializations.map(skill => skill.name).sort()
-      const actual = p.skillsToLearn({}, main).sort()
-      expect(actual).toEqual(expected)
-    })
-
-    it('does not include skills you\'ve already mastered', () => {
-      const p = new Person()
-      const skillNames = skills.map(skill => skill.name)
-      p.skills.mastered = [ skillNames[0] ]
-      const learnable = p.skillsToLearn()
-      const actual = !learnable.includes(skillNames[0]) && learnable.length === skillNames.length - 1
-      expect(actual).toEqual(true)
-    })
-
-    it('can apply pressure to learn a skill encouraged by the community', () => {
-      const community = { traditions: { skill: 'Communication' } }
-      const p = new Person()
-      p.personality.agreeableness = 2
-      const actual = p.skillsToLearn(community).sort()
-      const skillNames = skills.map(skill => skill.name)
-      const expected = [ ...skillNames, 'Communication', 'Communication', 'Communication' ].sort()
-      expect(actual).toEqual(expected)
-    })
-
-    it('makes it more likely to pick a skill that others in the community can teach you', () => {
-      const community = { people: { teacher: { skills: { mastered: [ 'Communication' ] } } } }
-      const p = new Person()
-      const actual = p.skillsToLearn(community).sort()
-      const skillNames = skills.map(skill => skill.name)
-      const expected = [ ...skillNames, 'Communication' ].sort()
-      expect(actual).toEqual(expected)
-    })
-  })
-
-  describe('startLearning', () => {
-    it('sets a new skill to learn', () => {
-      const p = new Person()
-      p.startLearning('React', 2019)
-      expect(p.skills.learning).toEqual('React')
-    })
-
-    it('sets an initial estimate on when you\'ll master that new skill', () => {
-      const p = new Person()
-      p.intelligence = 0
-      p.startLearning('React', 2019)
-      expect(p.skills.willMaster).toEqual(2024)
-    })
-  })
-
-  describe('pickNewSkill', () => {
-    it('sets a new skill to learn', () => {
-      const p = new Person()
-      p.pickNewSkill({}, 2019)
-      expect(p.skills.learning).not.toEqual(undefined)
-    })
-
-    it('sets an initial estimate on when you\'ll master that new skill', () => {
-      const p = new Person()
-      p.intelligence = 0
-      p.pickNewSkill({}, 2019)
-      expect(p.skills.willMaster).toEqual(2024)
     })
   })
 })

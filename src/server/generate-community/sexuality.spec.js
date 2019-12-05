@@ -2,7 +2,6 @@
 
 import Body from './body'
 import Sexuality from './sexuality'
-import tables from '../../data/community-creation'
 
 describe('Sexuality', () => {
   describe('constructor', () => {

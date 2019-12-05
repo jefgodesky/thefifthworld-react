@@ -70,6 +70,8 @@ export default class Body {
    *   met, a new `Body` object, with probabilities determined by its parents,
    *   is produced. If not, this method returns `undefined`.
    * @param born {number} - (Optional) The year in which this child is born.
+   * @param args {Object} - The arguments object passed to the `Body`
+   *   constructor.
    * @returns {Body|undefined} - If two viable parents are provided, a child is
    *   created that blends their traits. If not, it returns `undefined`. There
    *   is a 25% chance of infant mortality, indicated by the `died` property
@@ -78,7 +80,7 @@ export default class Body {
    *   provided).
    */
 
-  static makeBaby (parents, born) {
+  static makeBaby (parents, born, args) {
     let baby
     if (parents && Array.isArray(parents) && parents.length > 1) {
       const bothBodies = parents.slice(0, 1).map(p => p.constructor && p.constructor.name === 'Body').reduce((acc, curr) => acc && curr, true)
@@ -97,7 +99,7 @@ export default class Body {
 
           // Start off by seeding our baby with random values.
 
-          baby = new Body()
+          baby = new Body(args)
           if (born && typeof born === 'number') baby.born = born
           const imr = baby.born ? baby.born : true
 

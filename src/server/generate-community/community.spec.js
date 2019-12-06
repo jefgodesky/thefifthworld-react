@@ -5,92 +5,108 @@ import Person from './person'
 
 describe('Community', () => {
   describe('constructor', () => {
-    it('copies properties from object', () => {
-      const obj = { prop1: true, prop2: false }
-      const community = new Community(obj)
-      const actual = [
-        community.prop1 === true,
-        community.prop2 === false
-      ]
-      expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
+    it('copies data provided', () => {
+      const data = { test: { val: 57 } }
+      const c = new Community(data)
+      expect(c.test.val).toEqual(57)
+    })
+  })
+
+  describe('init', () => {
+    it('prepares the people index', () => {
+      const c = new Community()
+      expect(c.people).toEqual({})
+    })
+
+    it('prepares the chronicle', () => {
+      const c = new Community()
+      expect(c.chronicle).toEqual([])
+    })
+
+    it('sets an initial discord', () => {
+      const c = new Community()
+      expect(c.status.discord).toBeLessThan(50)
+    })
+  })
+
+  describe('add', () => {
+    it('adds a person to the community', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      expect(Object.keys(c.people).length).toEqual(1)
+    })
+
+    it('returns the person\'s index', () => {
+      const p = new Person()
+      const c = new Community()
+      const index = c.add(p)
+      expect(index).toEqual('0')
+    })
+
+    it('assigns the person\'s community ID', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      expect(p.id).toEqual('0')
     })
   })
 
   describe('get', () => {
-    it('returns undefined if there is no such person', () => {
-      const community = new Community({})
-      const actual = community.get(0)
-      expect(actual).toEqual(undefined)
+    it('gets a person from the community', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0')
+      expect(actual)
     })
 
-    it('returns a person by ID', () => {
-      const community = new Community({})
-      community.addPerson(new Person())
-      const p2 = community.addPerson(new Person())
-      const actual = community.get(p2)
+    it('returns a Person object', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0')
       expect(actual.constructor.name).toEqual('Person')
     })
 
-    it('returns a datum about a person', () => {
-      const community = new Community({})
-      community.addPerson(new Person())
-      const p2 = community.addPerson(new Person())
-      const actual = community.get(p2, 'history')
-      expect(actual).toEqual([])
+    it('returns a property', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0', 'intelligence')
+      expect(typeof actual).toEqual('number')
     })
 
-    it('returns undefined if the person doesn\'t have that selector', () => {
-      const community = new Community({})
-      community.addPerson(new Person())
-      const p2 = community.addPerson(new Person())
-      const actual = community.get(p2, 'body.meanAirSpeed')
-      expect(actual).toEqual(undefined)
-    })
-  })
-
-  describe('getCurrentPopulation', () => {
-    it('returns the number of people alive in the community', () => {
-      const community = new Community({})
-      const p1 = community.addPerson(new Person())
-      const p2 = community.addPerson(new Person())
-      community.people[p1].died = true
-      const actual = community.getCurrentPopulation()
-      expect(actual).toEqual([ p2 ])
-    })
-  })
-
-  describe('setStatus', () => {
-    it('sets the community status', () => {
-      const community = new Community({})
-      community.setStatus()
-      const events = [ 'peace', 'conflict', 'lean', 'sickness' ]
-      const actual = [
-        community.status.discord >= 0,
-        events.includes(community.status.event)
-      ]
-      expect(actual.reduce((acc, curr) => acc && curr, true)).toEqual(true)
-    })
-  })
-
-  describe('addPerson', () => {
-    it('adds a person to the community', () => {
-      const community = new Community({})
-      community.addPerson(new Person())
-      expect(Object.keys(community.people).length).toEqual(1)
+    it('returns a Body', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0', 'body')
+      expect(actual.constructor.name).toEqual('Body')
     })
 
-    it('returns the new person\'s ID in the community index', () => {
-      const community = new Community({})
-      const actual = community.addPerson(new Person())
-      expect(actual).toEqual('0')
+    it('returns a Personality', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0', 'personality')
+      expect(actual.constructor.name).toEqual('Personality')
     })
-  })
 
-  describe('run', () => {
-    it('chronicles 150 years of history', () => {
-      const community = new Community({ traditions: { monogamy: true } })
-      community.run()
-      expect(community.chronicle.length).toEqual(150)
+    it('returns a Sexuality', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0', 'sexuality')
+      expect(actual.constructor.name).toEqual('Sexuality')
+    })
+
+    it('returns a nested value', () => {
+      const p = new Person()
+      const c = new Community()
+      c.add(p)
+      const actual = c.get('0', 'personality.openness.value')
+      expect(typeof actual).toEqual('number')
     })
   })
 })

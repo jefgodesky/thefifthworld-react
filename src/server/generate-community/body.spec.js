@@ -320,7 +320,7 @@ describe('Body', () => {
     it('returns false if an eye is healthy', () => {
       const b = new Body()
       b.eyes.right = 'Healthy'
-      expect(b.isGone('eyes', 'right')).not
+      expect(b.isGone('eyes', 'right')).not.toBe(true)
     })
 
     it('returns true if an ear is deaf', () => {
@@ -332,7 +332,7 @@ describe('Body', () => {
     it('returns false if an ear is healthy', () => {
       const b = new Body()
       b.ears.right = 'Healthy'
-      expect(b.isGone('ears', 'right')).not
+      expect(b.isGone('ears', 'right')).not.toBe(true)
     })
 
     it('returns true if an arm is disabled', () => {
@@ -350,7 +350,7 @@ describe('Body', () => {
     it('returns false if an arm is healthy', () => {
       const b = new Body()
       b.arms.right = 'Healthy'
-      expect(b.isGone('arms', 'right')).not
+      expect(b.isGone('arms', 'right')).not.toBe(true)
     })
 
     it('returns true if a leg is disabled', () => {
@@ -368,7 +368,7 @@ describe('Body', () => {
     it('returns false if a leg is healthy', () => {
       const b = new Body()
       b.legs.right = 'Healthy'
-      expect(b.isGone('legs', 'right')).not
+      expect(b.isGone('legs', 'right')).not.toBe(true)
     })
   })
 
@@ -399,7 +399,7 @@ describe('Body', () => {
     it('will return false if both ears are already deaf', () => {
       const b = new Body()
       b.ears = { left: 'Deaf', right: 'Deaf' }
-      expect(b.deafen()).not
+      expect(b.deafen()).not.toBe(true)
     })
   })
 
@@ -422,7 +422,7 @@ describe('Body', () => {
     it('will return false if both eyes are already blind', () => {
       const b = new Body()
       b.eyes = { left: 'Blind', right: 'Blind' }
-      expect(b.blind()).not
+      expect(b.blind()).not.toBe(true)
     })
   })
 
@@ -447,7 +447,7 @@ describe('Body', () => {
     it('will always return false before longevity', () => {
       const b = new Body()
       b.longevity = 90
-      expect(b.checkForDyingOfOldAge(80)).not
+      expect(b.checkForDyingOfOldAge(80)).not.toBe(true)
     })
 
     it('will always return true 10 years after longevity', () => {

@@ -3,7 +3,7 @@ import tables from '../../data/community-creation'
 import { pickRandom } from './shuffle'
 
 export default class Sexuality {
-  constructor(body, mateFor) {
+  constructor (body, mateFor) {
     if (!mateFor && random.int(1, 100) === 100) {
       this.androphilia = 0
       this.gynephilia = 0
@@ -51,7 +51,7 @@ export default class Sexuality {
       const { androphilia, gynephilia, skoliophilia } = biases
       const total = androphilia + gynephilia + skoliophilia
 
-      this.androphilia = total ? androphilia / total : 0,
+      this.androphilia = total ? androphilia / total : 0
       this.gynephilia = total ? gynephilia / total : 0
       this.skoliophilia = total ? skoliophilia / total : 0
     }

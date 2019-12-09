@@ -87,7 +87,7 @@ describe('Body', () => {
     })
 
     it('can have a specified gender', () => {
-      const b = new Body('Man')
+      const b = new Body({ specifiedGender: 'Man' })
       const actual = [
         typeof b.hasPenis === 'boolean',
         typeof b.hasWomb === 'boolean'

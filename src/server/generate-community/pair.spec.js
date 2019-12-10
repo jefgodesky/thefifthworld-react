@@ -29,6 +29,16 @@ describe('Pair', () => {
       expect(typeof pair.love).toEqual('number')
     })
 
+    it('doesn\'t save if it\'s told not to', () => {
+      const p1 = new Person()
+      const p2 = new Person()
+      new Pair(p1, p2, false)
+      const actual = p1.pairs === undefined && p2.pairs === undefined
+      expect(actual)
+    })
+  })
+
+  describe('save', () => {
     it('records the pairing for both persons', () => {
       const p1 = new Person()
       const p2 = new Person()
@@ -42,6 +52,16 @@ describe('Pair', () => {
       new Pair(p1, p2)
       p1.pairs[0].test = true
       expect(p2.pairs[0].test).toEqual(true)
+    })
+
+    it('can find out about partners', () => {
+      const j = new Person()
+      const r = new Person()
+      j.name = 'Juliet'
+      r.name = 'Romeo'
+      new Pair(j, r)
+      const actual = j.pairs[0].name === 'Romeo' && r.pairs[0].name === 'Juliet'
+      expect(actual)
     })
   })
 })

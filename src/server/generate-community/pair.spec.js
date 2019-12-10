@@ -1,5 +1,6 @@
 /* global describe, it, expect */
 
+import Community from './community'
 import Pair from './pair'
 import Person from './person'
 
@@ -32,8 +33,8 @@ describe('Pair', () => {
     it('doesn\'t save if it\'s told not to', () => {
       const p1 = new Person()
       const p2 = new Person()
-      new Pair(p1, p2, false)
-      const actual = p1.pairs === undefined && p2.pairs === undefined
+      const p = new Pair(p1, p2, false)
+      const actual = typeof p.love === 'number' && p1.pairs === undefined && p2.pairs === undefined
       expect(actual)
     })
   })
@@ -42,14 +43,16 @@ describe('Pair', () => {
     it('records the pairing for both persons', () => {
       const p1 = new Person()
       const p2 = new Person()
-      new Pair(p1, p2)
+      const p = new Pair(p1, p2, false)
+      p.save()
       expect(p1.pairs.length + p2.pairs.length).toEqual(2)
     })
 
     it('creates a symmetrical pair object', () => {
       const p1 = new Person()
       const p2 = new Person()
-      new Pair(p1, p2)
+      const p = new Pair(p1, p2)
+      p.save()
       p1.pairs[0].test = true
       expect(p2.pairs[0].test).toEqual(true)
     })
@@ -59,9 +62,25 @@ describe('Pair', () => {
       const r = new Person()
       j.name = 'Juliet'
       r.name = 'Romeo'
-      new Pair(j, r)
+      const p = new Pair(j, r)
+      p.save()
       const actual = j.pairs[0].name === 'Romeo' && r.pairs[0].name === 'Juliet'
       expect(actual)
+    })
+  })
+
+  describe('form', () => {
+    it('finds someone to form a pair with', () => {
+      const community = new Community()
+      const p = new Person()
+      p.born = 1979
+      p.sexuality.androphilia = 0.4
+      p.sexuality.gynephilia = 0.4
+      p.sexuality.skoliophilia = 0.2
+      Pair.form(p, community, 2019)
+      const t1 = p.pairs.length === 1
+      const t2 = Object.keys(community.people).length === 2
+      expect(t1 && t2)
     })
   })
 })

@@ -1,4 +1,6 @@
 import random from 'random'
+import Person from './person'
+import { get } from '../../shared/utils'
 
 export default class Pair {
   constructor (a, b, save = true) {
@@ -31,5 +33,40 @@ export default class Pair {
         ? [...this.b.pairs, this]
         : [this]
     }
+  }
+
+  /**
+   * Finds potential partners for the character, then determines which of those
+   * partners to choose based on the love scores for each.
+   * @param person {Person} - The person finding a relationship.
+   * @param community {Community} - The community object.
+   * @param year {number} - The year this is happening in.
+   * @returns {string|boolean} - The community ID of the partner created, or
+   *   `false` if something went wrong.
+   */
+
+  static form (person, community, year) {
+    const { born } = person
+    if (person && person.constructor && person.constructor.name === 'Person' && born && typeof born === 'number') {
+      const numGenders = get(community, 'traditions.genders') || 3
+      const genders = person.sexuality.getGenderPreferences(numGenders)
+      if (genders.length > 0) {
+        const candidates = genders.map(gender => {
+          const candidateBorn = Math.min(born + random.int(-5, 5), year - 18)
+          const candidate = new Person({ born: candidateBorn, gender })
+          // TODO: Age up candidate
+          return candidate
+        })
+        const pairs = candidates
+          .map(candidate => new Pair(person, candidate, false))
+          .sort((a, b) => a.love - b.love)
+        const pair = pairs.shift()
+        if (community.add(pair.b)) {
+          pair.save()
+          return true
+        }
+      }
+    }
+    return false
   }
 }

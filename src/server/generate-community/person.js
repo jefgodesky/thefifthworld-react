@@ -12,6 +12,7 @@ export default class Person {
       this.genotype = new Body(args)
     }
 
+    if (args.born) this.born = args.born
     this.body = new Body({ copy: this.genotype })
     this.personality = new Personality()
     this.sexuality = new Sexuality(this.body, args.mateFor)
@@ -64,6 +65,40 @@ export default class Person {
       this.personality.extraversion.value += 1
       this.personality.agreeableness.value -= 2
       this.personality.neuroticism.value += 2
+    }
+  }
+
+  /**
+   * Marks a characer's death.
+   * @param cause {string} - A string indicating the cause of death.
+   * @param year {number} - The year in which the person died.
+   */
+
+  die (cause = 'natural', year = true) {
+    this.died = year
+    const entry = { event: 'died', cause }
+    if (year && typeof year === 'number') entry.year = year
+    this.history.push(entry)
+  }
+
+  /**
+   * Ages a character.
+   * @param hasProblems {boolean} - If `true`, then the community faces one or
+   *   more problems this year, like conflict, sickness, or lean times.
+   * @param year {number} - The year that the character is aging through.
+   */
+
+  age (hasProblems, year) {
+    const age = this.born ? year - this.body.born : undefined
+    if (age) {
+      this.body.adjustFertility(hasProblems, age)
+
+      // Check for death from old age
+      if (age > this.body.longevity) {
+        const chance = age - this.body.longevity
+        const check = random.int(1, 10)
+        if (check < chance) this.die('natural', year)
+      }
     }
   }
 }

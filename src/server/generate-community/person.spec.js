@@ -133,4 +133,48 @@ describe('Person', () => {
       expect(actual).toEqual(expected)
     })
   })
+
+  describe('die', () => {
+    it('marks the character as dead', () => {
+      const p = new Person()
+      p.die()
+      expect(p.died)
+    })
+
+    it('records the year the person died', () => {
+      const p = new Person()
+      p.die('natural', 2019)
+      expect(p.died).toEqual(2019)
+    })
+
+    it('records an entry for the person\'s death', () => {
+      const p = new Person()
+      p.die()
+      expect(p.history.length).toEqual(1)
+    })
+
+    it('tags the entry for the person\'s death', () => {
+      const p = new Person()
+      p.die()
+      const arr = p.history.filter(e => e.event === 'died')
+      expect(arr.length).toEqual(1)
+    })
+
+    it('records the cause of death', () => {
+      const p = new Person()
+      const cause = 'chocolate'
+      p.die(cause)
+      expect(p.history[0].cause).toEqual(cause)
+    })
+  })
+
+  describe('age', () => {
+    it('won\'t let you live more than 10 years beyond your longevity', () => {
+      const p = new Person()
+      p.born = 1908
+      p.body.longevity = 100
+      p.age(false, 2019)
+      expect(p.died)
+    })
+  })
 })

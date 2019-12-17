@@ -4,6 +4,8 @@ import Body from './body'
 import Personality from './personality'
 import Sexuality from './sexuality'
 
+import { isPopulatedArray, between } from '../../shared/utils'
+
 export default class Person {
   constructor (args = {}) {
     if (args && args.mother && args.mother.genotype && args.father && args.father.genotype) {
@@ -89,7 +91,7 @@ export default class Person {
    */
 
   age (hasProblems, year) {
-    const age = this.born ? year - this.body.born : undefined
+    const age = this.body.getAge(year)
     if (age) {
       this.body.adjustFertility(hasProblems, age)
 
@@ -99,6 +101,61 @@ export default class Person {
         const check = random.int(1, 10)
         if (check < chance) this.die('natural', year)
       }
+    }
+  }
+
+  /**
+   * Determines if the person would like to find a partner.
+   * @param hasProblems {boolean} - `true` if the community is facing a problem
+   *   (like conflict, sickness, or lean times) at the time that the question
+   *   is posed.
+   * @param year {number} - The year in which we're asking this question.
+   * @returns {boolean} - `true` if this person would like to find a partner,
+   *   or `false` if not.
+   */
+
+  wantsPartner (hasProblems, year) {
+    const age = this.body.getAge(year)
+    if (age) {
+      // Is the community expecting you to find a partner?
+      const expectation = age > 16 && age < 25
+        ? between((age - 16) * 10, 0, 100)
+        : age > 25
+          ? between(100 - ((age - 25) * 3), 0, 100)
+          : 0
+
+      // Are you asexual?
+      const { androphilia, gynophilia, skoliophilia } = this.sexuality
+      const isAce = androphilia + gynophilia + skoliophilia === 0
+
+      // Do you have children or a partner?
+      const hasChildren = isPopulatedArray(this.children)
+      const hasPartner = isPopulatedArray(this.pairs)
+
+      // We'll initialize with an estimation of desire.
+      let chance = (this.personality.extraversion.value + 2) * 19
+
+      if (isAce || age < 16) {
+        chance = 0
+      } else if (!hasPartner && !hasChildren) {
+        // Will you give in to social demands and settle down with someone?
+        // Or maybe you want a relationship for yourself?
+        const obligation = this.personality.willConform() ? expectation : expectation / 2
+        chance = between(Math.max(chance, obligation), 0, 100)
+      } else {
+        // We keep our initial value based on desire, but the more partners you
+        // already have, the more likely it is that you find satisfaction with
+        // them and don't look elsewhere. Even in polygamous societies, most
+        // people are still monogamous as a practical matter.
+        const numPartners = hasPartner ? this.pairs.length : 0
+        for (let i = 0; i < numPartners; i++) chance = chance / 2
+      }
+
+      // If the community has problems, there's less time to think about
+      // romance, sex, and relationships.
+      if (hasProblems) chance = chance / 2
+
+      return random.int(1, 100) < chance
     }
   }
 }

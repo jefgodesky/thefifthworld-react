@@ -170,11 +170,33 @@ describe('Person', () => {
 
   describe('age', () => {
     it('won\'t let you live more than 10 years beyond your longevity', () => {
-      const p = new Person()
-      p.born = 1908
+      const p = new Person({ born: 1908 })
       p.body.longevity = 100
       p.age(false, 2019)
       expect(p.died)
+    })
+  })
+
+  describe('wantsPartner', () => {
+    it('determines if this person would like to find a partner', () => {
+      const p = new Person({ born: 1979 })
+      const actual = p.wantsPartner(false, 2019)
+      expect(typeof actual).toEqual('boolean')
+    })
+
+    it('always returns false for minors', () => {
+      const p = new Person({ born: 2006 })
+      const actual = p.wantsPartner(false, 2019)
+      expect(actual).toEqual(false)
+    })
+
+    it('always returns false for asexual people', () => {
+      const p = new Person({ born: 1979 })
+      p.sexuality.androphilia = 0
+      p.sexuality.gynephilia = 0
+      p.sexuality.skoliophilia = 0
+      const actual = p.wantsPartner(false, 2019)
+      expect(actual).toEqual(false)
     })
   })
 })

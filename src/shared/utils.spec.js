@@ -8,7 +8,8 @@ import {
   dedupe,
   getFileSizeStr,
   clone,
-  alphabetize
+  alphabetize,
+  between
 } from './utils'
 
 describe('checkExists', () => {
@@ -135,5 +136,22 @@ describe('alphabetize', () => {
   it('can alphabetize an array of strings', () => {
     const actual = alphabetize([ 'banana', 'apple', 'carrot' ])
     expect(actual).toEqual([ 'apple', 'banana', 'carrot' ])
+  })
+})
+
+describe('between', () => {
+  it('returns the value if it is between the min and the max', () => {
+    const actual = between(50, 1, 100)
+    expect(actual).toEqual(50)
+  })
+
+  it('returns the min if the value is less than that', () => {
+    const actual = between(0, 1, 100)
+    expect(actual).toEqual(1)
+  })
+
+  it('returns the max if the value is greater than that', () => {
+    const actual = between(110, 1, 100)
+    expect(actual).toEqual(100)
   })
 })

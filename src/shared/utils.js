@@ -161,6 +161,20 @@ const daysFromNow = days => {
   }
 }
 
+/**
+ * Returns the value only if it is between the `min` and `max`. If the value
+ * is less than the `min`, it returns the `min`, and if it is more than the
+ * `max`, it returns the `max`.
+ * @param value {number} - The value to check.
+ * @param min {number} - The lowest valid value.
+ * @param max {number} - The highest valid value.
+ * @returns {number} - A valid value.
+ */
+
+const between = (value, min, max) => {
+  return Math.max(Math.min(value, max), min)
+}
+
 export {
   checkExists,
   isPopulatedArray,
@@ -171,5 +185,6 @@ export {
   clone,
   requestLocation,
   alphabetize,
-  daysFromNow
+  daysFromNow,
+  between
 }

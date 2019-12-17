@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone } from '../../shared/utils'
+import { clone, between } from '../../shared/utils'
 import { checkUntil } from './check'
 import tables from '../../data/community-creation'
 
@@ -308,7 +308,7 @@ export default class Body {
           : age > 20 && hasPenis
             ? Math.max(100 + (-1) * Math.pow(4 + (-0.2 * age), 2), 0)
             : 0
-      this.fertility = Math.min(Math.max(fertility + mod, 0), max)
+      this.fertility = between(fertility + mod, 0, max)
     }
   }
 

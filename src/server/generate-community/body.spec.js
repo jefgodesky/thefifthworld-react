@@ -244,7 +244,7 @@ describe('Body', () => {
   describe('adjustFertility', () => {
     it('sets fertility to zero if you\'re 16 or younger', () => {
       const b = new Body()
-      b.adjustFertility('peace', 16)
+      b.adjustFertility(false, 16)
       expect(b.fertility).toEqual(0)
     })
 
@@ -252,7 +252,7 @@ describe('Body', () => {
       const b = new Body()
       b.fertility = 90
       b.infertile = false
-      b.adjustFertility('peace', 20)
+      b.adjustFertility(false, 20)
       expect(b.fertility).toEqual(100)
     })
 
@@ -260,9 +260,9 @@ describe('Body', () => {
       const b = new Body()
       b.fertility = 100
       b.infertile = false
-      b.adjustFertility('peace', 20)
+      b.adjustFertility(false, 20)
       const before = b.fertility
-      b.adjustFertility('peace', 25)
+      b.adjustFertility(false, 25)
       expect(b.fertility).toBeLessThan(before)
     })
 
@@ -272,7 +272,7 @@ describe('Body', () => {
       b.hasPenis = false
       b.fertility = 100
       b.infertile = false
-      b.adjustFertility('peace', 45)
+      b.adjustFertility(false, 45)
       expect(b.fertility).toBeLessThan(50)
     })
 
@@ -282,7 +282,7 @@ describe('Body', () => {
       b.hasPenis = true
       b.fertility = 100
       b.infertile = false
-      b.adjustFertility('peace', 56)
+      b.adjustFertility(false, 56)
       expect(b.fertility).toBeLessThan(50)
     })
 
@@ -290,7 +290,7 @@ describe('Body', () => {
       const b = new Body()
       b.fertility = 0
       b.infertile = false
-      b.adjustFertility('peace', 20)
+      b.adjustFertility(false, 20)
       expect(b.fertility).toEqual(20)
     })
 
@@ -298,14 +298,14 @@ describe('Body', () => {
       const b = new Body()
       b.fertility = 100
       b.infertile = false
-      b.adjustFertility('lean', 20)
+      b.adjustFertility(true, 20)
       expect(b.fertility).toEqual(90)
     })
 
     it('does nothing if you\'re infertile', () => {
       const b = new Body()
       b.makeInfertile()
-      b.adjustFertility('peace', 20)
+      b.adjustFertility(false, 20)
       expect(b.fertility).toEqual(0)
     })
   })

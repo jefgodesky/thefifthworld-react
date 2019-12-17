@@ -109,4 +109,43 @@ describe('Community', () => {
       expect(typeof actual).toEqual('number')
     })
   })
+
+  describe('getCurrentPopulation', () => {
+    it('returns the members of the community', () => {
+      const c = new Community()
+      const p1 = new Person()
+      const p2 = new Person()
+      const id1 = c.add(p1)
+      const id2 = c.add(p2)
+      const pop = c.getCurrentPopulation()
+      const actual = [
+        id1 === pop[0].id,
+        id2 === pop[1].id,
+        pop.length === 2
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+
+    it('doesn\'t include people who have died', () => {
+      const c = new Community()
+      const p1 = new Person()
+      const p2 = new Person()
+      c.add(p1)
+      c.add(p2)
+      p2.died = true
+      const pop = c.getCurrentPopulation()
+      expect(pop.length).toEqual(1)
+    })
+
+    it('doesn\'t include people who have left', () => {
+      const c = new Community()
+      const p1 = new Person()
+      const p2 = new Person()
+      c.add(p1)
+      c.add(p2)
+      p2.left = true
+      const pop = c.getCurrentPopulation()
+      expect(pop.length).toEqual(1)
+    })
+  })
 })

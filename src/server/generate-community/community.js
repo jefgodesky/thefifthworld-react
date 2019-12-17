@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone, get } from '../../shared/utils'
+import { clone, get, daysFromNow } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -62,5 +62,17 @@ export default class Community {
     } else {
       return false
     }
+  }
+
+  /**
+   * Returns the people who have not died or left as array.
+   * @returns {Person[]} - An array of the people who have not yet died or left
+   *   the community.
+   */
+
+  getCurrentPopulation () {
+    return Object.keys(this.people)
+      .map(key => this.people[key])
+      .filter(p => !p.died && !p.left)
   }
 }

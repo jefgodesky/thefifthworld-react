@@ -140,7 +140,7 @@ export default class Person {
       } else if (!hasPartner && !hasChildren) {
         // Will you give in to social demands and settle down with someone?
         // Or maybe you want a relationship for yourself?
-        const obligation = this.personality.willConform() ? expectation : expectation / 2
+        const obligation = this.personality.check('agreeableness') ? expectation : expectation / 2
         chance = between(Math.max(chance, obligation), 0, 100)
       } else {
         // We keep our initial value based on desire, but the more partners you

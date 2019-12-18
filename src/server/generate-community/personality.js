@@ -1,6 +1,7 @@
 import BigFiveTrait from './big-five-trait'
 import random from 'random'
 import { pickRandom } from './shuffle'
+import { between } from '../../shared/utils'
 
 export default class Personality {
   constructor () {
@@ -59,15 +60,32 @@ export default class Personality {
   }
 
   /**
-   * Uses this person's agreeableness to create a probability that she will
-   * conform to social norms, and then makes a random check against that
-   * probability.
-   * @returns {boolean} - `true` if the person will conform to social norms in
-   *   this instance, or `false` if she won't.
+   * Uses a personality trait to create a probability.
+   * @param basedOn {string} - The personality trait to use. Valid values are
+   *   `openness`, `conscientiousness`, `extraversion`, `agreeableness`, and
+   *   `neuroticism`.
+   * @returns {number} - The probability that the person will act in accordance
+   *   with that trait (i.e., given `openness`, the probability that she'll
+   *   behave in an open way; given `conscientiousness`, the probability that
+   *   she'll do the conscientious thing, etc.)
    */
 
-  willConform () {
-    const probability = (this.agreeableness.value + 2) * 19
+  chance (basedOn) {
+    return between((this[basedOn].value + 3) * 16, 1, 99)
+  }
+
+  /**
+   * Calculates a probability using the `chance` method and checks it against
+   * a random integer to turn that probability into a probabilistic boolean.
+   * @param basedOn {string} - The personality trait to use. Valid values are
+   *   `openness`, `conscientiousness`, `extraversion`, `agreeableness`, and
+   *   `neuroticism`.
+   * @returns {boolean} - `true` if the person will act in this way, or `false`
+   *   if she won't this time.
+   */
+
+  check (basedOn) {
+    const probability = this.chance(basedOn)
     return random.int(1, 100) < probability
   }
 }

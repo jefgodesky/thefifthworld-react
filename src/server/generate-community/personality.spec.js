@@ -87,30 +87,51 @@ describe('Personality', () => {
     })
   })
 
-  describe('willConform', () => {
+  describe('chance', () => {
+    it('returns a probability based on a trait', () => {
+      const p = new Personality()
+      const trait = 'openness'
+      p[trait].value = 0
+      const t1 = p.chance(trait)
+      p[trait].value = 3
+      const t2 = p.chance(trait)
+      p[trait].value = 6
+      const t3 = p.chance(trait)
+      p[trait].value = -3
+      const t4 = p.chance(trait)
+      p[trait].value = -6
+      const t5 = p.chance(trait)
+      const actual = [ t1, t2, t3, t4, t5 ]
+      const expected = [ 48, 96, 99, 1, 1  ]
+      expect(actual).toEqual(expected)
+    })
+  })
+
+  describe('check', () => {
     it('returns a boolean', () => {
       const p = new Personality()
-      expect(typeof p.willConform()).toEqual('boolean')
+      const actual = p.check('openness')
+      expect(typeof actual).toEqual('boolean')
     })
 
-    it('returns true more often for a more agreeable person', () => {
+    it('is more likely to return false with a low value', () => {
       const p = new Personality()
-      p.agreeableness.value = 3
-      const actual = []
-      for (let i = 0; i < 100; i++) actual.push(p.willConform())
-      const yes = actual.filter(r => r === true).length
-      const no = actual.filter(r => r === false).length
-      expect(yes).toBeGreaterThan(no)
+      p.openness.value = -3
+      const arr = []
+      for (let i = 0; i < 100; i++) arr.push(p.check('openness'))
+      const yes = arr.filter(x => x === true).length
+      const no = arr.filter(x => x === false).length
+      expect(no > yes)
     })
 
-    it('returns false more often for a less agreeable person', () => {
+    it('is more likely to return true with a high value', () => {
       const p = new Personality()
-      p.agreeableness.value = -3
-      const actual = []
-      for (let i = 0; i < 100; i++) actual.push(p.willConform())
-      const yes = actual.filter(r => r === true).length
-      const no = actual.filter(r => r === false).length
-      expect(no).toBeGreaterThan(yes)
+      p.openness.value = 3
+      const arr = []
+      for (let i = 0; i < 100; i++) arr.push(p.check('openness'))
+      const yes = arr.filter(x => x === true).length
+      const no = arr.filter(x => x === false).length
+      expect(yes > no)
     })
   })
 })

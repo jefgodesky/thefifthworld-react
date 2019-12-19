@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone, get, daysFromNow } from '../../shared/utils'
+import { clone, get, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -74,5 +74,16 @@ export default class Community {
     return Object.keys(this.people)
       .map(key => this.people[key])
       .filter(p => !p.died && !p.left)
+  }
+
+  /**
+   * Returns whether or not the community is currently experiencing any major
+   * problems, like conflict, sickness, or lean times.
+   * @returns {boolean} - `true` if the community is experiencing any major
+   *   problems, or `false` if it is not.
+   */
+
+  hasProblems () {
+    return this.status && isPopulatedArray(this.status.problems)
   }
 }

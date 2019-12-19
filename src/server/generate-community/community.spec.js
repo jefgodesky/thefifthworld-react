@@ -148,4 +148,18 @@ describe('Community', () => {
       expect(pop.length).toEqual(1)
     })
   })
+
+  describe('hasProblems', () => {
+    it('returns true if the community has problems', () => {
+      const c = new Community()
+      c.status.problems = [ 'conflict' ]
+      expect(c.hasProblems()).toEqual(true)
+    })
+
+    it('returns false if the community has no problems', () => {
+      const c = new Community()
+      c.status.problems = []
+      expect(c.hasProblems()).toEqual(false)
+    })
+  })
 })

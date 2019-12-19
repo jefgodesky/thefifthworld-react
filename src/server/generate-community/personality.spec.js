@@ -1,5 +1,8 @@
 /* global describe, it, expect */
 
+import Community from './community'
+import Pair from './pair'
+import Person from './person'
 import Personality from './personality'
 import { clone } from '../../shared/utils'
 
@@ -37,6 +40,37 @@ describe('Personality', () => {
 
       const actual = a.distance(b)
       expect(actual).toEqual(3)
+    })
+  })
+
+  describe('getAverage', () => {
+    it('returns the average value of a population', () => {
+      const p1 = new Person()
+      const p2 = new Person()
+      const p3 = new Person()
+      const p4 = new Person()
+      p1.personality.openness.value = 0
+      p2.personality.openness.value = 0
+      p3.personality.openness.value = 0
+      p4.personality.openness.value = 1
+      expect(Personality.getAverage([ p1, p2, p3, p4 ], 'openness')).toEqual(0.25)
+    })
+  })
+
+  describe('pickChange', () => {
+    it('will make a change', () => {
+      const sum = p => {
+        const { openness, conscientiousness, extraversion, agreeableness, neuroticism } = p
+        return openness.value + conscientiousness.value + extraversion.value + agreeableness.value + neuroticism.value
+      }
+
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      const before = sum(p.personality)
+      p.personality.pickChange(c, Pair.getPartners(p.pairs, p.id))
+      const after = sum(p.personality)
+      expect(before).not.toEqual(after)
     })
   })
 

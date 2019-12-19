@@ -79,6 +79,6 @@ export default class Pair {
    */
 
   static getPartners (pairs, id) {
-    return pairs.map(pair => pair.a.id === id ? pair.b : pair.a)
+    return Array.isArray(pairs) ? pairs.map(pair => pair.a.id === id ? pair.b : pair.a) : []
   }
 }

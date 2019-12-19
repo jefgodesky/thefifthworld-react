@@ -1,7 +1,7 @@
 import BigFiveTrait from './big-five-trait'
 import random from 'random'
 import { pickRandom } from './shuffle'
-import { between } from '../../shared/utils'
+import { between, isPopulatedArray } from '../../shared/utils'
 
 export default class Personality {
   constructor () {
@@ -28,6 +28,51 @@ export default class Personality {
     const a = this.agreeableness.distance(other.agreeableness)
     const n = this.neuroticism.distance(other.neuroticism)
     return o + c + e + a + n
+  }
+
+  /**
+   * Returns the average score for a trait in a population.
+   * @param population {Person[]} - An array of Person objects.
+   * @param trait {string} - The string to find the average value for. Valid
+   *   values are `openness`, `conscientiousness`, `extraversion`,
+   *   `agreeableness`, and `neuroticism`.
+   * @returns {number} - The average value for that trait in the given
+   *   population.
+   */
+
+  static getAverage (population, trait) {
+    const scores = population.map(p => p.personality[trait].value)
+    return scores.reduce((acc, curr) => acc + curr, 0) / scores.length
+  }
+
+  /**
+   * Pick how a personality will change. If one is very agreeable (as reflected
+   * by two separate agreeableness checks), she'll conform to the average of
+   * her community. If she's somewhat agreeable (as reflected by a single
+   * agreeableness check) and has partners, she'll conform to the average of
+   * her partners. Otherwise, she'll change randomly.
+   * @param community {Community} - The community object.
+   * @param partners {Person[]} - An array of the person's partners.
+   */
+
+  pickChange (community, partners) {
+    const traits = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
+    const directions = [ '+', '-' ]
+    const willConformToCommunity = this.check('agreeableness') && this.check('agreeableness')
+    const willConformToPartners = isPopulatedArray(partners) && this.check('agreeableness')
+    const trait = pickRandom(traits)
+    let direction = pickRandom(directions)
+
+    if (willConformToCommunity || willConformToPartners) {
+      const avg = willConformToCommunity
+        ? Personality.getAverage(Object.keys(community.people).map(k => community.people[k]), trait)
+        : Personality.getAverage(partners, trait)
+      // Hey, doesn't this mean this person will frequently over-correct? Yeah, it does!
+      // That's a feature, not a bug! People are messy and imprecise!
+      direction = this[trait].value < avg ? '+' : '-'
+    }
+
+    this.change(`${direction}${trait}`)
   }
 
   /**

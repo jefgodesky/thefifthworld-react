@@ -20,18 +20,16 @@ export default class Pair {
 
   /**
    * Add the pair to each of the person objects involved.
-   * @param a {Person} - One person in the pair.
-   * @param b {Person} - One person in the pair.
    */
 
   save () {
     if (this.a && this.b) {
       this.a.pairs = this.a.pairs && Array.isArray(this.a.pairs)
-        ? [...this.a.pairs, this]
-        : [this]
+        ? [ ...this.a.pairs, this ]
+        : [ this ]
       this.b.pairs = this.b.pairs && Array.isArray(this.b.pairs)
-        ? [...this.b.pairs, this]
-        : [this]
+        ? [ ...this.b.pairs, this ]
+        : [ thi s]
     }
   }
 

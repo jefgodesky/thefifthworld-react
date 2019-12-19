@@ -29,7 +29,7 @@ export default class Pair {
         : [ this ]
       this.b.pairs = this.b.pairs && Array.isArray(this.b.pairs)
         ? [ ...this.b.pairs, this ]
-        : [ thi s]
+        : [ this ]
     }
   }
 
@@ -66,5 +66,19 @@ export default class Pair {
       }
     }
     return false
+  }
+
+  /**
+   * Given an array of pairs and a person's ID, returns an array of partners
+   * who do not have that ID. Used in turning an array of pairs that a person
+   * is in into an array of partners that person has.
+   * @param pairs {Pair[]} - An array of pairs.
+   * @param id {number} - An ID to exclude.
+   * @returns {Person[]} - An array of those partners who do not have the
+   *   given ID.
+   */
+
+  static getPartners (pairs, id) {
+    return pairs.map(pair => pair.a.id === id ? pair.b : pair.a)
   }
 }

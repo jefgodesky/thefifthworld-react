@@ -460,7 +460,16 @@ export default class Body {
           outcome = 'took a scar to the right leg'
         }
         break
-      case 'torso': this.takeScar('torso'); outcome = 'took a scar to the torso'; break
+      case 'torso':
+        if (this.hasPenis && roll === 1) {
+          this.makeInfertile()
+          this.takeScar('torso')
+          outcome = 'was castrated in an injury'
+        } else {
+          this.takeScar('torso')
+          outcome = 'took a scar to the torso'
+        }
+        break
       default: break
     }
 

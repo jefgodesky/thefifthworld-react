@@ -85,21 +85,39 @@ export default class Person {
 
   /**
    * Ages a character.
-   * @param hasProblems {boolean} - If `true`, then the community faces one or
-   *   more problems this year, like conflict, sickness, or lean times.
+   * @param community {Community} - The community object.
    * @param year {number} - The year that the character is aging through.
+   * @param canDie {boolean} - Can this person die during this year? This might
+   *   be set to false, for example, if we're aging up a potential partner.
+   *   (Default: `true`).
    */
 
-  age (hasProblems, year) {
+  age (community, year, canDie = true) {
     const age = this.body.getAge(year)
     if (age) {
+      const hasProblems = community.hasProblems()
       this.body.adjustFertility(hasProblems, age)
 
       // Check for death from old age
-      if (age > this.body.longevity) {
-        const chance = age - this.body.longevity
-        const check = random.int(1, 10)
-        if (check < chance) this.die('natural', year)
+      if (canDie) {
+        this.body.checkForDyingOfOldAge(age)
+      }
+
+      if (!this.died) {
+        // TODO: Did you get sick?
+        // TODO: Did you get hurt?
+
+        if (!this.havingBaby) {
+          const wantsPartner = this.wantsPartner(hasProblems, year)
+          const willFindPartnerAgreeable = this.personality.check('agreeableness')
+          const willFindPartnerExtraverted = this.personality.check('extraversion')
+          const willFindPartner = wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted
+          const partner = willFindPartner ? Pair.form(this, community, year) : false
+
+          if (!partner) {
+            // TODO: Develop skills.
+          }
+        }
       }
     }
   }
@@ -125,8 +143,8 @@ export default class Person {
           : 0
 
       // Are you asexual?
-      const { androphilia, gynophilia, skoliophilia } = this.sexuality
-      const isAce = androphilia + gynophilia + skoliophilia === 0
+      const { androphilia, gynephilia, skoliophilia } = this.sexuality
+      const isAce = androphilia + gynephilia + skoliophilia === 0
 
       // Do you have children or a partner?
       const hasChildren = isPopulatedArray(this.children)

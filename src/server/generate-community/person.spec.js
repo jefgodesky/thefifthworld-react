@@ -1,5 +1,6 @@
 /* global describe, it, expect */
 
+import Community from './community'
 import Person from './person'
 
 describe('Person', () => {
@@ -171,8 +172,9 @@ describe('Person', () => {
   describe('age', () => {
     it('won\'t let you live more than 10 years beyond your longevity', () => {
       const p = new Person({ born: 1908 })
+      const c = new Community()
       p.body.longevity = 100
-      p.age(false, 2019)
+      p.age(c, 2019)
       expect(p.died)
     })
   })

@@ -98,25 +98,20 @@ export default class Person {
       const hasProblems = community.hasProblems()
       this.body.adjustFertility(hasProblems, age)
 
-      // Check for death from old age
-      if (canDie) {
-        this.body.checkForDyingOfOldAge(age)
-      }
+      // Check for death, injury, or illness
+      if (canDie) this.body.checkForDyingOfOldAge(age)
+      if (!this.died && random.int(1, 1000) < 8) this.body.getHurt(canDie)
+      if (!this.died && random.int(1, 1000) < 8) this.body.getSick(canDie)
 
-      if (!this.died) {
-        // TODO: Did you get sick?
-        // TODO: Did you get hurt?
+      if (!this.died && !this.havingBaby) {
+        const wantsPartner = this.wantsPartner(hasProblems, year)
+        const willFindPartnerAgreeable = this.personality.check('agreeableness')
+        const willFindPartnerExtraverted = this.personality.check('extraversion')
+        const willFindPartner = wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted
+        const partner = willFindPartner ? Pair.form(this, community, year) : false
 
-        if (!this.havingBaby) {
-          const wantsPartner = this.wantsPartner(hasProblems, year)
-          const willFindPartnerAgreeable = this.personality.check('agreeableness')
-          const willFindPartnerExtraverted = this.personality.check('extraversion')
-          const willFindPartner = wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted
-          const partner = willFindPartner ? Pair.form(this, community, year) : false
-
-          if (!partner) {
-            // TODO: Develop skills.
-          }
+        if (!partner) {
+          // TODO: Develop skills.
         }
       }
     }

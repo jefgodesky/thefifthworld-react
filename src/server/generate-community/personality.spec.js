@@ -57,7 +57,7 @@ describe('Personality', () => {
     })
   })
 
-  describe('pickChange', () => {
+  describe('change', () => {
     it('will make a change', () => {
       const sum = p => {
         const { openness, conscientiousness, extraversion, agreeableness, neuroticism } = p
@@ -68,55 +68,8 @@ describe('Personality', () => {
       const p = new Person()
       c.add(p)
       const before = sum(p.personality)
-      p.personality.pickChange(c, Pair.getPartners(p.pairs, p.id))
+      p.personality.change(c, Pair.getPartners(p.pairs, p.id))
       const after = sum(p.personality)
-      expect(before).not.toEqual(after)
-    })
-  })
-
-  describe('change', () => {
-    it('can increase a trait', () => {
-      const p = new Personality()
-      const before = clone(p)
-      p.change('+openness')
-      const actual = [
-        p.openness.value > before.openness.value,
-        p.conscientiousness.value === before.conscientiousness.value,
-        p.extraversion.value === before.extraversion.value,
-        p.agreeableness.value === before.agreeableness.value,
-        p.neuroticism.value === before.neuroticism.value
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
-    })
-
-    it('can decrease a trait', () => {
-      const p = new Personality()
-      const before = clone(p)
-      p.change('-openness')
-      const actual = [
-        p.openness.value < before.openness.value,
-        p.conscientiousness.value === before.conscientiousness.value,
-        p.extraversion.value === before.extraversion.value,
-        p.agreeableness.value === before.agreeableness.value,
-        p.neuroticism.value === before.neuroticism.value
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
-    })
-
-    it('can make a random change', () => {
-      const p = new Personality()
-      const sum = p => {
-        const o = p.openness.value
-        const c = p.conscientiousness.value
-        const e = p.extraversion.value
-        const a = p.agreeableness.value
-        const n = p.neuroticism.value
-        return o + c + e + a + n
-      }
-
-      const before = sum(p)
-      p.change()
-      const after = sum(p)
       expect(before).not.toEqual(after)
     })
   })

@@ -1,6 +1,7 @@
 import random from 'random'
 
 import Body from './body'
+import Pair from './pair'
 import Personality from './personality'
 import Sexuality from './sexuality'
 
@@ -102,7 +103,7 @@ export default class Person {
       if (canDie) this.body.checkForDyingOfOldAge(age)
       if (!this.died && random.int(1, 1000) < 8) this.body.getHurt(canDie)
       if (!this.died && random.int(1, 1000) < 8) this.body.getSick(canDie)
-      if (!this.died) this.personality.pickChange(community, Pair.getPartners(this.pairs, this.id))
+      if (!this.died) this.personality.change(community, Pair.getPartners(this.pairs, this.id))
 
       if (!this.died && !this.havingBaby) {
         const wantsPartner = this.wantsPartner(hasProblems, year)

@@ -46,16 +46,16 @@ export default class Personality {
   }
 
   /**
-   * Pick how a personality will change. If one is very agreeable (as reflected
-   * by two separate agreeableness checks), she'll conform to the average of
-   * her community. If she's somewhat agreeable (as reflected by a single
+   * Change a personality trait. If one is very agreeable (as reflected by two
+   * separate agreeableness checks), she'll conform to the average of her
+   * community. If she's somewhat agreeable (as reflected by a single
    * agreeableness check) and has partners, she'll conform to the average of
    * her partners. Otherwise, she'll change randomly.
    * @param community {Community} - The community object.
    * @param partners {Person[]} - An array of the person's partners.
    */
 
-  pickChange (community, partners) {
+  change (community, partners) {
     const traits = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
     const directions = [ '+', '-' ]
     const willConformToCommunity = this.check('agreeableness') && this.check('agreeableness')
@@ -72,36 +72,7 @@ export default class Personality {
       direction = this[trait].value < avg ? '+' : '-'
     }
 
-    this.change(`${direction}${trait}`)
-  }
-
-  /**
-   * Change a personality trait.
-   * @param how {string} - (Optional) Which personality trait and how to change
-   *   it. The first character should either be `+` (indicating that the trait
-   *   should be increased) or `-` (indicating that it should be decreased),
-   *   followed by the trait to adjust (one of the Big Five personality
-   *   traits). Thus, the valid values are `+openness`, `-openness`,
-   *   `+conscientiousness`, `-conscientiousness`, `+extraversion`,
-   *   `-extraversion`, `+agreeableness`, `-agreeableness`, `+neuroticism`,
-   *   or `-neuroticism`. If not given, a random value is chosen.
-   *   (Default: `null`)
-   */
-
-  change (how = null) {
-    if (!how) {
-      // No direction specified, so we'll pick one at random
-      const dir = pickRandom([ '+', '-' ])
-      const trait = pickRandom([ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ])
-      how = `${dir}${trait}`
-    }
-
-    // What change are we making?
-    const dir = how.substr(0, 1) === '+' ? 1 : -1
-    const trait = how.substr(1)
-
-    // Make that change.
-    this[trait].change(dir)
+    this[trait].change(direction)
   }
 
   /**

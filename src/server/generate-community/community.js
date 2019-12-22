@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone, get } from '../../shared/utils'
+import { clone, get, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -89,6 +89,19 @@ export default class Community {
   getMasters (skill) {
     const everyone = this.getCurrentPopulation()
     return everyone.filter(p => p.skills.mastered.includes(skill))
+  }
+
+  /**
+   * Returns the most recent entries in the community's history.
+   * @param years {number} - The number of entries to return. (Default: `5`)
+   * @returns {Object[]} - An array of objects providing information about the
+   *   most recent years in the community's history.
+   */
+
+  getRecentHistory (years = 5) {
+    return isPopulatedArray(this.history)
+      ? this.history.slice(Math.max(this.history.length - years, 0))
+      : []
   }
 
   /**

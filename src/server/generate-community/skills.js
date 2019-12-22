@@ -1,7 +1,7 @@
 import random from 'random'
 import skills from '../../data/skills'
 import { pickRandom } from './shuffle'
-import { between, get, isPopulatedArray } from '../../shared/utils'
+import { between, get } from '../../shared/utils'
 
 export default class Skills {
   constructor () {
@@ -131,19 +131,13 @@ export default class Skills {
     const isHealer = person.skills.mastered.includes('Medicine')
     const isPeacemaker = person.skills.mastered.includes('Deescalation')
     if (!isHealer || !isPeacemaker) {
-      const recent = community && isPopulatedArray(community.history)
-        ? community.history.slice(Math.max(community.history.length - 30, 0))
-        : []
-
-      if (!isHealer) {
-        const recentSickYears = recent.filter(e => e.sick).length
-        for (let i = 0; i < recentSickYears; i++) list.push('Medicine')
+      const recent = community.getRecentHistory(30)
+      const weight = (skill, fn) => {
+        const years = recent.filter(fn).length
+        for (let i = 0; i < years; i++) list.push(skill)
       }
-
-      if (!isPeacemaker) {
-        const recentConflictYears = recent.filter(e => e.conflict).length
-        for (let i = 0; i < recentConflictYears; i++) list.push('Deescalation')
-      }
+      weight('Medicine', e => e.sick)
+      weight('Deescalation', e => e.conflict)
     }
 
     // Pick a skill at random from the list

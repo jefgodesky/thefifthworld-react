@@ -175,6 +175,26 @@ describe('Community', () => {
     })
   })
 
+  describe('getRecentHistory', () => {
+    it('returns 5 years by default', () => {
+      const c = new Community()
+      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      expect(c.getRecentHistory().length).toEqual(5)
+    })
+
+    it('returns the number of entries requested', () => {
+      const c = new Community()
+      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      expect(c.getRecentHistory(8).length).toEqual(8)
+    })
+
+    it('returns no more than the number of entries in the history', () => {
+      const c = new Community()
+      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      expect(c.getRecentHistory(25).length).toEqual(11)
+    })
+  })
+
   describe('calculateHelp', () => {
     it('can help with a skill', () => {
       const c = new Community()

@@ -100,6 +100,8 @@ export default class Body {
           // Start off by seeding our baby with random values.
 
           baby = new Body(args)
+          baby.mother = mother
+          baby.father = father
           if (born && typeof born === 'number') baby.born = born
           const imr = baby.born ? baby.born : true
 

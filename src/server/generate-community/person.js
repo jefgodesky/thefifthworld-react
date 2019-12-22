@@ -114,9 +114,7 @@ export default class Person {
         const willFindPartner = wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted
         const partner = willFindPartner ? Pair.form(this, community, year) : false
 
-        if (!partner) {
-          // TODO: Develop skills.
-        }
+        if (!partner && age > 14) Skills.advance(this, community)
       }
     }
   }

@@ -170,4 +170,19 @@ export default class Skills {
       }
     }
   }
+
+  /**
+   * If the person is learning a skill, mark progress in that. If not, pick a
+   * skill to start learning.
+   * @param person {Person} - The Person object.
+   * @param community {Community} - The Community object.
+   */
+
+  static advance (person, community) {
+    if (person.skills.learning) {
+      person.skills.advance()
+    } else {
+      Skills.pick(person, community)
+    }
+  }
 }

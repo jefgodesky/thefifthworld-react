@@ -358,6 +358,50 @@ describe('Skills', () => {
 
       expect(test).toBeGreaterThan(control)
     })
+
+    it('is more likely to be medicine if the community has been sick', () => {
+      let control = 0
+      let test = 0
+      const c = new Community()
+      const p = new Person()
+
+      // Control group
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === 'Medicine') control++
+      }
+
+      // Test group
+      c.history = [ { sick: true, conflict: false }, { sick: true, conflict: false }, { sick: true, conflict: false } ]
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === 'Medicine') test++
+      }
+
+      expect(test).toBeGreaterThanOrEqual(control)
+    })
+
+    it('is more likely to be deescalation if the community has been in conflict', () => {
+      let control = 0
+      let test = 0
+      const c = new Community()
+      const p = new Person()
+
+      // Control group
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === 'Deescalation') control++
+      }
+
+      // Test group
+      c.history = [ { sick: false, conflict: true }, { sick: false, conflict: true }, { sick: false, conflict: true } ]
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === 'Deescalation') test++
+      }
+
+      expect(test).toBeGreaterThanOrEqual(control)
+    })
   })
 
   describe('advance', () => {

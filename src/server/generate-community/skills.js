@@ -1,7 +1,7 @@
 import random from 'random'
 import skills from '../../data/skills'
 import { pickRandom } from './shuffle'
-import { between, get } from '../../shared/utils'
+import { between, get, isPopulatedArray } from '../../shared/utils'
 
 export default class Skills {
   constructor () {
@@ -120,8 +120,34 @@ export default class Skills {
 
     // If it wasn't magic and it wasn't the community's favored skill, we use
     // the normal process
+    const list = person.skills.getLearnableSkills(community)
+
+    // If you haven't already mastered medicine, and the community has faced a
+    // lot of sickness in its recent history, there's pressure to learn
+    // medicine. Likewise, if you haven't already mastered deescalation, and
+    // the community has been embroiled in conflict, there's pressure to
+    // learn how to deescalate situations.
+
+    const isHealer = person.skills.mastered.includes('Medicine')
+    const isPeacemaker = person.skills.mastered.includes('Deescalation')
+    if (!isHealer || !isPeacemaker) {
+      const recent = community && isPopulatedArray(community.history)
+        ? community.history.slice(Math.max(community.history.length - 30, 0))
+        : []
+
+      if (!isHealer) {
+        const recentSickYears = recent.filter(e => e.sick).length
+        for (let i = 0; i < recentSickYears; i++) list.push('Medicine')
+      }
+
+      if (!isPeacemaker) {
+        const recentConflictYears = recent.filter(e => e.conflict).length
+        for (let i = 0; i < recentConflictYears; i++) list.push('Deescalation')
+      }
+    }
+
+    // Pick a skill at random from the list
     if (person.skills.learning === undefined) {
-      const list = person.skills.getLearnableSkills(community)
       person.skills.learning = {
         skill: pickRandom(list),
         progress: 0,

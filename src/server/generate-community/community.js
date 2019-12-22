@@ -92,6 +92,29 @@ export default class Community {
   }
 
   /**
+   * Calculates the chance for a community to achieve something where the
+   * skills they've mastered can make a difference. This is subject to
+   * diminishing marginal returns, though, so each additional helper adds only
+   * 75% of what the previous one did.
+   * @param skill {string} - The relevant skill to help.
+   * @param base {number} - How much the first helper adds to the chances of
+   *   success.
+   * @returns {number} - The chance of success with the help of everyone in the
+   *   community who has mastered the relevant skill.
+   */
+
+  calculateHelp (skill, base) {
+    const help = []
+    const helpers = this.getMasters(skill)
+    let contribution = base
+    for (let i = 0; i < helpers.length; i++) {
+      help.push(contribution)
+      contribution = contribution * 0.75
+    }
+    return help.reduce((acc, curr) => acc + curr, 0)
+  }
+
+  /**
    * Returns whether or not the community is currently experiencing any major
    * problems, like conflict, sickness, or lean times.
    * @returns {boolean} - `true` if the community is experiencing any major

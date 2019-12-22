@@ -175,6 +175,30 @@ describe('Community', () => {
     })
   })
 
+  describe('calculateHelp', () => {
+    it('can help with a skill', () => {
+      const c = new Community()
+      const h = new Person()
+      h.skills.mastered = [ 'Medicine' ]
+      c.add(h)
+      expect(c.calculateHelp('Medicine', 25)).toEqual(25)
+    })
+
+    it('suffers from diminishing marginal returns', () => {
+      const c = new Community()
+      const h1 = new Person()
+      h1.skills.mastered = [ 'Medicine' ]
+      c.add(h1)
+      const h2 = new Person()
+      h2.skills.mastered = [ 'Medicine' ]
+      c.add(h2)
+      const h3 = new Person()
+      h3.skills.mastered = [ 'Medicine' ]
+      c.add(h3)
+      expect(c.calculateHelp('Medicine', 25)).toEqual(57.8125)
+    })
+  })
+
   describe('hasProblems', () => {
     it('returns true if the community has problems', () => {
       const c = new Community()

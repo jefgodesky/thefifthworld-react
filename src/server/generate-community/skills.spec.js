@@ -359,4 +359,36 @@ describe('Skills', () => {
       expect(test).toBeGreaterThan(control)
     })
   })
+
+  describe('advance', () => {
+    it('increments progress', () => {
+      const c = new Community()
+      const p = new Person()
+      Skills.pick(p, c)
+      p.skills.advance()
+      expect(p.skills.learning.progress).toEqual(1)
+    })
+
+    it('adds skill to mastered skills when it reaches the needed years', () => {
+      const s = new Skills()
+      s.learning = {
+        skill: 'Acting',
+        progress: 6,
+        needed: 7
+      }
+      s.advance()
+      expect(s.mastered).toEqual([ 'Acting' ])
+    })
+
+    it('sets learning to undefined when learning is done', () => {
+      const s = new Skills()
+      s.learning = {
+        skill: 'Acting',
+        progress: 6,
+        needed: 7
+      }
+      s.advance()
+      expect(s.learning).toEqual(undefined)
+    })
+  })
 })

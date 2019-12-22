@@ -129,4 +129,19 @@ export default class Skills {
       }
     }
   }
+
+  /**
+   * Marks progress in mastering a skill that you're learning.
+   */
+
+  advance () {
+    if (this.learning) {
+      this.learning.progress++
+      const { progress, needed, skill } = this.learning
+      if (progress >= needed) {
+        this.mastered = [ ...this.mastered, skill ]
+        this.learning = undefined
+      }
+    }
+  }
 }

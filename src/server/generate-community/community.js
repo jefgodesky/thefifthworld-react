@@ -80,6 +80,18 @@ export default class Community {
   }
 
   /**
+   * Returns the people who have mastered a particular skill.
+   * @param skill {string} - The name of the skill that you're interested in.
+   * @returns {Person[]} - An array of the people who have mastered the
+   *   given skill.
+   */
+
+  getMasters (skill) {
+    const everyone = this.getCurrentPopulation()
+    return everyone.filter(p => p.skills.mastered.includes(skill))
+  }
+
+  /**
    * Returns whether or not the community is currently experiencing any major
    * problems, like conflict, sickness, or lean times.
    * @returns {boolean} - `true` if the community is experiencing any major

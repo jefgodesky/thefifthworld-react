@@ -149,6 +149,32 @@ describe('Community', () => {
     })
   })
 
+  describe('getMasters', () => {
+    it('gets an array of the people who have mastered a given skill', () => {
+      const skill = 'Acting'
+      const c = new Community()
+
+      const p1 = new Person()
+      p1.skills.mastered = [ skill ]
+      c.add(p1)
+
+      const p2 = new Person()
+      p2.skills.mastered = [ skill ]
+      c.add(p2)
+
+      const p3 = new Person()
+      c.add(p3)
+
+      const p4 = new Person()
+      c.add(p4)
+
+      const everyone = c.getCurrentPopulation()
+      const actors = c.getMasters(skill)
+
+      expect(everyone.length === 4 && actors.length === 2)
+    })
+  })
+
   describe('hasProblems', () => {
     it('returns true if the community has problems', () => {
       const c = new Community()

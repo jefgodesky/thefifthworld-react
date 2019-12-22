@@ -1,5 +1,7 @@
+import random from 'random'
 import skills from '../../data/skills'
-import { between } from '../../shared/utils'
+import { pickRandom } from './shuffle'
+import { between, get } from '../../shared/utils'
 
 export default class Skills {
   constructor () {
@@ -64,8 +66,10 @@ export default class Skills {
     }
 
     const min = isSecret ? 1 : 10
-    const motherIsWizard = person.body.mother.skills.mastered.includes('Magic') ? factors.motherIsWizard : 0
-    const fatherIsWizard = person.body.father.skills.mastered.includes('Magic') ? factors.fatherIsWizard : 0
+    const motherSkills = get(person, 'body.mother.skills.mastered')
+    const fatherSkills = get(person, 'body.father.skills.mastered')
+    const motherIsWizard = motherSkills && motherSkills.includes('Magic') ? factors.motherIsWizard : 0
+    const fatherIsWizard = fatherSkills && fatherSkills.includes('Magic') ? factors.fatherIsWizard : 0
     const hasBothGenitalia = person.body.hasPenis && person.body.hasWomb
     const hasNeitherGenitalia = !person.body.hasPenis && !person.body.hasWomb
     const isIntersex = hasBothGenitalia || hasNeitherGenitalia ? factors.isIntersex : 0
@@ -75,5 +79,54 @@ export default class Skills {
     const isNeurodivergent = person.neurodivergent ? factors.isNeurodivergent : 0
 
     return between(motherIsWizard + fatherIsWizard + isIntersex + isMagicalGender + isDwarf + isNeurodivergent, min, 95)
+  }
+
+  /**
+   * Pick a skill for this person to start learning.
+   * @param person {Person} - The Person object.
+   * @param community {Community} - The Community object.
+   */
+
+  static pick (person, community) {
+    person.skills.learning = undefined
+    const needed = Math.round(7 + (person.intelligence * -1))
+
+    // Check for magical calling
+    if (!person.skills.mastered.includes('Magic')) {
+      const tradition = get(community, 'traditions.magic')
+      const calling = Skills.getMagicalCalling(person, tradition === 'secret')
+      if (random.int(1, 100) < calling) {
+        person.skills.learning = {
+          skill: 'Magic',
+          progress: 0,
+          needed
+        }
+      }
+    }
+
+    // If it wasn't magic, maybe it's the community's favored skill?
+    let willConform = true
+    for (let i = 0; i < 4; i++) willConform = willConform && person.personality.check('agreeableness')
+    if ((person.skills.learning === undefined) && willConform) {
+      const favored = get(community, 'traditions.skill')
+      if (favored) {
+        person.skills.learning = {
+          skill: favored,
+          progress: 0,
+          needed
+        }
+      }
+    }
+
+    // If it wasn't magic and it wasn't the community's favored skill, we use
+    // the normal process
+    if (person.skills.learning === undefined) {
+      const list = person.skills.getLearnableSkills(community)
+      person.skills.learning = {
+        skill: pickRandom(list),
+        progress: 0,
+        needed
+      }
+    }
   }
 }

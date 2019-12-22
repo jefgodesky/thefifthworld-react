@@ -312,4 +312,51 @@ describe('Skills', () => {
       expect(Skills.getMagicalCalling(p, false)).toEqual(95)
     })
   })
+
+  describe('pick', () => {
+    it('picks a skill to start learning', () => {
+      const c = new Community()
+      const p = new Person()
+      Skills.pick(p, c)
+      expect(typeof p.skills.learning.skill).toEqual('string')
+    })
+
+    it('sets progress at zero', () => {
+      const c = new Community()
+      const p = new Person()
+      Skills.pick(p, c)
+      expect(p.skills.learning.progress).toEqual(0)
+    })
+
+    it('sets a number of years needed to master the skill', () => {
+      const c = new Community()
+      const p = new Person()
+      Skills.pick(p, c)
+      expect(p.skills.learning.needed).toBeLessThan(15)
+    })
+
+    it('is more likely to be the community\'s favored skill if you\'re more agreeable', () => {
+      let control = 0
+      let test = 0
+      const skill = 'Acting'
+      const c = new Community()
+      c.traditions = { skill }
+      const p = new Person()
+
+      // Control group
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === skill) control++
+      }
+
+      // Test group
+      p.personality.agreeableness.value = 3
+      for (let i = 0; i < 100; i++) {
+        Skills.pick(p, c)
+        if (p.skills.learning.skill === skill) test++
+      }
+
+      expect(test).toBeGreaterThan(control)
+    })
+  })
 })

@@ -4,7 +4,6 @@ import Community from './community'
 import Pair from './pair'
 import Person from './person'
 import Personality from './personality'
-import { clone } from '../../shared/utils'
 
 describe('Personality', () => {
   describe('constructor', () => {
@@ -89,7 +88,7 @@ describe('Personality', () => {
       p[trait].value = -6
       const t5 = p.chance(trait)
       const actual = [ t1, t2, t3, t4, t5 ]
-      const expected = [ 48, 96, 99, 1, 1  ]
+      const expected = [ 48, 96, 99, 1, 1 ]
       expect(actual).toEqual(expected)
     })
   })

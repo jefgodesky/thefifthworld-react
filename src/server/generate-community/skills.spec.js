@@ -269,7 +269,6 @@ describe('Skills', () => {
       expect(Skills.getMagicalCalling(p, false)).toEqual(35)
     })
 
-
     it('returns 35 for a dwarf in a community that considers magic open', () => {
       const mother = new Person()
       const father = new Person()

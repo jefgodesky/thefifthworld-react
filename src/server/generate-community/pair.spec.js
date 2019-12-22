@@ -96,7 +96,7 @@ describe('Pair', () => {
       Pair.form(p, community, 2019)
       const partners = Pair.getPartners(p.pairs, p.id)
       const t1 = partners.length === 1
-      const t2 = typeof partners[0] === 'Person'
+      const t2 = partners[0].constructor.name === 'Person'
       const t3 = (p.pairs[0].a.id === partners[0].id) || p.pairs[0].b.id === partners[0].id
       const t4 = (p.pairs[0].a.id === p.id) || (p.pairs[0].b.id === p.id)
       expect(t1 && t2 && t3 && t4)

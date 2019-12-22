@@ -45,8 +45,8 @@ describe('Skills', () => {
       const p2 = new Person()
       c.add(p2)
       const list = p2.skills.getLearnableSkills(c)
-      const expected = list.filter(s => s === 'Acting')
-      expect(expected.length).toEqual(2)
+      const actual = list.filter(s => s === 'Acting').length
+      expect(actual).toEqual(2)
     })
   })
 

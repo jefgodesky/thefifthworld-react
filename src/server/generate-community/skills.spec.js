@@ -49,4 +49,267 @@ describe('Skills', () => {
       expect(expected.length).toEqual(2)
     })
   })
+
+  describe('getMagicalCalling', () => {
+    it('returns 1 for a person in a community that considers magic a secret who has no qualifications', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(1)
+    })
+
+    it('returns 75 for the daughter of a wizard mother in a community that considers magic a secret', () => {
+      const mother = new Person()
+      mother.skills.mastered = [ 'Magic' ]
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(75)
+    })
+
+    it('returns 75 for the daughter of a wizard father in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      father.skills.mastered = [ 'Magic' ]
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(75)
+    })
+
+    it('returns 95 for the daughter of two wizard parents in a community that considers magic a secret', () => {
+      const mother = new Person()
+      mother.skills.mastered = [ 'Magic' ]
+      const father = new Person()
+      father.skills.mastered = [ 'Magic' ]
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(95)
+    })
+
+    it('returns 5 for an intersex person in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = false
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(5)
+    })
+
+    it('returns 5 for a person of a special gender in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Third gender'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(5)
+    })
+
+    it('returns 5 for a dwarf in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = true
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, true)).toEqual(5)
+    })
+
+    it('returns 5 for a neurodivergent person in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = true
+      expect(Skills.getMagicalCalling(p, true)).toEqual(5)
+    })
+
+    it('returns 15 for a neurodivergent dwarf of a special gender in a community that considers magic a secret', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Third gender'
+      p.body.achondroplasia = true
+      p.neurodivergent = true
+      expect(Skills.getMagicalCalling(p, true)).toEqual(15)
+    })
+
+    it('returns 10 for a person in a community that considers magic open who has no qualifications', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(10)
+    })
+
+    it('returns 25 for a the daughter of a wizard mother in a community that considers magic open', () => {
+      const mother = new Person()
+      mother.skills.mastered = [ 'Magic' ]
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(25)
+    })
+
+    it('returns 25 for a the daughter of a wizard father in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      father.skills.mastered = [ 'Magic' ]
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(25)
+    })
+
+    it('returns 50 for a the daughter of two wizard parents in a community that considers magic open', () => {
+      const mother = new Person()
+      mother.skills.mastered = [ 'Magic' ]
+      const father = new Person()
+      father.skills.mastered = [ 'Magic' ]
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(50)
+    })
+
+    it('returns 35 for an intersex person in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = false
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(35)
+    })
+
+    it('returns 35 for a person of a special gender in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Third gender'
+      p.body.achondroplasia = false
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(35)
+    })
+
+
+    it('returns 35 for a dwarf in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = true
+      p.neurodivergent = false
+      expect(Skills.getMagicalCalling(p, false)).toEqual(35)
+    })
+
+    it('returns 35 for a neurodivergent person in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Woman'
+      p.body.achondroplasia = false
+      p.neurodivergent = true
+      expect(Skills.getMagicalCalling(p, false)).toEqual(35)
+    })
+
+    it('returns 95 for a neurodivergent dwarf of a special gender in a community that considers magic open', () => {
+      const mother = new Person()
+      const father = new Person()
+      const p = new Person()
+      p.body.mother = mother
+      p.body.father = father
+      p.body.hasPenis = false
+      p.body.hasWomb = true
+      p.gender = 'Third gender'
+      p.body.achondroplasia = true
+      p.neurodivergent = true
+      expect(Skills.getMagicalCalling(p, false)).toEqual(95)
+    })
+  })
 })

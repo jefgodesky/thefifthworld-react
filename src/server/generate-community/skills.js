@@ -34,8 +34,11 @@ export default class Skills {
       masters = [ ...masters, ...p.skills.mastered ]
     })
 
-    // Remove the skills that you've already mastered
-    return [ ...base, ...masters ].filter(s => !this.mastered.includes(s))
+    // Remove the skills that you've already mastered, as well as magic because
+    // magic has a whole other thing going on.
+    return [ ...base, ...masters ]
+      .filter(s => !this.mastered.includes(s))
+      .filter(s => s !== 'Magic')
   }
 
   /**

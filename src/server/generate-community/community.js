@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone, get, isPopulatedArray } from '../../shared/utils'
+import { clone, get, between, isPopulatedArray, daysFromNow } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -18,10 +18,13 @@ export default class Community {
 
   init () {
     this.people = {}
-    this.chronicle = []
+    this.history = []
     const randomizer = random.normal(25, 1)
+    if (!this.territory) this.territory = {}
+    this.territory.yield = 0
     this.status = {
-      discord: Math.floor(randomizer())
+      discord: Math.floor(randomizer()),
+      problems: []
     }
   }
 
@@ -84,6 +87,41 @@ export default class Community {
    */
 
   hasProblems () {
-    return this.status && isPopulatedArray(this.status.problems)
+    return this.status && (this.status.lean || this.status.sick || this.status.conflict)
+  }
+
+  /**
+   * Adjust the yield of the community's territory. It has a natural
+   * regeneration rate equal to the community's carrying capacity, based on
+   * whether or not they're hunter-gatherers. Then, we reduce that by the
+   * number of people in the community (e.g., the community's ecological
+   * footprint).
+   */
+
+  adjustYield () {
+    const people = this.getCurrentPopulation()
+    const base = get(this, 'traditions.village') ? 150 : 30
+    this.territory.yield += base - people.length
+  }
+
+  /**
+   * See if new problems develop.
+   */
+
+  newProblems () {
+    // If yield has dropped to negative numbers, you're facing lean times
+    const y = get(this, 'territory.yield')
+    if (typeof y === 'number' && y < 0) this.status.lean = true
+    const yf = this.status.lean ? 2 : 1
+
+    // Lean times and more people make it more likely that you suffer sickness
+    const village = get(this, 'traditions.village')
+    const capacity = village === true ? 150 : 30
+    const people = this.getCurrentPopulation()
+    const spf = people.length / capacity
+    if (random.int(1, 100) < 5 * yf * spf) this.status.sick = true
+
+    // Lean times makes it more likely that you get into a conflict
+    if (random.int(1, 100) < yf) this.status.conflict = true
   }
 }

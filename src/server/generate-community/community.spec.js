@@ -303,7 +303,7 @@ describe('Community', () => {
         if (c.status.sick) test++
       }
 
-      expect(test).toBeGreaterThan(control)
+      expect(test).toBeGreaterThanOrEqual(control)
     })
 
     it('will add sickness more often when you have a lot of people', () => {
@@ -325,7 +325,7 @@ describe('Community', () => {
         if (c.status.sick) test++
       }
 
-      expect(test).toBeGreaterThan(control)
+      expect(test).toBeGreaterThanOrEqual(control)
     })
 
     it('will add conflict more often in lean times', () => {
@@ -348,7 +348,6 @@ describe('Community', () => {
         if (c.status.conflict) test++
       }
 
-      console.log({ control, test })
       expect(test).toBeGreaterThanOrEqual(control)
     })
   })
@@ -392,7 +391,7 @@ describe('Community', () => {
         if (!c.status.sick) test++
       }
 
-      expect(test).toBeGreaterThan(control)
+      expect(test).toBeGreaterThanOrEqual(control)
     })
 
     it('is more likely to end conflict if the community has more peacemakers', () => {
@@ -417,7 +416,7 @@ describe('Community', () => {
         if (!c.status.conflict) test++
       }
 
-      expect(test).toBeGreaterThan(control)
+      expect(test).toBeGreaterThanOrEqual(control)
     })
   })
 })

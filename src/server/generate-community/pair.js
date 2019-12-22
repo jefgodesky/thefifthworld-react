@@ -1,4 +1,5 @@
 import random from 'random'
+import Community from './community'
 import Person from './person'
 import { get } from '../../shared/utils'
 
@@ -50,11 +51,19 @@ export default class Pair {
       const genders = person.sexuality.getGenderPreferences(numGenders)
       if (genders.length > 0) {
         const candidates = genders.map(gender => {
-          const candidateBorn = Math.min(born + random.int(-5, 5), year - 18)
+          const age = year - born
+          const gap = Math.floor((age / 2) - 7)
+          const candidateBorn = year - random.int(age - gap, age + gap)
           const candidate = new Person({ born: candidateBorn, gender })
-          // TODO: Age up candidate
           return candidate
         })
+
+        // Age up candidates
+        candidates.forEach((candidate, i) => {
+          const defaultCommunity = new Community()
+          for (let y = candidate.body.born; y < year; y++) candidate.age(defaultCommunity, y, true)
+        })
+
         const pairs = candidates
           .map(candidate => new Pair(person, candidate, false))
           .sort((a, b) => a.love - b.love)

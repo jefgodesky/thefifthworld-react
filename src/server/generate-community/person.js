@@ -90,13 +90,14 @@ export default class Person {
    * Ages a character.
    * @param community {Community} - The community object.
    * @param year {number} - The year that the character is aging through.
-   * @param canDie {boolean} - Can this person die during this year? This might
-   *   be set to false, for example, if we're aging up a potential partner.
-   *   (Default: `true`).
+   * @param isMate {boolean} - Is this person being aged up as a potential mate
+   *   for someone? If so, she can't die, and we'll skip finding mates for her.
+   *   (Default: `false`)
    */
 
-  age (community, year, canDie = true) {
+  age (community, year, isMate = false) {
     const age = this.body.getAge(year)
+    const canDie = !isMate
     if (age) {
       const hasProblems = community.hasProblems()
       this.body.adjustFertility(hasProblems, age)
@@ -108,11 +109,14 @@ export default class Person {
       if (!this.died) this.personality.change(community, Pair.getPartners(this.pairs, this.id))
 
       if (!this.died && !this.havingBaby) {
-        const wantsPartner = this.wantsPartner(hasProblems, year)
-        const willFindPartnerAgreeable = this.personality.check('agreeableness')
-        const willFindPartnerExtraverted = this.personality.check('extraversion')
-        const willFindPartner = wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted
-        const partner = willFindPartner ? Pair.form(this, community, year) : false
+        let partner = false
+        if (!isMate) {
+          const wantsPartner = this.wantsPartner(hasProblems, year)
+          const willFindPartnerAgreeable = this.personality.check('agreeableness')
+          const willFindPartnerExtraverted = this.personality.check('extraversion')
+          if (wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted)
+            partner = Pair.form(this, community, year)
+        }
 
         if (!partner && age > 14) Skills.advance(this, community)
       }

@@ -82,6 +82,20 @@ describe('Pair', () => {
       const t2 = Object.keys(community.people).length === 2
       expect(t1 && t2)
     })
+
+    it('follows the \'half your age plus seven\' rule', () => {
+      const community = new Community()
+      const p = new Person()
+      p.born = 1979
+      p.body.born = 1979
+      p.sexuality.androphilia = 0.4
+      p.sexuality.gynephilia = 0.4
+      p.sexuality.skoliophilia = 0.2
+      Pair.form(p, community, 2019)
+      const partner = p.pairs[0].a === p ? p.pairs[0].b : p.pairs[0].a
+      const gap = Math.abs(p.body.getAge(2019) - partner.body.getAge(2019))
+      expect(gap).toBeLessThanOrEqual(13)
+    })
   })
 
   describe('getPartners', () => {

@@ -4,6 +4,7 @@ import Body from './body'
 import Pair from './pair'
 import Personality from './personality'
 import Sexuality from './sexuality'
+import Skills from './skills'
 
 import { isPopulatedArray, between } from '../../shared/utils'
 
@@ -18,6 +19,7 @@ export default class Person {
     if (args.born) this.born = args.born
     this.body = new Body({ copy: this.genotype })
     this.personality = new Personality()
+    this.skills = new Skills()
     this.sexuality = new Sexuality(this.body, args.mateFor)
     this.gender = args && args.specifiedGender ? args.specifiedGender : this.assignGender(args.numGenders)
 

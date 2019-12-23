@@ -93,6 +93,11 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
+      a.personality.openness.value = 0; b.personality.openness.value = 0; c.personality.openness.value = 0
+      a.personality.conscientiousness.value = 0; b.personality.conscientiousness.value = 0; c.personality.conscientiousness.value = 0
+      a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
+      a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
+      a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
       const p = new Polycule(a, b, c)
       p.love = [
         [ 1, 0.5, 0.5 ],
@@ -116,48 +121,6 @@ describe('Polycule', () => {
         c.polycule === undefined
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
-    })
-  })
-
-  describe('findLove', () => {
-    it('calculates a love score between two people', () => {
-      const a = new Person()
-      const b = new Person()
-      const actual = Polycule.findLove(a, b)
-      const tests = [
-        typeof actual === 'number',
-        actual <= 1,
-        actual >= 0
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(tests)
-    })
-
-    it('gives a higher score to people who are more alike', () => {
-      let control = []
-      let test = []
-
-      // Control group
-      for (let i = 0; i < 100; i++) {
-        const a = new Person()
-        const b = new Person()
-        control.push(Polycule.findLove(a, b))
-      }
-
-      // Test group
-      for (let i = 0; i < 100; i++) {
-        const a = new Person()
-        const b = new Person()
-        a.personality.openness.value = 0; b.personality.openness.value = 0
-        a.personality.conscientiousness.value = 0; b.personality.conscientiousness.value = 0
-        a.personality.extraversion.value = 0; b.personality.extraversion.value = 0
-        a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0
-        a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0
-        test.push(Polycule.findLove(a, b))
-      }
-
-      const controlAvg = control.reduce((acc, curr) => acc + curr, 0) / control.length
-      const testAvg = test.reduce((acc, curr) => acc + curr, 0) / test.length
-      expect(testAvg).toBeGreaterThan(controlAvg)
     })
   })
 

@@ -22,7 +22,7 @@ export default class Polycule {
     } else {
       const arr = []
       for (let i = 0; i < this.people.length; i++) {
-        const score = Polycule.findLove(person, this.people[i])
+        const score = random.int(0, 50)
         this.love[i] = [ ...this.love[i], score ]
         arr.push(score)
       }
@@ -53,7 +53,7 @@ export default class Polycule {
     let sum = 0
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
-        sum += this.love[i][j]
+        sum += this.people[i].personality.distance(this.people[j].personality) + this.love[i][j]
       }
     }
     return sum / this.people.length
@@ -67,19 +67,6 @@ export default class Polycule {
     this.people.forEach(person => {
       person.polycule = this
     })
-  }
-
-  /**
-   * Find the love between two people.
-   * @param a {Person} - The first Perosn object.
-   * @param b {Person} - The second Person object.
-   * @returns {number} - A love score from 0 to 1.
-   */
-
-  static findLove (a, b) {
-    const distance = a.personality.distance(b.personality)
-    const desire = random.int(-5, 5)
-    return between((15 - (distance - desire)) / 15, 0, 1)
   }
 
   /**

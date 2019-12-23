@@ -38,9 +38,24 @@ export default class Polycule {
    */
 
   remove (person) {
+    if (this.people.includes(person)) {
+      this.love = this.getLoveWithout(person)
+      this.people = this.people.file(p => p !== person)
+    }
+  }
+
+  /**
+   * Return what the love matrix would be without a given person.
+   * @param person {Person} - The person to exclude.
+   * @returns {number[]|boolean} - Returns what the love matrix would be
+   *   without that person if she's in the polycule, or `false` if she isn't
+   *   in the polycule to begin with.
+   */
+
+  getLoveWithout (person) {
+    const matrix = []
     const index = this.people.indexOf(person)
     if (index > -1) {
-      const matrix = []
       for (let i = 0; i < this.people.length; i++) {
         if (i !== index) {
           const row = []
@@ -52,9 +67,8 @@ export default class Polycule {
           matrix.push(row)
         }
       }
-      this.love = matrix
-      this.people = this.people.filter(p => p !== person)
     }
+    return index > -1 ? matrix : false
   }
 
   /**

@@ -96,6 +96,26 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getLoveWithout', () => {
+    it('returns a smaller love matrix', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.getLoveWithout(c)
+      expect(actual.length).toEqual(2)
+    })
+
+    it('maintains love values', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.getLoveWithout(c)
+      expect(actual[0][1]).toEqual(p.love[0][1])
+    })
+  })
+
   describe('avg', () => {
     it('returns an average', () => {
       const a = new Person()

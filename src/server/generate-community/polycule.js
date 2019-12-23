@@ -38,10 +38,23 @@ export default class Polycule {
    */
 
   remove (person) {
-    const remaining = this.people.filter(p => p !== person)
-    const tmp = new Polycule(...remaining)
-    this.people = tmp.people
-    this.love = tmp.love
+    const index = this.people.indexOf(person)
+    if (index > -1) {
+      const matrix = []
+      for (let i = 0; i < this.people.length; i++) {
+        if (i !== index) {
+          const row = []
+          for (let j = 0; j < this.people.length; j++) {
+            if (j !== index) {
+              row.push(this.love[i][j])
+            }
+          }
+          matrix.push(row)
+        }
+      }
+      this.love = matrix
+      this.people = this.people.filter(p => p !== person)
+    }
   }
 
   /**

@@ -72,19 +72,27 @@ describe('Polycule', () => {
       const c = new Person()
       const p = new Polycule(a, b, c)
       p.remove(c)
+      expect(p.people.length).toEqual(2)
+    })
 
-      const actual = [
-        p.people.length === 2,
-        p.love[0][0] === 1,
-        typeof p.love[0][1] === 'number',
-        p.love[0][2] === undefined,
-        typeof p.love[1][0] === 'number',
-        p.love[1][1] === 1,
-        p.love[1][2] === undefined,
-        p.love[2] === undefined,
-        p.love[0][1] === p.love[1][0]
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+    it('has a smaller love matrix', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const before = p.love.length
+      p.remove(c)
+      expect(p.love.length).toBeLessThan(before)
+    })
+
+    it('maintains love values', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const before = p.love[0][1]
+      p.remove(c)
+      expect(p.love[0][1]).toEqual(before)
     })
   })
 

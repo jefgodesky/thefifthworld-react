@@ -37,18 +37,11 @@ describe('Community', () => {
       expect(Object.keys(c.people).length).toEqual(1)
     })
 
-    it('returns the person\'s index', () => {
-      const p = new Person()
-      const c = new Community()
-      const index = c.add(p)
-      expect(index).toEqual('0')
-    })
-
-    it('assigns the person\'s community ID', () => {
+    it('assigns the person\'s community', () => {
       const p = new Person()
       const c = new Community()
       c.add(p)
-      expect(p.id).toEqual('0')
+      expect(p.community === c)
     })
   })
 

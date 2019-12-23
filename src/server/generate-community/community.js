@@ -52,18 +52,13 @@ export default class Community {
   /**
    * Adds a person to the community and returns that person's ID.
    * @param person {Person} - The person to add to the community.
-   * @returns {number|boolean} - The ID for the person added, or `false` if it
-   *   was not given a valid Person object.
    */
 
   add (person) {
     if (person && person.constructor.name === 'Person') {
       const index = `${Object.keys(this.people).length}`
       this.people[index] = person
-      person.id = index
-      return index
-    } else {
-      return false
+      person.community = this
     }
   }
 

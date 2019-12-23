@@ -132,7 +132,7 @@ describe('Polycule', () => {
         [ 50, null, 50 ],
         [ 50, 50, null ]
       ]
-      expect(p.avg()).toEqual(50)
+      expect(p.avg()).toEqual(150)
     })
 
     it('can calculate what it would be like without someone', () => {

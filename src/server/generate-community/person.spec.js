@@ -178,27 +178,4 @@ describe('Person', () => {
       expect(p.died)
     })
   })
-
-  describe('wantsPartner', () => {
-    it('determines if this person would like to find a partner', () => {
-      const p = new Person({ born: 1979 })
-      const actual = p.wantsPartner(false, 2019)
-      expect(typeof actual).toEqual('boolean')
-    })
-
-    it('always returns false for minors', () => {
-      const p = new Person({ born: 2006 })
-      const actual = p.wantsPartner(false, 2019)
-      expect(actual).toEqual(false)
-    })
-
-    it('always returns false for asexual people', () => {
-      const p = new Person({ born: 1979 })
-      p.sexuality.androphilia = 0
-      p.sexuality.gynephilia = 0
-      p.sexuality.skoliophilia = 0
-      const actual = p.wantsPartner(false, 2019)
-      expect(actual).toEqual(false)
-    })
-  })
 })

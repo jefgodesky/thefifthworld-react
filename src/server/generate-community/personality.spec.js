@@ -1,7 +1,6 @@
 /* global describe, it, expect */
 
 import Community from './community'
-import Pair from './pair'
 import Person from './person'
 import Personality from './personality'
 
@@ -67,7 +66,7 @@ describe('Personality', () => {
       const p = new Person()
       c.add(p)
       const before = sum(p.personality)
-      p.personality.change(c, Pair.getPartners(p.pairs, p.id))
+      p.personality.change(c)
       const after = sum(p.personality)
       expect(before).not.toEqual(after)
     })

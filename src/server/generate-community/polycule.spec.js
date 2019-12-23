@@ -132,10 +132,10 @@ describe('Polycule', () => {
         [ 50, null, 50 ],
         [ 50, 50, null ]
       ]
-      expect(p.avg()).toEqual(150)
+      expect(p.avg()).toEqual(50)
     })
 
-    it('can be given a matrix', () => {
+    it('can calculate what it would be like without someone', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
@@ -145,12 +145,14 @@ describe('Polycule', () => {
       a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
       a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
       const p = new Polycule(a, b, c)
-      const matrix = [
-        [ null, 50, 50 ],
+      p.love = [
+        [ null, 50, 10 ],
         [ 50, null, 50 ],
-        [ 50, 50, null ]
+        [ 10, 50, null ]
       ]
-      expect(p.avg(matrix)).toEqual(150)
+      const withC = p.avg()
+      const withoutC = p.avg(c)
+      expect(withoutC).toBeGreaterThan(withC)
     })
   })
 

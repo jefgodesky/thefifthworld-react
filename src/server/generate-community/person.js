@@ -114,8 +114,9 @@ export default class Person {
           const wantsPartner = this.wantsPartner(hasProblems, year)
           const willFindPartnerAgreeable = this.personality.check('agreeableness')
           const willFindPartnerExtraverted = this.personality.check('extraversion')
-          if (wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted)
+          if (wantsPartner && willFindPartnerAgreeable && willFindPartnerExtraverted) {
             partner = Pair.form(this, community, year)
+          }
         }
 
         if (!partner && age > 14) Skills.advance(this, community)

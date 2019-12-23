@@ -117,6 +117,40 @@ export default class Polycule {
   }
 
   /**
+   * Returns an object with information on hypotheticals of what the polycule
+   * would be like in each instance where one of the members were removed.
+   * @param threshold {number} - The threshold delta on the change to the
+   *   polycule's average love score to recommend removing someone.
+   *   (Default: `30`).
+   * @returns {{index: number, recommendation: boolean, deltas: []}} - An
+   *   object representing what possible future scenarios would be like. The
+   *   `deltas` property is an array of deltas, or how the polycule's average
+   *   love score would change if the person with the corresponding index
+   *   number were removed from it. The `index` property provides the index of
+   *   the person with the highest delta (i.e., the person whose removal would
+   *   raise the polycule's average love score by the highest amount). The
+   *   `recommendation` property is a boolean indicating whether or not that
+   *   person should be removed from the polycule, based on the threshold
+   *   provided (i.e., if removing this person would raise the polycule's
+   *   average love score by an amount greater than the threshold, then the
+   *   `recommendation` is `true`).
+   */
+
+  partnerDelta (threshold = 30) {
+    const curr = this.avg()
+    const deltas = []
+    this.people.forEach(person => {
+      deltas.push(this.avg(person) - curr)
+    })
+    const max = Math.max(...deltas)
+    return {
+      deltas,
+      index: deltas.indexOf(max),
+      recommendation: max > threshold
+    }
+  }
+
+  /**
    * Reevaluate the love in relationships based on current personality traits.
    */
 

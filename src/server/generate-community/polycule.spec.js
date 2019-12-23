@@ -188,6 +188,52 @@ describe('Polycule', () => {
     })
   })
 
+  describe('partnerDelta', () => {
+    it('returns a delta on how the polycule would change without each member', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.partnerDelta()
+      const { deltas } = actual
+      const test = `${typeof deltas[0]} ${typeof deltas[1]} ${typeof deltas[2]}`
+      expect(test).toEqual('number number number')
+    })
+
+    it('returns the index of the person whose removal would make the biggest improvement', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.partnerDelta()
+      const tests = [
+        typeof actual.index === 'number',
+        actual.index >= 0,
+        actual.index < p.people.length
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(tests)
+    })
+
+    it('provides a recommendation on whether or not to remove someone', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.partnerDelta()
+      expect(typeof actual.recommendation).toEqual('boolean')
+    })
+
+    it('takes a threshold for recommending removing someone', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.partnerDelta(20)
+      const expected = Math.max(...actual.deltas) > 20
+      expect(actual.recommendation).toEqual(expected)
+    })
+  })
+
   describe('reevaluate', () => {
     it('increases love scores when people grow closer', () => {
       const a = new Person()

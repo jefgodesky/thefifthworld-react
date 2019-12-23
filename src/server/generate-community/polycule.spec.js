@@ -124,6 +124,37 @@ describe('Polycule', () => {
     })
   })
 
+  describe('reevaluate', () => {
+    it('increases love scores when people grow closer', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      const before = p.love[0][1]
+      a.personality.openness.value = b.personality.openness.value
+      p.reevaluate()
+      expect(p.love[0][1]).toBeGreaterThan(before)
+    })
+
+    it('decreases love scores when people grow apart', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      const before = p.love[0][1]
+      a.personality.openness.value = 3
+      b.personality.openness.value = -3
+      p.reevaluate()
+      expect(p.love[0][1]).toBeLessThan(before)
+    })
+
+    it('maintains symmetry', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.reevaluate()
+      expect(p.love[0][1]).toEqual(p.love[1][0])
+    })
+  })
+
   describe('form', () => {
     it('can form a new polycule', () => {
       const c = new Community()

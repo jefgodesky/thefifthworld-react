@@ -72,6 +72,21 @@ export default class Polycule {
   }
 
   /**
+   * Reevaluate the love in relationships based on current personality traits.
+   */
+
+  reevaluate () {
+    for (let i = 0; i < this.people.length; i++) {
+      for (let j = 0; j < i; j++) {
+        const distance = this.people[i].personality.distance(this.people[j].personality)
+        const delta = distance > 7 ? -5 : 5
+        this.love[i][j] += delta
+        this.love[j][i] += delta
+      }
+    }
+  }
+
+  /**
    * Form a new polycule.
    * @param person {Person} - The person searching for a relationship.
    * @param community {Community} - The community that this person belongs to.

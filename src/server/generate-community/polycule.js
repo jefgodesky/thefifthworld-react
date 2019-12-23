@@ -1,7 +1,7 @@
 import random from 'random'
-import {between, get} from '../../shared/utils'
-import Person from "./person";
-import Community from "./community";
+import Community from './community'
+import Person from './person'
+import { get } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -18,7 +18,7 @@ export default class Polycule {
 
   add (person, love) {
     if (love) {
-      this.love.push([ ...love, 1 ])
+      this.love.push([ ...love, null ])
     } else {
       const arr = []
       for (let i = 0; i < this.people.length; i++) {
@@ -26,7 +26,7 @@ export default class Polycule {
         this.love[i] = [ ...this.love[i], score ]
         arr.push(score)
       }
-      this.love.push([ ...arr, 1 ])
+      this.love.push([ ...arr, null ])
     }
 
     this.people.push(person)
@@ -53,7 +53,9 @@ export default class Polycule {
     let sum = 0
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
-        sum += this.people[i].personality.distance(this.people[j].personality) + this.love[i][j]
+        const distance = this.people[i].personality.distance(this.people[j].personality)
+        const compatibility = ((7 - distance) / 7) * 100
+        sum += compatibility + this.love[i][j]
       }
     }
     return sum / this.people.length
@@ -94,7 +96,7 @@ export default class Polycule {
         })
         const dates = candidates.map(candidate => ({ candidate, polycule: new Polycule(person, candidate) }))
         dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
-        if (dates[0].polycule.avg() > 0.4) {
+        if (dates[0].polycule.avg() > 30) {
           const { candidate, polycule } = dates[0]
           community.add(candidate)
           polycule.commit()

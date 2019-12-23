@@ -77,11 +77,11 @@ describe('Polycule', () => {
         p.people.length === 2,
         p.love[0][0] === 1,
         typeof p.love[0][1] === 'number',
-        typeof p.love[0][2] === undefined,
+        p.love[0][2] === undefined,
         typeof p.love[1][0] === 'number',
         p.love[1][1] === 1,
-        typeof p.love[1][2] === undefined,
-        typeof p.love[2] === undefined,
+        p.love[1][2] === undefined,
+        p.love[2] === undefined,
         p.love[0][1] === p.love[1][0]
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
@@ -100,11 +100,11 @@ describe('Polycule', () => {
       a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
       const p = new Polycule(a, b, c)
       p.love = [
-        [ 1, 0.5, 0.5 ],
-        [ 0.5, 1, 0.5 ],
-        [ 0.5, 0.5, 1 ]
+        [ null, 50, 50 ],
+        [ 50, null, 50 ],
+        [ 50, 50, null ]
       ]
-      expect(p.avg()).toEqual(0.5)
+      expect(p.avg()).toEqual(150)
     })
   })
 
@@ -148,7 +148,7 @@ describe('Polycule', () => {
       p.sexuality.gynephilia = 1
       p.sexuality.skoliophilia = 1
       const rel = Polycule.form(p, c, 2019)
-      expect(rel === false || rel.avg() > 0.4)
+      expect(rel === false || rel.avg() > 30)
     })
 
     it('saves the polycule to each of the partners', () => {

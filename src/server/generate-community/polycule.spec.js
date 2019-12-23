@@ -263,6 +263,16 @@ describe('Polycule', () => {
       p.reevaluate()
       expect(p.love[0][1]).toEqual(p.love[1][0])
     })
+
+    it('might kick someone out', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const before = p.people.length
+      p.reevaluate()
+      expect(p.people.length).toBeLessThanOrEqual(before)
+    })
   })
 
   describe('form', () => {

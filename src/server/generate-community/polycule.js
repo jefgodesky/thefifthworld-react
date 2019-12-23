@@ -163,6 +163,16 @@ export default class Polycule {
         this.love[j][i] += delta
       }
     }
+
+    // Derive a threshold based on how agreeable everyone in the polycule is.
+    // If someone is pulling down the polycule's average love score by a number
+    // greater than that average agreeableness, then whoever is contributing
+    // the most to that state of affairs is removed.
+
+    const threshold = this.people.map(p => p.personality.chance('agreeableness') / 2)
+    const avgThreshold = threshold.reduce((acc, curr) => acc + curr, 0) / threshold.length
+    const evaluation = this.partnerDelta(avgThreshold)
+    if (evaluation.recommendation) this.remove(this.people[evaluation.index])
   }
 
   /**

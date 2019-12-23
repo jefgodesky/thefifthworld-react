@@ -40,7 +40,7 @@ export default class Polycule {
   remove (person) {
     if (this.people.includes(person)) {
       this.love = this.getLoveWithout(person)
-      this.people = this.people.file(p => p !== person)
+      this.people = this.people.filter(p => p !== person)
     }
   }
 

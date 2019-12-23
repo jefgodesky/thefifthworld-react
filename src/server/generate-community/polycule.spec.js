@@ -124,6 +124,22 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getPartners', () => {
+    it('returns the other members of the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getOthers(a)).toEqual([ b ])
+    })
+
+    it('returns everyone in the polycule if given someone not in it', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getOthers()).toEqual([ a, b ])
+    })
+  })
+
   describe('reevaluate', () => {
     it('increases love scores when people grow closer', () => {
       const a = new Person()

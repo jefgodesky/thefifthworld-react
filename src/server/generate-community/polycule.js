@@ -72,6 +72,19 @@ export default class Polycule {
   }
 
   /**
+   * Returns all of the members of the polycule other than `self`.
+   * @param self {Person} - The person to exclude (i.e., return the array of
+   *   self's partners, not counting self as her own partner).
+   * @returns {Person[]} - The people in the polycule, excluding `self`. If
+   *   `self` is not part of the polycule, this will equal the members of the
+   *   polycule.
+   */
+
+  getOthers (self) {
+    return this.people.filter(p => p !== self)
+  }
+
+  /**
    * Reevaluate the love in relationships based on current personality traits.
    */
 

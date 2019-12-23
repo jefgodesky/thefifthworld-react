@@ -46,16 +46,18 @@ export default class Polycule {
 
   /**
    * Returns an average for all of the love in the polycule.
+   * @param matrix {number[][]} - A two-dimensional matrix to use instead of
+   *   the polycule's love matrix. Defaults to the polycule's love matrix.
    * @returns {number} - The average love score in the polycule.
    */
 
-  avg () {
+  avg (matrix = this.love) {
     let sum = 0
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
         const distance = this.people[i].personality.distance(this.people[j].personality)
         const compatibility = ((7 - distance) / 7) * 100
-        sum += compatibility + this.love[i][j]
+        sum += compatibility + matrix[i][j]
       }
     }
     return sum / this.people.length

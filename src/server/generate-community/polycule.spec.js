@@ -106,6 +106,24 @@ describe('Polycule', () => {
       ]
       expect(p.avg()).toEqual(150)
     })
+
+    it('can be given a matrix', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      a.personality.openness.value = 0; b.personality.openness.value = 0; c.personality.openness.value = 0
+      a.personality.conscientiousness.value = 0; b.personality.conscientiousness.value = 0; c.personality.conscientiousness.value = 0
+      a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
+      a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
+      a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
+      const p = new Polycule(a, b, c)
+      const matrix = [
+        [ null, 50, 50 ],
+        [ 50, null, 50 ],
+        [ 50, 50, null ]
+      ]
+      expect(p.avg(matrix)).toEqual(150)
+    })
   })
 
   describe('commit', () => {

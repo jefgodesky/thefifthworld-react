@@ -86,6 +86,13 @@ describe('Person', () => {
     })
   })
 
+  describe('wantsMate', () => {
+    it('returns a boolean', () => {
+      const p = new Person({ born: 1979 })
+      expect(typeof p.wantsMate(2019)).toEqual('boolean')
+    })
+  })
+
   describe('die', () => {
     it('marks the character as dead', () => {
       const p = new Person()

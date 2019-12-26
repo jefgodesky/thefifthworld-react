@@ -4,6 +4,7 @@ import Body from './body'
 import Personality from './personality'
 import Sexuality from './sexuality'
 import Skills from './skills'
+import { between } from '../../shared/utils'
 
 export default class Person {
   constructor (args = {}) {
@@ -51,6 +52,45 @@ export default class Person {
       if (gender === 'Man') gender = 'Masculine man'
     }
     return gender
+  }
+
+  /**
+   * Does this person want a mate?
+   * @param year {number} - The year we're asking.
+   * @returns {boolean} - Returns `true` if this person would like to find a
+   *   mate, or `false` if not.
+   */
+
+  wantsMate (year) {
+    const age = this.body.getAge(year)
+    if (age) {
+      // Does the community expect her to find a mate?
+      const expectation = this.polycule
+        ? 0
+        : age < 25
+          ? between(100 - ((25 - age) * 15), 0, 100)
+          : between((50 - age) * 5, 0, 100)
+
+      // Will she comply with the community's wishes?
+      let willComply = random.int(1, 100) < expectation
+      if (willComply) {
+        const checkTimes = this.sexuality.isAsexual() ? 4 : 2
+        for (let c = 0; c < checkTimes; c++) willComply = willComply && this.personality.check('agreeableness')
+      }
+      const pressure = willComply ? expectation / 4 : 0
+
+      // Is she sexually satisfied? How much does that matter to her?
+      const sex = this.polycule ? this.polycule.getSexualSatisfaction(this) : 0
+      const desire = (this.sexuality.libido - sex) / 2
+
+      // Is she lonely?
+      const love = this.polycule ? this.polycule.avg() : 0
+      const outgoing = this.personality.chance('extraversion')
+      const needy = this.personality.chance('neuroticism')
+      const loneliness = between(needy - outgoing - love, 0, 100)
+
+      return random.int(1, 100) < pressure + desire + loneliness
+    }
   }
 
   /**

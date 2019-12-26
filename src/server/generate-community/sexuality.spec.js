@@ -11,6 +11,12 @@ describe('Sexuality', () => {
       expect(s.androphilia).toBeGreaterThanOrEqual(0)
     })
 
+    it('assigns a libido score', () => {
+      const b = new Body()
+      const s = new Sexuality(b)
+      expect(s.libido).toBeGreaterThanOrEqual(0)
+    })
+
     it('assigns a gynephilia score', () => {
       const b = new Body()
       const s = new Sexuality(b)
@@ -28,6 +34,7 @@ describe('Sexuality', () => {
     it('returns true if the person is asexual', () => {
       const b = new Body()
       const s = new Sexuality(b)
+      s.libido = 0
       s.androphilia = 0
       s.gynephilia = 0
       s.skoliophilia = 0

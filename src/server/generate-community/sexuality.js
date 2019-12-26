@@ -4,7 +4,8 @@ import { pickRandom } from './shuffle'
 
 export default class Sexuality {
   constructor (body, mateFor) {
-    if (!mateFor && random.int(1, 100) === 100) {
+    this.libido = random.int(0, 99)
+    if (this.libido === 0) {
       this.androphilia = 0
       this.gynephilia = 0
       this.skoliophilia = 0
@@ -64,9 +65,7 @@ export default class Sexuality {
    */
 
   isAsexual () {
-    const { androphilia, gynephilia, skoliophilia } = this
-    const total = androphilia + gynephilia + skoliophilia
-    return total === 0
+    return this.libido === 0
   }
 
   /**

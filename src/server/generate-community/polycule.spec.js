@@ -110,17 +110,20 @@ describe('Polycule', () => {
   })
 
   describe('getSexualSatisfaction', () => {
-    it('returns sexual satisfaction', () => {
+    it('returns your compatibility with the most libidinous other polycule member', () => {
       const a = new Person()
       const b = new Person()
-      a.sexuality.libido = 90
-      b.sexuality.libido = 80
-      const p = new Polycule(a, b)
+      const c = new Person()
+      a.sexuality.libido = 50
+      b.sexuality.libido = 50
+      c.sexuality.libido = 100
+      const p = new Polycule(a, b, c)
       const actual = [
         p.getSexualSatisfaction(a),
-        p.getSexualSatisfaction(b)
+        p.getSexualSatisfaction(b),
+        p.getSexualSatisfaction(c)
       ]
-      const expected = [ 90, 100 ]
+      const expected = [ 100, 100, 50 ]
       expect(actual).toEqual(expected)
     })
 
@@ -354,6 +357,21 @@ describe('Polycule', () => {
           rel.people[1].polycule === rel
         ]
       expect(actual.reduce((acc, curr) => acc && curr, true))
+    })
+  })
+
+  describe('getSexualCompatibility', () => {
+    it('returns sexual compatibility', () => {
+      const a = new Person()
+      const b = new Person()
+      a.sexuality.libido = 90
+      b.sexuality.libido = 80
+      const actual = [
+        Polycule.getSexualCompatibility(a, b),
+        Polycule.getSexualCompatibility(b, a)
+      ]
+      const expected = [ 90, 100 ]
+      expect(actual).toEqual(expected)
     })
   })
 })

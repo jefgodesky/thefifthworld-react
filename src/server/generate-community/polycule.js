@@ -64,9 +64,8 @@ export default class Polycule {
   getSexualSatisfaction (person) {
     if (this.people.includes(person)) {
       const others = this.getOthers(person)
-      const libidos = others.map(p => p.sexuality.libido)
-      const maxPartner = Math.max(...libidos)
-      return between(100 - (person.sexuality.libido - maxPartner), 0, 100)
+      others.sort((a, b) => b.sexuality.libido - a.sexuality.libido)
+      return Polycule.getSexualCompatibility(person, others[0])
     } else {
       return false
     }
@@ -237,5 +236,20 @@ export default class Polycule {
       }
     }
     return false
+  }
+
+  /**
+   * Reports how well one person satisfied another in a sexual relationship.
+   * @param a {Person} - The person whose satisfaction we're currently
+   *   asking about.
+   * @param b {Person} - The person whose ability to satisfy the first person
+   *   we're currently asking about.
+   * @returns {number} - A number expressing the two people's sexual
+   *   compatibility. A score of 100 means that they b will completely satisfy
+   *   a, whereas a score of 0 means that b will completely frustrate a.
+   */
+
+  static getSexualCompatibility (a, b) {
+    return between(100 - (a.sexuality.libido - b.sexuality.libido), 0, 100)
   }
 }

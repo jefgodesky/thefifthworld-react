@@ -1,7 +1,7 @@
 import random from 'random'
 import Community from './community'
 import Person from './person'
-import { get } from '../../shared/utils'
+import { get, between } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -47,6 +47,28 @@ export default class Polycule {
         this.people[0].polycule = undefined
         delete this
       }
+    }
+  }
+
+  /**
+   * Returns the sexual satisfaction of a single polycule member with her
+   * present situation.
+   * @param person {Person} - The Person to test.
+   * @returns {boolean|number} - If the person given is a member of the
+   *   polycule, it returns a number between 0 and 100 indicating her sexual
+   *   satisfaction. A score of 100 indicates perfect satisfaction, while a
+   *   score of 0 indicates perfect frustration. Returns `false` if the person
+   *   is not in the polycule.
+   */
+
+  getSexualSatisfaction (person) {
+    if (this.people.includes(person)) {
+      const others = this.getOthers(person)
+      const libidos = others.map(p => p.sexuality.libido)
+      const maxPartner = Math.max(...libidos)
+      return between(100 - (person.sexuality.libido - maxPartner), 0, 100)
+    } else {
+      return false
     }
   }
 

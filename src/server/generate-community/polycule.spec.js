@@ -109,6 +109,30 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getSexualSatisfaction', () => {
+    it('returns sexual satisfaction', () => {
+      const a = new Person()
+      const b = new Person()
+      a.sexuality.libido = 90
+      b.sexuality.libido = 80
+      const p = new Polycule(a, b)
+      const actual = [
+        p.getSexualSatisfaction(a),
+        p.getSexualSatisfaction(b)
+      ]
+      const expected = [ 90, 100 ]
+      expect(actual).toEqual(expected)
+    })
+
+    it('returns false is asked about someone not in the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getSexualSatisfaction(c)).toEqual(false)
+    })
+  })
+
   describe('getLoveWithout', () => {
     it('returns a smaller love matrix', () => {
       const a = new Person()

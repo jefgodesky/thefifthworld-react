@@ -19,19 +19,19 @@ export default class Polycule {
     const arr = []
     for (let i = 0; i < this.people.length; i++) {
       // How much does the new person love this person?
-      const sexMattersToNewPerson = person.sexuality.libido / 2
+      const sexMattersToNewPerson = person.sexuality.libido / 200
       const newPersonHeartWants = random.int(1, 100) * (1 - sexMattersToNewPerson)
       const newPersonWithThis = Polycule.getSexualCompatibility(person, this.people[i]) * sexMattersToNewPerson
       const newPersonLove = newPersonHeartWants + newPersonWithThis
 
       // How much does this person love the new person?
-      const sexMattersToThisPerson = this.people[i].sexuality.libido / 2
+      const sexMattersToThisPerson = this.people[i].sexuality.libido / 200
       const thisPersonHeartWants = random.int(1, 100) * (1 - sexMattersToThisPerson)
       const thisPersonWithNew = Polycule.getSexualCompatibility(this.people[i], person)
       const thisPersonLove = thisPersonHeartWants + thisPersonWithNew
 
       // Take the average
-      const score = (newPersonLove + thisPersonLove) / 2
+      const score = (newPersonLove + thisPersonLove) / 4
       this.love[i] = [ ...this.love[i], score ]
       arr.push(score)
     }
@@ -193,9 +193,9 @@ export default class Polycule {
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
         const distance = 7 - this.people[i].personality.distance(this.people[j].personality)
-        const sexFactorI = (this.people[i].sexuality.libido / 100) * 5
+        const sexFactorI = (this.people[i].sexuality.libido / 100) * 2
         const sexIJ = ((Polycule.getSexualCompatibility(this.people[i], this.people[j]) / 50) - 1) * sexFactorI
-        const sexFactorJ = (this.people[j].sexuality.libido / 100) * 5
+        const sexFactorJ = (this.people[j].sexuality.libido / 100) * 2
         const sexJI = ((Polycule.getSexualCompatibility(this.people[j], this.people[i]) / 50) - 1) * sexFactorJ
         const delta = distance + sexIJ + sexJI
         this.love[i][j] += delta

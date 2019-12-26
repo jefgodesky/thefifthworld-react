@@ -290,6 +290,8 @@ describe('Polycule', () => {
       const b = new Person()
       const p = new Polycule(a, b)
       const before = p.love[0][1]
+      a.sexuality.libido = 50
+      b.sexuality.libido = 50
       a.personality.openness.value = 3
       b.personality.openness.value = -3
       p.change()

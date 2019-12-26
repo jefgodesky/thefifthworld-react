@@ -13,21 +13,16 @@ export default class Polycule {
   /**
    * Add a person to the polycule.
    * @param person {Person} - The Person to add to the polycule.
-   * @param love {number[]} - An array of love scores to use.
    */
 
-  add (person, love) {
-    if (love) {
-      this.love.push([ ...love, null ])
-    } else {
-      const arr = []
-      for (let i = 0; i < this.people.length; i++) {
-        const score = random.int(0, 50)
-        this.love[i] = [ ...this.love[i], score ]
-        arr.push(score)
-      }
-      this.love.push([ ...arr, null ])
+  add (person) {
+    const arr = []
+    for (let i = 0; i < this.people.length; i++) {
+      const score = random.int(0, 50)
+      this.love[i] = [ ...this.love[i], score ]
+      arr.push(score)
     }
+    this.love.push([ ...arr, null ])
 
     this.people.push(person)
   }

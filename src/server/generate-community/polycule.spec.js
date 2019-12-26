@@ -94,6 +94,19 @@ describe('Polycule', () => {
       p.remove(c)
       expect(p.love[0][1]).toEqual(before)
     })
+
+    it('deletes itself if only one person remains', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b)
+      const actual = [
+        a.polycule === undefined,
+        b.polycule === undefined,
+        p === undefined
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
   })
 
   describe('getLoveWithout', () => {

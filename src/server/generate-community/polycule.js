@@ -42,6 +42,11 @@ export default class Polycule {
       this.love = this.getLoveWithout(person)
       this.people = this.people.filter(p => p !== person)
       person.polycule = undefined
+
+      if (this.people.length === 1) {
+        this.people[0].polycule = undefined
+        delete this
+      }
     }
   }
 

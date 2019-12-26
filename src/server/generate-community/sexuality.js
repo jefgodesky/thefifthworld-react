@@ -58,6 +58,18 @@ export default class Sexuality {
   }
 
   /**
+   * Reports if this person is asexual.
+   * @returns {boolean} - Returns `true` if this person is asexual, or `false`
+   *   if she isn't.
+   */
+
+  isAsexual () {
+    const { androphilia, gynephilia, skoliophilia } = this
+    const total = androphilia + gynephilia + skoliophilia
+    return total === 0
+  }
+
+  /**
    * Returns an array of strings representing the spread of genders that this
    * character might from a relationship with, based on her sexuality.
    * @param genders {number} - (Optional) The number of genders recognized by

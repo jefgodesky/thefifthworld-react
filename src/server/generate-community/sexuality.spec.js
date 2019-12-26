@@ -24,6 +24,26 @@ describe('Sexuality', () => {
     })
   })
 
+  describe('isAsexual', () => {
+    it('returns true if the person is asexual', () => {
+      const b = new Body()
+      const s = new Sexuality(b)
+      s.androphilia = 0
+      s.gynephilia = 0
+      s.skoliophilia = 0
+      expect(s.isAsexual()).toEqual(true)
+    })
+
+    it('returns false if the person is not asexual', () => {
+      const b = new Body()
+      const s = new Sexuality(b)
+      s.androphilia = 0
+      s.gynephilia = 1
+      s.skoliophilia = 0
+      expect(s.isAsexual()).toEqual(false)
+    })
+  })
+
   describe('getGenderPreferences', () => {
     it('returns an array of genders for a two-gender society', () => {
       const valid = [ 'Woman', 'Man' ]

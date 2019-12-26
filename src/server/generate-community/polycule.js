@@ -192,8 +192,12 @@ export default class Polycule {
   change () {
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
-        const distance = this.people[i].personality.distance(this.people[j].personality)
-        const delta = distance > 7 ? -5 : 5
+        const distance = 7 - this.people[i].personality.distance(this.people[j].personality)
+        const sexFactorI = (this.people[i].sexuality.libido / 100) * 5
+        const sexIJ = ((Polycule.getSexualCompatibility(this.people[i], this.people[j]) / 50) - 1) * sexFactorI
+        const sexFactorJ = (this.people[j].sexuality.libido / 100) * 5
+        const sexJI = ((Polycule.getSexualCompatibility(this.people[j], this.people[i]) / 50) - 1) * sexFactorJ
+        const delta = distance + sexIJ + sexJI
         this.love[i][j] += delta
         this.love[j][i] += delta
       }

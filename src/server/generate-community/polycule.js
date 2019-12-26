@@ -160,7 +160,7 @@ export default class Polycule {
    * Reevaluate the love in relationships based on current personality traits.
    */
 
-  reevaluate () {
+  change () {
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
         const distance = this.people[i].personality.distance(this.people[j].personality)

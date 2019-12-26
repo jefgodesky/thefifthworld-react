@@ -247,14 +247,14 @@ describe('Polycule', () => {
     })
   })
 
-  describe('reevaluate', () => {
+  describe('change', () => {
     it('increases love scores when people grow closer', () => {
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a, b)
       const before = p.love[0][1]
       a.personality.openness.value = b.personality.openness.value
-      p.reevaluate()
+      p.change()
       expect(p.love[0][1]).toBeGreaterThan(before)
     })
 
@@ -265,7 +265,7 @@ describe('Polycule', () => {
       const before = p.love[0][1]
       a.personality.openness.value = 3
       b.personality.openness.value = -3
-      p.reevaluate()
+      p.change()
       expect(p.love[0][1]).toBeLessThan(before)
     })
 
@@ -273,7 +273,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a, b)
-      p.reevaluate()
+      p.change()
       expect(p.love[0][1]).toEqual(p.love[1][0])
     })
 
@@ -283,7 +283,7 @@ describe('Polycule', () => {
       const c = new Person()
       const p = new Polycule(a, b, c)
       const before = p.people.length
-      p.reevaluate()
+      p.change()
       expect(p.people.length).toBeLessThanOrEqual(before)
     })
   })

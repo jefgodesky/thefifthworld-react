@@ -80,6 +80,20 @@ describe('Body', () => {
       expect(b.fertility).toEqual(0)
     })
 
+    it('determines if this person is a psychopath', () => {
+      const ppl = []
+      for (let i = 0; i < 1000; i++) {
+        const b = new Body()
+        ppl.push(b)
+      }
+      const psychopaths = ppl.filter(p => p.psychopath)
+      const actual = [
+        psychopaths.length > 0,
+        psychopaths.length < 20
+      ].reduce((acc, curr) => acc && curr, 0)
+      expect(actual)
+    })
+
     it('can record scars', () => {
       const b = new Body()
       const { scars } = b

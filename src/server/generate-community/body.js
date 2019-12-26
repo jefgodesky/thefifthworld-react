@@ -54,6 +54,7 @@ export default class Body {
     this.hasPenis = false
     this.hasWomb = true
     this.fertility = 0
+    this.psychopath = random.int(1, 100) === 1
     this.scars = []
 
     if (random.int(1, 10) === 1) this.makeInfertile()
@@ -171,6 +172,13 @@ export default class Body {
             baby.legs.left = 'Disabled'
             baby.legs.right = 'Disabled'
           }
+
+          // Psychopathy is heritable. We're modeling that here with a very
+          // basic 2x2 Punnett square.
+
+          const psychopathyFromMother = mother.psychopath && random.boolean()
+          const psychopathyFromFather = father.psychopath && random.boolean()
+          this.psychopath = psychopathyFromMother || psychopathyFromFather
 
           // Achondroplasia pops up unexpectedly very randomly, but it is genetic,
           // so if one or both of your parents have it, we need to calculate the odds

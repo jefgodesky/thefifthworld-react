@@ -44,12 +44,6 @@ describe('Person', () => {
       const p = new Person()
       expect(typeof p.neurodivergent).toEqual('boolean')
     })
-
-    it('determines psychopathy', () => {
-      const options = [ null, 1 ]
-      const p = new Person()
-      expect(options.includes(p.psychopath))
-    })
   })
 
   describe('assignGender', () => {
@@ -89,49 +83,6 @@ describe('Person', () => {
       p.gender = null
       p.assignGender(2)
       expect(genders.includes(p.gender))
-    })
-  })
-
-  describe('makePsychopath', () => {
-    it('tracks the severity of the psychopath\'s behavior', () => {
-      const p = new Person()
-      p.makePsychopath()
-      expect(p.psychopath).toEqual(1)
-    })
-
-    it('does nothing if you\'re already a psychopath', () => {
-      const p = new Person()
-      p.makePsychopath()
-      const before = [
-        p.personality.openness.value,
-        p.personality.conscientiousness.value,
-        p.personality.extraversion.value,
-        p.personality.agreeableness.value,
-        p.personality.neuroticism.value
-      ]
-      p.makePsychopath()
-      const after = [
-        p.personality.openness.value,
-        p.personality.conscientiousness.value,
-        p.personality.extraversion.value,
-        p.personality.agreeableness.value,
-        p.personality.neuroticism.value
-      ]
-      expect(before).toEqual(after)
-    })
-
-    it('adjusts personality traits', () => {
-      const p = new Person()
-      p.personality.openness.value = 0
-      p.personality.conscientiousness.value = 0
-      p.personality.extraversion.value = 0
-      p.personality.agreeableness.value = 0
-      p.personality.neuroticism.value = 0
-      p.makePsychopath()
-      const { openness, conscientiousness, extraversion, agreeableness, neuroticism } = p.personality
-      const actual = [ openness.value, conscientiousness.value, extraversion.value, agreeableness.value, neuroticism.value ]
-      const expected = [ 1, -2, 1, -2, 2 ]
-      expect(actual).toEqual(expected)
     })
   })
 

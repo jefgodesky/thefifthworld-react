@@ -13,6 +13,18 @@ export default class Personality {
   }
 
   /**
+   * Adjust personality traits to express psychopathy.
+   */
+
+  expressPsychopathy () {
+    this.openness.value += 1
+    this.conscientiousness.value -= 2
+    this.extraversion.value += 1
+    this.agreeableness.value -= 2
+    this.neuroticism.value += 2
+  }
+
+  /**
    * Returns the sum of the distances between each of the Big Five personality
    * traits.
    * @param other {Personality} - The personality to compare to.

@@ -20,6 +20,43 @@ describe('Personality', () => {
     })
   })
 
+  describe('expressPsychopathy', () => {
+    it('increases openness to experience', () => {
+      const p = new Personality()
+      const before = p.openness.value
+      p.expressPsychopathy()
+      expect(before).toBeLessThan(p.openness.value)
+    })
+
+    it('decreases conscientiousness', () => {
+      const p = new Personality()
+      const before = p.conscientiousness.value
+      p.expressPsychopathy()
+      expect(before).toBeGreaterThan(p.conscientiousness.value)
+    })
+
+    it('increases extraversion', () => {
+      const p = new Personality()
+      const before = p.extraversion.value
+      p.expressPsychopathy()
+      expect(before).toBeLessThan(p.extraversion.value)
+    })
+
+    it('decreases agreeableness', () => {
+      const p = new Personality()
+      const before = p.agreeableness.value
+      p.expressPsychopathy()
+      expect(before).toBeGreaterThan(p.agreeableness.value)
+    })
+
+    it('increases neuroticism', () => {
+      const p = new Personality()
+      const before = p.neuroticism.value
+      p.expressPsychopathy()
+      expect(before).toBeLessThan(p.neuroticism.value)
+    })
+  })
+
   describe('distance', () => {
     it('returns the sum of all traits distances', () => {
       const a = new Personality()

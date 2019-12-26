@@ -23,8 +23,7 @@ export default class Person {
     const randomDistributed = random.normal(0, 1)
     this.intelligence = randomDistributed()
     this.neurodivergent = random.int(1, 100) === 1
-    this.psychopath = null
-    if (random.int(1, 100) === 1) this.makePsychopath()
+    if (this.body.psychopath) this.personality.expressPsychopathy()
 
     this.history = []
   }
@@ -52,22 +51,6 @@ export default class Person {
       if (gender === 'Man') gender = 'Masculine man'
     }
     return gender
-  }
-
-  /**
-   * This person is a psychopath. Mark as such and make necessary adjustments
-   * to personality scores.
-   */
-
-  makePsychopath () {
-    if (this.psychopath === null) {
-      this.psychopath = 1
-      this.personality.openness.value += 1
-      this.personality.conscientiousness.value -= 2
-      this.personality.extraversion.value += 1
-      this.personality.agreeableness.value -= 2
-      this.personality.neuroticism.value += 2
-    }
   }
 
   /**

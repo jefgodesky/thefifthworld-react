@@ -36,6 +36,45 @@ describe('Polycule', () => {
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
     })
+
+    it('can create a theoretical polycule of one', () => {
+      const a = new Person()
+      const p = new Polycule(a)
+      const actual = [
+        p.people === [ a ],
+        p.love === [ [ null ] ]
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+  })
+
+  describe('findNewPartner', () => {
+    it('won\'t return a partner who won\'t fit in well enough', () => {
+      const c = new Community()
+      const p = new Person()
+      p.body.born = 1979
+      p.sexuality.androphilia = 1
+      p.sexuality.gynephilia = 1
+      p.sexuality.skoliophilia = 1
+      const poly = new Polycule(p)
+      poly.findNewPartner(c, 2019)
+      expect(poly.avg() === null || poly.avg() > 30)
+    })
+
+    it('saves the polycule to each of the partners', () => {
+      const c = new Community()
+      const p = new Person()
+      p.body.born = 1979
+      p.sexuality.androphilia = 1
+      p.sexuality.gynephilia = 1
+      p.sexuality.skoliophilia = 1
+      const poly = new Polycule(p)
+      poly.findNewPartner(c, 2019)
+      const t1 = poly.avg() === null || poly.avg() > 30
+      const t2 = poly.people[0].polycule === poly
+      const t3 = poly.people.length > 1 ? poly.people[1].polycule === poly : true
+      expect(t1 && t2 && t3)
+    })
   })
 
   describe('add', () => {
@@ -194,6 +233,12 @@ describe('Polycule', () => {
       const withoutC = p.avg(c)
       expect(withoutC).toBeGreaterThan(withC)
     })
+
+    it('returns null if there\'s only one person', () => {
+      const p = new Person()
+      const poly = new Polycule(p)
+      expect(poly.avg()).toEqual(null)
+    })
   })
 
   describe('commit', () => {
@@ -285,19 +330,6 @@ describe('Polycule', () => {
       expect(p.love[0][1]).toBeGreaterThan(before)
     })
 
-    it('decreases love scores when people grow apart', () => {
-      const a = new Person()
-      const b = new Person()
-      const p = new Polycule(a, b)
-      const before = p.love[0][1]
-      a.sexuality.libido = 50
-      b.sexuality.libido = 50
-      a.personality.openness.value = 3
-      b.personality.openness.value = -3
-      p.change()
-      expect(p.love[0][1]).toBeLessThan(before)
-    })
-
     it('maintains symmetry', () => {
       const a = new Person()
       const b = new Person()
@@ -314,51 +346,6 @@ describe('Polycule', () => {
       const before = p.people.length
       p.change()
       expect(p.people.length).toBeLessThanOrEqual(before)
-    })
-  })
-
-  describe('form', () => {
-    it('can form a new polycule', () => {
-      const c = new Community()
-      const p = new Person()
-      p.body.born = 1979
-      p.sexuality.androphilia = 1
-      p.sexuality.gynephilia = 1
-      p.sexuality.skoliophilia = 1
-      let successes = 0
-      for (let i = 0; i < 10; i++) {
-        const poly = Polycule.form(p, c, 2019)
-        if (poly) successes++
-      }
-      expect(successes).toBeGreaterThanOrEqual(0)
-    })
-
-    it('won\'t return a relationship of insufficient qualtiy', () => {
-      const c = new Community()
-      const p = new Person()
-      p.body.born = 1979
-      p.sexuality.androphilia = 1
-      p.sexuality.gynephilia = 1
-      p.sexuality.skoliophilia = 1
-      const rel = Polycule.form(p, c, 2019)
-      expect(rel === false || rel.avg() > 30)
-    })
-
-    it('saves the polycule to each of the partners', () => {
-      const c = new Community()
-      const p = new Person()
-      p.body.born = 1979
-      p.sexuality.androphilia = 1
-      p.sexuality.gynephilia = 1
-      p.sexuality.skoliophilia = 1
-      const rel = Polycule.form(p, c, 2019)
-      const actual = rel === false
-        ? [ true ]
-        : [
-          rel.people[0].polycule === rel,
-          rel.people[1].polycule === rel
-        ]
-      expect(actual.reduce((acc, curr) => acc && curr, true))
     })
   })
 

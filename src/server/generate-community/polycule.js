@@ -11,6 +11,50 @@ export default class Polycule {
   }
 
   /**
+   * Finds a new partner to join the polycule.
+   * @param community {Community} - The Community object.
+   * @param year {number} - The year when the new partner is added to the
+   *   polycule.
+   */
+
+  findNewPartner (community, year) {
+    const ages = this.people.map(p => p.body.getAge())
+    const avgAge = ages.reduce((acc, curr) => acc + curr, 0) / this.people.length
+    if (typeof avgAge === 'number' && avgAge > 15) {
+      // First we get an array of the genders that the members of the polycule
+      // would be interested in. This is the union of the set of preferences
+      // from each member.
+      const numGenders = get(community, 'traditions.genders') || 3
+      let genders = []
+      this.people.forEach(p => {
+        const meet = Math.ceil(p.personality.chance('extraversion') / 10)
+        const pref = p.sexuality.getGenderPreferences(numGenders, meet)
+        genders = [ ...genders, ...pref ]
+      })
+
+      // If we have preferences, we can create some candidates.
+      if (genders.length > 0) {
+        const candidates = genders.map(gender => {
+          const gap = Math.floor((avgAge / 2) - 7)
+          const candidateBorn = year - random.int(avgAge - gap, avgAge + gap)
+          const candidate = new Person({ born: candidateBorn, gender })
+          const defaultCommunity = new Community()
+          for (let y = candidateBorn; y < year; y++) candidate.age(defaultCommunity, y, true)
+          return candidate
+        })
+        const dates = candidates.map(candidate => ({ candidate, polycule: new Polycule(candidate, ...this.people) }))
+        dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
+        if (dates[0].polycule.avg() > 30) {
+          const { candidate } = dates[0]
+          community.add(candidate)
+          this.add(candidate)
+          this.commit()
+        }
+      }
+    }
+  }
+
+  /**
    * Add a person to the polycule.
    * @param person {Person} - The Person to add to the polycule.
    */
@@ -125,7 +169,7 @@ export default class Polycule {
       }
     }
     const connections = (people.length * (people.length - 1)) / 2
-    return sum / connections
+    return connections === 0 ? null : sum / connections
   }
 
   /**
@@ -212,42 +256,6 @@ export default class Polycule {
     const avgThreshold = threshold.reduce((acc, curr) => acc + curr, 0) / threshold.length
     const evaluation = this.partnerDelta(avgThreshold)
     if (evaluation.recommendation) this.remove(this.people[evaluation.index])
-  }
-
-  /**
-   * Form a new polycule.
-   * @param person {Person} - The person searching for a relationship.
-   * @param community {Community} - The community that this person belongs to.
-   * @param year {number} - The year in which this person forms this
-   *   relationship.
-   */
-
-  static form (person, community, year) {
-    const age = person.body.getAge(year)
-    if (age && age > 15) {
-      const numGenders = get(community, 'traditions.genders') || 3
-      const meet = Math.ceil(person.personality.chance('extraversion') / 10)
-      const genders = person.sexuality.getGenderPreferences(numGenders, meet)
-      if (genders.length > 0) {
-        const candidates = genders.map(gender => {
-          const gap = Math.floor((age / 2) - 7)
-          const candidateBorn = year - random.int(age - gap, age + gap)
-          const candidate = new Person({ born: candidateBorn, gender })
-          const defaultCommunity = new Community()
-          for (let y = candidateBorn; y < year; y++) candidate.age(defaultCommunity, y, true)
-          return candidate
-        })
-        const dates = candidates.map(candidate => ({ candidate, polycule: new Polycule(person, candidate) }))
-        dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
-        if (dates[0].polycule.avg() > 30) {
-          const { candidate, polycule } = dates[0]
-          community.add(candidate)
-          polycule.commit()
-          return polycule
-        }
-      }
-    }
-    return false
   }
 
   /**

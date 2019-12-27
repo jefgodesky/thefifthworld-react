@@ -7,6 +7,7 @@ export default class Polycule {
   constructor (...people) {
     this.people = []
     this.love = []
+    this.children = []
     for (let i = 0; i < people.length; i++) this.add(people[i])
   }
 
@@ -231,9 +232,11 @@ export default class Polycule {
 
   /**
    * Reevaluate the love in relationships based on current personality traits.
+   * @param community {Community} - The Community object.
+   * @param year {number} - The year in which the polycule is changing.
    */
 
-  change () {
+  change (community, year) {
     for (let i = 0; i < this.people.length; i++) {
       for (let j = 0; j < i; j++) {
         const distance = 7 - this.people[i].personality.distance(this.people[j].personality)
@@ -250,12 +253,30 @@ export default class Polycule {
     // Derive a threshold based on how agreeable everyone in the polycule is.
     // If someone is pulling down the polycule's average love score by a number
     // greater than that average agreeableness, then whoever is contributing
-    // the most to that state of affairs is removed.
+    // the most to that state of affairs is removed. If not, consider expanding
+    // the polycule instead.
 
     const threshold = this.people.map(p => p.personality.chance('agreeableness') / 2)
     const avgThreshold = threshold.reduce((acc, curr) => acc + curr, 0) / threshold.length
     const evaluation = this.partnerDelta(avgThreshold)
-    if (evaluation.recommendation) this.remove(this.people[evaluation.index])
+    if (evaluation.recommendation) {
+      // There's one member of the polycule whose removal would make everyone
+      // happier. Someone's getting dumped.
+      this.remove(this.people[evaluation.index])
+    } else {
+      // If no one's getting dumped, is it possible that we want to add
+      // a new member?
+      const agreed = this.people.map(p => p.wantsMate(year)).reduce((acc, curr) => acc && curr, true)
+      if (agreed) {
+        const recruitment = this.people.map(p => {
+          const c1 = p.personality.check('extraversion')
+          const c2 = p.personality.check('extraversion')
+          const c3 = p.personality.check('extraversion')
+          return c1 && c2 && c3
+        }).reduce((acc, curr) => acc || curr, false)
+        if (recruitment) this.findNewPartner(community, year)
+      }
+    }
   }
 
   /**

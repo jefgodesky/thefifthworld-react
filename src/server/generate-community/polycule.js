@@ -231,6 +231,33 @@ export default class Polycule {
   }
 
   /**
+   * Determines if the people in the polycule would like to have a child.
+   * @param community {Community} - The Community object.
+   * @param year {number} - The year in which they're making this decision.
+   * @returns {boolean} - Returns `true` if the polycule decides to try to have
+   *   a child, or `false` if they decide not to.
+   */
+
+  wantChild (community, year) {
+    const potentialFathers = this.people.filter(p => p.body.isFertile('Male'))
+    const potentialMothers = this.people.filter(p => p.body.isFertile('Female'))
+    if (potentialFathers.length > 0 && potentialMothers.length > 0) {
+      // The more open to experience you are, the fewer years of peace you
+      // need to convince you to have a child, and each member of the polycule
+      // needs to agree, so we can just look at the least open person in it.
+      const recent = community.getRecentHistory(10)
+      const openness = this.people.map(p => p.personality.chance('openness'))
+      const leastOpen = Math.min(...openness)
+      const peaceNeeded = Math.ceil((100 - leastOpen) / 10)
+      return recent
+        .slice(0, peaceNeeded)
+        .map(y => !y.lean && !y.conflict && !y.sick)
+        .reduce((acc, curr) => acc && curr, true)
+    }
+    return false
+  }
+
+  /**
    * Reevaluate the love in relationships based on current personality traits.
    * @param community {Community} - The Community object.
    * @param year {number} - The year in which the polycule is changing.

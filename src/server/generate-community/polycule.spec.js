@@ -319,6 +319,20 @@ describe('Polycule', () => {
     })
   })
 
+  describe('wantChild', () => {
+    it('returns a boolean', () => {
+      const m = new Community()
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      a.body.adjustFertility(false, 25)
+      b.body.adjustFertility(false, 25)
+      c.body.adjustFertility(false, 25)
+      const p = new Polycule(a, b, c)
+      expect(typeof p.wantChild(m, 2019)).toEqual('boolean')
+    })
+  })
+
   describe('change', () => {
     it('increases love scores when people grow closer', () => {
       const a = new Person()

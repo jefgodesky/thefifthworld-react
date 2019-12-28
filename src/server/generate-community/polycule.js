@@ -316,17 +316,22 @@ export default class Polycule {
       // happier. Someone's getting dumped.
       this.remove(this.people[evaluation.index])
     } else {
-      // If no one's getting dumped, is it possible that we want to add
-      // a new member?
-      const agreed = this.people.map(p => p.wantsMate(year)).reduce((acc, curr) => acc && curr, true)
-      if (agreed) {
-        const recruitment = this.people.map(p => {
-          const c1 = p.personality.check('extraversion')
-          const c2 = p.personality.check('extraversion')
-          const c3 = p.personality.check('extraversion')
-          return c1 && c2 && c3
-        }).reduce((acc, curr) => acc || curr, false)
-        if (recruitment) this.findNewPartner(community, year)
+      // If no one's getting dumped, do we want to have a child?
+      if (this.wantChild(community, year)) {
+        this.haveChild(community, year)
+      } else {
+        // If no one's getting dumped and we don't want to have a child, is it
+        // possible that we want to expand the polycule?
+        const agreed = this.people.map(p => p.wantsMate(year)).reduce((acc, curr) => acc && curr, true)
+        if (agreed) {
+          const recruitment = this.people.map(p => {
+            const c1 = p.personality.check('extraversion')
+            const c2 = p.personality.check('extraversion')
+            const c3 = p.personality.check('extraversion')
+            return c1 && c2 && c3
+          }).reduce((acc, curr) => acc || curr, false)
+          if (recruitment) this.findNewPartner(community, year)
+        }
       }
     }
   }

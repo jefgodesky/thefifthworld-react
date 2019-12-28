@@ -129,7 +129,7 @@ export default class Person {
 
       // People change
       const partners = this.polycule && this.polycule.constructor && this.polycule.constructor.name === 'Polycule'
-        ? this.polycule.getPartners(this)
+        ? this.polycule.getOthers(this)
         : []
       if (!this.died) this.personality.change(community, partners)
 

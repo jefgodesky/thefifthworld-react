@@ -313,7 +313,10 @@ export default class Polycule {
     const evaluation = this.partnerDelta(avgThreshold)
     if (evaluation.recommendation) {
       // There's one member of the polycule whose removal would make everyone
-      // happier. Someone's getting dumped.
+      // happier. Someone's getting dumped. If the polycule had more than two
+      // members and the community considers monogamy a norm, this sort of
+      // drama can serve to reinforce that norm.
+      if (this.people.length > 2) community.reinforceMonogamy()
       this.remove(this.people[evaluation.index])
     } else {
       // If no one's getting dumped, do we want to have a child?
@@ -321,8 +324,22 @@ export default class Polycule {
         this.haveChild(community, year)
       } else {
         // If no one's getting dumped and we don't want to have a child, is it
-        // possible that we want to expand the polycule?
-        const agreed = this.people.map(p => p.wantsMate(year)).reduce((acc, curr) => acc && curr, true)
+        // possible that we want to expand the polycule? Lots of communities
+        // will at least start off with monogamy as a norm. That might change,
+        // but if (when?) it does, it will be because of people who are willing
+        // to challenge that norm.
+
+        let willChallenge = true
+        const monogamy = get(community, 'traditions.monogamy') || 0
+        if (monogamy > 0 && this.people.length === 2) {
+          const agreeableness = this.people.map(p => p.personality.chance('agreeableness'))
+          const mostAgreeable = Math.max(...agreeableness) / 100
+          willChallenge = random.int(1, 100) > (monogamy * mostAgreeable) * 100
+        }
+
+        const agreed = willChallenge && this.people
+          .map(p => p.wantsMate(year))
+          .reduce((acc, curr) => acc && curr, true)
         if (agreed) {
           const recruitment = this.people.map(p => {
             const c1 = p.personality.check('extraversion')

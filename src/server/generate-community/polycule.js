@@ -258,6 +258,31 @@ export default class Polycule {
   }
 
   /**
+   * Sees if the polycule can produce a child.
+   * @param community {Community} - The Community object.
+   * @param year {number} - The year in which the polycule is trying
+   *   to conceive.
+   */
+
+  haveChild (community, year) {
+    const potentialFathers = this.people
+      .filter(p => p.body.isFertile('Male'))
+      .sort((a, b) => b.body.fertility - a.body.fertility)
+    const potentialMothers = this.people
+      .filter(p => p.body.isFertile('Female'))
+      .sort((a, b) => b.body.fertility - a.body.fertility)
+    const mother = potentialMothers.length > 0 ? potentialMothers[0] : null
+    const father = potentialFathers.length > 0 ? potentialFathers[0] : null
+    const chance = mother && father
+      ? Math.min(mother.body.fertility, father.body.fertility)
+      : 0
+    if (random.int(1, 125) < chance) {
+      const child = new Person({ mother, father, born: year })
+      this.children.push(child)
+    }
+  }
+
+  /**
    * Reevaluate the love in relationships based on current personality traits.
    * @param community {Community} - The Community object.
    * @param year {number} - The year in which the polycule is changing.

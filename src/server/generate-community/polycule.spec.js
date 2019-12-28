@@ -333,6 +333,20 @@ describe('Polycule', () => {
     })
   })
 
+  describe('haveChild', () => {
+    it('might create a child', () => {
+      const m = new Community()
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      a.body.hasWomb = true; a.body.hasPenis = false; a.body.infertile = false; a.body.fertility = 100
+      b.body.hasWomb = false; b.body.hasPenis = true; b.body.infertile = false; b.body.fertility = 100
+      const p = new Polycule(a, b, c)
+      p.haveChild(m, 2019)
+      expect(p.children.length).toBeLessThanOrEqual(1)
+    })
+  })
+
   describe('change', () => {
     it('increases love scores when people grow closer', () => {
       const a = new Person()

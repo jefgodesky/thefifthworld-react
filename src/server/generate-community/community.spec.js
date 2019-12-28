@@ -432,4 +432,34 @@ describe('Community', () => {
       expect(test).toBeGreaterThanOrEqual(control)
     })
   })
+
+  describe('reinforceMonogamy', () => {
+    it('sets monogamy if it wasn\'t already', () => {
+      const c = new Community()
+      c.reinforceMonogamy()
+      expect(c.traditions.monogamy).toEqual(1)
+    })
+
+    it('increases monogamy by 5%', () => {
+      const c = new Community()
+      c.traditions = { monogamy: 0.7 }
+      c.reinforceMonogamy()
+      expect(c.traditions.monogamy).toEqual(0.75)
+    })
+  })
+
+  describe('reduceMonogamy', () => {
+    it('sets monogamy if it wasn\'t already', () => {
+      const c = new Community()
+      c.reduceMonogamy()
+      expect(c.traditions.monogamy).toEqual(0)
+    })
+
+    it('reduces monogamy by 1%', () => {
+      const c = new Community()
+      c.traditions = { monogamy: 0.7 }
+      c.reduceMonogamy()
+      expect(c.traditions.monogamy).toEqual(0.69)
+    })
+  })
 })

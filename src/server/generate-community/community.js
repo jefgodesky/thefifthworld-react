@@ -189,4 +189,38 @@ export default class Community {
       if (random.int(1, 100) < chance) this.status.conflict = false
     }
   }
+
+  /**
+   * A lot of communities begin with monogamy as a norm. This can change
+   * (and in fact, in most cases, will), but we can leave that up to the
+   * history of the community and the people in it. While this is going on,
+   * certain events, like drama in polycules consisting of three or more
+   * people, might serve to reinforce the norm of monogamy in the minds of
+   * the community. This method increases monogamy by 5%, if the community
+   * still puts any stock in it.
+   */
+
+  reinforceMonogamy () {
+    if (!this.traditions) this.traditions = { monogamy: 1 }
+    const { monogamy } = this.traditions
+    if (monogamy > 0) this.traditions.monogamy = Math.min(monogamy + 0.05, 1)
+  }
+
+  /**
+   * A lot of communities begin with monogamy as a norm. This can change
+   * (and in fact, in most cases, will), but we can leave that up to the
+   * history of the community and the people in it. This method reduces the
+   * community's faith in monogamy by 1%. This can be called any time something
+   * happens that reduces the community's faith in monogamy. For example, each
+   * year, each polycule with three or more people in it calls this method
+   * once. So, for example, a community with five polycules of three people
+   * each will reduce its faith in monogamy by 5% each year, reducing it from
+   * 100% to zero in just 20 years.
+   */
+
+  reduceMonogamy () {
+    if (!this.traditions) this.traditions = { monogamy: 0 }
+    const { monogamy } = this.traditions
+    if (monogamy > 0) this.traditions.monogamy = Math.max(monogamy - 0.01, 0)
+  }
 }

@@ -13,9 +13,14 @@ describe('Community', () => {
   })
 
   describe('init', () => {
-    it('prepares the people index', () => {
+    it('prepares the people array', () => {
       const c = new Community()
-      expect(c.people).toEqual({})
+      expect(c.people).toEqual([])
+    })
+
+    it('prepares the polycules array', () => {
+      const c = new Community()
+      expect(c.polycules).toEqual([])
     })
 
     it('prepares history', () => {
@@ -34,7 +39,7 @@ describe('Community', () => {
       const p = new Person()
       const c = new Community()
       c.add(p)
-      expect(Object.keys(c.people).length).toEqual(1)
+      expect(c.people.length).toEqual(1)
     })
 
     it('assigns the person\'s community', () => {
@@ -42,64 +47,6 @@ describe('Community', () => {
       const c = new Community()
       c.add(p)
       expect(p.community === c)
-    })
-  })
-
-  describe('get', () => {
-    it('gets a person from the community', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0')
-      expect(actual)
-    })
-
-    it('returns a Person object', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0')
-      expect(actual.constructor.name).toEqual('Person')
-    })
-
-    it('returns a property', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0', 'intelligence')
-      expect(typeof actual).toEqual('number')
-    })
-
-    it('returns a Body', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0', 'body')
-      expect(actual.constructor.name).toEqual('Body')
-    })
-
-    it('returns a Personality', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0', 'personality')
-      expect(actual.constructor.name).toEqual('Personality')
-    })
-
-    it('returns a Sexuality', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0', 'sexuality')
-      expect(actual.constructor.name).toEqual('Sexuality')
-    })
-
-    it('returns a nested value', () => {
-      const p = new Person()
-      const c = new Community()
-      c.add(p)
-      const actual = c.get('0', 'personality.openness.value')
-      expect(typeof actual).toEqual('number')
     })
   })
 

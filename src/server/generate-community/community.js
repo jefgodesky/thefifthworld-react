@@ -38,8 +38,7 @@ export default class Community {
 
   add (person) {
     if (person && person.constructor.name === 'Person') {
-      const index = `${Object.keys(this.people).length}`
-      this.people[index] = person
+      this.people.push(person)
       person.community = this
     }
   }

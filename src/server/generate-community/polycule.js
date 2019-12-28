@@ -279,6 +279,7 @@ export default class Polycule {
     if (random.int(1, 125) < chance) {
       const child = new Person({ mother, father, born: year })
       this.children.push(child)
+      child.parents = this
     }
   }
 

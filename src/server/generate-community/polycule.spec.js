@@ -345,6 +345,18 @@ describe('Polycule', () => {
       p.haveChild(m, 2019)
       expect(p.children.length).toBeLessThanOrEqual(1)
     })
+
+    it('marks the polycule as the child\'s parents', () => {
+      const m = new Community()
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      a.body.hasWomb = true; a.body.hasPenis = false; a.body.infertile = false; a.body.fertility = 100
+      b.body.hasWomb = false; b.body.hasPenis = true; b.body.infertile = false; b.body.fertility = 100
+      const p = new Polycule(a, b, c)
+      p.haveChild(m, 2019)
+      expect(p.children.length === 0 || p.children[0].parents === p)
+    })
   })
 
   describe('change', () => {

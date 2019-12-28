@@ -1,5 +1,6 @@
 import random from 'random'
-import { clone, get, isPopulatedArray } from '../../shared/utils'
+import Person from './person'
+import { clone, daysFromNow, get, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -201,5 +202,104 @@ export default class Community {
     if (!this.traditions) this.traditions = { monogamy: 0 }
     const { monogamy } = this.traditions
     if (monogamy > 0) this.traditions.monogamy = Math.max(monogamy - 0.01, 0)
+  }
+
+  /**
+   * Adds a founder to the community.
+   * @param year {number} - The year this founder is born.
+   */
+
+  addFounder (year) {
+    const p = new Person({ born: year })
+    p.founder = true
+    this.add(p)
+  }
+
+  /**
+   * A village should have 50 founders. A hunter-gatherer band should have 10.
+   * If the community currently has fewer founders than it should, there's a
+   * 50% chance of adding one. If it's a village and that doesn't bring it up
+   * to 50, there's a 25% chance of adding two.
+   * @param year {number} - The year being considered.
+   */
+
+  considerFounder (year) {
+    const village = get(this, 'traditions.village') || false
+    const expected = village ? 50 : 10
+    const currently = this.people.filter(p => p.founder).length
+    if (currently < expected) {
+      const flip = random.boolean()
+      if (flip) {
+        this.addFounder(year)
+        if (village && currently + 1 < expected) {
+          const flip2 = random.boolean()
+          if (flip2) this.addFounder(year)
+        }
+      }
+    }
+  }
+
+  /**
+   * Keeps a record of the community's history.
+   * @param year {number} - The year being recorded.
+   */
+
+  recordHistory (year) {
+    const people = this.getCurrentPopulation()
+    const entry = {
+      year,
+      population: people.length,
+      polycules: this.polycules.length,
+      yield: this.territory.yield,
+      lean: this.status.lean,
+      sick: this.status.sick,
+      conflict: this.status.conflict
+    }
+    this.history.push(entry)
+  }
+
+  /**
+   * Runs one year in a simulation of the community's life.
+   * @param year {number} - The year being simulated.
+   * @param founding {boolean} - A flag to indicate if this is in the "founding
+   *   period" of the community. In this period the simulation is partial,
+   *   because we're adding the founders of the community. They're probably
+   *   surrounded by other people and events that we're not modeling because
+   *   otherwise we'd end up trying to model the whole universe.
+   */
+
+  annual (year, founding = false) {
+    if (founding) { this.considerFounder(year) } else { this.adjustYield() }
+    this.solveProblems()
+    this.newProblems()
+    this.polycules.forEach(p => p.change())
+    this.people.forEach(p => p.age())
+    this.recordHistory(year)
+  }
+
+  /**
+   * Runs a simulation of the community for a number of years leading up to the
+   * "present" of the Fifth World (144,000 days from the moment the simulation
+   * is started).
+   * @param years {number} - The number of years that the simulation should run
+   *   over (Default: `200`)
+   */
+
+  run (years = 200) {
+    const until = daysFromNow(144000)
+    const end = until.getFullYear()
+    const start = Math.min(end - years, end - 50)
+
+    // The further back you go, the more likely it is that your community
+    // starts off facing sickness and war.
+
+    const chance = ((years - 100) / 300) * 100
+    if (chance < random.int(1, 100)) this.status.sick = true
+    if (chance < random.int(1, 100)) this.status.conflict = true
+
+    for (let y = start; y < end; y++) {
+      const founding = y < start + 50
+      this.annual(y, founding)
+    }
   }
 }

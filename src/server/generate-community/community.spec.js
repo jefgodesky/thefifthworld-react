@@ -1,7 +1,9 @@
 /* global describe, it, expect */
 
+import random from 'random'
 import Community from './community'
 import Person from './person'
+import { daysFromNow } from '../../shared/utils'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -407,6 +409,67 @@ describe('Community', () => {
       c.traditions = { monogamy: 0.7 }
       c.reduceMonogamy()
       expect(c.traditions.monogamy).toEqual(0.69)
+    })
+  })
+
+  describe('run', () => {
+    it('runs for 200 years by default', () => {
+      const until = daysFromNow(144000)
+      const end = until.getFullYear()
+      const start = end - 200
+      const c = new Community()
+      c.run()
+      const actual = [
+        c.history.length === 200,
+        c.history[0].year === start,
+        c.history[199].year === end
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+
+    it('runs for the number of years specified', () => {
+      const c = new Community()
+      c.run(300)
+      expect(c.history.length).toEqual(300)
+    })
+
+    it('won\'t do less than 50 years', () => {
+      const c = new Community()
+      c.run(5)
+      expect(c.history.length).toEqual(50)
+    })
+
+    it('includes other data in the history', () => {
+      const c = new Community()
+      c.run()
+      const entry = c.history[random.int(0, 199)]
+      console.log(entry)
+      const actual = [
+        typeof entry.population === 'number',
+        typeof entry.yield === 'number',
+        typeof entry.lean === 'boolean',
+        typeof entry.sick === 'boolean',
+        typeof entry.conflict === 'boolean'
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+
+    it('adds 10 founders for a hunter-gatherer band', () => {
+      const c = new Community()
+      c.run()
+      const founders = Object.keys(c.people)
+        .map(key => c.people[key])
+        .filter(p => p.founder)
+      expect(founders.length).toEqual(10)
+    })
+
+    it('adds 50 founders for a village', () => {
+      const c = new Community()
+      c.run()
+      const founders = Object.keys(c.people)
+        .map(key => c.people[key])
+        .filter(p => p.founder)
+      expect(founders.length).toEqual(10)
     })
   })
 })

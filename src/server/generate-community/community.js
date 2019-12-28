@@ -18,6 +18,7 @@ export default class Community {
 
   init () {
     this.people = {}
+    this.polycules = []
     this.history = []
     const randomizer = random.normal(25, 1)
     if (!this.territory) this.territory = {}

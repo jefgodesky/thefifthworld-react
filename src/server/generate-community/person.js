@@ -125,8 +125,16 @@ export default class Person {
 
       // Check for death, injury, or illness
       if (canDie) this.body.checkForDyingOfOldAge(age)
-      if (!this.died && random.int(1, 1000) < 8) this.body.getHurt(canDie)
-      if (!this.died && random.int(1, 1000) < 8) this.body.getSick(canDie)
+      if (!this.died) {
+        let chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
+        if (community.status.conflict) chanceOfInjury = chanceOfInjury * 2
+        if (random.int(1, 1000) < chanceOfInjury) this.body.getHurt(canDie)
+
+        let chanceOfIllness = 8 * (this.personality.chance('openness') / 50)
+        if (community.status.sick) chanceOfIllness = chanceOfIllness * 4
+        if (community.status.sick) chanceOfIllness = chanceOfIllness * 2
+        if (random.int(1, 1000) < chanceOfIllness) this.body.getSick(canDie)
+      }
 
       // People change
       const partners = this.polycule && this.polycule.constructor && this.polycule.constructor.name === 'Polycule'

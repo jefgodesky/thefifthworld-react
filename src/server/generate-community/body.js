@@ -292,6 +292,25 @@ export default class Body {
   }
 
   /**
+   * Returns whether or not this person is fertile.
+   * @param sex {string} - Either `male` or `female`. If provided, the answer
+   *   is restricted only to fertile members of that sex (e.g.,
+   *   `isFertile('Female')` will only return true if this person is a fertile
+   *   female.
+   * @returns {boolean} - Returns `true` if this person is fertile (and has the
+   *   sex given, if one was specified), or `false` if she is not.
+   */
+
+  isFertile (sex) {
+    const isFertile = !this.infertile && this.fertility > 0
+    return sex === 'Female'
+      ? this.hasWomb && isFertile
+      : sex === 'Male'
+        ? this.hasPenis && isFertile
+        : isFertile
+  }
+
+  /**
    * Flag this person as infertile and reduce her fertility to zero.
    */
 

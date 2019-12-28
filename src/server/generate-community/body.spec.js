@@ -255,6 +255,56 @@ describe('Body', () => {
     })
   })
 
+  describe('isFertile', () => {
+    it('returns false given an infertile person', () => {
+      const b = new Body({ born: 1979 })
+      b.makeInfertile()
+      expect(b.isFertile()).toEqual(false)
+    })
+
+    it('returns false given a fertile person', () => {
+      const b = new Body({ born: 1979 })
+      b.fertility = 100
+      b.infertile = false
+      expect(b.isFertile()).toEqual(true)
+    })
+
+    it('returns false if given a fertile female, if asked for a fertile male', () => {
+      const b = new Body({ born: 1979 })
+      b.hasWomb = true
+      b.hasPenis = false
+      b.fertility = 100
+      b.infertile = false
+      expect(b.isFertile('Male')).toEqual(false)
+    })
+
+    it('returns true if given a fertile female, if asked for a fertile female', () => {
+      const b = new Body({ born: 1979 })
+      b.hasWomb = true
+      b.hasPenis = false
+      b.fertility = 100
+      b.infertile = false
+      expect(b.isFertile('Female')).toEqual(true)
+    })
+
+    it('returns false if given a fertile male, if asked for a fertile female', () => {
+      const b = new Body({ born: 1979 })
+      b.hasWomb = false
+      b.hasPenis = true
+      b.fertility = 100
+      expect(b.isFertile('Female')).toEqual(false)
+    })
+
+    it('returns true if given a fertile male, if asked for a fertile male', () => {
+      const b = new Body({ born: 1979 })
+      b.hasWomb = false
+      b.hasPenis = true
+      b.fertility = 100
+      b.infertile = false
+      expect(b.isFertile('Male')).toEqual(true)
+    })
+  })
+
   describe('adjustFertility', () => {
     it('sets fertility to zero if you\'re 16 or younger', () => {
       const b = new Body()

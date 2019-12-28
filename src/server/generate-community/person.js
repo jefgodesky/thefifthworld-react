@@ -63,7 +63,7 @@ export default class Person {
 
   wantsMate (year) {
     const age = this.body.getAge(year)
-    if (age) {
+    if (age && age > 15) {
       // Does the community expect her to find a mate?
       const expectation = this.polycule
         ? 0
@@ -133,7 +133,23 @@ export default class Person {
         : []
       if (!this.died) this.personality.change(community, partners)
 
-      // TODO: Relationships and skills
+      const wantsMate = this.wantsMate(year)
+      const hasMate = this.polycule && this.polycule.people.length > 1
+      const havingChild = hasMate && this.polycule && this.polycule.havingChild
+      const timeForSkills = (hasMate && !havingChild) || (!hasMate && !wantsMate)
+      if (timeForSkills) {
+        // Either you're in a polycule but that polycule isn't having a baby,
+        // or you're not in a polycule but you're fine with that. That leaves
+        // time for learning new skills.
+        Skills.advance(this, year)
+      } else if (wantsMate && !hasMate) {
+        // You want to be in a relationship, but you're not, so you're
+        // spending a lot of your time trying to form a bond with someone you
+        // could love and spend your life with.
+        if (!this.polycule) this.polycule = new Polycule(this)
+        this.polycule.findNewPartner(community, year)
+        if (this.polycule.people.length < 2) delete this.polycule
+      }
     }
   }
 }

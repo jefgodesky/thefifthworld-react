@@ -154,7 +154,12 @@ export default class Person {
       } else if (wantsMate && !hasMate) {
         if (!this.polycule) this.polycule = new Polycule(this)
         this.polycule.findNewPartner(community, year)
-        if (this.polycule.people.length < 2) delete this.polycule
+        if (this.polycule.people.length < 2) {
+          delete this.polycule
+        } else {
+          if (!Array.isArray(community.polycules)) community.polycules = []
+          community.polycules = [ ...community.polycules, this.polycule ]
+        }
       }
     }
   }

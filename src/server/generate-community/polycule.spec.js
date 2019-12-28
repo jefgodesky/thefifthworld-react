@@ -361,30 +361,33 @@ describe('Polycule', () => {
 
   describe('change', () => {
     it('increases love scores when people grow closer', () => {
+      const community = new Community()
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a, b)
       const before = p.love[0][1]
       a.personality.openness.value = b.personality.openness.value
-      p.change()
+      p.change(community, 2019)
       expect(p.love[0][1]).toBeGreaterThan(before)
     })
 
     it('maintains symmetry', () => {
+      const community = new Community()
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a, b)
-      p.change()
+      p.change(community, 2019)
       expect(p.love[0][1]).toEqual(p.love[1][0])
     })
 
     it('might kick someone out', () => {
+      const community = new Community()
       const a = new Person()
       const b = new Person()
       const c = new Person()
       const p = new Polycule(a, b, c)
       const before = p.people.length
-      p.change()
+      p.change(community, 2019)
       expect(p.people.length).toBeLessThanOrEqual(before)
     })
   })

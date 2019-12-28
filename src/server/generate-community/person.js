@@ -2,6 +2,7 @@ import random from 'random'
 
 import Body from './body'
 import Personality from './personality'
+import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 import { between } from '../../shared/utils'
@@ -141,7 +142,7 @@ export default class Person {
         // Either you're in a polycule but that polycule isn't having a baby,
         // or you're not in a polycule but you're fine with that. That leaves
         // time for learning new skills.
-        Skills.advance(this, year)
+        Skills.advance(this, community)
       } else if (wantsMate && !hasMate) {
         // You want to be in a relationship, but you're not, so you're
         // spending a lot of your time trying to form a bond with someone you

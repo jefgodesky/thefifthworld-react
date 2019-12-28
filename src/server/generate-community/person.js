@@ -142,19 +142,16 @@ export default class Person {
         : []
       if (!this.died) this.personality.change(community, partners)
 
+      // What are you doing with this year? Are you focusing on forming a new
+      // relationship, or on mastering a new skill?
+
       const wantsMate = this.wantsMate(year)
       const hasMate = this.polycule && this.polycule.people.length > 1
       const havingChild = hasMate && this.polycule && this.polycule.havingChild
       const timeForSkills = (hasMate && !havingChild) || (!hasMate && !wantsMate)
       if (timeForSkills) {
-        // Either you're in a polycule but that polycule isn't having a baby,
-        // or you're not in a polycule but you're fine with that. That leaves
-        // time for learning new skills.
         Skills.advance(this, community)
       } else if (wantsMate && !hasMate) {
-        // You want to be in a relationship, but you're not, so you're
-        // spending a lot of your time trying to form a bond with someone you
-        // could love and spend your life with.
         if (!this.polycule) this.polycule = new Polycule(this)
         this.polycule.findNewPartner(community, year)
         if (this.polycule.people.length < 2) delete this.polycule

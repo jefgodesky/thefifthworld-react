@@ -32,7 +32,7 @@ export default class Body {
 
   random (born = undefined, specifiedGender = undefined) {
     const rand = random.normal(0, 1)
-    const randomLongevity = random.normal(100, 5)
+    const randomLongevity = random.normal(80, 5)
     if (born && typeof born === 'number') this.born = born
     this.type = rand()
     this.longevity = randomLongevity()

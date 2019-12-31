@@ -225,16 +225,12 @@ export default class Community {
 
   considerFounder (year) {
     const village = get(this, 'traditions.village') || false
-    const expected = village ? 50 : 10
+    const expected = village ? 150 : 30
     const currently = this.people.filter(p => p.founder).length
     if (currently < expected) {
-      const flip = random.boolean()
-      if (flip) {
+      const add = village ? random.int(0, 5) : random.int(0, 2)
+      for (let i = 0; i < add; i++) {
         this.addFounder(year)
-        if (village && currently + 1 < expected) {
-          const flip2 = random.boolean()
-          if (flip2) this.addFounder(year)
-        }
       }
     }
   }
@@ -272,9 +268,16 @@ export default class Community {
     if (founding) { this.considerFounder(year) } else { this.adjustYield() }
     this.solveProblems()
     this.newProblems()
-    this.polycules.forEach(p => p.change())
-    this.people.forEach(p => p.age())
+    this.polycules.forEach(p => p.change(this, year))
+    this.people.forEach(p => p.age(this, year))
     this.recordHistory(year)
+
+    // Each polycule of three or more erodes the community's belief in
+    // monogamy as a norm each year, until polygamy is fulled accepted.
+
+    this.polycules.forEach(p => {
+      if (p.people.length > 2) this.reduceMonogamy()
+    })
   }
 
   /**

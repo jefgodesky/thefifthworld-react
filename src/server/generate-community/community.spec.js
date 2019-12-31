@@ -443,7 +443,6 @@ describe('Community', () => {
       const c = new Community()
       c.run()
       const entry = c.history[random.int(0, 199)]
-      console.log(entry)
       const actual = [
         typeof entry.population === 'number',
         typeof entry.yield === 'number',
@@ -454,22 +453,27 @@ describe('Community', () => {
       expect(actual)
     })
 
-    it('adds 10 founders for a hunter-gatherer band', () => {
+    it('adds approx. 30 founders for a hunter-gatherer band', () => {
       const c = new Community()
       c.run()
       const founders = Object.keys(c.people)
         .map(key => c.people[key])
         .filter(p => p.founder)
-      expect(founders.length).toEqual(10)
+      const notTooMany = founders.length < 40
+      const notTooFew = founders.length > 20
+      expect(notTooMany && notTooFew)
     })
 
-    it('adds 50 founders for a village', () => {
+    it('adds approx. 150 founders for a village', () => {
       const c = new Community()
+      c.traditions = { village: true }
       c.run()
       const founders = Object.keys(c.people)
         .map(key => c.people[key])
         .filter(p => p.founder)
-      expect(founders.length).toEqual(10)
+      const notTooMany = founders.length < 175
+      const notTooFew = founders.length > 125
+      expect(notTooMany && notTooFew)
     })
   })
 })

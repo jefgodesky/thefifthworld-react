@@ -8,6 +8,18 @@ describe('BigFiveTrait', () => {
       const trait = new BigFiveTrait()
       expect(typeof trait.value).toEqual('number')
     })
+
+    it('has an average near zero', () => {
+      const all = []
+      for (let i = 0; i < 100; i++) {
+        const trait = new BigFiveTrait()
+        all.push(trait.value)
+      }
+      const avg = all.reduce((acc, curr) => acc + curr, 0) / 100
+      const notTooBig = avg < 1
+      const notTooSmall = avg > -1
+      expect(notTooBig && notTooSmall)
+    })
   })
 
   describe('isBelow', () => {

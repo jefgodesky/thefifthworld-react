@@ -19,7 +19,7 @@ export default class Polycule {
    */
 
   findNewPartner (community, year) {
-    const ages = this.people.map(p => p.body.getAge())
+    const ages = this.people.map(p => p.body.getAge(year))
     const avgAge = ages.reduce((acc, curr) => acc + curr, 0) / this.people.length
     if (typeof avgAge === 'number' && avgAge > 15) {
       // First we get an array of the genders that the members of the polycule
@@ -28,7 +28,7 @@ export default class Polycule {
       const numGenders = get(community, 'traditions.genders') || 3
       let genders = []
       this.people.forEach(p => {
-        const meet = Math.ceil(p.personality.chance('extraversion') / 10)
+        const meet = Math.ceil(p.personality.chance('extraversion') / 25)
         const pref = p.sexuality.getGenderPreferences(numGenders, meet)
         genders = [ ...genders, ...pref ]
       })
@@ -39,17 +39,22 @@ export default class Polycule {
           const gap = Math.floor((avgAge / 2) - 7)
           const candidateBorn = year - random.int(avgAge - gap, avgAge + gap)
           const candidate = new Person({ born: candidateBorn, gender })
+          candidate.isMate = true
           const defaultCommunity = new Community()
-          for (let y = candidateBorn; y < year; y++) candidate.age(defaultCommunity, y, true)
+          for (let y = candidateBorn; y < year; y++) candidate.age(defaultCommunity, y)
           return candidate
         })
-        const dates = candidates.map(candidate => ({ candidate, polycule: new Polycule(candidate, ...this.people) }))
-        dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
-        if (dates[0].polycule.avg() > 30) {
-          const { candidate } = dates[0]
-          community.add(candidate)
-          this.add(candidate)
-          this.commit()
+        const dates = candidates
+          .filter(p => !p.polycule && !p.died)
+          .map(candidate => ({ candidate, polycule: new Polycule(candidate, ...this.people) }))
+        if (dates.length > 0) {
+          dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
+          if (dates[0].polycule.avg() > 75) {
+            const { candidate } = dates[0]
+            community.add(candidate)
+            this.add(candidate)
+            this.commit()
+          }
         }
       }
     }
@@ -92,13 +97,14 @@ export default class Polycule {
 
   remove (person) {
     if (this.people.includes(person)) {
+      const community = person.community
       this.love = this.getLoveWithout(person)
       this.people = this.people.filter(p => p !== person)
       person.polycule = undefined
 
-      if (this.people.length === 1) {
-        this.people[0].polycule = undefined
-        delete this
+      if (this.people.length < 2) {
+        this.people.forEach(p => { p.polycule = null })
+        if (community) community.removePolycule(this)
       }
     }
   }

@@ -276,19 +276,11 @@ export default class Body {
    */
 
   getAge (year) {
-    const { born, died } = this
-    const ageAtDeath = born && typeof born === 'number' && died && typeof died === 'number' ? died - born : null
-    const ageAtYear = born && typeof born === 'number' && year && typeof year === 'number' ? year - born : null
-
-    if (ageAtDeath && ageAtYear) {
-      return Math.min(ageAtDeath, ageAtYear)
-    } else if (ageAtYear && !ageAtDeath) {
-      return ageAtYear
-    } else if (ageAtDeath && !ageAtYear) {
-      return ageAtDeath
-    } else {
-      return undefined
-    }
+    const { born, died, left } = this
+    const ageAtDeath = born && typeof born === 'number' && died && typeof died === 'number' ? died - born : undefined
+    const ageAtLeft = born && typeof born === 'number' && left && typeof left === 'number' ? left - born : undefined
+    const ageAtYear = born && typeof born === 'number' && year && typeof year === 'number' ? year - born : undefined
+    return ageAtDeath || ageAtLeft || ageAtYear
   }
 
   /**
@@ -406,15 +398,12 @@ export default class Body {
 
   /**
    * Checks the person's prognosis when she gets sick.
-   * @param canDie {boolean} (Optional) A flag that can indicate that this
-   *   person cannot die from this disease. (Default: `true`)
    * @returns {string} - A string indicating the person's prognosis (one of
    *   `death`, `deaf`, `blind`, or `recovery`).
    */
 
-  getSick (canDie = true) {
-    const unacceptable = canDie ? [] : [ 'death' ]
-    let prognosis = checkUntil(tables.illness, unacceptable)
+  getSick () {
+    let prognosis = checkUntil(tables.illness)
 
     switch (prognosis) {
       case 'deaf':
@@ -431,16 +420,13 @@ export default class Body {
 
   /**
    * Sustain a random injury.
-   * @param canDie {boolean} (Optional) A flag that can indicate that this
-   *   person cannot die from this injury. (Default: `true`)
    * @returns {string} - A string indicating the outcome of the person's
    *   injury  (one of `death`, `face`, `left arm`, `right arm`, `left leg`,
    *   `right leg`, `infection`, or `recovery`).
    */
 
-  getHurt (canDie = false) {
-    const unacceptable = canDie ? [] : [ 'death' ]
-    let outcome = checkUntil(tables.injury, unacceptable)
+  getHurt () {
+    let outcome = checkUntil(tables.injury)
     const roll = random.int(1, 8)
 
     switch (outcome) {

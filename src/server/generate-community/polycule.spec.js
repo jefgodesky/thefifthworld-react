@@ -75,6 +75,32 @@ describe('Polycule', () => {
       const t3 = poly.people.length > 1 ? poly.people[1].polycule === poly : true
       expect(t1 && t2 && t3)
     })
+
+    it('sometimes works out and sometimes doesn\'t', () => {
+      let successes = 0
+      let failures = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const p = new Person()
+        p.body.born = 1979
+        p.sexuality.androphilia = 1
+        p.sexuality.gynephilia = 1
+        p.sexuality.skoliophilia = 1
+        const poly = new Polycule(p)
+        poly.findNewPartner(c, 2019)
+        if (poly.people.length > 1) {
+          successes++
+        } else {
+          failures++
+        }
+      }
+      const actual = [
+        successes + failures === 100,
+        successes > 25,
+        successes < 75
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
   })
 
   describe('add', () => {

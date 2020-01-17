@@ -3,6 +3,7 @@
 import random from 'random'
 import Community from './community'
 import Person from './person'
+import Polycule from './polycule'
 import { daysFromNow } from '../../shared/utils'
 
 describe('Community', () => {
@@ -49,6 +50,29 @@ describe('Community', () => {
       const c = new Community()
       c.add(p)
       expect(p.community === c)
+    })
+  })
+
+  describe('addPolycule', () => {
+    it('adds a polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule([ a, b ])
+      const c = new Community()
+      c.addPolycule(p)
+      expect(c.polycules.length).toEqual(1)
+    })
+  })
+
+  describe('removePolycule', () => {
+    it('removes a polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule([ a, b ])
+      const c = new Community()
+      c.addPolycule(p)
+      c.removePolycule(p)
+      expect(c.polycules.length).toEqual(0)
     })
   })
 
@@ -456,11 +480,9 @@ describe('Community', () => {
     it('adds approx. 30 founders for a hunter-gatherer band', () => {
       const c = new Community()
       c.run()
-      const founders = Object.keys(c.people)
-        .map(key => c.people[key])
-        .filter(p => p.founder)
-      const notTooMany = founders.length < 40
-      const notTooFew = founders.length > 20
+      const founders = c.people.filter(p => p.founder).length
+      const notTooMany = founders < 40
+      const notTooFew = founders > 20
       expect(notTooMany && notTooFew)
     })
 

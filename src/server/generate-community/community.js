@@ -45,6 +45,29 @@ export default class Community {
   }
 
   /**
+   * Adds a polycule to the community.
+   * @param polycule {Polycule} - The Polycule object to add to the community.
+   */
+
+  addPolycule (polycule) {
+    if (!this.polycules || !Array.isArray(this.polycules)) {
+      this.polycules = [ polycule ]
+    } else {
+      this.polycules = [ ...this.polycules, polycule ]
+    }
+  }
+
+  /**
+   * Removes a polycule from the community.
+   * @param polycule {Polycule} - The Polycule object to remove from the
+   *   community.
+   */
+
+  removePolycule (polycule) {
+    this.polycules = this.polycules.filter(p => p !== polycule)
+  }
+
+  /**
    * Returns the people who have not died or left as array.
    * @returns {Person[]} - An array of the people who have not yet died or left
    *   the community.
@@ -269,7 +292,8 @@ export default class Community {
     this.solveProblems()
     this.newProblems()
     this.polycules.forEach(p => p.change(this, year))
-    this.people.forEach(p => p.age(this, year))
+    const population = this.getCurrentPopulation()
+    population.forEach(p => p.age(this, year))
     this.recordHistory(year)
 
     // Each polycule of three or more erodes the community's belief in

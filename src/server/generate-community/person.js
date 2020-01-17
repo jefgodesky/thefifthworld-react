@@ -90,7 +90,7 @@ export default class Person {
       const needy = this.personality.chance('neuroticism')
       const loneliness = between(needy - outgoing - love, 0, 100)
 
-      return random.int(1, 100) < pressure + desire + loneliness
+      return random.int(1, 300) < pressure + desire + loneliness
     }
   }
 
@@ -105,35 +105,45 @@ export default class Person {
     const entry = { event: 'died', cause }
     if (year && typeof year === 'number') entry.year = year
     this.history.push(entry)
+    if (this.polycule) this.polycule.remove(this)
+  }
+
+  /**
+   * Marks when a character leaves the community.
+   * @param year {number} - The year in which the person leaves.
+   */
+
+  leave (year) {
+    this.left = year
+    this.body.left = year
+    const entry = { event: 'left' }
+    this.history.push(entry)
+    if (this.polycule) this.polycule.remove(this)
   }
 
   /**
    * Ages a character.
    * @param community {Community} - The community object.
    * @param year {number} - The year that the character is aging through.
-   * @param isMate {boolean} - Is this person being aged up as a potential mate
-   *   for someone? If so, she can't die, and we'll skip finding mates for her.
-   *   (Default: `false`)
    */
 
-  age (community, year, isMate = false) {
+  age (community, year) {
     const age = this.body.getAge(year)
-    const canDie = !isMate
     if (age) {
       const hasProblems = community.hasProblems()
       this.body.adjustFertility(hasProblems, age)
 
       // Check for death, injury, or illness
-      if (canDie) this.body.checkForDyingOfOldAge(age)
+      if (this.body.checkForDyingOfOldAge(age)) this.die('natural', year)
       if (!this.died) {
         let chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
         if (community.status.conflict) chanceOfInjury = chanceOfInjury * 2
-        if (random.int(1, 1000) < chanceOfInjury) this.body.getHurt(canDie)
+        if (random.int(1, 1000) < chanceOfInjury) this.body.getHurt()
 
         let chanceOfIllness = 8 * (this.personality.chance('openness') / 50)
         if (community.status.sick) chanceOfIllness = chanceOfIllness * 4
         if (community.status.sick) chanceOfIllness = chanceOfIllness * 2
-        if (random.int(1, 1000) < chanceOfIllness) this.body.getSick(canDie)
+        if (random.int(1, 1000) < chanceOfIllness) this.body.getSick()
       }
 
       // People change
@@ -151,14 +161,15 @@ export default class Person {
       const timeForSkills = (hasMate && !havingChild) || (!hasMate && !wantsMate)
       if (timeForSkills) {
         Skills.advance(this, community)
+      } else if (wantsMate && !hasMate && hasProblems) {
+        this.leave(year)
       } else if (wantsMate && !hasMate) {
         if (!this.polycule) this.polycule = new Polycule(this)
         this.polycule.findNewPartner(community, year)
         if (this.polycule.people.length < 2) {
           delete this.polycule
         } else {
-          if (!Array.isArray(community.polycules)) community.polycules = []
-          community.polycules = [ ...community.polycules, this.polycule ]
+          community.addPolycule(this.polycule)
         }
       }
     }

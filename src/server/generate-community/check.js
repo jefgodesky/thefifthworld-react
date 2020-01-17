@@ -34,11 +34,11 @@ const check = (table, roll) => {
  * @param unacceptable {[*]} - An array of values that are not acceptable. If
  *   an unacceptable value is found, it will simply try again until it finds an
  *   acceptable one. Returns `false` if there are no unacceptable responses
- *   possible.
+ *   possible. (Default: `[]`)
  * @returns {*} - A randomly chosen value from the table.
  */
 
-const checkUntil = (table, unacceptable) => {
+const checkUntil = (table, unacceptable = []) => {
   let result = false
   const acceptable = table.filter(option => !unacceptable.includes(option.event))
   if (acceptable.length > 0) {

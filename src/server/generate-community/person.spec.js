@@ -91,6 +91,49 @@ describe('Person', () => {
       const p = new Person({ born: 1979 })
       expect(typeof p.wantsMate(2019)).toEqual('boolean')
     })
+
+    it('always returns false for a child', () => {
+      const p = new Person({ born: 1979 })
+      let affirmatives = 0
+      for (let i = 0; i < 100; i++) {
+        if (p.wantsMate(1994)) affirmatives++
+      }
+      expect(affirmatives).toEqual(0)
+    })
+
+    it('returns true more often for someone in her 20s', () => {
+      const younger = new Person({ born: 1995 })
+      const elder = new Person({ born: 1965 })
+
+      younger.sexuality.androphilia = 1
+      younger.sexuality.gynephilia = 0
+      younger.sexuality.skoliophilia = 0
+      younger.body.fertility = 100
+
+      elder.sexuality.androphilia = 1
+      elder.sexuality.gynephilia = 0
+      elder.sexuality.skoliophilia = 0
+      elder.body.fertility = 0
+
+      const counter = {
+        younger: { affirmatives: 0, negatives: 0 },
+        elder: { affirmatives: 0, negatives: 0 }
+      }
+
+      for (let i = 0; i < 100; i++) {
+        const youngerResult = younger.wantsMate(2020)
+        const elderResult = elder.wantsMate(2020)
+        if (youngerResult) { counter.younger.affirmatives++ } else { counter.younger.negatives++ }
+        if (elderResult) { counter.elder.affirmatives++ } else { counter.elder.negatives++ }
+      }
+
+      const actual = [
+        counter.younger.affirmatives + counter.younger.negatives === 100,
+        counter.elder.affirmatives + counter.elder.negatives === 100,
+        counter.younger.affirmatives > counter.elder.affirmatives
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual).toEqual(true)
+    })
   })
 
   describe('die', () => {

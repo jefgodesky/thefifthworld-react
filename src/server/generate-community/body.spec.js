@@ -4,16 +4,6 @@ import Body from './body'
 
 describe('Body', () => {
   describe('constructor', () => {
-    it('assigns a birth year', () => {
-      const b = new Body({ born: 2019 })
-      expect(b.born).toEqual(2019)
-    })
-
-    it('doesn\'t assign a birth year if it isn\'t given a year', () => {
-      const b = new Body({ born: 'nope' })
-      expect(b.born).toEqual(undefined)
-    })
-
     it('assigns a body type', () => {
       const b = new Body()
       expect(typeof b.type).toEqual('number')
@@ -198,60 +188,6 @@ describe('Body', () => {
 
       const baby = new Body({ parents: [ mama, papa ] })
       expect(baby.constructor.name).toEqual('Body')
-    })
-
-    it('assigns the birth year', () => {
-      const p1 = new Body()
-      p1.hasPenis = false
-      p1.hasWomb = true
-
-      const p2 = new Body()
-      p2.hasPenis = true
-      p2.hasWomb = false
-
-      const baby = Body.makeBaby([ p1, p2 ], 2019)
-      expect(baby.born).toEqual(2019)
-    })
-
-    it('doesn\'t assign the birth year if it isn\'t given a number', () => {
-      const p1 = new Body()
-      p1.hasPenis = false
-      p1.hasWomb = true
-
-      const p2 = new Body()
-      p2.hasPenis = true
-      p2.hasWomb = false
-
-      const baby = Body.makeBaby([ p1, p2 ], 'nope')
-      expect(baby.born).toEqual(undefined)
-    })
-  })
-
-  describe('getAge', () => {
-    it('reports age', () => {
-      const b = new Body({ born: 1979 })
-      expect(b.getAge(2019)).toEqual(40)
-    })
-
-    it('reports age at death if asking after she died', () => {
-      const b = new Body({ born: 1979 })
-      b.died = 2009
-      expect(b.getAge(2019)).toEqual(30)
-    })
-
-    it('reports a negative number if it\'s before her birth', () => {
-      const b = new Body({ born: 1979 })
-      expect(b.getAge(1969)).toEqual(-10)
-    })
-
-    it('returns undefined if she has no birth year recorded', () => {
-      const b = new Body()
-      expect(b.getAge(2019)).toEqual(undefined)
-    })
-
-    it('returns undefined if an invalid year is given', () => {
-      const b = new Body({ born: 1979 })
-      expect(b.getAge('today')).toEqual(undefined)
     })
   })
 

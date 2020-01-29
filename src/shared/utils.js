@@ -111,7 +111,7 @@ const getFileSizeStr = size => {
  */
 
 const clone = obj => {
-  const str = JSON.stringify(obj)
+  const str = obj === undefined ? '{}' : JSON.stringify(obj)
   return JSON.parse(str)
 }
 

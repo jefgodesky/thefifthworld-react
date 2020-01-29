@@ -10,19 +10,16 @@ export default class Body {
         this[key] = clone(args.copy[key])
       })
     } else if (args && args.parents) {
-      const { born, specifiedGender } = args
-      const baby = Body.makeBaby(born, specifiedGender)
+      const baby = Body.makeBaby(args.parents, args)
       return baby
     } else {
       const specifiedGender = args ? args.specifiedGender : undefined
-      const born = args ? args.born : undefined
-      this.random(born, specifiedGender)
+      this.random(specifiedGender)
     }
   }
 
   /**
    * Generate a random body.
-   * @param born {number} - (Optional) The year this body is born.
    * @param specifiedGender {string} - (Optional) The gender that this person
    *   will eventually grow into (unrealistic, but helpful for when we're
    *   generating random people that an established member of the community
@@ -30,10 +27,9 @@ export default class Body {
    *   community).
    */
 
-  random (born = undefined, specifiedGender = undefined) {
+  random (specifiedGender = undefined) {
     const rand = random.normal(0, 1)
     const randomLongevity = random.normal(80, 5)
-    if (born && typeof born === 'number') this.born = born
     this.type = rand()
     this.longevity = randomLongevity()
     this.eyes = random.float(0, 100) < 0.016
@@ -70,7 +66,6 @@ export default class Body {
    *   the other must have `hasPenis` equal to `true`. If these conditions are
    *   met, a new `Body` object, with probabilities determined by its parents,
    *   is produced. If not, this method returns `undefined`.
-   * @param born {number} - (Optional) The year in which this child is born.
    * @param args {Object} - The arguments object passed to the `Body`
    *   constructor.
    * @returns {Body|undefined} - If two viable parents are provided, a child is
@@ -81,13 +76,13 @@ export default class Body {
    *   provided).
    */
 
-  static makeBaby (parents, born, args) {
+  static makeBaby (parents, args) {
     let baby
     if (parents && Array.isArray(parents) && parents.length > 1) {
       const bothBodies = parents.slice(0, 1).map(p => p.constructor && p.constructor.name === 'Body').reduce((acc, curr) => acc && curr, true)
       if (bothBodies) {
         const mindex = parents[0].hasWomb ? 0 : parents[1].hasWomb ? 1 : -1
-        const findex = mindex === 0 && parents[1].hasPenis ? 1 : mindex === 1 && parents[0].hasPenis ? 0 : -1
+        const findex = parents[0].hasPenis ? 0 : parents[1].hasPenis ? 1 : -1
         if (mindex > -1 && findex > -1) {
           // We have two parents, and they're both Body objects, and one is
           // able to reproduce sexually as a male and the other is able to
@@ -98,13 +93,11 @@ export default class Body {
           const mother = parents[mindex]
           const father = parents[findex]
 
-          // Start off by seeding our baby with random values.
-
-          baby = new Body(args)
+          const rnd = args ? clone(args) : {}
+          delete rnd.parents
+          baby = new Body(rnd)
           baby.mother = mother
           baby.father = father
-          if (born && typeof born === 'number') baby.born = born
-          const imr = baby.born ? baby.born : true
 
           // We're trying for "descent with variation" by taking the average of
           // your mother's value and your father's value and then adding a
@@ -178,7 +171,7 @@ export default class Body {
 
           const psychopathyFromMother = mother.psychopath && random.boolean()
           const psychopathyFromFather = father.psychopath && random.boolean()
-          this.psychopath = psychopathyFromMother || psychopathyFromFather
+          baby.psychopath = psychopathyFromMother || psychopathyFromFather
 
           // Achondroplasia pops up unexpectedly very randomly, but it is genetic,
           // so if one or both of your parents have it, we need to calculate the odds
@@ -189,15 +182,15 @@ export default class Body {
             const fromMother = mother.achondroplasia && random.boolean() === true
             const fromFather = father.achondroplasia && random.boolean() === true
             if (fromMother || fromFather) {
-              this.achondroplasia = true
-              if (fromMother && fromFather) this.dead = imr
+              baby.achondroplasia = true
+              baby.dead = true
             } else {
-              this.achondroplasia = false
+              baby.achondroplasia = false
             }
           }
 
           // 25% infant mortality rate
-          if (random.int(1, 4) === 1) this.dead = imr
+          if (random.int(1, 4) === 1) baby.dead = true
         }
       }
     }
@@ -262,25 +255,6 @@ export default class Body {
           break
       }
     }
-  }
-
-  /**
-   * Returns the person's age in a particular year.
-   * @param year {number} - The year in which we're asking for the person's
-   *   age.
-   * @returns {number|undefined} - If the person has died and we have the year
-   *   of her birth and death, and you're asking for her age after she died, it
-   *   returns her age at death. If we have the year of her birth, it returns
-   *   her age in the year provided. If either there is no year of birth
-   *   recorded, or if the year provided is not valid, it returns `undefined`.
-   */
-
-  getAge (year) {
-    const { born, died, left } = this
-    const ageAtDeath = born && typeof born === 'number' && died && typeof died === 'number' ? died - born : undefined
-    const ageAtLeft = born && typeof born === 'number' && left && typeof left === 'number' ? left - born : undefined
-    const ageAtYear = born && typeof born === 'number' && year && typeof year === 'number' ? year - born : undefined
-    return ageAtDeath || ageAtLeft || ageAtYear
   }
 
   /**

@@ -44,6 +44,28 @@ describe('Person', () => {
       const p = new Person()
       expect(typeof p.neurodivergent).toEqual('boolean')
     })
+
+    it('establishes a present', () => {
+      const p = new Person({ born: 2020 })
+      expect(p.present).toEqual(2020)
+    })
+
+    it('includes infant mortality', () => {
+      let infantMortality = 0
+      for (let i = 0; i < 100; i++) {
+        const mom = new Person()
+        mom.genotype.hasWomb = true
+        mom.genotype.hasPenis = false
+
+        const dad = new Person()
+        dad.genotype.hasWomb = false
+        dad.genotype.hasPenis = true
+
+        const baby = new Person({ parents: [ mom.genotype, dad.genotype ], born: 2020 })
+        if (baby.died) infantMortality++
+      }
+      expect(infantMortality).toBeGreaterThan(0)
+    })
   })
 
   describe('assignGender', () => {
@@ -86,96 +108,55 @@ describe('Person', () => {
     })
   })
 
-  describe('wantsMate', () => {
-    it('returns a boolean', () => {
-      const p = new Person({ born: 1979 })
-      expect(typeof p.wantsMate(2019)).toEqual('boolean')
-    })
-
-    it('always returns false for a child', () => {
-      const p = new Person({ born: 1979 })
-      let affirmatives = 0
-      for (let i = 0; i < 100; i++) {
-        if (p.wantsMate(1994)) affirmatives++
-      }
-      expect(affirmatives).toEqual(0)
-    })
-
-    it('returns true more often for someone in her 20s', () => {
-      const younger = new Person({ born: 1995 })
-      const elder = new Person({ born: 1965 })
-
-      younger.sexuality.androphilia = 1
-      younger.sexuality.gynephilia = 0
-      younger.sexuality.skoliophilia = 0
-      younger.body.fertility = 100
-
-      elder.sexuality.androphilia = 1
-      elder.sexuality.gynephilia = 0
-      elder.sexuality.skoliophilia = 0
-      elder.body.fertility = 0
-
-      const counter = {
-        younger: { affirmatives: 0, negatives: 0 },
-        elder: { affirmatives: 0, negatives: 0 }
-      }
-
-      for (let i = 0; i < 100; i++) {
-        const youngerResult = younger.wantsMate(2020)
-        const elderResult = elder.wantsMate(2020)
-        if (youngerResult) { counter.younger.affirmatives++ } else { counter.younger.negatives++ }
-        if (elderResult) { counter.elder.affirmatives++ } else { counter.elder.negatives++ }
-      }
-
-      const actual = [
-        counter.younger.affirmatives + counter.younger.negatives === 100,
-        counter.elder.affirmatives + counter.elder.negatives === 100,
-        counter.younger.affirmatives > counter.elder.affirmatives
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
-    })
-  })
-
   describe('die', () => {
     it('marks the character as dead', () => {
       const p = new Person()
       p.die()
       expect(p.died)
     })
+  })
 
-    it('records the year the person died', () => {
-      const p = new Person()
-      p.die('natural', 2019)
-      expect(p.died).toEqual(2019)
+  describe('getAge', () => {
+    it('calculates age based on the character\'s present', () => {
+      const p = new Person({ born: 2020 })
+      p.present = 2040
+      expect(p.getAge()).toEqual(20)
     })
 
-    it('records an entry for the person\'s death', () => {
-      const p = new Person()
-      p.die()
-      expect(p.history.length).toEqual(1)
+    it('calculates age based on the year provided', () => {
+      const p = new Person({ born: 2020 })
+      p.present = 2040
+      expect(p.getAge(2030)).toEqual(10)
     })
 
-    it('tags the entry for the person\'s death', () => {
-      const p = new Person()
-      p.die()
-      const arr = p.history.filter(e => e.event === 'died')
-      expect(arr.length).toEqual(1)
+    it('calculates age based on the year the character left', () => {
+      const p = new Person({ born: 2020 })
+      p.present = 2040
+      p.left = 2035
+      expect(p.getAge()).toEqual(15)
     })
 
-    it('records the cause of death', () => {
-      const p = new Person()
-      const cause = 'chocolate'
-      p.die(cause)
-      expect(p.history[0].cause).toEqual(cause)
+    it('calculates age based on the year the character died', () => {
+      const p = new Person({ born: 2020 })
+      p.present = 2040
+      p.died = 2035
+      expect(p.getAge()).toEqual(15)
     })
   })
 
   describe('age', () => {
+    it('increments the character\'s present', () => {
+      const p = new Person({ born: 2020 })
+      const c = new Community()
+      p.age(c)
+      expect(p.present).toEqual(2021)
+    })
+
     it('won\'t let you live more than 10 years beyond your longevity', () => {
-      const p = new Person({ born: 1908 })
+      const p = new Person({ born: 2020 })
       const c = new Community()
       p.body.longevity = 100
-      p.age(c, 2019)
+      for (let i = 0; i < 120; i++) p.age(c)
       expect(p.died)
     })
   })

@@ -1,63 +1,17 @@
 import random from 'random'
 import Community from './community'
+import History from './history'
 import Person from './person'
 import { get, between } from '../../shared/utils'
 
 export default class Polycule {
-  constructor (...people) {
+  constructor (year, ...people) {
     this.people = []
     this.love = []
     this.children = []
+    this.history = new History()
+    this.history.add({ year, tags: [ 'formed' ], people, size: people.length })
     for (let i = 0; i < people.length; i++) this.add(people[i])
-  }
-
-  /**
-   * Finds a new partner to join the polycule.
-   * @param community {Community} - The Community object.
-   * @param year {number} - The year when the new partner is added to the
-   *   polycule.
-   */
-
-  findNewPartner (community, year) {
-    const ages = this.people.map(p => p.body.getAge(year))
-    const avgAge = ages.reduce((acc, curr) => acc + curr, 0) / this.people.length
-    if (typeof avgAge === 'number' && avgAge > 15) {
-      // First we get an array of the genders that the members of the polycule
-      // would be interested in. This is the union of the set of preferences
-      // from each member.
-      const numGenders = get(community, 'traditions.genders') || 3
-      let genders = []
-      this.people.forEach(p => {
-        const meet = Math.ceil(p.personality.chance('extraversion') / 25)
-        const pref = p.sexuality.getGenderPreferences(numGenders, meet)
-        genders = [ ...genders, ...pref ]
-      })
-
-      // If we have preferences, we can create some candidates.
-      if (genders.length > 0) {
-        const candidates = genders.map(gender => {
-          const gap = Math.floor((avgAge / 2) - 7)
-          const candidateBorn = year - random.int(avgAge - gap, avgAge + gap)
-          const candidate = new Person({ born: candidateBorn, gender })
-          candidate.isMate = true
-          const defaultCommunity = new Community()
-          for (let y = candidateBorn; y < year; y++) candidate.age(defaultCommunity, y)
-          return candidate
-        })
-        const dates = candidates
-          .filter(p => !p.polycule && !p.died)
-          .map(candidate => ({ candidate, polycule: new Polycule(candidate, ...this.people) }))
-        if (dates.length > 0) {
-          dates.sort((a, b) => b.polycule.avg() - a.polycule.avg())
-          if (dates[0].polycule.avg() > 75) {
-            const { candidate } = dates[0]
-            community.add(candidate)
-            this.add(candidate)
-            this.commit()
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -286,77 +240,6 @@ export default class Polycule {
       const child = new Person({ mother, father, born: year })
       this.children.push(child)
       child.parents = this
-    }
-  }
-
-  /**
-   * Reevaluate the love in relationships based on current personality traits.
-   * @param community {Community} - The Community object.
-   * @param year {number} - The year in which the polycule is changing.
-   */
-
-  change (community, year) {
-    for (let i = 0; i < this.people.length; i++) {
-      for (let j = 0; j < i; j++) {
-        const distance = 7 - this.people[i].personality.distance(this.people[j].personality)
-        const sexFactorI = (this.people[i].sexuality.libido / 100) * 2
-        const sexIJ = ((Polycule.getSexualCompatibility(this.people[i], this.people[j]) / 50) - 1) * sexFactorI
-        const sexFactorJ = (this.people[j].sexuality.libido / 100) * 2
-        const sexJI = ((Polycule.getSexualCompatibility(this.people[j], this.people[i]) / 50) - 1) * sexFactorJ
-        const delta = distance + sexIJ + sexJI
-        this.love[i][j] += delta
-        this.love[j][i] += delta
-      }
-    }
-
-    // Derive a threshold based on how agreeable everyone in the polycule is.
-    // If someone is pulling down the polycule's average love score by a number
-    // greater than that average agreeableness, then whoever is contributing
-    // the most to that state of affairs is removed. If not, consider expanding
-    // the polycule instead.
-
-    const threshold = this.people.map(p => p.personality.chance('agreeableness') / 2)
-    const avgThreshold = threshold.reduce((acc, curr) => acc + curr, 0) / threshold.length
-    const evaluation = this.partnerDelta(avgThreshold)
-    if (evaluation.recommendation) {
-      // There's one member of the polycule whose removal would make everyone
-      // happier. Someone's getting dumped. If the polycule had more than two
-      // members and the community considers monogamy a norm, this sort of
-      // drama can serve to reinforce that norm.
-      if (this.people.length > 2) community.reinforceMonogamy()
-      this.remove(this.people[evaluation.index])
-    } else {
-      // If no one's getting dumped, do we want to have a child?
-      if (this.wantChild(community, year)) {
-        this.haveChild(community, year)
-      } else {
-        // If no one's getting dumped and we don't want to have a child, is it
-        // possible that we want to expand the polycule? Lots of communities
-        // will at least start off with monogamy as a norm. That might change,
-        // but if (when?) it does, it will be because of people who are willing
-        // to challenge that norm.
-
-        let willChallenge = true
-        const monogamy = get(community, 'traditions.monogamy') || 0
-        if (monogamy > 0 && this.people.length === 2) {
-          const agreeableness = this.people.map(p => p.personality.chance('agreeableness'))
-          const mostAgreeable = Math.max(...agreeableness) / 100
-          willChallenge = random.int(1, 100) > (monogamy * mostAgreeable) * 100
-        }
-
-        const agreed = willChallenge && this.people
-          .map(p => p.wantsMate(year))
-          .reduce((acc, curr) => acc && curr, true)
-        if (agreed) {
-          const recruitment = this.people.map(p => {
-            const c1 = p.personality.check('extraversion')
-            const c2 = p.personality.check('extraversion')
-            const c3 = p.personality.check('extraversion')
-            return c1 && c2 && c3
-          }).reduce((acc, curr) => acc || curr, false)
-          if (recruitment) this.findNewPartner(community, year)
-        }
-      }
     }
   }
 

@@ -10,7 +10,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       expect(p.people).toEqual([ a, b, c ])
     })
 
@@ -18,7 +18,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
 
       const actual = [
         p.love[0][0] === 1,
@@ -39,67 +39,19 @@ describe('Polycule', () => {
 
     it('can create a theoretical polycule of one', () => {
       const a = new Person()
-      const p = new Polycule(a)
+      const p = new Polycule(2020, a)
       const actual = [
         p.people === [ a ],
         p.love === [ [ null ] ]
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
     })
-  })
 
-  describe('findNewPartner', () => {
-    it('won\'t return a partner who won\'t fit in well enough', () => {
-      const c = new Community()
-      const p = new Person()
-      p.body.born = 1979
-      p.sexuality.androphilia = 1
-      p.sexuality.gynephilia = 1
-      p.sexuality.skoliophilia = 1
-      const poly = new Polycule(p)
-      poly.findNewPartner(c, 2019)
-      expect(poly.avg() === null || poly.avg() > 30)
-    })
-
-    it('saves the polycule to each of the partners', () => {
-      const c = new Community()
-      const p = new Person()
-      p.body.born = 1979
-      p.sexuality.androphilia = 1
-      p.sexuality.gynephilia = 1
-      p.sexuality.skoliophilia = 1
-      const poly = new Polycule(p)
-      poly.findNewPartner(c, 2019)
-      const t1 = poly.avg() === null || poly.avg() > 30
-      const t2 = poly.people[0].polycule === poly
-      const t3 = poly.people.length > 1 ? poly.people[1].polycule === poly : true
-      expect(t1 && t2 && t3)
-    })
-
-    it('sometimes works out and sometimes doesn\'t', () => {
-      let successes = 0
-      let failures = 0
-      for (let i = 0; i < 100; i++) {
-        const c = new Community()
-        const p = new Person()
-        p.body.born = 1979
-        p.sexuality.androphilia = 1
-        p.sexuality.gynephilia = 1
-        p.sexuality.skoliophilia = 1
-        const poly = new Polycule(p)
-        poly.findNewPartner(c, 2019)
-        if (poly.people.length > 1) {
-          successes++
-        } else {
-          failures++
-        }
-      }
-      const actual = [
-        successes + failures === 100,
-        successes > 25,
-        successes < 75
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+    it('records that the polycule was formed', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(2020, a, b)
+      expect(p.history.get({ tags: [ 'formed' ] }).length).toEqual(1)
     })
   })
 
@@ -108,7 +60,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       p.add(c)
 
       const actual = [
@@ -135,7 +87,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       p.remove(c)
       expect(p.people.length).toEqual(2)
     })
@@ -144,7 +96,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const before = p.love.length
       p.remove(c)
       expect(p.love.length).toBeLessThan(before)
@@ -154,7 +106,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const before = p.love[0][1]
       p.remove(c)
       expect(p.love[0][1]).toEqual(before)
@@ -163,7 +115,7 @@ describe('Polycule', () => {
     it('deletes itself if only one person remains', () => {
       const a = new Person()
       const b = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       p.remove(b)
       const actual = [
         a.polycule === undefined,
@@ -182,7 +134,7 @@ describe('Polycule', () => {
       a.sexuality.libido = 50
       b.sexuality.libido = 50
       c.sexuality.libido = 100
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = [
         p.getSexualSatisfaction(a),
         p.getSexualSatisfaction(b),
@@ -196,7 +148,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       expect(p.getSexualSatisfaction(c)).toEqual(false)
     })
   })
@@ -206,7 +158,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.getLoveWithout(c)
       expect(actual.length).toEqual(2)
     })
@@ -215,7 +167,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.getLoveWithout(c)
       expect(actual[0][1]).toEqual(p.love[0][1])
     })
@@ -231,7 +183,7 @@ describe('Polycule', () => {
       a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
       a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
       a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       p.love = [
         [ null, 50, 50 ],
         [ 50, null, 50 ],
@@ -249,7 +201,7 @@ describe('Polycule', () => {
       a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
       a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
       a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       p.love = [
         [ null, 50, 10 ],
         [ 50, null, 50 ],
@@ -262,7 +214,7 @@ describe('Polycule', () => {
 
     it('returns null if there\'s only one person', () => {
       const p = new Person()
-      const poly = new Polycule(p)
+      const poly = new Polycule(2020, p)
       expect(poly.avg()).toEqual(null)
     })
   })
@@ -272,7 +224,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       p.commit()
       const actual = [
         a.polycule.constructor.name === 'Polycule',
@@ -283,18 +235,18 @@ describe('Polycule', () => {
     })
   })
 
-  describe('getPartners', () => {
+  describe('getOthers', () => {
     it('returns the other members of the polycule', () => {
       const a = new Person()
       const b = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       expect(p.getOthers(a)).toEqual([ b ])
     })
 
     it('returns everyone in the polycule if given someone not in it', () => {
       const a = new Person()
       const b = new Person()
-      const p = new Polycule(a, b)
+      const p = new Polycule(2020, a, b)
       expect(p.getOthers()).toEqual([ a, b ])
     })
   })
@@ -304,7 +256,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.partnerDelta()
       const { deltas } = actual
       const test = `${typeof deltas[0]} ${typeof deltas[1]} ${typeof deltas[2]}`
@@ -315,7 +267,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.partnerDelta()
       const tests = [
         typeof actual.index === 'number',
@@ -329,7 +281,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.partnerDelta()
       expect(typeof actual.recommendation).toEqual('boolean')
     })
@@ -338,7 +290,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
+      const p = new Polycule(2020, a, b, c)
       const actual = p.partnerDelta(20)
       const expected = Math.max(...actual.deltas) > 20
       expect(actual.recommendation).toEqual(expected)
@@ -354,8 +306,8 @@ describe('Polycule', () => {
       a.body.adjustFertility(false, 25)
       b.body.adjustFertility(false, 25)
       c.body.adjustFertility(false, 25)
-      const p = new Polycule(a, b, c)
-      expect(typeof p.wantChild(m, 2019)).toEqual('boolean')
+      const p = new Polycule(2020, a, b, c)
+      expect(typeof p.wantChild(m, 2020)).toEqual('boolean')
     })
   })
 
@@ -367,8 +319,8 @@ describe('Polycule', () => {
       const c = new Person()
       a.body.hasWomb = true; a.body.hasPenis = false; a.body.infertile = false; a.body.fertility = 100
       b.body.hasWomb = false; b.body.hasPenis = true; b.body.infertile = false; b.body.fertility = 100
-      const p = new Polycule(a, b, c)
-      p.haveChild(m, 2019)
+      const p = new Polycule(2020, a, b, c)
+      p.haveChild(m, 2020)
       expect(p.children.length).toBeLessThanOrEqual(1)
     })
 
@@ -379,42 +331,9 @@ describe('Polycule', () => {
       const c = new Person()
       a.body.hasWomb = true; a.body.hasPenis = false; a.body.infertile = false; a.body.fertility = 100
       b.body.hasWomb = false; b.body.hasPenis = true; b.body.infertile = false; b.body.fertility = 100
-      const p = new Polycule(a, b, c)
-      p.haveChild(m, 2019)
+      const p = new Polycule(2020, a, b, c)
+      p.haveChild(m, 2020)
       expect(p.children.length === 0 || p.children[0].parents === p)
-    })
-  })
-
-  describe('change', () => {
-    it('increases love scores when people grow closer', () => {
-      const community = new Community()
-      const a = new Person()
-      const b = new Person()
-      const p = new Polycule(a, b)
-      const before = p.love[0][1]
-      a.personality.openness.value = b.personality.openness.value
-      p.change(community, 2019)
-      expect(p.love[0][1]).toBeGreaterThan(before)
-    })
-
-    it('maintains symmetry', () => {
-      const community = new Community()
-      const a = new Person()
-      const b = new Person()
-      const p = new Polycule(a, b)
-      p.change(community, 2019)
-      expect(p.love[0][1]).toEqual(p.love[1][0])
-    })
-
-    it('might kick someone out', () => {
-      const community = new Community()
-      const a = new Person()
-      const b = new Person()
-      const c = new Person()
-      const p = new Polycule(a, b, c)
-      const before = p.people.length
-      p.change(community, 2019)
-      expect(p.people.length).toBeLessThanOrEqual(before)
     })
   })
 

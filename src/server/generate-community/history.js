@@ -53,6 +53,8 @@ export default class History {
         const intersection = e.tags.filter(x => t.includes(x))
         return intersection.length > 0
       })
+    } else {
+      return this.record
     }
   }
 }

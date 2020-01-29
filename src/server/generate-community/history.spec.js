@@ -64,5 +64,16 @@ describe('History', () => {
       const actual = h.get({ year: 2020, tags: [ 'test1' ] })
       expect(actual.length).toEqual(1)
     })
+
+    it('returns the entire record if not given appropriate criteria', () => {
+      const h = new History()
+      const entries = [
+        { year: 2019, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test2' ] }
+      ]
+      entries.forEach(e => h.add(e))
+      expect(h.get({})).toEqual(entries)
+    })
   })
 })

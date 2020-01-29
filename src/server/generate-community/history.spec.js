@@ -1,0 +1,68 @@
+/* global describe, it, expect */
+
+import History from './history'
+
+describe('History', () => {
+  describe('constructor', () => {
+    it('creates an array', () => {
+      const h = new History()
+      expect(h.record).toEqual([])
+    })
+  })
+
+  describe('add', () => {
+    it('adds an entry to the history', () => {
+      const h = new History()
+      const entry = { year: 2020, tags: [ 'test' ] }
+      h.add(entry)
+      expect(h.record).toEqual([ entry ])
+    })
+  })
+
+  describe('get', () => {
+    it('returns all entries for a given year', () => {
+      const h = new History()
+      h.add({ year: 2019, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test2' ] })
+      const actual = h.get({ year: 2020 })
+      expect(actual.length).toEqual(2)
+    })
+
+    it('returns all entries with a given tag', () => {
+      const h = new History()
+      h.add({ year: 2019, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test2' ] })
+      const actual = h.get({ tag: 'test1' })
+      expect(actual.length).toEqual(2)
+    })
+
+    it('returns all entries with one of a set of tags', () => {
+      const h = new History()
+      h.add({ year: 2019, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test2' ] })
+      const actual = h.get({ tags: [ 'test1', 'test2' ] })
+      expect(actual.length).toEqual(3)
+    })
+
+    it('combines single tag and array of tags', () => {
+      const h = new History()
+      h.add({ year: 2019, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test2' ] })
+      const actual = h.get({ tag: 'test1', tags: [ 'test2' ] })
+      expect(actual.length).toEqual(3)
+    })
+
+    it('returns only those entries that match the year and at least one tag', () => {
+      const h = new History()
+      h.add({ year: 2019, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test1' ] })
+      h.add({ year: 2020, tags: [ 'test2' ] })
+      const actual = h.get({ year: 2020, tags: [ 'test1' ] })
+      expect(actual.length).toEqual(1)
+    })
+  })
+})

@@ -5,7 +5,6 @@ import Personality from './personality'
 import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
-import { between } from '../../shared/utils'
 
 export default class Person {
   constructor (args = {}) {

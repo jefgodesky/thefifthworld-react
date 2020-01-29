@@ -1,6 +1,5 @@
 /* global describe, it, expect */
 
-import Community from './community'
 import Person from './person'
 
 describe('Person', () => {

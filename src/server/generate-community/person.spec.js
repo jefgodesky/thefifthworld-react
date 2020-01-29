@@ -147,16 +147,14 @@ describe('Person', () => {
   describe('age', () => {
     it('increments the character\'s present', () => {
       const p = new Person({ born: 2020 })
-      const c = new Community()
-      p.age(c)
+      p.age()
       expect(p.present).toEqual(2021)
     })
 
     it('won\'t let you live more than 10 years beyond your longevity', () => {
       const p = new Person({ born: 2020 })
-      const c = new Community()
       p.body.longevity = 100
-      for (let i = 0; i < 120; i++) p.age(c)
+      for (let i = 0; i < 120; i++) p.age()
       expect(p.died)
     })
   })

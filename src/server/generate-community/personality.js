@@ -63,21 +63,21 @@ export default class Personality {
    * community. If she's somewhat agreeable (as reflected by a single
    * agreeableness check) and has partners, she'll conform to the average of
    * her partners. Otherwise, she'll change randomly.
-   * @param community {Community} - The community object.
-   * @param partners {Person[]} - An array of the person's partners.
+   * @param community {Community} - (Optional) The community object.
+   * @param partners {Person[]} - (Optional) An array of the person's partners.
    */
 
-  change (community, partners) {
+  change (community = undefined, partners = undefined) {
     const traits = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
     const directions = [ '+', '-' ]
-    const willConformToCommunity = this.check('agreeableness') && this.check('agreeableness')
-    const willConformToPartners = isPopulatedArray(partners) && this.check('agreeableness')
+    const willConformToCommunity = community && this.check('agreeableness') && this.check('agreeableness')
+    const willConformToPartners = partners && isPopulatedArray(partners) && this.check('agreeableness')
     const trait = pickRandom(traits)
     let direction = pickRandom(directions)
 
     if (willConformToCommunity || willConformToPartners) {
       const avg = willConformToCommunity
-        ? Personality.getAverage(Object.keys(community.people).map(k => community.people[k]), trait)
+        ? Personality.getAverage(community.people, trait)
         : Personality.getAverage(partners, trait)
       // Hey, doesn't this mean this person will frequently over-correct? Yeah, it does!
       // That's a feature, not a bug! People are messy and imprecise!

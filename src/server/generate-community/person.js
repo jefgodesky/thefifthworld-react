@@ -108,14 +108,14 @@ export default class Person {
 
   /**
    * Ages a character.
-   * @param community {Community} - The community object.
+   * @param community {Community} - (Optional) The community object.
    */
 
-  age (community) {
+  age (community= undefined) {
     this.present++
     const age = this.getAge(this.present)
     if (age) {
-      const hasProblems = community.hasProblems()
+      const hasProblems = community ? community.hasProblems() : false
       this.body.adjustFertility(hasProblems, age)
 
       // Check for death, injury, or illness
@@ -123,9 +123,14 @@ export default class Person {
       if (!this.died) {
         let chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
         if (random.int(1, 1000) < chanceOfInjury) this.body.getHurt()
+        // TODO: Create a history class, and report to it when a character gets hurt.
+        // TODO: If there's a conflict, see if character gets hurt in it.
 
         let chanceOfIllness = 8 * (this.personality.chance('openness') / 50)
         if (random.int(1, 1000) < chanceOfIllness) this.body.getSick()
+        // TODO: Create a history class, and report to it when a character gets sick.
+        // TODO: If it's a time of sickness, see if character gets sick b/c of it.
+        // TODO: If it's lean times, see if character gets sick b/c of it.
       }
 
       // People change
@@ -133,6 +138,8 @@ export default class Person {
         ? this.polycule.getOthers(this)
         : []
       if (!this.died) this.personality.change(community, partners)
+
+      // TODO: Relationships and skills.
     }
   }
 }

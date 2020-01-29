@@ -99,11 +99,9 @@ describe('Personality', () => {
         return openness.value + conscientiousness.value + extraversion.value + agreeableness.value + neuroticism.value
       }
 
-      const c = new Community()
       const p = new Person()
-      c.add(p)
       const before = sum(p.personality)
-      p.personality.change(c)
+      p.personality.change()
       const after = sum(p.personality)
       expect(before).not.toEqual(after)
     })

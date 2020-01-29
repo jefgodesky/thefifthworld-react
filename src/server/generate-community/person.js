@@ -1,6 +1,7 @@
 import random from 'random'
 
 import Body from './body'
+import History from './history'
 import Personality from './personality'
 import Polycule from './polycule'
 import Sexuality from './sexuality'
@@ -29,6 +30,9 @@ export default class Person {
 
     this.born = year
     this.present = year
+
+    this.history = new History()
+    if (year) this.history.add({ year, tags: [ 'born' ]})
 
     if (this.genotype.dead) this.die('infant mortality', year)
   }
@@ -64,8 +68,10 @@ export default class Person {
    */
 
   die (cause = 'natural') {
-    this.died = this.present
-    if (this.polycule) this.polycule.remove(this)
+    const year = this.present
+    this.died = year
+    if (this.polycule) this.polycule.remove(this, year)
+    this.history.add({ year, tags: [ 'died' ] })
   }
 
   /**
@@ -73,8 +79,10 @@ export default class Person {
    */
 
   leave () {
-    this.left = this.present
-    if (this.polycule) this.polycule.remove(this)
+    const year = this.present
+    this.left = year
+    if (this.polycule) this.polycule.remove(this, year)
+    this.history.add({ year, tags: [ 'left' ] })
   }
 
   /**

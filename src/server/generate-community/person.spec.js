@@ -65,6 +65,19 @@ describe('Person', () => {
       }
       expect(infantMortality).toBeGreaterThan(0)
     })
+
+    it('adds a birth entry', () => {
+      const mom = new Person()
+      mom.genotype.hasWomb = true
+      mom.genotype.hasPenis = false
+
+      const dad = new Person()
+      dad.genotype.hasWomb = false
+      dad.genotype.hasPenis = true
+
+      const baby = new Person({ parents: [ mom.genotype, dad.genotype ], born: 2020 })
+      expect(baby.history.get({ tags: [ 'born' ] }).length).toEqual(1)
+    })
   })
 
   describe('assignGender', () => {
@@ -109,9 +122,33 @@ describe('Person', () => {
 
   describe('die', () => {
     it('marks the character as dead', () => {
+      const now = new Date()
+      const year = now.getFullYear()
       const p = new Person()
       p.die()
-      expect(p.died)
+      expect(p.died).toEqual(year)
+    })
+
+    it('adds it to the character\'s history', () => {
+      const p = new Person()
+      p.die()
+      expect(p.history.get({ tags: [ 'died' ] }).length).toEqual(1)
+    })
+  })
+
+  describe('leave', () => {
+    it('marks that the character left the community', () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const p = new Person()
+      p.leave()
+      expect(p.left).toEqual(year)
+    })
+
+    it('adds it to the character\'s history', () => {
+      const p = new Person()
+      p.leave()
+      expect(p.history.get({ tags: [ 'left' ] }).length).toEqual(1)
     })
   })
 

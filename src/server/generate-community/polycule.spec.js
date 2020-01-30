@@ -21,30 +21,33 @@ describe('Polycule', () => {
       const p = new Polycule(a, b, c)
 
       const actual = [
-        p.love[0][0] === 1,
+        p.love[0][0] === null,
         typeof p.love[0][1] === 'number',
         typeof p.love[0][2] === 'number',
         typeof p.love[1][0] === 'number',
-        p.love[1][1] === 1,
+        p.love[1][1] === null,
         typeof p.love[1][2] === 'number',
         typeof p.love[2][0] === 'number',
         typeof p.love[2][1] === 'number',
-        p.love[2][2] === 1,
+        p.love[2][2] === null,
         p.love[0][1] === p.love[1][0],
         p.love[0][2] === p.love[2][0],
         p.love[1][2] === p.love[2][1]
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(actual).toEqual(true)
     })
 
     it('can create a theoretical polycule of one', () => {
       const a = new Person()
       const p = new Polycule(a)
       const actual = [
-        p.people === [ a ],
-        p.love === [ [ null ] ]
+        p.people.length === 1,
+        p.people[0] === a,
+        p.love.length === 1,
+        p.love[0].length === 1,
+        p.love[0][0] === null
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(actual).toEqual(true)
     })
 
     it('records that the polycule was formed', () => {
@@ -94,15 +97,15 @@ describe('Polycule', () => {
 
       const actual = [
         p.people.length === 3,
-        p.love[0][0] === 1,
+        p.love[0][0] === null,
         typeof p.love[0][1] === 'number',
         typeof p.love[0][2] === 'number',
         typeof p.love[1][0] === 'number',
-        p.love[1][1] === 1,
+        p.love[1][1] === null,
         typeof p.love[1][2] === 'number',
         typeof p.love[2][0] === 'number',
         typeof p.love[2][1] === 'number',
-        p.love[2][2] === 1,
+        p.love[2][2] === null,
         p.love[0][1] === p.love[1][0],
         p.love[0][2] === p.love[2][0],
         p.love[1][2] === p.love[2][1]
@@ -118,6 +121,32 @@ describe('Polycule', () => {
       const p = new Polycule(a, b)
       p.add(c)
       expect(p.history.get({ tags: [ 'expanded' ] }).length).toEqual(1)
+    })
+
+    it('adds the community if it didn\'t have one yet', () => {
+      const a = new Person({ born: 2000 })
+      const b = new Person({ born: 2000 })
+      const community = new Community()
+      const c = new Person({ born: 2000 })
+      community.add(c)
+      for (let i = 0; i < 20; i++) { a.age(); b.age(); c.age() }
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.community).toEqual(community)
+    })
+
+    it('doesn\'t add the community if it already has one', () => {
+      const c1 = new Community()
+      const c2 = new Community()
+      const a = new Person({ born: 2000 })
+      const b = new Person({ born: 2000 })
+      const c = new Person({ born: 2000 })
+      c1.add(a)
+      c2.add(b)
+      for (let i = 0; i < 20; i++) { a.age(); b.age(); c.age() }
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.community).toEqual(c1)
     })
   })
 
@@ -151,6 +180,15 @@ describe('Polycule', () => {
       expect(p.love[0][1]).toEqual(before)
     })
 
+    it('records that someone left', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      expect(p.history.get({ tag: 'reduced' }).length).toEqual(1)
+    })
+
     it('deletes itself if only one person remains', () => {
       const a = new Person()
       const b = new Person()
@@ -159,9 +197,29 @@ describe('Polycule', () => {
       const actual = [
         a.polycule === undefined,
         b.polycule === undefined,
-        p === undefined
+        p.love === undefined
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(actual).toEqual(true)
+    })
+
+    it('removes itself from the community list', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      c.add(a)
+      c.add(b)
+      const p = new Polycule(a, b)
+      p.commit()
+      p.remove(b)
+      expect(c.polycules.length).toEqual(0)
+    })
+
+    it('records that the polycule dissolved', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b)
+      expect(p.history.get({ tag: 'dissolved' }).length).toEqual(1)
     })
   })
 
@@ -270,7 +328,18 @@ describe('Polycule', () => {
         b.polycule.constructor.name === 'Polycule',
         c.polycule === undefined
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(actual).toEqual(true)
+    })
+
+    it('saves the polycule to the community', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      c.add(a)
+      c.add(b)
+      const p = new Polycule(a, b)
+      p.commit()
+      expect(c.polycules.length).toEqual(1)
     })
   })
 

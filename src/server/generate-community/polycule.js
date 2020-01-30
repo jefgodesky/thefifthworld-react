@@ -12,9 +12,19 @@ export default class Polycule {
 
     for (let i = 0; i < people.length; i++) this.add(people[i])
 
+    this.getCommunity()
     const year = this.getPresent()
     this.history = new History()
     if (year) this.history.add({ year, tags: [ 'formed' ], size: people.length })
+  }
+
+  /**
+   * Get the community that this polycule belongs to by looking at its members.
+   */
+
+  getCommunity () {
+    const communities = this.people.map(p => p.community).filter(c => c && c.constructor && c.constructor.name === 'Community')
+    this.community = isPopulatedArray(communities) ? communities[0] : undefined
   }
 
   /**
@@ -56,6 +66,7 @@ export default class Polycule {
 
     this.love.push([ ...arr, null ])
     this.people.push(person)
+    if (!this.community) this.getCommunity()
 
     if (this.history) {
       const year = this.getPresent()
@@ -69,15 +80,21 @@ export default class Polycule {
    */
 
   remove (person) {
+    const year = this.getPresent()
     if (this.people.includes(person)) {
-      const community = person.community
-      this.love = this.getLoveWithout(person)
-      this.people = this.people.filter(p => p !== person)
-      person.polycule = undefined
-
-      if (this.people.length < 2) {
-        this.people.forEach(p => { p.polycule = null })
-        if (community) community.removePolycule(this)
+      if (this.people.length > 2) {
+        // Remove one person, but the polycule remains
+        this.love = this.getLoveWithout(person)
+        this.people = this.people.filter(p => p !== person)
+        person.polycule = undefined
+        if (year) this.history.add({ year, tags: [ 'reduced' ], size: this.people.length })
+      } else {
+        // We're down to just two people, so this is the end of the polycule.
+        this.love = undefined
+        this.people.forEach(p => { p.polycule = undefined })
+        this.people = undefined
+        if (this.community) this.community.removePolycule(this)
+        if (year) this.history.add({year, tags: [ 'dissolved' ] })
       }
     }
   }
@@ -160,6 +177,8 @@ export default class Polycule {
     this.people.forEach(person => {
       person.polycule = this
     })
+
+    if (this.community) this.community.addPolycule(this)
   }
 
   /**

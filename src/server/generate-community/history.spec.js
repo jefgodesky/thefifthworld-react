@@ -56,6 +56,34 @@ describe('History', () => {
       expect(actual.length).toEqual(3)
     })
 
+    it('returns entries between two years (inclusive)', () => {
+      const h = new History()
+      const entries = [
+        { year: 2012, tags: [ 'test' ] },
+        { year: 2013, tags: [ 'test' ] },
+        { year: 2014, tags: [ 'test' ] },
+        { year: 2015, tags: [ 'nope' ] },
+        { year: 2016, tags: [ 'test' ] },
+        { year: 2017, tags: [ 'test' ] }
+      ]
+      entries.forEach(e => h.add(e))
+      expect(h.get({ between: [ 2014, 2016 ] }).length).toEqual(3)
+    })
+
+    it('combines interval and tags', () => {
+      const h = new History()
+      const entries = [
+        { year: 2012, tags: [ 'test' ] },
+        { year: 2013, tags: [ 'test' ] },
+        { year: 2014, tags: [ 'test' ] },
+        { year: 2015, tags: [ 'nope' ] },
+        { year: 2016, tags: [ 'test' ] },
+        { year: 2017, tags: [ 'test' ] }
+      ]
+      entries.forEach(e => h.add(e))
+      expect(h.get({ between: [ 2014, 2016 ], tag: 'test' }).length).toEqual(2)
+    })
+
     it('returns only those entries that match the year and at least one tag', () => {
       const h = new History()
       h.add({ year: 2019, tags: [ 'test1' ] })

@@ -102,7 +102,7 @@ export default class Person {
    *   be if we assume he's still alive somewhere).
    */
 
-  getAge (year= undefined) {
+  getAge (year = undefined) {
     const { born, died, left, present } = this
     const years = []
     if (typeof year === 'number') years.push(year)
@@ -111,6 +111,38 @@ export default class Person {
     if (typeof present === 'number') years.push(present)
     const mark = Math.min(...years)
     return born && mark ? mark - born : undefined
+  }
+
+  /**
+   * Processes the character suffering a serious injury.
+   */
+
+  getHurt () {
+    const outcome = this.body.getHurt()
+    if (outcome === 'death') {
+      this.die('injury')
+    } else if (outcome === 'infection') {
+      this.getSick([ 'infection', 'injury' ])
+    } else {
+      this.history.add({ year: this.present, tags: [ 'injury' ], outcome })
+    }
+  }
+
+  /**
+   * Processes the character suffering a serious bout of illness.
+   * @param special {[string]} - A string specifying anything special to note
+   *   about the illness (e.g., it's an infection from a wound, it was a direct
+   *   result of a time of sickness, or it was a direct result of lean times).
+   */
+
+  getSick (special = []) {
+    const outcome = this.body.getSick()
+    const tags = [ 'illness', ...special ]
+    if (outcome === 'death') {
+      this.die(tags.join(' '))
+    } else {
+      this.history.add({ year: this.present, tags, outcome })
+    }
   }
 
   /**
@@ -129,13 +161,11 @@ export default class Person {
       if (this.body.checkForDyingOfOldAge(age)) this.die('natural')
       if (!this.died) {
         let chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
-        if (random.int(1, 1000) < chanceOfInjury) this.body.getHurt()
-        // TODO: Create a history class, and report to it when a character gets hurt.
+        if (random.int(1, 1000) < chanceOfInjury) this.getHurt()
         // TODO: If there's a conflict, see if character gets hurt in it.
 
         let chanceOfIllness = 8 * (this.personality.chance('openness') / 50)
-        if (random.int(1, 1000) < chanceOfIllness) this.body.getSick()
-        // TODO: Create a history class, and report to it when a character gets sick.
+        if (random.int(1, 1000) < chanceOfIllness) this.getSick()
         // TODO: If it's a time of sickness, see if character gets sick b/c of it.
         // TODO: If it's lean times, see if character gets sick b/c of it.
       }

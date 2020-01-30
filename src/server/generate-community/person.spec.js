@@ -180,6 +180,28 @@ describe('Person', () => {
     })
   })
 
+  describe('getHurt', () => {
+    it('records the injury', () => {
+      const p = new Person()
+      p.getHurt()
+      expect(p.history.get({ tag: 'injury' }).length).toEqual(1)
+    })
+  })
+
+  describe('getSick', () => {
+    it('records the illness', () => {
+      const p = new Person()
+      p.getSick()
+      expect(p.history.get({ tag: 'illness' }).length).toEqual(1)
+    })
+
+    it('records special tags', () => {
+      const p = new Person()
+      p.getSick([ 'from sickness' ])
+      expect(p.history.get({ tag: 'from sickness' }).length).toEqual(1)
+    })
+  })
+
   describe('age', () => {
     it('increments the character\'s present', () => {
       const p = new Person({ born: 2020 })

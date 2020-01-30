@@ -199,6 +199,28 @@ export default class Community {
   }
 
   /**
+   * Generate some number of random strangers.
+   * @returns {[Person]} - An array of strangers.
+   */
+
+  generateStrangers () {
+    const { present } = this
+    const population = this.getCurrentPopulation().length
+    const min = Math.max(5, population / 8)
+    const max = Math.max(10, population / 4)
+    const num = random.int(min, max)
+    const strangers = []
+    for (let i = 0; i < num; i++) {
+      const age = random.int(16, 65)
+      const born = present - age
+      const stranger = new Person({ born })
+      for (let y = born; y <= present; y++) stranger.age()
+      strangers.push(stranger)
+    }
+    return strangers
+  }
+
+  /**
    * A lot of communities begin with monogamy as a norm. This can change
    * (and in fact, in most cases, will), but we can leave that up to the
    * history of the community and the people in it. While this is going on,

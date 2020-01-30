@@ -14,7 +14,7 @@ export default class Polycule {
 
     const year = this.getPresent()
     this.history = new History()
-    if (year) this.history.add({ year, tags: [ 'formed' ], people, size: people.length })
+    if (year) this.history.add({ year, tags: [ 'formed' ], size: people.length })
   }
 
   /**
@@ -53,9 +53,14 @@ export default class Polycule {
       this.love[i] = [ ...this.love[i], score ]
       arr.push(score)
     }
-    this.love.push([ ...arr, null ])
 
+    this.love.push([ ...arr, null ])
     this.people.push(person)
+
+    if (this.history) {
+      const year = this.getPresent()
+      if (year) this.history.add({year, tags: ['expanded'], size: this.people.length})
+    }
   }
 
   /**

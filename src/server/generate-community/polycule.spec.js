@@ -107,7 +107,17 @@ describe('Polycule', () => {
         p.love[0][2] === p.love[2][0],
         p.love[1][2] === p.love[2][1]
       ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(actual).toEqual(true)
+    })
+
+    it('records the expansion', () => {
+      const a = new Person({ born: 2000 })
+      const b = new Person({ born: 2000 })
+      const c = new Person({ born: 2000 })
+      for (let i = 0; i < 20; i++) { a.age(); b.age(); c.age() }
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.history.get({ tags: [ 'expanded' ] }).length).toEqual(1)
     })
   })
 

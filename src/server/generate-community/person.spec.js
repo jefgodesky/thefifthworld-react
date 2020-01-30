@@ -186,6 +186,12 @@ describe('Person', () => {
       p.getHurt()
       expect(p.history.get({ tag: 'injury' }).length).toEqual(1)
     })
+
+    it('records special tags', () => {
+      const p = new Person()
+      p.getHurt([ 'in conflict' ])
+      expect(p.history.get({ tag: 'in conflict' }).length).toEqual(1)
+    })
   })
 
   describe('getSick', () => {

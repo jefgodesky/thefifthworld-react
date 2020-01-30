@@ -115,16 +115,19 @@ export default class Person {
 
   /**
    * Processes the character suffering a serious injury.
+   * @param special {[string]} - A string specifying anything special to note
+   *   about the injury (e.g., it's an injury suffered during a conflcit).
    */
 
-  getHurt () {
+  getHurt (special= []) {
     const outcome = this.body.getHurt()
+    const tags = [ 'injury', ...special ]
     if (outcome === 'death') {
-      this.die('injury')
+      this.die(tags.join(' '))
     } else if (outcome === 'infection') {
-      this.getSick([ 'infection', 'injury' ])
+      this.getSick([ 'infection', ...tags ])
     } else {
-      this.history.add({ year: this.present, tags: [ 'injury' ], outcome })
+      this.history.add({ year: this.present, tags, outcome })
     }
   }
 
@@ -155,6 +158,8 @@ export default class Person {
     const age = this.getAge(this.present)
     if (age) {
       const hasProblems = community ? community.hasProblems() : false
+      const status = community && community.status ? community.status : { conflict: false, sickness: false, lean: false }
+      const { conflict, sickness, lean } = status
       this.body.adjustFertility(hasProblems, age)
 
       // Check for death, injury, or illness
@@ -162,12 +167,15 @@ export default class Person {
       if (!this.died) {
         let chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
         if (random.int(1, 1000) < chanceOfInjury) this.getHurt()
-        // TODO: If there's a conflict, see if character gets hurt in it.
+        if (conflict) {
+          const odds = age > 15 && age < 35 ? 100 : 500
+          if (random.int(1, odds) < chanceOfInjury) this.getHurt([ 'in conflict' ])
+        }
 
         let chanceOfIllness = 8 * (this.personality.chance('openness') / 50)
         if (random.int(1, 1000) < chanceOfIllness) this.getSick()
-        // TODO: If it's a time of sickness, see if character gets sick b/c of it.
-        // TODO: If it's lean times, see if character gets sick b/c of it.
+        if (sickness && random.int(1, 1000) < chanceOfIllness * 10) this.getSick([ 'from sickness' ])
+        if (lean && random.int(1, 1000) < chanceOfIllness * 2) this.getSick([ 'from sickness' ])
       }
 
       // People change

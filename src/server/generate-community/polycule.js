@@ -2,16 +2,30 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
-import { get, between } from '../../shared/utils'
+import { between, isPopulatedArray } from '../../shared/utils'
 
 export default class Polycule {
-  constructor (year, ...people) {
+  constructor (...people) {
     this.people = []
     this.love = []
     this.children = []
-    this.history = new History()
-    this.history.add({ year, tags: [ 'formed' ], people, size: people.length })
+
     for (let i = 0; i < people.length; i++) this.add(people[i])
+
+    const year = this.getPresent()
+    this.history = new History()
+    if (year) this.history.add({ year, tags: [ 'formed' ], people, size: people.length })
+  }
+
+  /**
+   * Returns the present year for the current state of the polycule, as
+   * determined by finding the latest present for each of the members.
+   * @returns {number} - The present year for the polycule.
+   */
+
+  getPresent () {
+    const years = this.people.map(p => p.present).filter(y => typeof y === 'number')
+    return isPopulatedArray(years) ? Math.max(...years) : undefined
   }
 
   /**

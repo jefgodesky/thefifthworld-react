@@ -1,4 +1,5 @@
 import random from 'random'
+import History from './history'
 import Person from './person'
 import { clone, daysFromNow, get, isPopulatedArray } from '../../shared/utils'
 
@@ -17,10 +18,11 @@ export default class Community {
    * when it needs to run a second simulation because the first one failed.
    */
 
-  init () {
+  init (year) {
     this.people = []
     this.polycules = []
-    this.history = []
+    this.present = year
+    this.history = new History()
     const randomizer = random.normal(25, 1)
     if (!this.territory) this.territory = {}
     this.territory.yield = 0
@@ -33,12 +35,12 @@ export default class Community {
   }
 
   /**
-   * Adds a person to the community and returns that person's ID.
+   * Adds a person to the community.
    * @param person {Person} - The person to add to the community.
    */
 
   add (person) {
-    if (person && person.constructor.name === 'Person') {
+    if (person && person.constructor && person.constructor.name === 'Person') {
       this.people.push(person)
       person.community = this
     }
@@ -64,7 +66,11 @@ export default class Community {
    */
 
   removePolycule (polycule) {
-    this.polycules = this.polycules.filter(p => p !== polycule)
+    if (!this.polycules || !Array.isArray(this.polycules)) {
+      this.polycules = []
+    } else {
+      this.polycules = this.polycules.filter(p => p !== polycule)
+    }
   }
 
   /**
@@ -97,9 +103,8 @@ export default class Community {
    */
 
   getRecentHistory (years = 5) {
-    return isPopulatedArray(this.history)
-      ? this.history.slice(Math.max(this.history.length - years, 0))
-      : []
+    const { present } = this
+    return this.history.get({ between: [ present - years + 1, present ] })
   }
 
   /**
@@ -274,7 +279,7 @@ export default class Community {
       sick: this.status.sick,
       conflict: this.status.conflict
     }
-    this.history.push(entry)
+    this.history.add(entry)
   }
 
   /**

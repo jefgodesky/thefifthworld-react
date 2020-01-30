@@ -26,11 +26,6 @@ describe('Community', () => {
       expect(c.polycules).toEqual([])
     })
 
-    it('prepares history', () => {
-      const c = new Community()
-      expect(c.history).toEqual([])
-    })
-
     it('sets an initial discord', () => {
       const c = new Community()
       expect(c.status.discord).toBeLessThan(50)
@@ -144,20 +139,23 @@ describe('Community', () => {
   describe('getRecentHistory', () => {
     it('returns 5 years by default', () => {
       const c = new Community()
-      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      for (let i = 0; i < 10; i++) c.recordHistory(i)
+      c.present = 9
       expect(c.getRecentHistory().length).toEqual(5)
     })
 
     it('returns the number of entries requested', () => {
       const c = new Community()
-      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      for (let i = 0; i < 10; i++) c.recordHistory(i)
+      c.present = 9
       expect(c.getRecentHistory(8).length).toEqual(8)
     })
 
     it('returns no more than the number of entries in the history', () => {
       const c = new Community()
-      c.history = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-      expect(c.getRecentHistory(25).length).toEqual(11)
+      for (let i = 0; i < 10; i++) c.recordHistory(i)
+      c.present = 9
+      expect(c.getRecentHistory(20).length).toEqual(10)
     })
   })
 

@@ -32,6 +32,7 @@ export default class Body {
     const randomLongevity = random.normal(80, 5)
     this.type = rand()
     this.longevity = randomLongevity()
+    this.attractiveness = rand()
     this.eyes = random.float(0, 100) < 0.016
       ? { left: 'Blind', right: 'Blind' }
       : { left: 'Healthy', right: 'Healthy' }
@@ -114,6 +115,7 @@ export default class Body {
 
           baby.type = descent(mother.type, father.type)
           baby.longevity = descent(mother.longevity, father.longevity)
+          baby.attractiveness = descent(mother.attractiveness, father.attractiveness)
 
           // We started off with random values for eyes, ears, and limbs, but
           // if either of your parents were born blind, then there's a much

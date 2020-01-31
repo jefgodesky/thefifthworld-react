@@ -14,6 +14,11 @@ describe('Body', () => {
       expect(b.longevity).toBeGreaterThan(50)
     })
 
+    it('assigns an attractiveness score', () => {
+      const b = new Body()
+      expect(typeof b.attractiveness).toEqual('number')
+    })
+
     it('determines if both eyes can see', () => {
       const b = new Body()
       const actual = [
@@ -173,6 +178,25 @@ describe('Body', () => {
       const actual = [
         baby.longevity >= 70,
         baby.longevity <= 80
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual)
+    })
+
+    it('returns a baby with an attractiveness score between its mother and father', () => {
+      const mama = new Body()
+      mama.attractiveness = 1
+      mama.hasPenis = false
+      mama.hasWomb = true
+
+      const papa = new Body()
+      papa.attractiveness = 0
+      papa.hasPenis = true
+      papa.hasWomb = false
+
+      const baby = Body.makeBaby([ mama, papa ])
+      const actual = [
+        baby.attractiveness >= 0,
+        baby.attractiveness <= 1
       ].reduce((acc, curr) => acc && curr, true)
       expect(actual)
     })

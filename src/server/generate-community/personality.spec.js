@@ -105,6 +105,47 @@ describe('Personality', () => {
       const after = sum(p.personality)
       expect(before).not.toEqual(after)
     })
+
+    it('will sometimes raise and sometimes lower a trait', () => {
+      const sum = p => {
+        const { openness, conscientiousness, extraversion, agreeableness, neuroticism } = p
+        return openness.value + conscientiousness.value + extraversion.value + agreeableness.value + neuroticism.value
+      }
+
+      const p = new Person()
+      const before = sum(p.personality)
+      for (let i = 0; i < 100; i++) p.personality.change()
+      const after = sum(p.personality)
+      expect(after > before - 5 && after < before + 5).toEqual(true)
+    })
+
+    it('will tend to move towards the community\'s average', () => {
+      const c = new Community()
+      for (let i = 0; i < 100; i++) {
+        const m = new Person()
+        m.personality.agreeableness.value = 10
+        c.add(m)
+      }
+
+      const p = new Personality()
+      p.agreeableness.value = 3
+      for (let i = 0; i < 100; i++) p.change(c)
+      expect(p.agreeableness.value).toBeGreaterThan(3)
+    })
+
+    it('will tend to move towards the circle\'s average', () => {
+      const circle = []
+      for (let i = 0; i < 2; i++) {
+        const m = new Person()
+        m.personality.agreeableness.value = 10
+        circle.push(m)
+      }
+
+      const p = new Personality()
+      p.agreeableness.value = 3
+      for (let i = 0; i < 100; i++) p.change(undefined, circle)
+      expect(p.agreeableness.value).toBeGreaterThan(3)
+    })
   })
 
   describe('chance', () => {

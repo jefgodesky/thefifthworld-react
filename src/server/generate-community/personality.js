@@ -69,7 +69,7 @@ export default class Personality {
 
   change (community = undefined, partners = undefined) {
     const traits = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
-    const directions = [ '+', '-' ]
+    const directions = [ 1, -1 ]
     const willConformToCommunity = community && this.check('agreeableness') && this.check('agreeableness')
     const willConformToPartners = partners && isPopulatedArray(partners) && this.check('agreeableness')
     const trait = pickRandom(traits)
@@ -81,7 +81,7 @@ export default class Personality {
         : Personality.getAverage(partners, trait)
       // Hey, doesn't this mean this person will frequently over-correct? Yeah, it does!
       // That's a feature, not a bug! People are messy and imprecise!
-      direction = this[trait].value < avg ? '+' : '-'
+      direction = this[trait].value < avg ? 1 : -1
     }
 
     this[trait].change(direction)

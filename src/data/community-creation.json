@@ -105,5 +105,71 @@
       "androphilic": [ "Feminine man", "Masculine man" ],
       "skoliophilic": [ "Feminine man", "Masculine woman", "Fifth gender" ]
     }
+  },
+  "encounterFactors": {
+    "Feminine woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  25, "event": "conscientiousness" },
+      { "chance":  15, "event": "extraversion" },
+      { "chance":  15, "event": "agreeableness" },
+      { "chance":  25, "event": "neuroticism" }
+    ],
+    "Woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  25, "event": "conscientiousness" },
+      { "chance":  15, "event": "extraversion" },
+      { "chance":  15, "event": "agreeableness" },
+      { "chance":  25, "event": "neuroticism" }
+    ],
+    "Masculine woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  22, "event": "conscientiousness" },
+      { "chance":  18, "event": "extraversion" },
+      { "chance":  18, "event": "agreeableness" },
+      { "chance":  22, "event": "neuroticism" }
+    ],
+    "Feminine man": [
+      { "chance":  17, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  13, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ],
+    "Man": [
+      { "chance":  25, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  10, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  15, "event": "neuroticism" }
+    ],
+    "Masculine man": [
+      { "chance":  25, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  10, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  15, "event": "neuroticism" }
+    ],
+    "Third gender": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  20, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ],
+    "Fifth gender": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  20, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ]
   }
 }

@@ -7,6 +7,11 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
+import { clone } from '../../shared/utils'
+import { pickRandom } from './shuffle'
+
+import data from '../../data/community-creation'
+
 export default class Person {
   constructor (args = {}) {
     const now = new Date()
@@ -22,6 +27,7 @@ export default class Person {
     this.skills = new Skills()
     this.sexuality = new Sexuality(this.body, args.mateFor)
     this.gender = args && args.specifiedGender ? args.specifiedGender : this.assignGender(args.numGenders)
+    this.attraction = this.getAttraction()
 
     const randomDistributed = random.normal(0, 1)
     this.intelligence = randomDistributed()
@@ -60,6 +66,39 @@ export default class Person {
       if (gender === 'Man') gender = 'Masculine man'
     }
     return gender
+  }
+
+  getAttraction () {
+    const traits = Object.keys(this.personality)
+    const factors = [ 'attractiveness', ...traits ]
+    let table = clone(data.encounterFactors[this.gender])
+
+    // Does physical attractiveness matter more or less to you?
+    const deltaVals = []
+    for (let i = -5; i < 6; i++) deltaVals.push(i)
+    const attractivenessDelta = pickRandom(deltaVals)
+    const attractivenessSwap = pickRandom(traits)
+    table.forEach(r => {
+      if (r.event === 'attractiveness') r.chance = r.chance + attractivenessDelta
+      if (r.event === attractivenessSwap) r.chance = r.chance - attractivenessDelta
+    })
+
+    // Do various personality traits matter more or less to you?
+    traits.forEach(trait => {
+      const posDeltaVals = []
+      for (let i = 1; i < 6; i++) posDeltaVals.push(i)
+      if (this.personality.check(trait)) {
+        const delta = pickRandom(posDeltaVals)
+        let swap = trait
+        while (swap === trait) swap = pickRandom(factors)
+        table.forEach(r => {
+          if (r.event === trait) r.chance = r.chance + delta
+          if (r.event === swap) r.chance = r.chance - delta
+        })
+      }
+    })
+
+    return table
   }
 
   /**

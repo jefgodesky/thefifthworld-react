@@ -118,6 +118,40 @@ describe('Person', () => {
       p.assignGender(2)
       expect(genders.includes(p.gender))
     })
+
+    it('assigns an attraction matrix', () => {
+      const p = new Person()
+      const { attraction } = p
+      const tests = [
+        attraction.length === 6,
+        attraction[0].event === 'attractiveness',
+        attraction[1].event === 'openness',
+        attraction[2].event === 'conscientiousness',
+        attraction[3].event === 'extraversion',
+        attraction[4].event === 'agreeableness',
+        attraction[5].event === 'neuroticism',
+        attraction.reduce((acc, curr) => acc + curr.chance, 0) === 100
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(tests).toEqual(true)
+    })
+  })
+
+  describe('getAttraction', () => {
+    it('returns a table of attraction priorities', () => {
+      const p = new Person()
+      const attraction = p.getAttraction()
+      const actual = [
+        attraction.length === 6,
+        attraction[0].event === 'attractiveness',
+        attraction[1].event === 'openness',
+        attraction[2].event === 'conscientiousness',
+        attraction[3].event === 'extraversion',
+        attraction[4].event === 'agreeableness',
+        attraction[5].event === 'neuroticism',
+        attraction.reduce((acc, curr) => acc + curr.chance, 0) === 100
+      ].reduce((acc, curr) => acc && curr, true)
+      expect(actual).toEqual(true)
+    })
   })
 
   describe('die', () => {

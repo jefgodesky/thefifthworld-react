@@ -68,6 +68,13 @@ export default class Person {
     return gender
   }
 
+  /**
+   * Returns an attraction matrix for this person. Starts with a baseline based
+   * on gender, but then adds random personal variation.
+   * @returns {{Object}} - An array of objects conforming to the format for a
+   *   table per the `check` method.
+   */
+
   getAttraction () {
     const traits = Object.keys(this.personality)
     const factors = [ 'attractiveness', ...traits ]

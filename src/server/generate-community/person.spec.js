@@ -2,6 +2,8 @@
 
 import Person from './person'
 
+import { allTrue } from '../../shared/utils'
+
 describe('Person', () => {
   describe('constructor', () => {
     it('creates a genotype', () => {
@@ -131,8 +133,8 @@ describe('Person', () => {
         attraction[4].event === 'agreeableness',
         attraction[5].event === 'neuroticism',
         attraction.reduce((acc, curr) => acc + curr.chance, 0) === 100
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(tests).toEqual(true)
+      ]
+      expect(allTrue(tests)).toEqual(true)
     })
   })
 
@@ -149,8 +151,8 @@ describe('Person', () => {
         attraction[4].event === 'agreeableness',
         attraction[5].event === 'neuroticism',
         attraction.reduce((acc, curr) => acc + curr.chance, 0) === 100
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
   })
 

@@ -4,7 +4,7 @@ import random from 'random'
 import Community from './community'
 import Person from './person'
 import Polycule from './polycule'
-import { daysFromNow } from '../../shared/utils'
+import { allTrue } from '../../shared/utils'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -83,8 +83,8 @@ describe('Community', () => {
         id1 === pop[0].id,
         id2 === pop[1].id,
         pop.length === 2
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('doesn\'t include people who have died', () => {
@@ -446,7 +446,7 @@ describe('Community', () => {
       const c = new Community()
       c.present = 2020
       const ages = c.generateStrangers().map(p => p.getAge())
-      expect(Math.max(...ages)).toBeLessThanOrEqual(65)
+      expect(Math.max(...ages)).toBeLessThanOrEqual(66)
     })
   })
 
@@ -482,43 +482,35 @@ describe('Community', () => {
 
   describe('run', () => {
     it('runs for 200 years by default', () => {
-      const until = daysFromNow(144000)
-      const end = until.getFullYear()
-      const start = end - 200
       const c = new Community()
       c.run()
-      const actual = [
-        c.history.length === 200,
-        c.history[0].year === start,
-        c.history[199].year === end
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      expect(c.history.record.length).toEqual(200)
     })
 
     it('runs for the number of years specified', () => {
       const c = new Community()
       c.run(300)
-      expect(c.history.length).toEqual(300)
+      expect(c.history.record.length).toEqual(300)
     })
 
     it('won\'t do less than 50 years', () => {
       const c = new Community()
       c.run(5)
-      expect(c.history.length).toEqual(50)
+      expect(c.history.record.length).toEqual(50)
     })
 
     it('includes other data in the history', () => {
       const c = new Community()
       c.run()
-      const entry = c.history[random.int(0, 199)]
+      const entry = c.history.record[random.int(0, 199)]
       const actual = [
         typeof entry.population === 'number',
         typeof entry.yield === 'number',
         typeof entry.lean === 'boolean',
         typeof entry.sick === 'boolean',
         typeof entry.conflict === 'boolean'
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('adds approx. 30 founders for a hunter-gatherer band', () => {

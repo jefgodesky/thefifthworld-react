@@ -26,9 +26,16 @@ const checkExists = (val, props) => {
  *   one item in it, or `false` if it is not.
  */
 
-const isPopulatedArray = obj => {
-  return Boolean(obj && Array.isArray(obj) && obj.length > 0)
-}
+const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length > 0)
+
+/**
+ * Returns `true` if each element in the given array is true.
+ * @param arr {Array} - An array to evaluate.
+ * @returns {*} - `true` if each element in `arr` is true, or `false` if it is
+ *   not.
+ */
+
+const allTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc && Boolean(curr), true)
 
 /**
  * If you have a value nested deep inside of an object (e.g., `obj.p1.p2.p3`),
@@ -178,6 +185,7 @@ const between = (value, min, max) => {
 export {
   checkExists,
   isPopulatedArray,
+  allTrue,
   get,
   formatDate,
   dedupe,

@@ -3,6 +3,8 @@
 import Body from './body'
 import Sexuality from './sexuality'
 
+import { allTrue } from '../../shared/utils'
+
 describe('Sexuality', () => {
   describe('constructor', () => {
     it('assigns an androphilia score', () => {
@@ -57,7 +59,7 @@ describe('Sexuality', () => {
       const b = new Body()
       const s = new Sexuality(b)
       const genders = s.getGenderPreferences(2, 25)
-      const actual = genders.map(g => valid.includes(g)).reduce((acc, curr) => acc && curr, true)
+      const actual = allTrue(genders.map(g => valid.includes(g)))
       expect(actual)
     })
 
@@ -66,7 +68,7 @@ describe('Sexuality', () => {
       const b = new Body()
       const s = new Sexuality(b)
       const genders = s.getGenderPreferences(3, 25)
-      const actual = genders.map(g => valid.includes(g)).reduce((acc, curr) => acc && curr, true)
+      const actual = allTrue(genders.map(g => valid.includes(g)))
       expect(actual)
     })
 
@@ -75,7 +77,7 @@ describe('Sexuality', () => {
       const b = new Body()
       const s = new Sexuality(b)
       const genders = s.getGenderPreferences(3, 25)
-      const actual = genders.map(g => valid.includes(g)).reduce((acc, curr) => acc && curr, true)
+      const actual = allTrue(genders.map(g => valid.includes(g)))
       expect(actual)
     })
 
@@ -84,7 +86,7 @@ describe('Sexuality', () => {
       const b = new Body()
       const s = new Sexuality(b)
       const genders = s.getGenderPreferences(3, 25)
-      const actual = genders.map(g => valid.includes(g)).reduce((acc, curr) => acc && curr, true)
+      const actual = allTrue(genders.map(g => valid.includes(g)))
       expect(actual)
     })
   })

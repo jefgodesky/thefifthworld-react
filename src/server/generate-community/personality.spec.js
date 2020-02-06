@@ -116,7 +116,7 @@ describe('Personality', () => {
       const before = sum(p.personality)
       for (let i = 0; i < 100; i++) p.personality.change()
       const after = sum(p.personality)
-      expect(after > before - 5 && after < before + 5).toEqual(true)
+      expect(after > before - 10 && after < before + 10).toEqual(true)
     })
 
     it('will tend to move towards the community\'s average', () => {

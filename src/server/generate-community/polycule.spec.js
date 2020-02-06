@@ -4,6 +4,8 @@ import Community from './community'
 import Person from './person'
 import Polycule from './polycule'
 
+import { allTrue } from '../../shared/utils'
+
 describe('Polycule', () => {
   describe('constructor', () => {
     it('creates an array of participants', () => {
@@ -33,8 +35,8 @@ describe('Polycule', () => {
         p.love[0][1] === p.love[1][0],
         p.love[0][2] === p.love[2][0],
         p.love[1][2] === p.love[2][1]
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('can create a theoretical polycule of one', () => {
@@ -46,8 +48,8 @@ describe('Polycule', () => {
         p.love.length === 1,
         p.love[0].length === 1,
         p.love[0][0] === null
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('records that the polycule was formed', () => {
@@ -109,8 +111,8 @@ describe('Polycule', () => {
         p.love[0][1] === p.love[1][0],
         p.love[0][2] === p.love[2][0],
         p.love[1][2] === p.love[2][1]
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('records the expansion', () => {
@@ -198,8 +200,8 @@ describe('Polycule', () => {
         a.polycule === undefined,
         b.polycule === undefined,
         p.love === undefined
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('removes itself from the community list', () => {
@@ -327,8 +329,8 @@ describe('Polycule', () => {
         a.polycule.constructor.name === 'Polycule',
         b.polycule.constructor.name === 'Polycule',
         c.polycule === undefined
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(actual).toEqual(true)
+      ]
+      expect(allTrue(actual)).toEqual(true)
     })
 
     it('saves the polycule to the community', () => {
@@ -381,8 +383,8 @@ describe('Polycule', () => {
         typeof actual.index === 'number',
         actual.index >= 0,
         actual.index < p.people.length
-      ].reduce((acc, curr) => acc && curr, true)
-      expect(tests)
+      ]
+      expect(allTrue(tests)).toEqual(true)
     })
 
     it('provides a recommendation on whether or not to remove someone', () => {

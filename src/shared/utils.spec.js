@@ -3,6 +3,7 @@
 import {
   checkExists,
   isPopulatedArray,
+  allTrue,
   get,
   formatDate,
   dedupe,
@@ -44,6 +45,28 @@ describe('isPopulatedArray', () => {
 
   it('returns false if its param is false', () => {
     expect(isPopulatedArray(false)).toEqual(false)
+  })
+})
+
+describe('allTrue', () => {
+  it('returns false if not given an array', () => {
+    expect(allTrue(true)).toEqual(false)
+  })
+
+  it('returns true if all values in array are true', () => {
+    expect(allTrue([ true, true ])).toEqual(true)
+  })
+
+  it('returns true if all values in array are truthy', () => {
+    expect(allTrue([ true, 1, 'yes' ])).toEqual(true)
+  })
+
+  it('returns false if any value in array is false', () => {
+    expect(allTrue([ true, false, true ])).toEqual(false)
+  })
+
+  it('returns false if any value in array is falsy', () => {
+    expect(allTrue([ true, 0, true ])).toEqual(false)
   })
 })
 

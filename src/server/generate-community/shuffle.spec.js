@@ -1,5 +1,6 @@
 /* global describe, it, expect */
 
+import { allTrue } from '../../shared/utils'
 import { shuffle, pickRandom } from './shuffle'
 
 describe('Shuffle', () => {
@@ -13,8 +14,7 @@ describe('Shuffle', () => {
       actual.indexOf(4) > -1,
       actual.indexOf(5) > -1
     ]
-    const expected = claims.reduce((acc, curr) => acc && curr)
-    expect(expected).toEqual(true)
+    expect(allTrue(claims)).toEqual(true)
   })
 })
 

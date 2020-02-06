@@ -1,5 +1,5 @@
 import random from 'random'
-import { clone, between } from '../../shared/utils'
+import { clone, between, allTrue } from '../../shared/utils'
 import { checkUntil } from './check'
 import tables from '../../data/community-creation'
 
@@ -80,7 +80,7 @@ export default class Body {
   static makeBaby (parents, args) {
     let baby
     if (parents && Array.isArray(parents) && parents.length > 1) {
-      const bothBodies = parents.slice(0, 1).map(p => p.constructor && p.constructor.name === 'Body').reduce((acc, curr) => acc && curr, true)
+      const bothBodies = allTrue(parents.slice(0, 1).map(p => p.constructor && p.constructor.name === 'Body'))
       if (bothBodies) {
         const mindex = parents[0].hasWomb ? 0 : parents[1].hasWomb ? 1 : -1
         const findex = parents[0].hasPenis ? 0 : parents[1].hasPenis ? 1 : -1

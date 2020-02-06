@@ -2,7 +2,7 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
-import { between, isPopulatedArray } from '../../shared/utils'
+import { between, isPopulatedArray, allTrue } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -247,10 +247,10 @@ export default class Polycule {
       const openness = this.people.map(p => p.personality.chance('openness'))
       const leastOpen = Math.min(...openness)
       const peaceNeeded = Math.ceil((100 - leastOpen) / 10)
-      return recent
+      const goodYears = recent
         .slice(0, peaceNeeded)
         .map(y => !y.lean && !y.conflict && !y.sick)
-        .reduce((acc, curr) => acc && curr, true)
+      return allTrue(goodYears)
     }
     return false
   }

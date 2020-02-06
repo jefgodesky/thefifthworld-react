@@ -7,7 +7,7 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
-import { between, clone } from '../../shared/utils'
+import { between, clone, allTrue } from '../../shared/utils'
 import { check } from './check'
 import { pickRandom } from './shuffle'
 
@@ -151,7 +151,7 @@ export default class Person {
             return side.subject.personality.check(side.criterion)
         }
       })
-      return outcomes.reduce((acc, curr) => acc && curr, true)
+      return allTrue(outcomes)
     } else {
       return false
     }

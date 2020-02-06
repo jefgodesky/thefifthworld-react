@@ -7,7 +7,8 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
-import { clone } from '../../shared/utils'
+import { between, clone } from '../../shared/utils'
+import { check } from './check'
 import { pickRandom } from './shuffle'
 
 import data from '../../data/community-creation'
@@ -106,6 +107,54 @@ export default class Person {
     })
 
     return table
+  }
+
+  /**
+   * Simulates an encounter between this person and someone else, and tells you
+   * if it went well or not.
+   * Each person's attraction matrix (see `getAttraction`) defines which
+   * factors are most important to each individual. These can be any of the Big
+   * Five personality traits or physical attractiveness. These are individually
+   * weighted in the attraction matrix. We use this weighting so that each
+   * person in the encounter can select a random factor to judge the encounter
+   * based upon, depending on their own weighting (e.g., if your attraction
+   * matrix has conscientiousness at 25, then you'll probably pick
+   * conscientiousness about one quarter of the time). We then use that factor
+   * to make a random check on the other person (e.g., if extraversion is the
+   * factor that you pick, then the other person needs to pass an extraversion
+   * check). If both checks pass, the encounter went well.
+   * @param other {Person} - The other person you're encountering.
+   * @returns {boolean} - Returns `true` if both participants were happy with
+   *   the encounter, or `false` if one or both were not.
+   */
+
+  encounter (other) {
+    if (other && other.constructor && other.constructor.name === 'Person') {
+      if (!this.attraction) this.attraction = this.getAttraction()
+      if (!other.attraction) other.attraction = other.getAttraction()
+
+      const sides = [
+        { criterion: check(this.attraction, random.int(1, 100)), subject: other },
+        { criterion: check(other.attraction, random.int(1, 100)), subject: this }
+      ]
+
+      const outcomes = sides.map(side => {
+        let chance
+        switch (side.criterion) {
+          case 'attractiveness':
+            chance = between((side.subject.body.attractiveness + 3) * 16, 1, 99)
+            return chance > random.int(1, 100)
+          case 'neuroticism':
+            chance = 100 - side.subject.personality.chance('neuroticism')
+            return chance > random.int(1, 100)
+          default:
+            return side.subject.personality.check(side.criterion)
+        }
+      })
+      return outcomes.reduce((acc, curr) => acc && curr, true)
+    } else {
+      return false
+    }
   }
 
   /**

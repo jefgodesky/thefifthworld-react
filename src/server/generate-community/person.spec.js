@@ -154,6 +154,207 @@ describe('Person', () => {
     })
   })
 
+  describe('encounter', () => {
+    it('returns true or false', () => {
+      const a = new Person()
+      const b = new Person()
+      const actual = a.encounter(b)
+      expect(typeof actual).toEqual('boolean')
+    })
+
+    it('returns false if not given a person', () => {
+      const a = new Person()
+      expect(a.encounter('nope')).toEqual(false)
+    })
+
+    it('factors in attractiveness', () => {
+      const matrix = [
+        { chance: 100, event: 'attractiveness' },
+        { chance: 0, event: 'openness' },
+        { chance: 0, event: 'conscientiousness' },
+        { chance: 0, event: 'extraversion' },
+        { chance: 0, event: 'agreeableness' },
+        { chance: 0, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.body.attractiveness = 3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.body.attractiveness = 3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('factors in openness to new experience', () => {
+      const matrix = [
+        { chance: 0, event: 'attractiveness' },
+        { chance: 100, event: 'openness' },
+        { chance: 0, event: 'conscientiousness' },
+        { chance: 0, event: 'extraversion' },
+        { chance: 0, event: 'agreeableness' },
+        { chance: 0, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.openness.value = 3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.personality.openness.value = 3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('factors in conscientiousness', () => {
+      const matrix = [
+        { chance: 0, event: 'attractiveness' },
+        { chance: 0, event: 'openness' },
+        { chance: 100, event: 'conscientiousness' },
+        { chance: 0, event: 'extraversion' },
+        { chance: 0, event: 'agreeableness' },
+        { chance: 0, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.conscientiousness.value = 3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.personality.conscientiousness.value = 3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('factors in extraversion', () => {
+      const matrix = [
+        { chance: 0, event: 'attractiveness' },
+        { chance: 0, event: 'openness' },
+        { chance: 0, event: 'conscientiousness' },
+        { chance: 100, event: 'extraversion' },
+        { chance: 0, event: 'agreeableness' },
+        { chance: 0, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.extraversion.value = 3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.personality.extraversion.value = 3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('factors in agreeableness', () => {
+      const matrix = [
+        { chance: 0, event: 'attractiveness' },
+        { chance: 0, event: 'openness' },
+        { chance: 0, event: 'conscientiousness' },
+        { chance: 0, event: 'extraversion' },
+        { chance: 100, event: 'agreeableness' },
+        { chance: 0, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.agreeableness.value = 3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.personality.agreeableness.value = 3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('factors in emotional stability', () => {
+      const matrix = [
+        { chance: 0, event: 'attractiveness' },
+        { chance: 0, event: 'openness' },
+        { chance: 0, event: 'conscientiousness' },
+        { chance: 0, event: 'extraversion' },
+        { chance: 0, event: 'agreeableness' },
+        { chance: 100, event: 'neuroticism' }
+      ]
+
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.neuroticism.value = -3
+        a.attraction = matrix
+
+        const b = new Person()
+        b.personality.neuroticism.value = -3
+        b.attraction = matrix
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+
+    it('can be assymetrical', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.personality.agreeableness.value = 3
+        a.attraction = [
+          { chance: 100, event: 'attractiveness' },
+          { chance: 0, event: 'openness' },
+          { chance: 0, event: 'conscientiousness' },
+          { chance: 0, event: 'extraversion' },
+          { chance: 0, event: 'agreeableness' },
+          { chance: 0, event: 'neuroticism' }
+        ]
+
+        const b = new Person()
+        b.body.attractiveness = 3
+        b.attraction = [
+          { chance: 0, event: 'attractiveness' },
+          { chance: 0, event: 'openness' },
+          { chance: 0, event: 'conscientiousness' },
+          { chance: 0, event: 'extraversion' },
+          { chance: 100, event: 'agreeableness' },
+          { chance: 0, event: 'neuroticism' }
+        ]
+
+        if (a.encounter(b)) count++
+      }
+
+      expect(count).toBeGreaterThanOrEqual(75)
+    })
+  })
+
   describe('die', () => {
     it('marks the character as dead', () => {
       const now = new Date()

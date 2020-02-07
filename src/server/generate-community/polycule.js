@@ -46,22 +46,8 @@ export default class Polycule {
   add (person) {
     const arr = []
     for (let i = 0; i < this.people.length; i++) {
-      // How much does the new person love this person?
-      const sexMattersToNewPerson = person.sexuality.libido / 200
-      const newPersonHeartWants = random.int(1, 100) * (1 - sexMattersToNewPerson)
-      const newPersonWithThis = Polycule.getSexualCompatibility(person, this.people[i]) * sexMattersToNewPerson
-      const newPersonLove = newPersonHeartWants + newPersonWithThis
-
-      // How much does this person love the new person?
-      const sexMattersToThisPerson = this.people[i].sexuality.libido / 200
-      const thisPersonHeartWants = random.int(1, 100) * (1 - sexMattersToThisPerson)
-      const thisPersonWithNew = Polycule.getSexualCompatibility(this.people[i], person)
-      const thisPersonLove = thisPersonHeartWants + thisPersonWithNew
-
-      // Take the average
-      const score = (newPersonLove + thisPersonLove) / 4
-      this.love[i] = [ ...this.love[i], score ]
-      arr.push(score)
+      this.love[i] = [ ...this.love[i], 1 ]
+      arr.push(1)
     }
 
     this.love.push([ ...arr, null ])

@@ -96,23 +96,12 @@ describe('Polycule', () => {
       const c = new Person()
       const p = new Polycule(a, b)
       p.add(c)
-
-      const actual = [
-        p.people.length === 3,
-        p.love[0][0] === null,
-        typeof p.love[0][1] === 'number',
-        typeof p.love[0][2] === 'number',
-        typeof p.love[1][0] === 'number',
-        p.love[1][1] === null,
-        typeof p.love[1][2] === 'number',
-        typeof p.love[2][0] === 'number',
-        typeof p.love[2][1] === 'number',
-        p.love[2][2] === null,
-        p.love[0][1] === p.love[1][0],
-        p.love[0][2] === p.love[2][0],
-        p.love[1][2] === p.love[2][1]
+      const expected = [
+        [ null, 1, 1 ],
+        [ 1, null, 1 ],
+        [ 1, 1, null ]
       ]
-      expect(allTrue(actual)).toEqual(true)
+      expect(p.love).toEqual(expected)
     })
 
     it('records the expansion', () => {

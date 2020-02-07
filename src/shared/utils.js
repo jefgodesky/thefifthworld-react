@@ -38,6 +38,25 @@ const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length 
 const allTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc && Boolean(curr), true)
 
 /**
+ * Return the average of the numbers in an array.
+ * @param arr {[number]} - An array of numbers.
+ * @returns {number} - Returns the average of the numbers in the array. If the
+ *   array contains both numbers and non-numbers, only the numbers are
+ *   considered. If there are no numbers in the array, or the argument passed
+ *   is not an array, it returns `0`.
+ */
+
+const avg = arr => {
+  if (arr && Array.isArray(arr)) {
+    const numbers = arr.filter(e => typeof e === 'number')
+    if (isPopulatedArray(numbers)) {
+      return numbers.reduce((acc, curr) => acc + curr, 0) / numbers.length
+    }
+  }
+  return 0
+}
+
+/**
  * If you have a value nested deep inside of an object (e.g., `obj.p1.p2.p3`),
  * but it's possible that any of those values might not exist (e.g., `obj` may
  * have a `p1` property, but that might not have a `p2` property, etc.), this
@@ -186,6 +205,7 @@ export {
   checkExists,
   isPopulatedArray,
   allTrue,
+  avg,
   get,
   formatDate,
   dedupe,

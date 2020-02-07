@@ -4,6 +4,7 @@ import {
   checkExists,
   isPopulatedArray,
   allTrue,
+  avg,
   get,
   formatDate,
   dedupe,
@@ -67,6 +68,20 @@ describe('allTrue', () => {
 
   it('returns false if any value in array is falsy', () => {
     expect(allTrue([ true, 0, true ])).toEqual(false)
+  })
+})
+
+describe('avg', () => {
+  it('returns the average of an array of numbers', () => {
+    expect(avg([ 1, 2, 3 ])).toEqual(2)
+  })
+
+  it('ignores non-numbers', () => {
+    expect(avg([ 1, 2, 3, '4' ])).toEqual(2)
+  })
+
+  it('returns 0 if there are no non-numbers in the array', () => {
+    expect(avg([ true, 'two', { val: 3 } ])).toEqual(0)
   })
 })
 

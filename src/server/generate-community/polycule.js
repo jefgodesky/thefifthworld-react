@@ -76,13 +76,22 @@ export default class Polycule {
         if (year) this.history.add({ year, tags: [ 'reduced' ], size: this.people.length })
       } else {
         // We're down to just two people, so this is the end of the polycule.
-        this.love = undefined
-        this.people.forEach(p => { p.polycule = undefined })
-        this.people = undefined
-        if (this.community) this.community.removePolycule(this)
-        if (year) this.history.add({year, tags: [ 'dissolved' ] })
+        this.breakup(year)
       }
     }
+  }
+
+  /**
+   * Break up the polycule.
+   * @param year {number} - The year in which the polycule breaks up.
+   */
+
+  breakup (year) {
+    this.love = undefined
+    this.people.forEach(p => { p.polycule = undefined })
+    this.people = undefined
+    if (this.community) this.community.removePolycule(this)
+    if (year) this.history.add({year, tags: [ 'dissolved' ] })
   }
 
   /**

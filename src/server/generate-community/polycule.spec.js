@@ -192,6 +192,20 @@ describe('Polycule', () => {
       ]
       expect(allTrue(actual)).toEqual(true)
     })
+  })
+
+  describe('breakup', () => {
+    it('removes itself from each person', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.breakup()
+      const tests = [
+        a.polycule === undefined,
+        b.polycule === undefined
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
 
     it('removes itself from the community list', () => {
       const c = new Community()
@@ -201,7 +215,7 @@ describe('Polycule', () => {
       c.add(b)
       const p = new Polycule(a, b)
       p.commit()
-      p.remove(b)
+      p.breakup()
       expect(c.polycules.length).toEqual(0)
     })
 
@@ -209,7 +223,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a, b)
-      p.remove(b)
+      p.breakup(2020)
       expect(p.history.get({ tag: 'dissolved' }).length).toEqual(1)
     })
   })

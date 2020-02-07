@@ -157,11 +157,32 @@ describe('Person', () => {
   })
 
   describe('encounter', () => {
-    it('returns true or false', () => {
+    it('returns an object', () => {
       const a = new Person()
       const b = new Person()
       const actual = a.encounter(b)
-      expect(typeof actual).toEqual('boolean')
+      expect(typeof actual).toEqual('object')
+    })
+
+    it('returns a boolean for if this person liked the other', () => {
+      const a = new Person()
+      const b = new Person()
+      const actual = a.encounter(b)
+      expect(typeof actual.self).toEqual('boolean')
+    })
+
+    it('returns a boolean for if the other liked this person', () => {
+      const a = new Person()
+      const b = new Person()
+      const actual = a.encounter(b)
+      expect(typeof actual.other).toEqual('boolean')
+    })
+
+    it('returns a boolean for if they both liked each other', () => {
+      const a = new Person()
+      const b = new Person()
+      const actual = a.encounter(b)
+      expect(actual.self && actual.other).toEqual(actual.mutual)
     })
 
     it('returns false if not given a person', () => {
@@ -189,7 +210,8 @@ describe('Person', () => {
         b.body.attractiveness = 3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -215,7 +237,8 @@ describe('Person', () => {
         b.personality.openness.value = 3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -241,7 +264,8 @@ describe('Person', () => {
         b.personality.conscientiousness.value = 3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -267,7 +291,8 @@ describe('Person', () => {
         b.personality.extraversion.value = 3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -293,7 +318,8 @@ describe('Person', () => {
         b.personality.agreeableness.value = 3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -319,7 +345,8 @@ describe('Person', () => {
         b.personality.neuroticism.value = -3
         b.attraction = matrix
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
@@ -350,7 +377,8 @@ describe('Person', () => {
           { chance: 0, event: 'neuroticism' }
         ]
 
-        if (a.encounter(b)) count++
+        const res = a.encounter(b)
+        if (res.mutual) count++
       }
 
       expect(count).toBeGreaterThanOrEqual(75)

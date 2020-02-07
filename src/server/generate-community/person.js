@@ -7,7 +7,7 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
-import { between, clone, allTrue } from '../../shared/utils'
+import { between, clone } from '../../shared/utils'
 import { check } from './check'
 import { pickRandom } from './shuffle'
 
@@ -124,8 +124,10 @@ export default class Person {
    * factor that you pick, then the other person needs to pass an extraversion
    * check). If both checks pass, the encounter went well.
    * @param other {Person} - The other person you're encountering.
-   * @returns {boolean} - Returns `true` if both participants were happy with
-   *   the encounter, or `false` if one or both were not.
+   * @returns {Object} - Returns an object with three properties: `self` (a
+   *   boolean that is `true` if this person liked the `other`), `other` (a
+   *   boolean that is `true` if the `other` liked this person), and `mutual`
+   *   (a boolean that is `true` if they both liked each other).
    */
 
   encounter (other) {
@@ -151,7 +153,8 @@ export default class Person {
             return side.subject.personality.check(side.criterion)
         }
       })
-      return allTrue(outcomes)
+
+      return { self: outcomes[0], other: outcomes[1], mutual: outcomes[0] && outcomes[1] }
     } else {
       return false
     }

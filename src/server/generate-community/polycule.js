@@ -2,7 +2,7 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
-import { between, isPopulatedArray, allTrue } from '../../shared/utils'
+import { isPopulatedArray, allTrue } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -61,6 +61,18 @@ export default class Polycule {
   }
 
   /**
+   * Save this polycule to each of the people in it.
+   */
+
+  commit () {
+    this.people.forEach(person => {
+      person.polycule = this
+    })
+
+    if (this.community) this.community.addPolycule(this)
+  }
+
+  /**
    * Remove a person from the polycule.
    * @param person {Person} - The person to remove.
    */
@@ -95,24 +107,65 @@ export default class Polycule {
   }
 
   /**
-   * Returns the sexual satisfaction of a single polycule member with her
-   * present situation.
-   * @param person {Person} - The Person to test.
-   * @returns {boolean|number} - If the person given is a member of the
-   *   polycule, it returns a number between 0 and 100 indicating her sexual
-   *   satisfaction. A score of 100 indicates perfect satisfaction, while a
-   *   score of 0 indicates perfect frustration. Returns `false` if the person
-   *   is not in the polycule.
+   * Returns all of the members of the polycule other than `self`.
+   * @param self {Person} - The person to exclude (i.e., return the array of
+   *   self's partners, not counting self as her own partner).
+   * @returns {Person[]} - The people in the polycule, excluding `self`. If
+   *   `self` is not part of the polycule, this will equal the members of the
+   *   polycule.
    */
 
-  getSexualSatisfaction (person) {
-    if (this.people.includes(person)) {
-      const others = this.getOthers(person)
-      others.sort((a, b) => b.sexuality.libido - a.sexuality.libido)
-      return Polycule.getSexualCompatibility(person, others[0])
-    } else {
-      return false
+  getOthers (self) {
+    return this.people.filter(p => p !== self)
+  }
+
+  /**
+   * Return the subset of the given array that are people in the polycule.
+   * @param arr {[Person]} - An array of Person objects.
+   * @returns {[Person]} - An array that contains only those Person objects
+   *   from the `arr` array that are also members of the polycule. The order
+   *   from the `arr` array is preserved.
+   */
+
+  getPolyculeMembers (arr) {
+    return arr.filter(p => this.people.includes(p))
+  }
+
+  /**
+   * Returns an average for all of the love in the polycule.
+   * @param without {Person} - If provided, calculates what the average love in
+   *   the polycule would be without this person.
+   * @returns {number} - The average love score in the polycule.
+   */
+
+  avg (without) {
+    const people = without ? this.people.filter(p => p !== without) : this.people
+    const love = without ? this.getLoveWithout(without) : this.love
+    let sum = 0
+    for (let i = 0; i < people.length; i++) {
+      for (let j = 0; j < i; j++) {
+        const distance = people[i].personality.distance(people[j].personality)
+        const compatibility = ((7 - distance) / 7) * 100
+        if (love[i][j] !== null) sum += compatibility + love[i][j]
+      }
     }
+    const connections = (people.length * (people.length - 1)) / 2
+    return connections === 0 ? null : sum / connections
+  }
+
+  /**
+   * Returns the love value between two people in the polycule.
+   * @param a {Person} - One person in the polycule.
+   * @param b {Person} - A second person in the polycule.
+   * @returns {int|null} - Returns the love score between `a` and `b` if they
+   *   are both people in the polycule. If one or both are not people in the
+   *   polycule, it returns `null`.
+   */
+
+  getLoveBetween (a, b) {
+    const aindex = this.people.indexOf(a)
+    const bindex = this.people.indexOf(b)
+    return aindex > -1 && bindex > -1 ? this.love[aindex][bindex] : null
   }
 
   /**
@@ -140,80 +193,6 @@ export default class Polycule {
       }
     }
     return index > -1 ? matrix : false
-  }
-
-  /**
-   * Returns an average for all of the love in the polycule.
-   * @param without {Person} - If provided, calculates what the average love in
-   *   the polycule would be without this person.
-   * @returns {number} - The average love score in the polycule.
-   */
-
-  avg (without) {
-    const people = without ? this.people.filter(p => p !== without) : this.people
-    const love = without ? this.getLoveWithout(without) : this.love
-    let sum = 0
-    for (let i = 0; i < people.length; i++) {
-      for (let j = 0; j < i; j++) {
-        const distance = people[i].personality.distance(people[j].personality)
-        const compatibility = ((7 - distance) / 7) * 100
-        if (love[i][j] !== null) sum += compatibility + love[i][j]
-      }
-    }
-    const connections = (people.length * (people.length - 1)) / 2
-    return connections === 0 ? null : sum / connections
-  }
-
-  /**
-   * Save this polycule to each of the people in it.
-   */
-
-  commit () {
-    this.people.forEach(person => {
-      person.polycule = this
-    })
-
-    if (this.community) this.community.addPolycule(this)
-  }
-
-  /**
-   * Returns all of the members of the polycule other than `self`.
-   * @param self {Person} - The person to exclude (i.e., return the array of
-   *   self's partners, not counting self as her own partner).
-   * @returns {Person[]} - The people in the polycule, excluding `self`. If
-   *   `self` is not part of the polycule, this will equal the members of the
-   *   polycule.
-   */
-
-  getOthers (self) {
-    return this.people.filter(p => p !== self)
-  }
-
-  /**
-   * Return the subset of the given array that are people in the polycule.
-   * @param arr {[Person]} - An array of Person objects.
-   * @returns {[Person]} - An array that contains only those Person objects
-   *   from the `arr` array that are also members of the polycule. The order
-   *   from the `arr` array is preserved.
-   */
-
-  getPolyculeMembers (arr) {
-    return arr.filter(p => this.people.includes(p))
-  }
-
-  /**
-   * Returns the love value between two people in the polycule.
-   * @param a {Person} - One person in the polycule.
-   * @param b {Person} - A second person in the polycule.
-   * @returns {int|null} - Returns the love score between `a` and `b` if they
-   *   are both people in the polycule. If one or both are not people in the
-   *   polycule, it returns `null`.
-   */
-
-  getLoveBetween (a, b) {
-    const aindex = this.people.indexOf(a)
-    const bindex = this.people.indexOf(b)
-    return aindex > -1 && bindex > -1 ? this.love[aindex][bindex] : null
   }
 
   /**
@@ -301,20 +280,5 @@ export default class Polycule {
       this.children.push(child)
       child.parents = this
     }
-  }
-
-  /**
-   * Reports how well one person satisfied another in a sexual relationship.
-   * @param a {Person} - The person whose satisfaction we're currently
-   *   asking about.
-   * @param b {Person} - The person whose ability to satisfy the first person
-   *   we're currently asking about.
-   * @returns {number} - A number expressing the two people's sexual
-   *   compatibility. A score of 100 means that they b will completely satisfy
-   *   a, whereas a score of 0 means that b will completely frustrate a.
-   */
-
-  static getSexualCompatibility (a, b) {
-    return between(100 - (a.sexuality.libido - b.sexuality.libido), 0, 100)
   }
 }

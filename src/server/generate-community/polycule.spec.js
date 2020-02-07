@@ -60,6 +60,37 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getCommunity', () => {
+    it('assigns the community of its members', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      c.add(a); c.add(b)
+      const p = new Polycule(a, b)
+      p.getCommunity()
+      expect(p.community).toEqual(c)
+    })
+
+    it('assigns the first community it finds', () => {
+      const c1 = new Community()
+      const c2 = new Community()
+      const a = new Person()
+      const b = new Person()
+      c1.add(a); c2.add(b)
+      const p = new Polycule(a, b)
+      p.getCommunity()
+      expect(p.community).toEqual(c1)
+    })
+
+    it('does nothing if there\'s no community to find', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.getCommunity()
+      expect(p.community).toEqual(undefined)
+    })
+  })
+
   describe('getPresent', () => {
     it('returns the present for the polycule', () => {
       const a = new Person()
@@ -138,6 +169,33 @@ describe('Polycule', () => {
       const p = new Polycule(a, b)
       p.add(c)
       expect(p.community).toEqual(c1)
+    })
+  })
+
+  describe('commit', () => {
+    it('saves the polycule to each member', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.commit()
+      const actual = [
+        a.polycule.constructor.name === 'Polycule',
+        b.polycule.constructor.name === 'Polycule',
+        c.polycule === undefined
+      ]
+      expect(allTrue(actual)).toEqual(true)
+    })
+
+    it('saves the polycule to the community', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      c.add(a)
+      c.add(b)
+      const p = new Polycule(a, b)
+      p.commit()
+      expect(c.polycules.length).toEqual(1)
     })
   })
 
@@ -228,50 +286,45 @@ describe('Polycule', () => {
     })
   })
 
-  describe('getSexualSatisfaction', () => {
-    it('returns your compatibility with the most libidinous other polycule member', () => {
+  describe('getOthers', () => {
+    it('returns the other members of the polycule', () => {
       const a = new Person()
       const b = new Person()
-      const c = new Person()
-      a.sexuality.libido = 50
-      b.sexuality.libido = 50
-      c.sexuality.libido = 100
-      const p = new Polycule(a, b, c)
-      const actual = [
-        p.getSexualSatisfaction(a),
-        p.getSexualSatisfaction(b),
-        p.getSexualSatisfaction(c)
-      ]
-      const expected = [ 100, 100, 50 ]
-      expect(actual).toEqual(expected)
+      const p = new Polycule(a, b)
+      expect(p.getOthers(a)).toEqual([ b ])
     })
 
-    it('returns false is asked about someone not in the polycule', () => {
+    it('returns everyone in the polycule if given someone not in it', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getOthers()).toEqual([ a, b ])
+    })
+  })
+
+  describe('getPolyculeMembers', () => {
+    it('returns those people who are in the polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
       const p = new Polycule(a, b)
-      expect(p.getSexualSatisfaction(c)).toEqual(false)
+      expect(p.getPolyculeMembers([ a, b, c ])).toEqual([ a, b ])
     })
-  })
 
-  describe('getLoveWithout', () => {
-    it('returns a smaller love matrix', () => {
+    it('preserves order', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
-      const actual = p.getLoveWithout(c)
-      expect(actual.length).toEqual(2)
+      const p = new Polycule(a, b)
+      expect(p.getPolyculeMembers([ a, b, c ])).not.toEqual([ b, a ])
     })
 
-    it('maintains love values', () => {
+    it('returns an empty array if none of them are in the polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      const p = new Polycule(a, b, c)
-      const actual = p.getLoveWithout(c)
-      expect(actual[0][1]).toEqual(p.love[0][1])
+      const p = new Polycule(a, b)
+      expect(p.getPolyculeMembers([ c ])).toEqual([])
     })
   })
 
@@ -321,75 +374,6 @@ describe('Polycule', () => {
     })
   })
 
-  describe('commit', () => {
-    it('saves the polycule to each member', () => {
-      const a = new Person()
-      const b = new Person()
-      const c = new Person()
-      const p = new Polycule(a, b)
-      p.commit()
-      const actual = [
-        a.polycule.constructor.name === 'Polycule',
-        b.polycule.constructor.name === 'Polycule',
-        c.polycule === undefined
-      ]
-      expect(allTrue(actual)).toEqual(true)
-    })
-
-    it('saves the polycule to the community', () => {
-      const c = new Community()
-      const a = new Person()
-      const b = new Person()
-      c.add(a)
-      c.add(b)
-      const p = new Polycule(a, b)
-      p.commit()
-      expect(c.polycules.length).toEqual(1)
-    })
-  })
-
-  describe('getOthers', () => {
-    it('returns the other members of the polycule', () => {
-      const a = new Person()
-      const b = new Person()
-      const p = new Polycule(a, b)
-      expect(p.getOthers(a)).toEqual([ b ])
-    })
-
-    it('returns everyone in the polycule if given someone not in it', () => {
-      const a = new Person()
-      const b = new Person()
-      const p = new Polycule(a, b)
-      expect(p.getOthers()).toEqual([ a, b ])
-    })
-  })
-
-  describe('getPolyculeMembers', () => {
-    it('returns those people who are in the polycule', () => {
-      const a = new Person()
-      const b = new Person()
-      const c = new Person()
-      const p = new Polycule(a, b)
-      expect(p.getPolyculeMembers([ a, b, c ])).toEqual([ a, b ])
-    })
-
-    it('preserves order', () => {
-      const a = new Person()
-      const b = new Person()
-      const c = new Person()
-      const p = new Polycule(a, b)
-      expect(p.getPolyculeMembers([ a, b, c ])).not.toEqual([ b, a ])
-    })
-
-    it('returns an empty array if none of them are in the polycule', () => {
-      const a = new Person()
-      const b = new Person()
-      const c = new Person()
-      const p = new Polycule(a, b)
-      expect(p.getPolyculeMembers([ c ])).toEqual([])
-    })
-  })
-
   describe('getLoveBetween', () => {
     it('returns a love score between two people in the polycule', () => {
       const a = new Person()
@@ -411,6 +395,26 @@ describe('Polycule', () => {
       const b = new Person()
       const p = new Polycule(a, b)
       expect(p.getLoveBetween(a, 'nope')).toEqual(null)
+    })
+  })
+
+  describe('getLoveWithout', () => {
+    it('returns a smaller love matrix', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.getLoveWithout(c)
+      expect(actual.length).toEqual(2)
+    })
+
+    it('maintains love values', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b, c)
+      const actual = p.getLoveWithout(c)
+      expect(actual[0][1]).toEqual(p.love[0][1])
     })
   })
 
@@ -497,21 +501,6 @@ describe('Polycule', () => {
       const p = new Polycule(a, b, c)
       p.haveChild(m, 2020)
       expect(p.children.length === 0 || p.children[0].parents === p)
-    })
-  })
-
-  describe('getSexualCompatibility', () => {
-    it('returns sexual compatibility', () => {
-      const a = new Person()
-      const b = new Person()
-      a.sexuality.libido = 90
-      b.sexuality.libido = 80
-      const actual = [
-        Polycule.getSexualCompatibility(a, b),
-        Polycule.getSexualCompatibility(b, a)
-      ]
-      const expected = [ 90, 100 ]
-      expect(actual).toEqual(expected)
     })
   })
 })

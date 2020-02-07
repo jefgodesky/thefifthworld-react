@@ -361,6 +361,30 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getLoveBetween', () => {
+    it('returns a love score between two people in the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      expect(typeof p.getLoveBetween(a, b)).toEqual('number')
+    })
+
+    it('returns null if given someone not in the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getLoveBetween(a, c)).toEqual(null)
+    })
+
+    it('returns null if not given two people', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getLoveBetween(a, 'nope')).toEqual(null)
+    })
+  })
+
   describe('partnerDelta', () => {
     it('returns a delta on how the polycule would change without each member', () => {
       const a = new Person()

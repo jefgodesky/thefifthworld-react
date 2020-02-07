@@ -107,6 +107,23 @@ export default class Polycule {
   }
 
   /**
+   * Run encounters between each of the members of the polycule to see how
+   * love scores change.
+   */
+
+  runEncounters () {
+    for (let i = 0; i < this.people.length; i++) {
+      for (let j = 0; j < i; j++) {
+        if (i !== j) {
+          const encounter = this.people[i].encounter(this.people[j])
+          this.love[i][j] += encounter.self ? 1 : -1
+          this.love[j][i] += encounter.other ? 1 : -1
+        }
+      }
+    }
+  }
+
+  /**
    * Returns all of the members of the polycule other than `self`.
    * @param self {Person} - The person to exclude (i.e., return the array of
    *   self's partners, not counting self as her own partner).
@@ -144,9 +161,7 @@ export default class Polycule {
     let sum = 0
     for (let i = 0; i < people.length; i++) {
       for (let j = 0; j < i; j++) {
-        const distance = people[i].personality.distance(people[j].personality)
-        const compatibility = ((7 - distance) / 7) * 100
-        if (love[i][j] !== null) sum += compatibility + love[i][j]
+        if (!isNaN(love[i][j])) sum += love[i][j]
       }
     }
     const connections = (people.length * (people.length - 1)) / 2

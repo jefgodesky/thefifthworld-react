@@ -286,6 +286,17 @@ describe('Polycule', () => {
     })
   })
 
+  describe('runEncounters', () => {
+    it('increases or decreases love scores', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.runEncounters()
+      const possibilities = [ 0, 1, 2 ]
+      expect(possibilities.includes(p.avg())).toEqual(true)
+    })
+  })
+
   describe('getOthers', () => {
     it('returns the other members of the polycule', () => {
       const a = new Person()
@@ -333,38 +344,23 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      a.personality.openness.value = 0; b.personality.openness.value = 0; c.personality.openness.value = 0
-      a.personality.conscientiousness.value = 0; b.personality.conscientiousness.value = 0; c.personality.conscientiousness.value = 0
-      a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
-      a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
-      a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
       const p = new Polycule(a, b, c)
-      p.love = [
-        [ null, 50, 50 ],
-        [ 50, null, 50 ],
-        [ 50, 50, null ]
-      ]
-      expect(p.avg()).toEqual(150)
+      expect(p.avg()).toEqual(1)
     })
 
     it('can calculate what it would be like without someone', () => {
       const a = new Person()
       const b = new Person()
       const c = new Person()
-      a.personality.openness.value = 0; b.personality.openness.value = 0; c.personality.openness.value = 0
-      a.personality.conscientiousness.value = 0; b.personality.conscientiousness.value = 0; c.personality.conscientiousness.value = 0
-      a.personality.extraversion.value = 0; b.personality.extraversion.value = 0; c.personality.extraversion.value = 0
-      a.personality.agreeableness.value = 0; b.personality.agreeableness.value = 0; c.personality.agreeableness.value = 0
-      a.personality.neuroticism.value = 0; b.personality.neuroticism.value = 0; c.personality.neuroticism.value = 0
       const p = new Polycule(a, b, c)
       p.love = [
-        [ null, 50, 10 ],
-        [ 50, null, 50 ],
-        [ 10, 50, null ]
+        [ null, 1, 0 ],
+        [ 1, null, 1 ],
+        [ 2, 1, null ]
       ]
       const withC = p.avg()
       const withoutC = p.avg(c)
-      expect(withoutC).toBeGreaterThan(withC)
+      expect(withC).toBeGreaterThan(withoutC)
     })
 
     it('returns null if there\'s only one person', () => {

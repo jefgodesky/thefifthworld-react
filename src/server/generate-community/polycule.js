@@ -2,7 +2,7 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
-import { isPopulatedArray, allTrue } from '../../shared/utils'
+import { isPopulatedArray, allTrue, avg } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -124,6 +124,44 @@ export default class Polycule {
   }
 
   /**
+   * Make changes in the polycule.
+   */
+
+  change () {
+    // Reset from any previous baby-having experience.
+    this.people.forEach(p => p.havingBaby = false)
+
+    // Run encounters to see how relationships change.
+    this.runEncounters()
+
+    // Should anyone be removed from the polycule? Our threshold is set by how
+    // agreeable the people in the polycule are. The more agreeable people are,
+    // the less willing they'll be to kick people out, increasing the threshold
+    // they'll require before doing it. The least agreeable people will drop
+    // people if it improves the average at all.
+
+    const agreeableness = avg(this.people.map(p => p.personality.agreeableness.value))
+    const multiplier = Math.max(Math.ceil(agreeableness + 3), 1)
+    const threshold = this.avg() * multiplier
+    let drop = null
+    this.people.forEach(person => {
+      if (this.getLoveWithout(person) > threshold) drop = person
+    })
+    if (drop) this.remove(drop)
+
+    // If we didn't drop anyone, do we want to have a baby?
+
+    if (!drop) {
+      if (!this.community) this.getCommunity()
+      const community = this.community
+      const year = this.getPresent()
+      if (community && year && this.wantChild(community, year) && this.haveChild(community, year)) {
+        this.people.forEach(p => p.havingBaby = true)
+      }
+    }
+  }
+
+  /**
    * Returns all of the members of the polycule other than `self`.
    * @param self {Person} - The person to exclude (i.e., return the array of
    *   self's partners, not counting self as her own partner).
@@ -211,40 +249,6 @@ export default class Polycule {
   }
 
   /**
-   * Returns an object with information on hypotheticals of what the polycule
-   * would be like in each instance where one of the members were removed.
-   * @param threshold {number} - The threshold delta on the change to the
-   *   polycule's average love score to recommend removing someone.
-   *   (Default: `30`).
-   * @returns {{index: number, recommendation: boolean, deltas: []}} - An
-   *   object representing what possible future scenarios would be like. The
-   *   `deltas` property is an array of deltas, or how the polycule's average
-   *   love score would change if the person with the corresponding index
-   *   number were removed from it. The `index` property provides the index of
-   *   the person with the highest delta (i.e., the person whose removal would
-   *   raise the polycule's average love score by the highest amount). The
-   *   `recommendation` property is a boolean indicating whether or not that
-   *   person should be removed from the polycule, based on the threshold
-   *   provided (i.e., if removing this person would raise the polycule's
-   *   average love score by an amount greater than the threshold, then the
-   *   `recommendation` is `true`).
-   */
-
-  partnerDelta (threshold = 30) {
-    const curr = this.avg()
-    const deltas = []
-    this.people.forEach(person => {
-      deltas.push(this.avg(person) - curr)
-    })
-    const max = Math.max(...deltas)
-    return {
-      deltas,
-      index: deltas.indexOf(max),
-      recommendation: max > threshold
-    }
-  }
-
-  /**
    * Determines if the people in the polycule would like to have a child.
    * @param community {Community} - The Community object.
    * @param year {number} - The year in which they're making this decision.
@@ -256,9 +260,11 @@ export default class Polycule {
     const potentialFathers = this.people.filter(p => p.body.isFertile('Male'))
     const potentialMothers = this.people.filter(p => p.body.isFertile('Female'))
     if (potentialFathers.length > 0 && potentialMothers.length > 0) {
+
       // The more open to experience you are, the fewer years of peace you
       // need to convince you to have a child, and each member of the polycule
       // needs to agree, so we can just look at the least open person in it.
+
       const recent = community.getRecentHistory(10)
       const openness = this.people.map(p => p.personality.chance('openness'))
       const leastOpen = Math.min(...openness)
@@ -276,6 +282,8 @@ export default class Polycule {
    * @param community {Community} - The Community object.
    * @param year {number} - The year in which the polycule is trying
    *   to conceive.
+   * @returns {boolean} - `true` if the polycule is having a child, or `false`
+   *   if they are not.
    */
 
   haveChild (community, year) {
@@ -294,6 +302,10 @@ export default class Polycule {
       const child = new Person({ mother, father, born: year })
       this.children.push(child)
       child.parents = this
+      mother.body.fertility = -20
+      return true
+    } else {
+      return false
     }
   }
 }

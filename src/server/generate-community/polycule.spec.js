@@ -361,6 +361,32 @@ describe('Polycule', () => {
     })
   })
 
+  describe('getPolyculeMembers', () => {
+    it('returns those people who are in the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getPolyculeMembers([ a, b, c ])).toEqual([ a, b ])
+    })
+
+    it('preserves order', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getPolyculeMembers([ a, b, c ])).not.toEqual([ b, a ])
+    })
+
+    it('returns an empty array if none of them are in the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      expect(p.getPolyculeMembers([ c ])).toEqual([])
+    })
+  })
+
   describe('getLoveBetween', () => {
     it('returns a love score between two people in the polycule', () => {
       const a = new Person()

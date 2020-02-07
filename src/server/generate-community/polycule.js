@@ -195,6 +195,18 @@ export default class Polycule {
   }
 
   /**
+   * Return the subset of the given array that are people in the polycule.
+   * @param arr {[Person]} - An array of Person objects.
+   * @returns {[Person]} - An array that contains only those Person objects
+   *   from the `arr` array that are also members of the polycule. The order
+   *   from the `arr` array is preserved.
+   */
+
+  getPolyculeMembers (arr) {
+    return arr.filter(p => this.people.includes(p))
+  }
+
+  /**
    * Returns the love value between two people in the polycule.
    * @param a {Person} - One person in the polycule.
    * @param b {Person} - A second person in the polycule.

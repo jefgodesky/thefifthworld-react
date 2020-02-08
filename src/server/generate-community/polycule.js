@@ -3,6 +3,9 @@ import Community from './community'
 import History from './history'
 import Person from './person'
 
+import data from '../../data/community-creation'
+
+import { check } from './check'
 import { shuffle, pickRandom } from './shuffle'
 import { isPopulatedArray, allTrue, avg } from '../../shared/utils'
 
@@ -137,6 +140,40 @@ export default class Polycule {
       entry.tags = [ ...entry.tags, 'crime', crime ]
     }
     if (year) this.history.add(entry)
+  }
+
+  /**
+   * Handles what happens to the polycule when one or more members commits
+   * adultery.
+   * @param adulterers {[Person]} - An array of the people involved in the
+   *   adultery, including those inside the polycule as well as those that they
+   *   committed adultery with.
+   */
+
+  cheat (adulterers) {
+    const insiders = adulterers.filter(p => this.people.includes(p))
+    if (insiders.length > 0) {
+      const outcome = check(data.cheatingOutcomes, random.int(1, 100))
+      const year = this.getPresent()
+      switch (outcome) {
+        case 'murder':
+          this.processMurder(this.murder(year, adulterers))
+          break
+        case 'breakup':
+          this.breakup(year, { adulterers })
+          break
+        case 'ejected':
+          if (insiders.length > this.people.length + 2) {
+            insiders.forEach(p => this.remove(p))
+          } else {
+            this.breakup(year, { adulterers })
+          }
+          break
+        default:
+          this.history.add({ year, tags: [ 'adultery' ], adulterers })
+          break
+      }
+    }
   }
 
   /**

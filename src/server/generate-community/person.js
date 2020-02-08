@@ -163,13 +163,17 @@ export default class Person {
   /**
    * Marks a characer's death.
    * @param cause {string} - A string indicating the cause of death.
+   * @param killer {Person} - (Optional) The person who killed this character.
+   *   (Default: `undefined`).
    */
 
-  die (cause = 'natural') {
+  die (cause = 'natural', killer = undefined) {
     const year = this.present
     this.died = year
     if (this.polycule) this.polycule.remove(this, year)
-    this.history.add({ year, tags: [ 'died' ] })
+    const entry = { year, tags: [ 'died' ], cause }
+    if (killer) entry.killer = killer
+    this.history.add(entry)
   }
 
   /**

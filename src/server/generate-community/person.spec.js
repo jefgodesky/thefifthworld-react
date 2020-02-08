@@ -399,6 +399,19 @@ describe('Person', () => {
       p.die()
       expect(p.history.get({ tags: [ 'died' ] }).length).toEqual(1)
     })
+
+    it('records the cause of death', () => {
+      const p = new Person()
+      p.die()
+      expect(p.history.get({ tags: [ 'died' ] })[0].cause).toEqual('natural')
+    })
+
+    it('records the killer (if you were killed)', () => {
+      const p = new Person()
+      const killer = new Person()
+      p.die('homicide', killer)
+      expect(p.history.get({ tags: [ 'died' ] })[0].killer).toEqual(killer)
+    })
   })
 
   describe('leave', () => {

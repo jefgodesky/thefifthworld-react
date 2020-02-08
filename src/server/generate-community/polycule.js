@@ -112,8 +112,8 @@ export default class Polycule {
 
     // Record what happened
     const entry = { year, tags: [ 'dissolved' ] }
-    if (isPopulatedArray(cheaters)) {
-      entry.cheaters = cheaters
+    if (isPopulatedArray(adulterers)) {
+      entry.adulterers = adulterers
       entry.tags.push('adultery')
     }
     if (year) this.history.add(entry)
@@ -161,6 +161,7 @@ export default class Polycule {
     const potentialMurderers = cheatedOn.filter(p => p.personality.check('openness') || p.personality.check('neuroticism'))
     report.murderer = isPopulatedArray(potentialMurderers) ? pickRandom(potentialMurderers) : null
 
+    // What will happen?
     if (report.murderer) {
       let numVictims = 1
       let done = false
@@ -172,7 +173,6 @@ export default class Polycule {
 
       for (let i = 0; i < numVictims; i++) {
         if (random.boolean()) {
-          potentialVictims[i].die('homicide', report.murderer)
           report.victims.push(potentialVictims[i])
         } else {
           report.attempted.push(potentialVictims[i])
@@ -180,11 +180,12 @@ export default class Polycule {
       }
     }
 
+    // Commit the crime.
     if (report.murderer && report.murderer.constructor && report.murderer.constructor.name === 'Person') {
-      report.murderer.crimes.murders.committed += report.victims.length
-      report.murderer.crimes.murders.attempted += report.attempted.length
+      report.murderer.murder(report.victims, report.attempted)
     }
 
+    // Finalize and send the report of what happened.
     report.outcome = isPopulatedArray(report.victims)
       ? 'murder'
       : isPopulatedArray(report.attempted)

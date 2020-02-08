@@ -300,7 +300,7 @@ describe('Polycule', () => {
       const p = new Polycule(a ,b)
       p.breakup(2020, [ a ])
       const entry = p.history.get({ tag: 'dissolved' })
-      expect(entry[0].cheaters).toEqual([ a ])
+      expect(entry[0].adulterers).toEqual([ a ])
     })
   })
 
@@ -337,7 +337,7 @@ describe('Polycule', () => {
       const p = new Polycule(a, b, c)
       const report = p.murder(2020, [ c, d ])
       let test = report.murderer
-        ? report.murderer.crimes.murders.committed === report.victims.length
+        ? report.murderer.crimes.murders.killed.length === report.victims.length
         : true
       expect(test).toEqual(true)
     })
@@ -350,7 +350,7 @@ describe('Polycule', () => {
       const p = new Polycule(a, b, c)
       const report = p.murder(2020, [ c, d ])
       let test = report.murderer
-        ? report.murderer.crimes.murders.attempted === report.attempted.length
+        ? report.murderer.crimes.murders.attempted.length === report.attempted.length
         : true
       expect(test).toEqual(true)
     })

@@ -77,9 +77,11 @@ export default class Polycule {
   /**
    * Remove a person from the polycule.
    * @param person {Person} - The person to remove.
+   * @param cause {Object} - Optional. An object explaining why the person was
+   *   removed from the polycule. (Default: `undefined`)
    */
 
-  remove (person) {
+  remove (person, cause = undefined) {
     const year = this.getPresent()
     if (this.people.includes(person)) {
       if (this.people.length > 2) {
@@ -87,10 +89,21 @@ export default class Polycule {
         this.love = this.getLoveWithout(person)
         this.people = this.people.filter(p => p !== person)
         person.polycule = undefined
-        if (year) this.history.add({ year, tags: [ 'reduced' ], size: this.people.length })
+        if (year) {
+          const entry = { year, tags: [ 'reduced' ], size: this.people.length }
+          if (cause && cause.adulterers) entry.tags.push('adultery')
+          if (cause && (cause.outcome === 'murder' || cause.outcome === 'attempted')) {
+            const crimes = { murder: 'murder', attempted: 'attempted murder' }
+            entry.tags = [ ...entry.tags, 'crime', crimes[cause.outcome] ]
+            entry.murderer = cause.murderer
+            entry.victims = cause.victims
+            entry.attempted = cause.attempted
+          }
+          this.history.add()
+        }
       } else {
         // We're down to just two people, so this is the end of the polycule.
-        this.breakup(year)
+        this.breakup(year, cause)
       }
     }
   }

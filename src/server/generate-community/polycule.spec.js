@@ -250,6 +250,82 @@ describe('Polycule', () => {
       ]
       expect(allTrue(actual)).toEqual(true)
     })
+
+    it('records the reason when someone is removed for adultery', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { adulterers: [ b, c ] })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].tags.includes('adultery')).toEqual(true)
+    })
+
+    it('records the parties involved when someone is removed for adultery', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { adulterers: [ b, c ] })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].adulterers).toEqual([ b, c ])
+    })
+
+    it('records the reason when someone is removed for committing a crime', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'murder' })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].tags.includes('crime')).toEqual(true)
+    })
+
+    it('records the reason when someone is removed for committing a murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'murder' })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].tags.includes('murder')).toEqual(true)
+    })
+
+    it('records the reason when someone is removed for attempting a murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'attempted' })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].tags.includes('attempted murder')).toEqual(true)
+    })
+
+    it('records the perpetrator when someone is removed for committing a murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'murder', murderer: b })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].murderer).toEqual(b)
+    })
+
+    it('records the victims when someone is removed for committing a murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'murder', victims: [ c ] })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].victims).toEqual([ c ])
+    })
+
+    it('records the people who survived when someone is removed for committing a murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.remove(b, { outcome: 'murder', attempted: [ c ] })
+      const records = p.history.get({ tags: [ 'dissolved' ] })
+      expect(records[0].attempted).toEqual([ c ])
+    })
   })
 
   describe('breakup', () => {

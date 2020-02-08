@@ -97,12 +97,13 @@ export default class Polycule {
   /**
    * Break up the polycule.
    * @param year {number} - The year in which the polycule breaks up.
-   * @param cheaters {[Person]} - Optional. An array of people who cheated,
-   *   which caused the polycule to break up. If not provided, the polycule
-   *   didn't break up because of adultery. (Default: `[]`)
+   * @param adulterers {[Person]} - Optional. An array of people involved in
+   *   the act of adultery that caused the polycule to break up. If not
+   *   provided, the polycule didn't break up because of adultery.
+   *   (Default: `[]`)
    */
 
-  breakup (year, cheaters = []) {
+  breakup (year, adulterers = []) {
     this.love = undefined
     this.people.forEach(p => { p.polycule = undefined })
     this.people = undefined

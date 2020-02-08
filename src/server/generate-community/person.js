@@ -38,7 +38,7 @@ export default class Person {
     this.born = year
     this.present = year
 
-    this.crimes = { murders: { committed: 0, attempted: 0 }, sabotage: 0 }
+    this.crimes = { murders: { killed: [], attempted: [] }, sabotage: 0 }
     this.history = new History()
     if (year) this.history.add({ year, tags: [ 'born' ]})
 
@@ -256,6 +256,44 @@ export default class Person {
       this.die(tags.join(' '))
     } else {
       this.history.add({ year: this.present, tags, outcome })
+    }
+  }
+
+  /**
+   * The character commits or attempts murder.
+   * @param victims {[Person]} - An array of people that the character murders.
+   *   (Default: `[]`)
+   * @param attempted {[Person]} - An array of people that the character tries
+   *   but fails to murder. (Default: `[]`)
+   */
+
+  murder (victims = [], attempted = []) {
+    this.crimes.murders.killed = [ ...this.crimes.murders.killed, ...victims ]
+    this.crimes.murders.attempted = [ ...this.crimes.murders.attempted, ...attempted ]
+    const year = this.present
+    const crime = victims.length > 0 ? 'murder' : attempted.length > 0 ? 'attempted murder' : null
+
+    victims.forEach(victim => {
+      victim.die('homicide', this)
+    })
+
+    attempted.forEach(victim => {
+      if (victim && victim.history) {
+        victim.history.add({
+          year,
+          tags: [ 'crime', 'victim', 'attempted murder' ],
+          perpetrator: this
+        })
+      }
+    })
+
+    if (crime) {
+      this.history.add({
+        year,
+        tags: [ 'crime', 'perpetrator', crime ],
+        victims,
+        attempted
+      })
     }
   }
 

@@ -2,7 +2,7 @@
 
 import Person from './person'
 
-import { allTrue } from '../../shared/utils'
+import { allTrue, isPopulatedArray } from '../../shared/utils'
 
 describe('Person', () => {
   describe('constructor', () => {
@@ -511,6 +511,182 @@ describe('Person', () => {
       const p = new Person()
       p.getSick([ 'from sickness' ])
       expect(p.history.get({ tag: 'from sickness' }).length).toEqual(1)
+    })
+  })
+
+  describe('murder', () => {
+    it('kills the victim', () => {
+      const today = new Date()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      expect(victim.died).toEqual(today.getFullYear())
+    })
+
+    it('can kill multiple victims', () => {
+      const today = new Date()
+      const murderer = new Person()
+      const victim1 = new Person()
+      const victim2 = new Person()
+      murderer.murder([ victim1, victim2 ])
+      const killedVictim1 = victim1.died === today.getFullYear()
+      const killedVictim2 = victim2.died === today.getFullYear()
+      expect(killedVictim1 && killedVictim2).toEqual(true)
+    })
+
+    it('keeps a list of people you\'ve murdered', () => {
+      const murderer = new Person()
+      const victim1 = new Person()
+      const victim2 = new Person()
+      const victim3 = new Person()
+      murderer.murder([ victim1 ])
+      murderer.murder([ victim2, victim3 ])
+      expect(murderer.crimes.murders.killed).toEqual([ victim1, victim2, victim3 ])
+    })
+
+    it('does not kill attempted victims', () => {
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      expect(victim.died).toEqual(undefined)
+    })
+
+    it('can handle multiple attempted victims', () => {
+      const murderer = new Person()
+      const victim1 = new Person()
+      const victim2 = new Person()
+      murderer.murder([], [ victim1, victim2 ])
+      const didNotKillVictim1 = victim1.died === undefined
+      const didNotKillVictim2 = victim2.died === undefined
+      expect(didNotKillVictim1 && didNotKillVictim2).toEqual(true)
+    })
+
+    it('keeps a list of people you\'ve tried to murder', () => {
+      const murderer = new Person()
+      const victim1 = new Person()
+      const victim2 = new Person()
+      const victim3 = new Person()
+      murderer.murder([], [ victim1 ])
+      murderer.murder([], [ victim2, victim3 ])
+      expect(murderer.crimes.murders.attempted).toEqual([ victim1, victim2, victim3 ])
+    })
+
+    it('updates the victim\'s history with the year', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      expect(victim.history.get({ year, tags: [ 'died' ] }).length).toEqual(1)
+    })
+
+    it('updates the victim\'s history with the cause of death as homicide', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      const history = victim.history.get({ year, tags: [ 'died' ] })
+      const entry = isPopulatedArray(history) ? history[0] : false
+      expect(entry && entry.cause === 'homicide').toEqual(true)
+    })
+
+    it('updates the victim\'s history with the killer', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      const history = victim.history.get({ year, tags: [ 'died' ] })
+      const entry = isPopulatedArray(history) ? history[0] : false
+      expect(entry && entry.killer === murderer).toEqual(true)
+    })
+
+    it('updates the attempted victim\'s history', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      expect(victim.history.get({ year, tags: [ 'victim' ] }).length).toEqual(1)
+    })
+
+    it('updates the attempted victim\'s history with the crime', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      expect(victim.history.get({ year, tags: [ 'attempted murder' ] }).length).toEqual(1)
+    })
+
+    it('updates the attempted victim\'s history with the attempted killer', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      const history = victim.history.get({ year, tags: [ 'attempted murder' ] })
+      const entry = isPopulatedArray(history) ? history[0] : false
+      expect(entry && entry.perpetrator === murderer).toEqual(true)
+    })
+
+    it('updates the murderer\'s history', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      expect(murderer.history.get({ year, tags: [ 'crime' ] }).length).toEqual(1)
+    })
+
+    it('notes that the murderer is the perpetrator', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      expect(murderer.history.get({ year, tags: [ 'perpetrator' ] }).length).toEqual(1)
+    })
+
+    it('updates the murderer\'s history with the murder', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      expect(murderer.history.get({ year, tags: [ 'murder' ] }).length).toEqual(1)
+    })
+
+    it('updates the murderer\'s history with the attempted murder', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      expect(murderer.history.get({ year, tags: [ 'attempted murder' ] }).length).toEqual(1)
+    })
+
+    it('notes the victims in the murderer\'s history', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([ victim ])
+      const history = murderer.history.get({ year, tags: [ 'murder' ] })
+      const entry = isPopulatedArray(history) ? history[0] : false
+      expect(entry.victims).toEqual([ victim ])
+    })
+
+    it('notes the attempted victims in the murderer\'s history', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const murderer = new Person()
+      const victim = new Person()
+      murderer.murder([], [ victim ])
+      const history = murderer.history.get({ year, tags: [ 'attempted murder' ] })
+      const entry = isPopulatedArray(history) ? history[0] : false
+      expect(entry.attempted).toEqual([ victim ])
     })
   })
 

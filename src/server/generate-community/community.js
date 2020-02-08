@@ -230,8 +230,8 @@ export default class Community {
   judgeMurder (report) {
     const { outcome, murderer, victims, attempted, year } = report
     const record = murderer && murderer.crimes && murderer.crimes.murders ? murderer.crimes.murders : null
-    const hasCommitted = record && record.committed ? record.committed : 0
-    const hasAttempted = record && record.attempted ? record.attempted : 0
+    const hasCommitted = record && record.committed ? record.committed.length : 0
+    const hasAttempted = record && record.attempted ? record.attempted.length : 0
     let execute = false
     let exile = false
     if (outcome === 'murder') {

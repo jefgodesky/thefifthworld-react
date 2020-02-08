@@ -456,8 +456,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -474,14 +473,14 @@ describe('Community', () => {
     it('might execute a murderer who\'s killed before', () => {
       const c = new Community()
       const murderer = new Person()
-      murderer.crimes.murders.committed = 4
       c.add(murderer)
-      const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      const oldVictim = new Person()
+      const newVictim = new Person()
+      murderer.murder([ oldVictim ])
+      murderer.murder([ newVictim ])
       c.judgeMurder({
         murderer,
-        victims: [ victim ],
+        victims: [ newVictim ],
         attempted: [],
         outcome: 'murder'
       })
@@ -496,14 +495,14 @@ describe('Community', () => {
     it('might execute a murderer who\'s tried to kill before', () => {
       const c = new Community()
       const murderer = new Person()
-      murderer.crimes.murders.attempted = 4
       c.add(murderer)
-      const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      const oldVictim = new Person()
+      const newVictim = new Person()
+      murderer.murder([], [ oldVictim ])
+      murderer.murder([ newVictim ], [])
       c.judgeMurder({
         murderer,
-        victims: [ victim ],
+        victims: [ newVictim ],
         attempted: [],
         outcome: 'murder'
       })
@@ -512,7 +511,7 @@ describe('Community', () => {
       const entry = isPopulatedArray(record) ? record[0] : false
       const executed = entry && entry.tags.includes('died') && entry.cause === 'executed'
       const exiled = entry && entry.tags.includes('left') && entry.crime === 'murder'
-      expect(executed || exiled).toEqual(true)
+      expect(!(executed && exiled)).toEqual(true)
     })
 
     it('might exile someone who tried to kill someone', () => {
@@ -520,7 +519,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      murderer.crimes.murders.attempted = 1
+      murderer.murder([], [ victim ])
       c.judgeMurder({
         murderer,
         victims: [],
@@ -539,7 +538,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      murderer.crimes.murders.attempted = 1
+      murderer.murder([], [ victim ])
       c.judgeMurder({
         murderer,
         victims: [],
@@ -558,8 +557,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -576,8 +574,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -594,8 +591,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -614,8 +610,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -635,9 +630,7 @@ describe('Community', () => {
       c.add(murderer)
       const victim = new Person()
       const survivor = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
-      murderer.crimes.murders.attempted = 1
+      murderer.murder([ victim ], [ survivor ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -656,8 +649,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      victim.die('homicide', murderer)
-      murderer.crimes.murders.committed = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [ victim ],
@@ -677,7 +669,7 @@ describe('Community', () => {
       const murderer = new Person()
       c.add(murderer)
       const victim = new Person()
-      murderer.crimes.murders.attempted = 1
+      murderer.murder([ victim ])
       c.judgeMurder({
         murderer,
         victims: [],

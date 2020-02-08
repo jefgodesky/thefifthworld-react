@@ -304,6 +304,56 @@ describe('Polycule', () => {
     })
   })
 
+  describe('murder', () => {
+    it('reports the outcome', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      const none = report.murderer === null && report.outcome === 'none'
+      const attempted = report.attempted.length > 0 && report.outcome === 'attempted'
+      const murder = report.victims.length > 0 && report.outcome === 'murder'
+      expect(none || attempted || murder).toEqual(true)
+    })
+
+    it('reports the murderer', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      const possibilities = [ a, b, null ]
+      expect(possibilities.includes(report.murderer)).toEqual(true)
+    })
+
+    it('reports the victims', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      const possibilities = [ c, d ]
+      const checks = report.victims.map(p => possibilities.includes(p))
+      expect(allTrue(checks)).toEqual(true)
+    })
+
+    it('reports the people that the killer tried but failed to murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      const possibilities = [ c, d ]
+      const checks = report.attempted.map(p => possibilities.includes(p))
+      expect(allTrue(checks)).toEqual(true)
+    })
+  })
+
   describe('runEncounters', () => {
     it('increases or decreases love scores', () => {
       const a = new Person()

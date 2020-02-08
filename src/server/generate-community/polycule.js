@@ -3,6 +3,7 @@ import Community from './community'
 import History from './history'
 import Person from './person'
 
+import { shuffle, pickRandom } from './shuffle'
 import { isPopulatedArray, allTrue, avg } from '../../shared/utils'
 
 export default class Polycule {
@@ -116,6 +117,75 @@ export default class Polycule {
       entry.tags.push('adultery')
     }
     if (year) this.history.add(entry)
+  }
+
+  /**
+   * A member of the polycule might react to being cheated on in the most
+   * extreme possible way: by killing someone. Adultery is the leading cause
+   * of murder in tribal societies, but even so it's not at all a common
+   * response to it. When it does happen, though, it's so traumatic that it
+   * does require some special handling. This method evaluates who, if anyone,
+   * is willing to do this, and if so, who he will target, and of them, who he
+   * will succeed in killing and who he will fail to kill. We return an object
+   * describing the outcome, providing the killer, his victims, the people he
+   * tried to kill, and a string summarizing the outcome.
+   * @param year {number} - The year in which the murder takes place.
+   * @param adulterers {[Person]} - An array of the persons involved in the act
+   *   of adultery.
+   * @returns {Object} - If the murder was committed, returns an object with
+   *   properties `murderer` (the Person object of the person who committed the
+   *   murder), `victims` (an array of Person objects of the people that the
+   *   murderer killed), `attempted` (an array of Person objects of the people
+   *   that the murderer tried but failed to kill), and `outcome` (either
+   *   `'murder'`, `'attempted'`, or `'none'`, describing what happened).
+   */
+
+  murder (year, adulterers) {
+    const report = {
+      murderer: null,
+      victims: [],
+      attempted: []
+    }
+
+    // Openness and neuroticism are correlated with intimate partner violence
+    // [https://www.ncbi.nlm.nih.gov/pubmed/27640426]. Extraversion was also
+    // correlated with it in men, but given that gender difference we might be
+    // able to conclude that that's tied up with toxic masculinity, which
+    // should be a lot less common in the Fifth World, so we'll focus on
+    // openness and neuroticism. We're also going to guess that the huge gender
+    // disparity we see in this sort of behavior today will disappear for much
+    // the same reason.
+
+    const potentialVictims = shuffle(adulterers)
+    const cheatedOn = this.people.filter(p => !adulterers.includes(p))
+    const potentialMurderers = cheatedOn.filter(p => p.personality.check('openness') || p.personality.check('neuroticism'))
+    report.murderer = isPopulatedArray(potentialMurderers) ? pickRandom(potentialMurderers) : null
+
+    if (report.murderer) {
+      let numVictims = 1
+      let done = false
+      while (numVictims < adulterers.length && !done) {
+        const open = report.murderer.personality.check('openness')
+        const neurotic = report.murderer.personality.check('neuroticism')
+        if (open && neurotic) { numVictims++ } else { done = true }
+      }
+
+      for (let i = 0; i < numVictims; i++) {
+        if (random.boolean()) {
+          potentialVictims[i].die('homicide', report.murderer)
+          report.victims.push(potentialVictims[i])
+        } else {
+          report.attempted.push(potentialVictims[i])
+        }
+      }
+    }
+
+    report.outcome = isPopulatedArray(report.victims)
+      ? 'murder'
+      : isPopulatedArray(report.attempted)
+        ? 'attempted'
+        : 'none'
+    return report
   }
 
   /**

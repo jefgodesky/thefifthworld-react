@@ -178,13 +178,21 @@ export default class Person {
 
   /**
    * Marks when a character leaves the community.
+   * @param crime {string} - Optional. If defined, the character did not leave
+   *   the community of her own volition, but was exiled for committing some
+   *   crime (usually murder or attempted murder). This string is a single word
+   *   or very short phrase to describe the crime. It should be usable as a
+   *   consistent tag (e.g., 'murder' or 'attempted murder').
+   *   (Default: `undefined`)
    */
 
-  leave () {
+  leave (crime = undefined) {
     const year = this.present
     this.left = year
     if (this.polycule) this.polycule.remove(this, year)
-    this.history.add({ year, tags: [ 'left' ] })
+    const entry = { year, tags: [ 'left' ] }
+    if (crime) { entry.tags.push('exile'); entry.crime = crime }
+    this.history.add(entry)
   }
 
   /**

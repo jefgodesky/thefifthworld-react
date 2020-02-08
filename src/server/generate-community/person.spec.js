@@ -428,6 +428,19 @@ describe('Person', () => {
       p.leave()
       expect(p.history.get({ tags: [ 'left' ] }).length).toEqual(1)
     })
+
+    it('records if the person was exiled', () => {
+      const p = new Person()
+      p.leave('wasting perfectly good pickles')
+      expect(p.history.get({ tags: [ 'exile' ] }).length).toEqual(1)
+    })
+
+    it('records the crime for which the person was exiled', () => {
+      const p = new Person()
+      const crime = 'wasting perfectly good pickles'
+      p.leave(crime)
+      expect(p.history.get({ tags: [ 'exile' ] })[0].crime).toEqual(crime)
+    })
   })
 
   describe('getAge', () => {

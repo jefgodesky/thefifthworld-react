@@ -80,6 +80,21 @@ describe('Person', () => {
       const baby = new Person({ parents: [ mom.genotype, dad.genotype ], born: 2020 })
       expect(baby.history.get({ tags: [ 'born' ] }).length).toEqual(1)
     })
+
+    it('starts you off with 0 murders', () => {
+      const p = new Person()
+      expect(p.crimes.murders.committed).toEqual(0)
+    })
+
+    it('starts you off with 0 attempted murders', () => {
+      const p = new Person()
+      expect(p.crimes.murders.attempted).toEqual(0)
+    })
+
+    it('starts you off with 0 incidents of sabotage', () => {
+      const p = new Person()
+      expect(p.crimes.sabotage).toEqual(0)
+    })
   })
 
   describe('assignGender', () => {

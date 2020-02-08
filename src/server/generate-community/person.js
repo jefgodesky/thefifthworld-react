@@ -38,6 +38,7 @@ export default class Person {
     this.born = year
     this.present = year
 
+    this.crimes = { murders: { committed: 0, attempted: 0 }, sabotage: 0 }
     this.history = new History()
     if (year) this.history.add({ year, tags: [ 'born' ]})
 

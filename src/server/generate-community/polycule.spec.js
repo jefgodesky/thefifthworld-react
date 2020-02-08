@@ -329,6 +329,32 @@ describe('Polycule', () => {
       expect(possibilities.includes(report.murderer)).toEqual(true)
     })
 
+    it('records the murders', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      let test = report.murderer
+        ? report.murderer.crimes.murders.committed === report.victims.length
+        : true
+      expect(test).toEqual(true)
+    })
+
+    it('records the attempted murders', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      const report = p.murder(2020, [ c, d ])
+      let test = report.murderer
+        ? report.murderer.crimes.murders.attempted === report.attempted.length
+        : true
+      expect(test).toEqual(true)
+    })
+
     it('reports the victims', () => {
       const a = new Person()
       const b = new Person()

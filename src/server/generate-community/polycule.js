@@ -180,6 +180,11 @@ export default class Polycule {
       }
     }
 
+    if (report.murderer && report.murderer.constructor && report.murderer.constructor.name === 'Person') {
+      report.murderer.crimes.murders.committed += report.victims.length
+      report.murderer.crimes.murders.attempted += report.attempted.length
+    }
+
     report.outcome = isPopulatedArray(report.victims)
       ? 'murder'
       : isPopulatedArray(report.attempted)

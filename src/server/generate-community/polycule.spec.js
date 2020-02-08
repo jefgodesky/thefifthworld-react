@@ -476,6 +476,40 @@ describe('Polycule', () => {
     })
   })
 
+  describe('processMurder', () => {
+    it('usually removes the murderer', () => {
+      let notRemoved = 0
+
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        const b = new Person()
+        const c = new Person()
+        const d = new Person()
+        const p = new Polycule(a, b, c)
+        p.processMurder({murderer: c, victims: [d], attempted: [], outcome: 'murder'})
+        if (p.people !== undefined && p.people.length === 3) notRemoved++
+      }
+
+      expect(notRemoved).toBeLessThan(25)
+    })
+
+    it('usually breaks up the polycule', () => {
+      let dissolved = 0
+
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        const b = new Person()
+        const c = new Person()
+        const d = new Person()
+        const p = new Polycule(a, b, c)
+        p.processMurder({murderer: c, victims: [d], attempted: [], outcome: 'murder'})
+        if (p.people === undefined) dissolved++
+      }
+
+      expect(dissolved).toBeGreaterThan(50)
+    })
+  })
+
   describe('runEncounters', () => {
     it('increases or decreases love scores', () => {
       const a = new Person()

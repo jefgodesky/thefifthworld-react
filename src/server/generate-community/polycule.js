@@ -202,6 +202,30 @@ export default class Polycule {
   }
 
   /**
+   * The polycule deals with a murder resulting from adultery. In most cases
+   * the perpetrator will be removed from the polycule, but in many cases, even
+   * if other members in the polycule remain, the trauma will lead to the
+   * polycule's breakup.
+   * @param report {Object} - The report object returned by the `murder`
+   *   method, providing information on what happened.
+   */
+
+  processMurder (report) {
+    if (report.outcome !== 'none') {
+      const expelOdds = { murder: 90, attempted: 70 }
+      const breakupOdds = { murder: 90, attempted: 50 }
+
+      if (random.int(1, 100) < expelOdds[report.outcome]) {
+        this.remove(report.murderer)
+      }
+
+      if (this.people.length > 1 && random.int(1, 100) < breakupOdds[report.outcome]) {
+        this.breakup(report.year, report)
+      }
+    }
+  }
+
+  /**
    * Run encounters between each of the members of the polycule to see how
    * love scores change.
    */

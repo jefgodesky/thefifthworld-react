@@ -4,7 +4,7 @@ import random from 'random'
 import Community from './community'
 import Person from './person'
 import Polycule from './polycule'
-import { allTrue } from '../../shared/utils'
+import { allTrue, isPopulatedArray } from '../../shared/utils'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -447,6 +447,249 @@ describe('Community', () => {
       c.present = 2020
       const ages = c.generateStrangers().map(p => p.getAge())
       expect(Math.max(...ages)).toBeLessThanOrEqual(66)
+    })
+  })
+
+  describe('judgeMurder', () => {
+    it('might exile a murderer', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder'
+      })
+      const today = new Date()
+      const record = murderer.history.get({ year: today.getFullYear(), tags: [ 'left' ] })
+      const entry = isPopulatedArray(record) ? record[0] : false
+      const exiled = entry && entry.tags.includes('exile') && entry.crime === 'murder'
+      expect(exiled || !entry).toEqual(true)
+    })
+
+    it('might execute a murderer who\'s killed before', () => {
+      const c = new Community()
+      const murderer = new Person()
+      murderer.crimes.murders.committed = 4
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder'
+      })
+      const today = new Date()
+      const record = murderer.history.get({ year: today.getFullYear(), tags: [ 'exile', 'died' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const executed = Boolean(entry.tags) && entry.tags.includes('died') && entry.cause === 'executed'
+      const exiled = Boolean(entry.tags) && entry.tags.includes('left') && entry.crime === 'murder'
+      expect(!(executed && exiled)).toEqual(true)
+    })
+
+    it('might execute a murderer who\'s tried to kill before', () => {
+      const c = new Community()
+      const murderer = new Person()
+      murderer.crimes.murders.attempted = 4
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder'
+      })
+      const today = new Date()
+      const record = murderer.history.get({ year: today.getFullYear(), tags: [ 'exile', 'died' ] })
+      const entry = isPopulatedArray(record) ? record[0] : false
+      const executed = entry && entry.tags.includes('died') && entry.cause === 'executed'
+      const exiled = entry && entry.tags.includes('left') && entry.crime === 'murder'
+      expect(executed || exiled).toEqual(true)
+    })
+
+    it('might exile someone who tried to kill someone', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      murderer.crimes.murders.attempted = 1
+      c.judgeMurder({
+        murderer,
+        victims: [],
+        attempted: [ victim ],
+        outcome: 'attempted'
+      })
+      const today = new Date()
+      const record = murderer.history.get({ year: today.getFullYear(), tags: [ 'exile' ] })
+      const entry = isPopulatedArray(record) ? record[0] : false
+      const exiled = entry.tags && entry.tags.includes('left') && entry.crime === 'attempted murder'
+      expect(exiled || !entry).toEqual(true)
+    })
+
+    it('won\'t execute someone for attempted murder', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      murderer.crimes.murders.attempted = 1
+      c.judgeMurder({
+        murderer,
+        victims: [],
+        attempted: [ victim ],
+        outcome: 'attempted'
+      })
+      const today = new Date()
+      const record = murderer.history.get({ year: today.getFullYear(), tags: [ 'exile' ] })
+      const entry = isPopulatedArray(record) ? record[0] : false
+      const executed = Boolean(entry.tags) && entry.tags.includes('died') && entry.cause === 'executed'
+      expect(executed).toEqual(false)
+    })
+
+    it('records that a crime happened', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'crime' ] })
+      expect(record.length).toEqual(1)
+    })
+
+    it('records the crime', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'murder' ] })
+      expect(record.length).toEqual(1)
+    })
+
+    it('records the perpetrator', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'murder' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const perp = entry.perpetrator ? entry.perpetrator : false
+      expect(perp).toEqual(murderer)
+    })
+
+    it('records the victims', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'murder' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const victims = entry.victims ? entry.victims : false
+      expect(victims).toEqual([ victim ])
+    })
+
+    it('records who the assailant tried and failed to murder', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      const survivor = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      murderer.crimes.murders.attempted = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [ survivor ],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'murder' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const attempted = entry.attempted ? entry.attempted : false
+      expect(attempted).toEqual([ survivor ])
+    })
+
+    it('records the community\'s judgment (execution, exile, or reconciliation for murder)', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      victim.die('homicide', murderer)
+      murderer.crimes.murders.committed = 1
+      c.judgeMurder({
+        murderer,
+        victims: [ victim ],
+        attempted: [],
+        outcome: 'murder',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'murder' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const judgment = entry.judgment ? entry.judgment : false
+      const possibilities = [ 'execution', 'exile', 'reconciliation' ]
+      expect(possibilities.includes(judgment)).toEqual(true)
+    })
+
+    it('records the community\'s judgment (exile or reconciliation for attempted murder)', () => {
+      const c = new Community()
+      const murderer = new Person()
+      c.add(murderer)
+      const victim = new Person()
+      murderer.crimes.murders.attempted = 1
+      c.judgeMurder({
+        murderer,
+        victims: [],
+        attempted: [ victim ],
+        outcome: 'attempted',
+        year: 2020
+      })
+      const record = c.history.get({ tags: [ 'attempted murder' ] })
+      const entry = isPopulatedArray(record) ? record[0] : {}
+      const judgment = entry.judgment ? entry.judgment : false
+      const possibilities = [ 'exile', 'reconciliation' ]
+      expect(possibilities.includes(judgment)).toEqual(true)
     })
   })
 

@@ -284,6 +284,24 @@ describe('Polycule', () => {
       p.breakup(2020)
       expect(p.history.get({ tag: 'dissolved' }).length).toEqual(1)
     })
+
+    it('records when the polycule breaks up due to adultery', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a ,b)
+      p.breakup(2020, [ a ])
+      const entry = p.history.get({ tag: 'dissolved' })
+      expect(entry[0].tags.includes('adultery')).toEqual(true)
+    })
+
+    it('records who cheated when the polycule breaks up due to adultery', () => {
+      const a = new Person()
+      const b = new Person()
+      const p = new Polycule(a ,b)
+      p.breakup(2020, [ a ])
+      const entry = p.history.get({ tag: 'dissolved' })
+      expect(entry[0].cheaters).toEqual([ a ])
+    })
   })
 
   describe('runEncounters', () => {

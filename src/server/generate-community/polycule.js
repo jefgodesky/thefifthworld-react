@@ -2,6 +2,7 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
+
 import { isPopulatedArray, allTrue, avg } from '../../shared/utils'
 
 export default class Polycule {
@@ -96,14 +97,24 @@ export default class Polycule {
   /**
    * Break up the polycule.
    * @param year {number} - The year in which the polycule breaks up.
+   * @param cheaters {[Person]} - Optional. An array of people who cheated,
+   *   which caused the polycule to break up. If not provided, the polycule
+   *   didn't break up because of adultery. (Default: `[]`)
    */
 
-  breakup (year) {
+  breakup (year, cheaters = []) {
     this.love = undefined
     this.people.forEach(p => { p.polycule = undefined })
     this.people = undefined
     if (this.community) this.community.removePolycule(this)
-    if (year) this.history.add({year, tags: [ 'dissolved' ] })
+
+    // Record what happened
+    const entry = { year, tags: [ 'dissolved' ] }
+    if (isPopulatedArray(cheaters)) {
+      entry.cheaters = cheaters
+      entry.tags.push('adultery')
+    }
+    if (year) this.history.add(entry)
   }
 
   /**

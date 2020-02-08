@@ -98,13 +98,14 @@ export default class Polycule {
   /**
    * Break up the polycule.
    * @param year {number} - The year in which the polycule breaks up.
-   * @param adulterers {[Person]} - Optional. An array of people involved in
-   *   the act of adultery that caused the polycule to break up. If not
-   *   provided, the polycule didn't break up because of adultery.
-   *   (Default: `[]`)
+   * @param cause {Object} - Optional. An object explaining why the polycule
+   *   broke up. This could include adultery (which would include a property
+   *   called `adulterers`, containing an array of Person objects of those
+   *   involved in the adultery) or murder or attempted murder (which would
+   *   provide the report object returned by the `murder` method).
    */
 
-  breakup (year, adulterers = []) {
+  breakup (year, cause = undefined) {
     this.love = undefined
     this.people.forEach(p => { p.polycule = undefined })
     this.people = undefined
@@ -112,9 +113,15 @@ export default class Polycule {
 
     // Record what happened
     const entry = { year, tags: [ 'dissolved' ] }
-    if (isPopulatedArray(adulterers)) {
-      entry.adulterers = adulterers
+    if (cause && cause.adulterers && isPopulatedArray(cause.adulterers)) {
+      entry.adulterers = cause.adulterers
       entry.tags.push('adultery')
+    } else if (cause && cause.outcome && (cause.outcome === 'murder' || cause.outcome === 'attempted')) {
+      const crime = cause.outcome === 'attempted' ? 'attempted murder' : 'murder'
+      entry.murderer = cause.murderer
+      entry.victims = cause.victims
+      entry.attempted = cause.attempted
+      entry.tags = [ ...entry.tags, 'crime', crime ]
     }
     if (year) this.history.add(entry)
   }

@@ -289,7 +289,7 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a ,b)
-      p.breakup(2020, [ a ])
+      p.breakup(2020, { adulterers: [ a ] })
       const entry = p.history.get({ tag: 'dissolved' })
       expect(entry[0].tags.includes('adultery')).toEqual(true)
     })
@@ -298,9 +298,105 @@ describe('Polycule', () => {
       const a = new Person()
       const b = new Person()
       const p = new Polycule(a ,b)
-      p.breakup(2020, [ a ])
+      p.breakup(2020, { adulterers: [ a ] })
       const entry = p.history.get({ tag: 'dissolved' })
       expect(entry[0].adulterers).toEqual([ a ])
+    })
+
+    it('records when the polycule breaks up due to murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [ d ], attempted: [], outcome: 'murder' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].tags.includes('murder')).toEqual(true)
+    })
+
+    it('records the murderer when the polycule breaks up due to murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [ d ], attempted: [], outcome: 'murder' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].murderer).toEqual(c)
+    })
+
+    it('records who was killed when the polycule breaks up due to murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [ d ], attempted: [], outcome: 'murder' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].victims).toEqual([ d ])
+    })
+
+    it('records who the killer tried but failed to kill when the polycule breaks up due to murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [ d ], attempted: [ b ], outcome: 'murder' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].attempted).toEqual([ b ])
+    })
+
+    it('records when the polycule breaks up due to attempted murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [], attempted: [ d ], outcome: 'attempted' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].tags.includes('attempted murder')).toEqual(true)
+    })
+
+    it('records the would-be murderer when the polycule breaks up due to attempted murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [], attempted: [ d ], outcome: 'attempted' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].murderer).toEqual(c)
+    })
+
+    it('records who was killed when the polycule breaks up due to attempted murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [], attempted: [ d ], outcome: 'attempted' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].victims).toEqual([])
+    })
+
+    it('records who the killer tried but failed to kill when the polycule breaks up due to attempted murder', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a ,b, c)
+      const report = { murderer: c, victims: [], attempted: [ d ], outcome: 'attempted' }
+      p.breakup(2020, report)
+      const records = p.history.get({ tag: 'dissolved' })
+      expect(records[0].attempted).toEqual([ d ])
     })
   })
 

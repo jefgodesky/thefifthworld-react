@@ -428,19 +428,7 @@ export default class Polycule {
     const potentialFathers = this.people.filter(p => p.body.isFertile('Male'))
     const potentialMothers = this.people.filter(p => p.body.isFertile('Female'))
     if (potentialFathers.length > 0 && potentialMothers.length > 0) {
-
-      // The more open to experience you are, the fewer years of peace you
-      // need to convince you to have a child, and each member of the polycule
-      // needs to agree, so we can just look at the least open person in it.
-
-      const recent = community.getRecentHistory(10)
-      const openness = this.people.map(p => p.personality.chance('openness'))
-      const leastOpen = Math.min(...openness)
-      const peaceNeeded = Math.ceil((100 - leastOpen) / 10)
-      const goodYears = recent
-        .slice(0, peaceNeeded)
-        .map(y => !y.lean && !y.conflict && !y.sick)
-      return allTrue(goodYears)
+      return allTrue(this.people.map(p => p.feelsSafe()))
     }
     return false
   }

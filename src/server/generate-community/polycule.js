@@ -376,18 +376,17 @@ export default class Polycule {
   }
 
   /**
-   * Returns the love value between two people in the polycule.
-   * @param a {Person} - One person in the polycule.
-   * @param b {Person} - A second person in the polycule.
-   * @returns {int|null} - Returns the love score between `a` and `b` if they
-   *   are both people in the polycule. If one or both are not people in the
-   *   polycule, it returns `null`.
+   * Returns the love that one member of the polycule has for another.
+   * @param subject {Person} - The one who loves.
+   * @param object {Person} - The one who is loved.
+   * @returns {int|null} - Returns `subject`'s love for `object` if they are
+   *   both in the polycule. If not, returns `null`.
    */
 
-  getLoveBetween (a, b) {
-    const aindex = this.people.indexOf(a)
-    const bindex = this.people.indexOf(b)
-    return aindex > -1 && bindex > -1 ? this.love[aindex][bindex] : null
+  getLoveFor (subject, object) {
+    const s = this.people.indexOf(subject)
+    const o = this.people.indexOf(object)
+    return s > -1 && o > -1 ? this.love[s][o] : null
   }
 
   /**

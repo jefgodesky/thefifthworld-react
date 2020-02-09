@@ -380,12 +380,6 @@ export default class Community {
 
   annual (year, founding = false) {
     if (founding) { this.considerFounder(year) } else { this.adjustYield() }
-    this.solveProblems()
-    this.newProblems()
-    this.polycules.forEach(p => p.change(this, year))
-    const population = this.getCurrentPopulation()
-    population.forEach(p => p.age(this, year))
-    this.recordHistory(year)
 
     // Each polycule of three or more erodes the community's belief in
     // monogamy as a norm each year, until polygamy is fulled accepted.
@@ -393,6 +387,20 @@ export default class Community {
     this.polycules.forEach(p => {
       if (p.people.length > 2) this.reduceMonogamy()
     })
+
+    // See if you can solve some problems. Then see what new problems may arise.
+    this.solveProblems()
+    this.newProblems()
+
+    // How does everyone's relationships change?
+    this.polycules.forEach(p => p.change(this, year))
+
+    // Age everyone up one year.
+    const population = this.getCurrentPopulation()
+    population.forEach(p => p.age(this, year))
+
+    // Record what happened.
+    this.recordHistory(year)
   }
 
   /**

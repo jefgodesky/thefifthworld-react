@@ -85,12 +85,12 @@ describe('Person', () => {
 
     it('starts you off with 0 murders', () => {
       const p = new Person()
-      expect(p.crimes.murders.committed).toEqual(0)
+      expect(p.crimes.murders.killed).toEqual([])
     })
 
     it('starts you off with 0 attempted murders', () => {
       const p = new Person()
-      expect(p.crimes.murders.attempted).toEqual(0)
+      expect(p.crimes.murders.attempted).toEqual([])
     })
 
     it('starts you off with 0 incidents of sabotage', () => {

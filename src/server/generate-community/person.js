@@ -195,11 +195,13 @@ export default class Person {
 
         if (agreed) {
           let willAdd = true
-          const monogamy = get(this, 'community.traditions.monogamy')
+          const monogamy = get(this, 'community.traditions.monogamy') || 1
           if (monogamy) {
             this.people.forEach(person => {
-              const chance = person.personality.chance('agreeableness') * monogamy
-              if (random.int(1, 100) < chance) willAdd = false
+              const rolls = Math.round(monogamy * 3)
+              for (let i = 0; i < rolls; i++) {
+                if (person.personality.check('agreeableness')) willAdd = false
+              }
             })
           }
           if (willAdd) this.polycule.add(stranger)

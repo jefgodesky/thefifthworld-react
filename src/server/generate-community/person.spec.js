@@ -2,6 +2,7 @@
 
 import Community from './community'
 import Person from './person'
+import Polycule from './polycule'
 
 import { allTrue, isPopulatedArray } from '../../shared/utils'
 
@@ -398,6 +399,29 @@ describe('Person', () => {
       }
 
       expect(count).toBeGreaterThanOrEqual(75)
+    })
+  })
+
+  describe('meet', () => {
+    it('might start a relationship', () => {
+      const p = new Person()
+      const s = new Person()
+      p.meet(s)
+      const no = p.polycule === undefined
+      const yes = Boolean(p.polycule) && p.polycule.people.includes(p) && p.polycule.people.includes(s) && p.polycule.people.length === 2
+      expect(yes || no).toEqual(true)
+    })
+
+    it('might expand the polycule', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.commit()
+      a.meet(c)
+      const no = p.people.length === 2
+      const yes = p.people.length === 3
+      expect(yes || no).toEqual(true)
     })
   })
 

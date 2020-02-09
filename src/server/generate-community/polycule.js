@@ -269,7 +269,7 @@ export default class Polycule {
         this.remove(report.murderer)
       }
 
-      if (this.people.length > 1 && random.int(1, 100) < breakupOdds[report.outcome]) {
+      if (this.people && this.people.length > 1 && random.int(1, 100) < breakupOdds[report.outcome]) {
         this.breakup(report.year, report)
       }
     }

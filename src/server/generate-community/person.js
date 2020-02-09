@@ -7,7 +7,7 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
-import { allTrue, between, clone, isPopulatedArray } from '../../shared/utils'
+import { allTrue, between, clone, get, isPopulatedArray } from '../../shared/utils'
 import { check } from './check'
 import { pickRandom } from './shuffle'
 
@@ -162,6 +162,73 @@ export default class Person {
   }
 
   /**
+   * Meeting a stranger. If you hit it off, you might want to start a
+   * relationship with her.
+   * If you're already in a polycule, we'll see how the other members of your
+   * polycule feel about her. If they all like her, too, then we need to look
+   * at our community's norms around monogamy. If we have such a thing, how
+   * strong are they, and is everyone in our polycule agreed to break them? If
+   * we don't have any such norms, or if everyone's agreed, then we'll add the
+   * stranger to the polycule.
+   * If there are people in your polycule who don't get along with the stranger
+   * or they're not willing to break community norms around monogamy, then the
+   * question becomes, will you be unfaithful? That depends on your love for
+   * each member of your polycule and your agreeableness (which reflects how
+   * much you care about whether or not you hurt someone). This evaluates
+   * everyone in the polycule, not just the people who didn't like the
+   * stranger, because the decision was a consensus, so you're cheating on all
+   * of them, not just the people who didn't like the stranger.
+   * IF you're not in a polycule, then you're going to start a life with the
+   * stranger, and the only question is if that life will be with this
+   * community or somewhere else. If you feel safe here, you'll join this
+   * community. If not, you'll leave with the stranger to start your life
+   * together somewhere else.
+   * @param stranger {Person} - The stranger you've met.
+   */
+
+  meet (stranger) {
+    const encounter = this.encounter((stranger))
+    if (encounter.mutual) {
+      if (this.polycule) {
+        const others = this.polycule.getOthers(this)
+        const agreed = allTrue(others.map(o => o.encounter(stranger).mutual))
+
+        if (agreed) {
+          let willAdd = true
+          const monogamy = get(this, 'community.traditions.monogamy')
+          if (monogamy) {
+            this.people.forEach(person => {
+              const chance = person.personality.chance('agreeableness') * monogamy
+              if (random.int(1, 100) < chance) willAdd = false
+            })
+          }
+          if (willAdd) this.polycule.add(stranger)
+        } else {
+          const willCheatOn = others.map(other => {
+            let willCheat = true
+            const tries = Math.max(this.polycule.getLoveFor(this, other), 1)
+            for (let i = 0; i < tries; i++) {
+              willCheat = willCheat && this.personality.check('agreeableness')
+            }
+            return willCheat
+          })
+          if (allTrue(willCheatOn)) this.polycule.cheat([ this, stranger ])
+        }
+      } else {
+        if (this.feelsSafe()) {
+          this.polycule = new Polycule(this, stranger)
+          if (this.community) {
+            this.community.add(stranger)
+            this.community.addPolycule(this.polycule)
+          }
+        } else {
+          this.leave()
+        }
+      }
+    }
+  }
+
+  /**
    * Marks a characer's death.
    * @param cause {string} - A string indicating the cause of death.
    * @param killer {Person} - (Optional) The person who killed this character.
@@ -274,7 +341,7 @@ export default class Person {
     const recent = this.community ? this.community.getRecentHistory(goodYearsNeeded) : []
     return isPopulatedArray(recent)
       ? allTrue(recent.map(y => !y.lean && !y.conflict && !y.sick))
-      : false
+      : true
   }
 
   /**

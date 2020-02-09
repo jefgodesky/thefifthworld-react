@@ -1,5 +1,6 @@
 /* global describe, it, expect */
 
+import Community from './community'
 import Person from './person'
 
 import { allTrue, isPopulatedArray } from '../../shared/utils'
@@ -511,6 +512,96 @@ describe('Person', () => {
       const p = new Person()
       p.getSick([ 'from sickness' ])
       expect(p.history.get({ tag: 'from sickness' }).length).toEqual(1)
+    })
+  })
+
+  describe('feelsSafe', () => {
+    it('returns true if things have been peaceful', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const c = new Community()
+      c.present = year + 100
+      for (let y = year; y < year + 100; y++) {
+        c.history.add({ year: y, lean: false, sick: false, conflict: false })
+      }
+
+      const p = new Person()
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(true)
+    })
+
+    it('returns false if you\'ve experienced lean times recently', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const c = new Community()
+      c.present = year + 101
+      for (let y = year; y < year + 100; y++) {
+        c.history.add({ year: y, lean: false, sick: false, conflict: false })
+      }
+      c.history.add({ year: year + 101, lean: true, sick: false, conflict: false })
+
+      const p = new Person()
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(false)
+    })
+
+    it('returns false if you\'ve experienced widespread sickness recently', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const c = new Community()
+      c.present = year + 101
+      for (let y = year; y < year + 100; y++) {
+        c.history.add({ year: y, lean: false, sick: false, conflict: false })
+      }
+      c.history.add({ year: year + 101, lean: false, sick: true, conflict: false })
+
+      const p = new Person()
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(false)
+    })
+
+    it('returns false if you\'ve been in a conflict recently', () => {
+      const today = new Date()
+      const year = today.getFullYear()
+      const c = new Community()
+      c.present = year + 101
+      for (let y = year; y < year + 100; y++) {
+        c.history.add({ year: y, lean: false, sick: false, conflict: false })
+      }
+      c.history.add({ year: year + 101, lean: false, sick: false, conflict: true })
+
+      const p = new Person()
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(false)
+    })
+
+    it('requires fewer peaceful years if you\'re more open', () => {
+      const c = new Community()
+      c.present = 2321
+      c.history.add({ year: 2320, lean: false, sick: false, conflict: true })
+      c.history.add({ year: 2321, lean: false, sick: false, conflict: false })
+
+      const p = new Person()
+      p.personality.openness.value = 3
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(true)
+    })
+
+    it('requires more peaceful years if you\'re less open', () => {
+      const c = new Community()
+      c.present = 2326
+      c.history.add({ year: 2320, lean: false, sick: false, conflict: true })
+      c.history.add({ year: 2321, lean: false, sick: false, conflict: false })
+      c.history.add({ year: 2322, lean: false, sick: false, conflict: false })
+      c.history.add({ year: 2323, lean: false, sick: false, conflict: false })
+      c.history.add({ year: 2324, lean: false, sick: false, conflict: false })
+      c.history.add({ year: 2325, lean: false, sick: false, conflict: false })
+      c.history.add({ year: 2326, lean: false, sick: false, conflict: false })
+
+      const p = new Person()
+      p.personality.openness.value = 0
+      c.add(p)
+      expect(p.feelsSafe()).toEqual(true)
     })
   })
 

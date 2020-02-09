@@ -7,7 +7,7 @@ import Polycule from './polycule'
 import Sexuality from './sexuality'
 import Skills from './skills'
 
-import { between, clone } from '../../shared/utils'
+import { allTrue, between, clone, isPopulatedArray } from '../../shared/utils'
 import { check } from './check'
 import { pickRandom } from './shuffle'
 
@@ -257,6 +257,24 @@ export default class Person {
     } else {
       this.history.add({ year: this.present, tags, outcome })
     }
+  }
+
+  /**
+   * Does this character feel safe about making big decisions like having a
+   * child or starting a new relationship? This is based on how many years have
+   * passed without want, sickness, or conflict. The more open you are to new
+   * experience, the lower your threshold is, and the fewer such good years
+   * need to pass for you to feel secure.
+   * @returns {boolean} - `true` if the character feels safe and secure in
+   *   embarking on some major life change, or `false` if she doesn't.
+   */
+
+  feelsSafe () {
+    const goodYearsNeeded = Math.ceil((100 - this.personality.chance('openness')) / 10)
+    const recent = this.community ? this.community.getRecentHistory(goodYearsNeeded) : []
+    return isPopulatedArray(recent)
+      ? allTrue(recent.map(y => !y.lean && !y.conflict && !y.sick))
+      : false
   }
 
   /**

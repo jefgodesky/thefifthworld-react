@@ -102,7 +102,7 @@ export default class Polycule {
             entry.victims = cause.victims
             entry.attempted = cause.attempted
           }
-          this.history.add()
+          this.history.add(entry)
         }
       } else {
         // We're down to just two people, so this is the end of the polycule.

@@ -293,15 +293,17 @@ export default class Polycule {
 
   processMurder (report) {
     if (report.outcome !== 'none') {
+      this.recordMurder(report)
       const expelOdds = { murder: 90, attempted: 70 }
-      const breakupOdds = { murder: 90, attempted: 50 }
+      const breakupOdds = { murder: 66, attempted: 33 }
 
       if (random.int(1, 100) < expelOdds[report.outcome]) {
-        this.remove(report.murderer)
+        this.remove(report.murderer, report)
       }
 
       if (this.people && this.people.length > 1 && random.int(1, 100) < breakupOdds[report.outcome]) {
-        this.breakup(report.year, report)
+        const year = this.getPresent()
+        this.breakup(year, report)
       }
     }
   }

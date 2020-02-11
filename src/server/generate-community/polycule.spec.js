@@ -621,6 +621,16 @@ describe('Polycule', () => {
 
       expect(dissolved).toBeGreaterThan(50)
     })
+
+    it('adds an entry to the polycule\'s history', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      p.processMurder({ murderer: c, victims: [ d ], attempted: [], outcome: 'murder' })
+      expect(p.history.get({ tags: [ 'murder' ] }).length).toBeGreaterThanOrEqual(1)
+    })
   })
 
   describe('runEncounters', () => {

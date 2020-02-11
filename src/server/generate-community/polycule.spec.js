@@ -476,6 +476,31 @@ describe('Polycule', () => {
     })
   })
 
+  describe('cheat', () => {
+    it('adds an entry to the polycule\'s history', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.cheat([ b, c ])
+      expect(p.history.get({ tags: [ 'adultery' ] }).length).toEqual(1)
+    })
+
+    it('adds an entry to each individual\'s history', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.cheat([ b, c ])
+      const tests = [
+        a.history.get({ tags: [ 'adultery' ] }).length === 1,
+        b.history.get({ tags: [ 'adultery' ] }).length === 1,
+        c.history.get({ tags: [ 'adultery' ] }).length === 1
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
+  })
+
   describe('murder', () => {
     it('reports the outcome', () => {
       const a = new Person()

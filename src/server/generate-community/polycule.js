@@ -155,6 +155,11 @@ export default class Polycule {
     if (insiders.length > 0) {
       const outcome = check(data.cheatingOutcomes, random.int(1, 100))
       const year = this.getPresent()
+      const notInPolycule = adulterers.filter(p => !this.people.includes(p))
+      const everyone = [ ...this.people, ...notInPolycule ]
+      const entry = { year, tags: [ 'adultery' ], adulterers }
+      this.history.add(entry)
+      everyone.forEach(p => p.history.add(entry))
       switch (outcome) {
         case 'murder':
           this.processMurder(this.murder(year, adulterers))

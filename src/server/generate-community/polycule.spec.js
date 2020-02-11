@@ -577,6 +577,18 @@ describe('Polycule', () => {
     })
   })
 
+  describe('recordMurder', () => {
+    it('adds an entry to the polycule\'s history', () => {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const p = new Polycule(a, b, c)
+      p.processMurder({ murderer: c, victims: [ b, d ], attempted: [], outcome: 'murder' })
+      expect(p.history.get({ tags: [ 'murder' ] }).length).toBeGreaterThan(0)
+    })
+  })
+
   describe('processMurder', () => {
     it('usually removes the murderer', () => {
       let notRemoved = 0

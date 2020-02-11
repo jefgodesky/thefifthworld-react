@@ -77,4 +77,16 @@ export default class History {
       return this.record
     }
   }
+
+  /**
+   * Was the given year a quiet, uneventful year in this history?
+   * @param year {number} - The year to check.
+   * @returns {boolean} - Returns `true` if the history contains no entries for
+   *   this year, or `false` if it does.
+   */
+
+  wasQuiet (year) {
+    const check = this.record.filter(e => e.year === year)
+    return check.length === 0
+  }
 }

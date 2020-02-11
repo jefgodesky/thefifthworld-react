@@ -104,4 +104,28 @@ describe('History', () => {
       expect(h.get({})).toEqual(entries)
     })
   })
+
+  describe('wasQuiet', () => {
+    it('returns true if nothing happened that year', () => {
+      const h = new History()
+      const entries = [
+        { year: 2019, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test2' ] }
+      ]
+      entries.forEach(e => h.add(e))
+      expect(h.wasQuiet(2018)).toEqual(true)
+    })
+
+    it('returns false if something happened that year', () => {
+      const h = new History()
+      const entries = [
+        { year: 2019, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test1' ] },
+        { year: 2020, tags: [ 'test2' ] }
+      ]
+      entries.forEach(e => h.add(e))
+      expect(h.wasQuiet(2019)).toEqual(false)
+    })
+  })
 })

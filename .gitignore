@@ -14,5 +14,3 @@ coverage/*
 server.js
 update.js
 update.*.sql
-src/server/generate-community/bak
-src/server/generate-community/bak/*

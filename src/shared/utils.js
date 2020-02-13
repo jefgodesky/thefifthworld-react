@@ -1,3 +1,5 @@
+import random from 'random'
+
 /**
  * This method ensures that a chain of properties exist. For example, if you
  * need to use a value like `obj.prop1.prop2.prop3`, and it's possible that any
@@ -201,6 +203,20 @@ const between = (value, min, max) => {
   return Math.max(Math.min(value, max), min)
 }
 
+/**
+ * Returns a value randomly selected from the given normal distribution.
+ * @param mean {number} - Optional. The mean of the normal distribution from
+ *   which we're to select a random value (Default: `0`).
+ * @param std {number} - Optional. The standard deviation of the normal
+ *   distribution from which we're to select a random value (Default: `1`).
+ * @returns {number} - A random value from the given normal distribution.
+ */
+
+const randomValFromNormalDistribution = (mean = 0, std = 1) => {
+  const thunk = random.normal(mean, std)
+  return thunk()
+}
+
 export {
   checkExists,
   isPopulatedArray,
@@ -214,5 +230,6 @@ export {
   requestLocation,
   alphabetize,
   daysFromNow,
-  between
+  between,
+  randomValFromNormalDistribution
 }

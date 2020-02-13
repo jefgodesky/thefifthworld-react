@@ -11,7 +11,8 @@ import {
   getFileSizeStr,
   clone,
   alphabetize,
-  between
+  between,
+  randomValFromNormalDistribution
 } from './utils'
 
 describe('checkExists', () => {
@@ -198,5 +199,27 @@ describe('between', () => {
   it('returns the max if the value is greater than that', () => {
     const actual = between(110, 1, 100)
     expect(actual).toEqual(100)
+  })
+})
+
+describe('randomValFromNormalDistribution', () => {
+  it('is within one standard deviation about 68% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const val = randomValFromNormalDistribution()
+      if (val > -1 && val < 1) count++
+    }
+    const notTooFew = count > 48
+    const notTooMany = count < 88
+    expect(notTooFew && notTooMany).toEqual(true)
+  })
+
+  it('is within two standard deviations about 95% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const val = randomValFromNormalDistribution()
+      if (val > -2 && val < 2) count++
+    }
+    expect(count > 75).toEqual(true)
   })
 })

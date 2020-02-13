@@ -2,7 +2,7 @@ import express from 'express'
 import axios from 'axios'
 import { escape as SQLEscape } from 'sqlstring'
 import distance from '@turf/distance'
-import Community from '../generate-community/community'
+// import Community from '../generate-community/community'
 import { clone } from '../../shared/utils'
 import config from '../../../config'
 import db from '../db'
@@ -240,9 +240,9 @@ const saveChoice = async (community, id, req, res) => {
  */
 
 const generate = async (community, id, req, res) => {
-  const c = new Community(community)
-  c.run()
-  console.log(c.analyze())
+  // const c = new Community(community)
+  // c.run()
+  // console.log(c.analyze())
   res.redirect(`/create-community/${id}`)
 }
 

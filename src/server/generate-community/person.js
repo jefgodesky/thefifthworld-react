@@ -389,7 +389,7 @@ export default class Person {
    * @param community {Community} - (Optional) The community object.
    */
 
-  age (community= undefined) {
+  age (community = undefined) {
     this.present++
     const age = this.getAge(this.present)
     if (age) {

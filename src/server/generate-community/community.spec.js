@@ -715,6 +715,20 @@ describe('Community', () => {
     })
   })
 
+  describe('addFounder', () => {
+    it('adds a new person to the community', () => {
+      const c = new Community()
+      c.addFounder()
+      expect(c.people.length).toEqual(1)
+    })
+
+    it('adds a founder to the community', () => {
+      const c = new Community()
+      c.addFounder()
+      expect(c.people[0].founder).toEqual(true)
+    })
+  })
+
   describe('run', () => {
     it('runs for 200 years by default', () => {
       const c = new Community()

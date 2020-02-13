@@ -381,6 +381,9 @@ export default class Community {
   annual (year, founding = false) {
     if (founding) { this.considerFounder(year) } else { this.adjustYield() }
 
+    // Generate some strangers to meet.
+    this.strangers = this.generateStrangers()
+
     // Each polycule of three or more erodes the community's belief in
     // monogamy as a norm each year, until polygamy is fulled accepted.
 

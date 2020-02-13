@@ -832,6 +832,20 @@ describe('Community', () => {
     })
   })
 
+  describe('annual', () => {
+    it('generates some strangers', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.strangers.length).toBeGreaterThan(0)
+    })
+
+    it('records history', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.history.record.length).toBeGreaterThan(0)
+    })
+  })
+
   describe('run', () => {
     it('runs for 200 years by default', () => {
       const c = new Community()

@@ -767,6 +767,71 @@ describe('Community', () => {
     })
   })
 
+  describe('recordHistory', () => {
+    it('adds an entry to the community\'s historical record', () => {
+      const c = new Community()
+      c.recordHistory(2020)
+      expect(c.history.record.length).toEqual(1)
+    })
+
+    it('records the community\'s population', () => {
+      const c = new Community()
+      const pop = random.int(10, 20)
+      for (let i = 0; i < pop; i++) {
+        const p = new Person()
+        c.add(p)
+      }
+      c.recordHistory(2020)
+      expect(c.history.record[0].population).toEqual(pop)
+    })
+
+    it('records the number of polycules in the community', () => {
+      const community = new Community()
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      const e = new Person()
+      community.add(a); community.add(b); community.add(c); community.add(d); community.add(e)
+      const p1 = new Polycule(a, b, c); p1.commit()
+      const p2 = new Polycule(d, e); p2.commit()
+      community.recordHistory(2020)
+      expect(community.history.record[0].polycules).toEqual(2)
+    })
+
+    it('records the yield of the community\'s territory that year', () => {
+      const c = new Community()
+      const y = random.int(1, 5)
+      c.territory = { yield: y }
+      c.recordHistory(2020)
+      expect(c.history.record[0].yield).toEqual(y)
+    })
+
+    it('records when the community experiences lean times', () => {
+      const c = new Community()
+      const lean = random.boolean()
+      c.status = { lean }
+      c.recordHistory(2020)
+      expect(c.history.record[0].lean).toEqual(lean)
+    })
+
+    it('records when the community experiences sickness', () => {
+      const c = new Community()
+      const sick = random.boolean()
+      c.status = { sick }
+      c.recordHistory(2020)
+      expect(c.history.record[0].sick).toEqual(sick)
+    })
+
+    it('records when the community experiences conflict', () => {
+      const c = new Community()
+      const conflict = random.boolean()
+      c.status = { conflict }
+      c.recordHistory(2020)
+      expect(c.history.record[0].conflict).toEqual(conflict)
+    })
+  })
+
   describe('run', () => {
     it('runs for 200 years by default', () => {
       const c = new Community()

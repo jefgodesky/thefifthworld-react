@@ -361,9 +361,9 @@ export default class Community {
       population: people.length,
       polycules: this.polycules.length,
       yield: this.territory.yield,
-      lean: this.status.lean,
-      sick: this.status.sick,
-      conflict: this.status.conflict
+      lean: this.status.lean === true,
+      sick: this.status.sick === true,
+      conflict: this.status.conflict === true
     }
     this.history.add(entry)
   }

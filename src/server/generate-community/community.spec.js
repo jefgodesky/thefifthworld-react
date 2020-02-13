@@ -729,6 +729,44 @@ describe('Community', () => {
     })
   })
 
+  describe('considerFounder', () => {
+    it('adds a founder to a hunter-gatherer band with no one in it about two thirds of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.considerFounder(2020)
+        if (c.people.length > 0) count++
+      }
+      expect((count > 46) && (count < 86)).toEqual(true)
+    })
+
+    it('doesn\'t add a founder to a hunter-gatherer band if it already has 10 founders', () => {
+      const c = new Community()
+      for (let i = 0; i < 10; i++) c.addFounder(2020)
+      c.considerFounder(2020)
+      expect(c.people.length).toEqual(10)
+    })
+
+    it('adds a founder to a village with no one in it about 83% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.traditions = { village: true }
+        c.considerFounder(2020)
+        if (c.people.length > 0) count++
+      }
+      expect((count > 73) && (count < 93)).toEqual(true)
+    })
+
+    it('doesn\'t add a founder to a village if it already has 50 founders', () => {
+      const c = new Community()
+      c.traditions = { village: true }
+      for (let i = 0; i < 50; i++) c.addFounder(2020)
+      c.considerFounder(2020)
+      expect(c.people.length).toEqual(50)
+    })
+  })
+
   describe('run', () => {
     it('runs for 200 years by default', () => {
       const c = new Community()

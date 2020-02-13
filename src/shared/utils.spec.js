@@ -12,7 +12,8 @@ import {
   clone,
   alphabetize,
   between,
-  randomValFromNormalDistribution
+  randomValFromNormalDistribution,
+  probabilityInNormalDistribution
 } from './utils'
 
 describe('checkExists', () => {
@@ -221,5 +222,11 @@ describe('randomValFromNormalDistribution', () => {
       if (val > -2 && val < 2) count++
     }
     expect(count > 75).toEqual(true)
+  })
+})
+
+describe('probabilityInNormalDistribution', () => {
+  it('returns 50 when given the mean', () => {
+    expect(probabilityInNormalDistribution(0)).toEqual(50)
   })
 })

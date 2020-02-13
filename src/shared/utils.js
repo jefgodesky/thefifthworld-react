@@ -1,4 +1,5 @@
 import random from 'random'
+import NormalDistribution from 'normal-distribution'
 
 /**
  * This method ensures that a chain of properties exist. For example, if you
@@ -217,6 +218,23 @@ const randomValFromNormalDistribution = (mean = 0, std = 1) => {
   return thunk()
 }
 
+/**
+ * Returns the probability that a value of `value` or lower would be randomly
+ * selected from a normal distribution.
+ * @param value {number} - The value to test.
+ * @param mean {number} - Optional. The mean of the normal distribution that we
+ *   are testing against (Default: `0`).
+ * @param std {number} - Optional. The standard deviation of the normal
+ *   distribution that we are testing against (Default: `1`).
+ * @returns {number} - The probability that a number equal to or less than
+ *   `value` would be chosen from this normal distribution.
+ */
+
+const probabilityInNormalDistribution = (value = 0, mean = 0, std = 1) => {
+  const dist = new NormalDistribution(mean, std)
+  return dist.cdf(value) * 100
+}
+
 export {
   checkExists,
   isPopulatedArray,
@@ -231,5 +249,6 @@ export {
   alphabetize,
   daysFromNow,
   between,
-  randomValFromNormalDistribution
+  randomValFromNormalDistribution,
+  probabilityInNormalDistribution
 }

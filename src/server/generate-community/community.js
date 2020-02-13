@@ -8,4 +8,12 @@ export default class Community {
       })
     }
   }
+
+  run () {
+    console.log('running community...')
+  }
+
+  analyze () {
+    return 'analyze community'
+  }
 }

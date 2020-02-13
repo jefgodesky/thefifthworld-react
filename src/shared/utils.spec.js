@@ -87,10 +87,17 @@ describe('avg', () => {
 
 describe('get', () => {
   it('can return a value from a chain of properties', () => {
-    const obj = { prop: 42 }
-    const actual = [ get(obj, 'prop'), get(obj, 'prop.nope') ]
-    const expected = [ 42, undefined ]
-    expect(actual).toEqual(expected)
+    const obj = { outer: { inner: 42 } }
+    expect(get(obj, 'outer.inner')).toEqual(42)
+  })
+
+  it('returns undefined if given a path the object does not contain', () => {
+    const obj = { outer: { inner: 42 } }
+    expect(get(obj, 'outer.nope')).toEqual(undefined)
+  })
+
+  it('returns undefined if not given an object', () => {
+    expect(get(42, 'prop')).toEqual(undefined)
   })
 })
 

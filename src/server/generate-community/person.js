@@ -294,6 +294,27 @@ export default class Person {
   }
 
   /**
+   * Is this person of an appropriate age for you to start a relationship with?
+   * We're using the received wisdom formula of "half your age plus seven."
+   * @param person {Person} - The person in question.
+   * @returns {boolean} - Returns `true` if the two people are of appropriate
+   *   age to have a relationship, or `false` if they are not.
+   */
+
+  isAppropriateAge (person) {
+    if (person && person.constructor && person.constructor.name === 'Person') {
+      const ageOfConsent = 16
+      const myAge = this.getAge()
+      const herAge = person.getAge()
+      const oldEnoughForMe = herAge >= (myAge / 2) + 7
+      const oldEnoughForHer = myAge >= (herAge / 2) + 7
+      return (myAge > ageOfConsent) && (herAge > ageOfConsent) && oldEnoughForMe && oldEnoughForHer
+    } else {
+      return false
+    }
+  }
+
+  /**
    * Processes the character suffering a serious injury.
    * @param special {[string]} - A string specifying anything special to note
    *   about the injury (e.g., it's an injury suffered during a conflcit).

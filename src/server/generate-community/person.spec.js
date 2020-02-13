@@ -511,6 +511,49 @@ describe('Person', () => {
     })
   })
 
+  describe('isAppropriateAge', () => {
+    it('returns true if given two people of appropriate age', () => {
+      const p1 = new Person({ born: 2000 })
+      const p2 = new Person({ born: 2000 })
+      p1.present = 2020; p2.present = 2020
+      expect(p1.isAppropriateAge(p2)).toEqual(true)
+    })
+
+    it('returns false if not given a person', () => {
+      const p = new Person({ born: 2005 })
+      p.present = 2020
+      expect(p.isAppropriateAge(32)).toEqual(false)
+    })
+
+    it('returns false if you\'re under 16', () => {
+      const p1 = new Person({ born: 2005 })
+      const p2 = new Person({ born: 2000 })
+      p1.present = 2020; p2.present = 2020
+      expect(p1.isAppropriateAge(p2)).toEqual(false)
+    })
+
+    it('returns false if she\'s under 16', () => {
+      const p1 = new Person({ born: 2000 })
+      const p2 = new Person({ born: 2005 })
+      p1.present = 2020; p2.present = 2020
+      expect(p1.isAppropriateAge(p2)).toEqual(false)
+    })
+
+    it('returns false if she\'s too young for you', () => {
+      const p1 = new Person({ born: 1990 })
+      const p2 = new Person({ born: 2000 })
+      p1.present = 2020; p2.present = 2020
+      expect(p1.isAppropriateAge(p2)).toEqual(false)
+    })
+
+    it('returns false if you\'re too young for her', () => {
+      const p1 = new Person({ born: 2000 })
+      const p2 = new Person({ born: 1990 })
+      p1.present = 2020; p2.present = 2020
+      expect(p1.isAppropriateAge(p2)).toEqual(false)
+    })
+  })
+
   describe('getHurt', () => {
     it('records the injury', () => {
       const p = new Person()

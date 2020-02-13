@@ -1,10 +1,10 @@
 /* global describe, it, expect */
 
 import {
-  rollTable
+  checkTable
 } from './utils'
 
-describe('rollTable', () => {
+describe('checkTable', () => {
   it('can check a random table', () => {
     const table = [
       { chance: 10, event: 'Test1' },
@@ -12,9 +12,9 @@ describe('rollTable', () => {
       { chance: 70, event: 'Test3' }
     ]
     const actual = [
-      rollTable(table, 5),
-      rollTable(table, 30),
-      rollTable(table, 99)
+      checkTable(table, 5),
+      checkTable(table, 30),
+      checkTable(table, 99)
     ]
     const expected = [ 'Test1', 'Test2', 'Test3' ]
     expect(actual).toEqual(expected)

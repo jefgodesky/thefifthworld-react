@@ -12,7 +12,7 @@ import random from 'random'
  *   provided that matches the `roll`, or `false` if something goes wrong.
  */
 
-const rollTable = (table, roll = random.int(1, 100)) => {
+const checkTable = (table, roll = random.int(1, 100)) => {
   let total = 0
   let index = 0
   while (total < 100 && index < table.length) {
@@ -27,5 +27,5 @@ const rollTable = (table, roll = random.int(1, 100)) => {
 }
 
 export {
-  rollTable
+  checkTable
 }

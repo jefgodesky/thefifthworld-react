@@ -9,8 +9,8 @@ import {
 
 export default class Personality {
   constructor (vals) {
-    this.traits = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
-    this.traits.forEach(trait => {
+    const traits = Personality.getTraitList()
+    traits.forEach(trait => {
       this[trait] = vals && !isNaN(vals[trait]) ? vals[trait] : randomValFromNormalDistribution()
     })
   }
@@ -28,7 +28,8 @@ export default class Personality {
    */
 
   chance (trait) {
-    if (this.traits.includes(trait)) {
+    const traits = Personality.getTraitList()
+    if (traits.includes(trait)) {
       return probabilityInNormalDistribution(this[trait])
     } else {
       return -1
@@ -55,5 +56,15 @@ export default class Personality {
       checks.push(random.int(1, 100) < this.chance(trait))
     }
     return logic === 'or' ? anyTrue(checks) : allTrue(checks)
+  }
+
+  /**
+   * Return a list of the Big Five personality traits.
+   * @returns {string[]} - An array of strings identifying the Big Five
+   *   personality traits.
+   */
+
+  static getTraitList () {
+    return [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
   }
 }

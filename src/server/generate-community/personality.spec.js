@@ -70,13 +70,13 @@ describe('Personality', () => {
 
     it('returns something greater than zero for a valid trait', () => {
       const p = new Personality()
-      const trait = pickRandom(p.traits)
+      const trait = pickRandom(Personality.getTraitList())
       expect(p.chance(trait)).toBeGreaterThanOrEqual(0)
     })
 
     it('returns something less than 100 for a valid trait', () => {
       const p = new Personality()
-      const trait = pickRandom(p.traits)
+      const trait = pickRandom(Personality.getTraitList())
       expect(p.chance(trait)).toBeLessThanOrEqual(100)
     })
   })
@@ -84,7 +84,7 @@ describe('Personality', () => {
   describe('check', () => {
     it('returns a boolean', () => {
       const p = new Personality()
-      const trait = pickRandom(p.traits)
+      const trait = pickRandom(Personality.getTraitList())
       expect(typeof p.check(trait)).toEqual('boolean')
     })
 
@@ -126,6 +126,13 @@ describe('Personality', () => {
         if (p.check('openness', 2, 'or')) { yes++ } else { no++ }
       }
       expect(yes).toBeGreaterThan(no)
+    })
+  })
+
+  describe('getTraitList', () => {
+    it('returns an array of the Big Five personality traits', () => {
+      const expected = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
+      expect(Personality.getTraitList()).toEqual(expected)
     })
   })
 })

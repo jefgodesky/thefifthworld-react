@@ -148,7 +148,7 @@ describe('History', () => {
       h.add(2020, { tags: [ 'test2' ] })
       h.add(2020, { tags: [ 'nope' ] })
       const e = h.getEvents()
-      expect(h.getTags(e, [ 'test1', 'test2' ]).length).toEqual(3)
+      expect(History.getTags(e, [ 'test1', 'test2' ]).length).toEqual(3)
     })
 
     it('returns an empty array if nothing matches', () => {
@@ -157,7 +157,7 @@ describe('History', () => {
       h.add(2020, { tags: [ 'test1' ] })
       h.add(2020, { tags: [ 'test2' ] })
       const e = h.getEvents()
-      expect(h.getTags(e, [ 'nope' ])).toEqual([])
+      expect(History.getTags(e, [ 'nope' ])).toEqual([])
     })
   })
 
@@ -177,7 +177,81 @@ describe('History', () => {
       h.add(2019, { test: true })
       h.add(2020, { test: true })
       const expected = h.getYears([ 2017, 2019 ])
-      expect(h.get({ year: [ 2017, 2019 ] })).toEqual(expected)
+      expect(h.get({ years: [ 2017, 2019 ] })).toEqual(expected)
+    })
+
+    it('combines a year with a range of years to return everything in between', () => {
+      const h = new History()
+      h.add(2016, { test: true })
+      h.add(2017, { test: true })
+      h.add(2018, { test: true })
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      const expected = h.getEvents()
+      expect(h.get({ years: [ 2016, 2018, 2020 ] })).toEqual(expected)
+    })
+
+    it('can get records with a particular tag', () => {
+      const h = new History()
+      h.add(2020, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tag: 'test1' }).length).toEqual(2)
+    })
+
+    it('can get records with one or more tags', () => {
+      const h = new History()
+      h.add(2020, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tags: [ 'test1', 'test2' ] }).length).toEqual(3)
+    })
+
+    it('combines a singular tag and an array of tags', () => {
+      const h = new History()
+      h.add(2020, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tags: [ 'test2' ], tag: 'test1' }).length).toEqual(3)
+    })
+
+    it('combines a year and a tag', () => {
+      const h = new History()
+      h.add(2019, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tag: 'test1', year: 2020 }).length).toEqual(1)
+    })
+
+    it('combines a range of years and a tag', () => {
+      const h = new History()
+      h.add(2019, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tag: 'test1', years: [ 2020, 2019 ] }).length).toEqual(2)
+    })
+
+    it('combines a year and an array of tags', () => {
+      const h = new History()
+      h.add(2019, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tags: [ 'test1', 'test2' ], year: 2020 }).length).toEqual(2)
+    })
+
+    it('combines a range of years and an array of tags', () => {
+      const h = new History()
+      h.add(2019, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      expect(h.get({ tags: [ 'test1', 'test2' ], year: [ 2020, 2019 ] }).length).toEqual(3)
     })
   })
 
@@ -197,7 +271,6 @@ describe('History', () => {
       h1.add(2020, { test: true })
       h2.add(2020, { test: true })
       const h = History.combine(h1, h2)
-      console.log(h.record)
       expect(h.record[2020].length).toEqual(1)
     })
   })

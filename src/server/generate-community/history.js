@@ -94,7 +94,7 @@ export default class History {
    *   tags provided.
    */
 
-  getTags (events, tags) {
+  static getTags (events, tags) {
     return events.filter(e => {
       const intersection = e.tags.filter(x => tags.includes(x))
       return intersection.length > 0
@@ -120,14 +120,16 @@ export default class History {
   get (query) {
     const given = {
       year: Boolean(query.year) && !isNaN(query.year),
-      years: Boolean(query.year) && isPopulatedArray(query.year)
+      years: Boolean(query.years) && isPopulatedArray(query.years),
+      tag: Boolean(query.tag) && typeof query.tag === 'string',
+      tags: Boolean(query.tags) && isPopulatedArray(query.tags)
     }
 
-    if (given.years) {
-      return this.getYears(query.year)
-    } else if (given.year) {
-      return this.getYear(query.year)
-    }
+    const years = given.years && given.year ? [ ...query.years, query.year ] : given.years ? query.years : given.year ? [ query.year ] : []
+    const tags = given.tags && given.tag ? [ ...query.tags, query.tag ] : given.tags ? query.tags : given.tag ? [ query.tag ] : []
+
+    const events = isPopulatedArray(years) ? this.getYears(years) : this.getEvents()
+    return isPopulatedArray(tags) ? History.getTags(events, tags) : events
   }
 
   /**

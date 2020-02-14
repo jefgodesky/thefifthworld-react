@@ -67,6 +67,30 @@ describe('History', () => {
     })
   })
 
+  describe('getEvents', () => {
+    it('returns a flattened array', () => {
+      const h = new History()
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      expect(h.getEvents().length).toEqual(2)
+    })
+
+    it('adds a year property', () => {
+      const h = new History()
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      expect(h.getEvents()[0].year).toEqual(2019)
+    })
+
+    it('returns events in chronological order', () => {
+      const h = new History()
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      const events = h.getEvents()
+      expect(events.map(e => e.year)).toEqual([ 2019, 2020 ])
+    })
+  })
+
   describe('getYear', () => {
     it('returns an empty array if asked for a year with no events', () => {
       const h = new History()

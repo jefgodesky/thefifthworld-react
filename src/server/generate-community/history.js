@@ -37,6 +37,24 @@ export default class History {
   }
 
   /**
+   * Return all events in the history, flattened into a single array of
+   * objects. A `year` property is added to each object, providing the year
+   * that the event occurred in (which would be in the key in the original
+   * `record` object).
+   * @returns {[Object]} - An array of event objects.
+   */
+
+  getEvents () {
+    let events = []
+    Object.keys(this.record).forEach(year => {
+      const cpy = clone(this.record[year])
+      cpy.forEach(e => { e.year = parseInt(year) })
+      events = [ ...events, ...cpy ]
+    })
+    return events
+  }
+
+  /**
    * Returns the events recorded for a given year.
    * @param year {number} - The year to return events for.
    * @returns {[Object]} - An array of events that occurred in that year.

@@ -50,7 +50,22 @@ const rollTableUntil = (table, unacceptable = []) => {
   return result
 }
 
+/**
+ * Shuffles the array.
+ * @param arr {Array} - The array to shuffle.
+ * @returns {*} - The shuffled array.
+ */
+
+const shuffle = arr => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
 export {
   checkTable,
-  rollTableUntil
+  rollTableUntil,
+  shuffle
 }

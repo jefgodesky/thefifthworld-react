@@ -64,8 +64,19 @@ const shuffle = arr => {
   return arr
 }
 
+/**
+ * Picks a random element from an array.
+ * @param arr {Array} = The array to pick an element from.
+ * @returns {*} - A random element from the array.
+ */
+
+const pickRandom = arr => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
 export {
   checkTable,
   rollTableUntil,
-  shuffle
+  shuffle,
+  pickRandom
 }

@@ -3,7 +3,8 @@
 import {
   checkTable,
   rollTableUntil,
-  shuffle
+  shuffle,
+  pickRandom
 } from './utils'
 import { allTrue } from '../../shared/utils'
 
@@ -47,16 +48,22 @@ describe('rollTableUntil', () => {
 })
 
 describe('shuffle', () => {
-  it('can randomly reorder an array', async () => {
-    const actual = shuffle([ 1, 2, 3, 4, 5 ])
+  it('can randomly reorder an array', () => {
+    const actual = shuffle([ 1, 2, 3 ])
     const claims = [
-      actual.length === 5,
+      actual.length === 3,
       actual.includes(1),
       actual.includes(2),
-      actual.includes(3),
-      actual.includes(4),
-      actual.includes(5)
+      actual.includes(3)
     ]
     expect(allTrue(claims)).toEqual(true)
+  })
+})
+
+describe('pickRandom', () => {
+  it('selects a random item from an array', () => {
+    const arr = [ 1, 2 ]
+    const actual = pickRandom(arr)
+    expect(arr.includes(actual)).toEqual(true)
   })
 })

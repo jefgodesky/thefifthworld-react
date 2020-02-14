@@ -13,7 +13,7 @@ export default class History {
 
   add (year, event) {
     const existing = !isNaN(year) && isPopulatedArray(this.record[year]) ? this.record[year] : []
-    this.record[year] = [ ...existing, event ]
+    this.record[year] = dedupe([ ...existing, event ])
   }
 
   get (query) {

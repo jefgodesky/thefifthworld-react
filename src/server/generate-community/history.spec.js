@@ -30,6 +30,13 @@ describe('History', () => {
       h.add(2020, { test: 2 })
       expect(h.record[2020][1].test).toEqual(2)
     })
+
+    it('will not add a duplicative event', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      h.add(2020, { test: true })
+      expect(h.record[2020]).toEqual([ { test: true } ])
+    })
   })
 
   describe('get', () => {

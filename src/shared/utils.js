@@ -41,6 +41,15 @@ const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length 
 const allTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc && Boolean(curr), true)
 
 /**
+ * Returns `true` if any element in the given array is true.
+ * @param arr {Array} - An array to evaluate.
+ * @returns {*} - `true` if any element in `arr` is true, or `false` if none of
+ *   them are.
+ */
+
+const anyTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc || Boolean(curr), false)
+
+/**
  * Return the average of the numbers in an array.
  * @param arr {[number]} - An array of numbers.
  * @returns {number} - Returns the average of the numbers in the array. If the
@@ -254,6 +263,7 @@ export {
   checkExists,
   isPopulatedArray,
   allTrue,
+  anyTrue,
   avg,
   get,
   formatDate,

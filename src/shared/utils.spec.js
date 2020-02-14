@@ -4,6 +4,7 @@ import {
   checkExists,
   isPopulatedArray,
   allTrue,
+  anyTrue,
   avg,
   get,
   formatDate,
@@ -70,6 +71,28 @@ describe('allTrue', () => {
 
   it('returns false if any value in array is falsy', () => {
     expect(allTrue([ true, 0, true ])).toEqual(false)
+  })
+})
+
+describe('anyTrue', () => {
+  it('returns false if not given an array', () => {
+    expect(anyTrue(true)).toEqual(false)
+  })
+
+  it('returns true if any value in array is true', () => {
+    expect(anyTrue([ true, false ])).toEqual(true)
+  })
+
+  it('returns true if any value in array is truthy', () => {
+    expect(anyTrue([ false, 1, 'yes' ])).toEqual(true)
+  })
+
+  it('returns false if all values in array are false', () => {
+    expect(anyTrue([ false, false ])).toEqual(false)
+  })
+
+  it('returns false if all values in array are falsy', () => {
+    expect(anyTrue([ false, 0, null, undefined ])).toEqual(false)
   })
 })
 

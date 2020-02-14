@@ -80,4 +80,32 @@ describe('Personality', () => {
       expect(p.chance(trait)).toBeLessThanOrEqual(100)
     })
   })
+
+  describe('check', () => {
+    it('returns a boolean', () => {
+      const p = new Personality()
+      const trait = pickRandom(p.traits)
+      expect(typeof p.check(trait)).toEqual('boolean')
+    })
+
+    it('is more likely when you have a high trait value', () => {
+      const p = new Personality({ openness: 2 })
+      let yes = 0
+      let no = 0
+      for (let i = 0; i < 100; i++) {
+        if (p.check('openness')) { yes++ } else { no++ }
+      }
+      expect(yes).toBeGreaterThan(no)
+    })
+
+    it('is less likely when you have a low trait value', () => {
+      const p = new Personality({ openness: -2 })
+      let yes = 0
+      let no = 0
+      for (let i = 0; i < 100; i++) {
+        if (p.check('openness')) { yes++ } else { no++ }
+      }
+      expect(no).toBeGreaterThan(yes)
+    })
+  })
 })

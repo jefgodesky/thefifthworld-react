@@ -1,3 +1,5 @@
+import random from 'random'
+
 import {
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
@@ -29,5 +31,18 @@ export default class Personality {
     } else {
       return -1
     }
+  }
+
+  /**
+   * Checks if someone will do something based on a given trait.
+   * @param trait {string} - The trait to derive the chance from. Accepted
+   *   values are `openness`, `conscientiousness`, `extraversion`,
+   *   `agreeableness`, and `neuroticism`.
+   * @returns {boolean} - Returns `true` if the person will behave consistently
+   *   with the given trait, or `false` if she will not.
+   */
+
+  check (trait) {
+    return random.int(1, 100) < this.chance(trait)
   }
 }

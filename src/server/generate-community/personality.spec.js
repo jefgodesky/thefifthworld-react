@@ -2,6 +2,8 @@
 
 import Personality from './personality'
 
+import { pickRandom } from './utils'
+
 describe('Personality', () => {
   describe('constructor', () => {
     it('assigns a random openness score', () => {
@@ -52,6 +54,30 @@ describe('Personality', () => {
     it('can be given a neuroticism score', () => {
       const p = new Personality({ neuroticism: 0 })
       expect(p.neuroticism).toEqual(0)
+    })
+  })
+
+  describe('chance', () => {
+    it('returns 50 for someone with a perfectly average trait', () => {
+      const p = new Personality({ openness: 0 })
+      expect(p.chance('openness')).toEqual(50)
+    })
+
+    it('returns -1 if you\'re not asking about a valid trait', () => {
+      const p = new Personality()
+      expect(p.chance('funkiness')).toEqual(-1)
+    })
+
+    it('returns something greater than zero for a valid trait', () => {
+      const p = new Personality()
+      const trait = pickRandom(p.traits)
+      expect(p.chance(trait)).toBeGreaterThanOrEqual(0)
+    })
+
+    it('returns something less than 100 for a valid trait', () => {
+      const p = new Personality()
+      const trait = pickRandom(p.traits)
+      expect(p.chance(trait)).toBeLessThanOrEqual(100)
     })
   })
 })

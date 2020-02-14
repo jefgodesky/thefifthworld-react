@@ -140,6 +140,27 @@ describe('History', () => {
     })
   })
 
+  describe('getTags', () => {
+    it('returns only those events with one or more of the given tags', () => {
+      const h = new History()
+      h.add(2020, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      h.add(2020, { tags: [ 'nope' ] })
+      const e = h.getEvents()
+      expect(h.getTags(e, [ 'test1', 'test2' ]).length).toEqual(3)
+    })
+
+    it('returns an empty array if nothing matches', () => {
+      const h = new History()
+      h.add(2020, { tags: [ 'test1', 'test2' ] })
+      h.add(2020, { tags: [ 'test1' ] })
+      h.add(2020, { tags: [ 'test2' ] })
+      const e = h.getEvents()
+      expect(h.getTags(e, [ 'nope' ])).toEqual([])
+    })
+  })
+
   describe('get', () => {
     it('can get records for a particular year', () => {
       const h = new History()

@@ -86,6 +86,22 @@ export default class History {
   }
 
   /**
+   * Given an array of events, returns an array of only those events that have
+   * one or more of the given tags.
+   * @param events {[Object]} - An array of event objects.
+   * @param tags {[string]} - An array of tags to search for.
+   * @returns {[Object]} - An array of event objects with tags that match the
+   *   tags provided.
+   */
+
+  getTags (events, tags) {
+    return events.filter(e => {
+      const intersection = e.tags.filter(x => tags.includes(x))
+      return intersection.length > 0
+    })
+  }
+
+  /**
    * Returns events that match given criteria.
    * @param query {Object} - An object that defines the criteria for the events
    *   to return. Expected properties are one or more of the following:

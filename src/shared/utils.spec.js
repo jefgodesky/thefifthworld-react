@@ -127,7 +127,7 @@ describe('formatDate', () => {
 })
 
 describe('dedupe', () => {
-  it('can deduplicate an arry', () => {
+  it('can deduplicate an array', () => {
     const orig = [ 1, 1, 2, 3 ]
     const actual = dedupe(orig)
     expect(actual).toEqual([ 1, 2, 3 ])
@@ -142,6 +142,11 @@ describe('dedupe', () => {
     }
     const actual = { orig, deduped }
     expect(actual).toEqual(expected)
+  })
+
+  it('can dedupe objects', () => {
+    const arr = [ { test: true }, { test: true } ]
+    expect(dedupe(arr)).toEqual([ { test: true } ])
   })
 })
 

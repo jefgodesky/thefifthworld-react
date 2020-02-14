@@ -106,7 +106,22 @@ const formatDate = date => {
  */
 
 const dedupe = arr => {
-  return [ ...new Set(arr) ]
+  let hasObj = false
+  arr.forEach(e => { if (typeof e === 'object') hasObj = true })
+  if (!hasObj) {
+    return [...new Set(arr)]
+  } else {
+    const index = []
+    const deduped = []
+    arr.forEach(e => {
+      const key = JSON.stringify(e)
+      if (!index.includes(key)) {
+        deduped.push(e)
+        index.push(key)
+      }
+    })
+    return deduped
+  }
 }
 
 /**

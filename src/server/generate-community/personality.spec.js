@@ -107,5 +107,25 @@ describe('Personality', () => {
       }
       expect(no).toBeGreaterThan(yes)
     })
+
+    it('is less likely when you have to roll multiple times', () => {
+      const p = new Personality({ openness: 0 })
+      let yes = 0
+      let no = 0
+      for (let i = 0; i < 100; i++) {
+        if (p.check('openness', 2)) { yes++ } else { no++ }
+      }
+      expect(no).toBeGreaterThan(yes)
+    })
+
+    it('is less likely when you can roll multiple times', () => {
+      const p = new Personality({ openness: 0 })
+      let yes = 0
+      let no = 0
+      for (let i = 0; i < 100; i++) {
+        if (p.check('openness', 2, 'or')) { yes++ } else { no++ }
+      }
+      expect(yes).toBeGreaterThan(no)
+    })
   })
 })

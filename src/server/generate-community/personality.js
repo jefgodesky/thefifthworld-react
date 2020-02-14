@@ -1,6 +1,8 @@
 import random from 'random'
 
 import {
+  anyTrue,
+  allTrue,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
 } from '../../shared/utils'
@@ -38,11 +40,20 @@ export default class Personality {
    * @param trait {string} - The trait to derive the chance from. Accepted
    *   values are `openness`, `conscientiousness`, `extraversion`,
    *   `agreeableness`, and `neuroticism`.
+   * @param times {number} - Optional. How many times should we check?
+   *   (Default: `1`)
+   * @param logic {string} - Optional. If we check multiple times, are we
+   *   looking for all the checks to pass (`and`) or any of them (`or`)?
+   *   Accepted values are `and` or `or` (Default: `and`).
    * @returns {boolean} - Returns `true` if the person will behave consistently
    *   with the given trait, or `false` if she will not.
    */
 
-  check (trait) {
-    return random.int(1, 100) < this.chance(trait)
+  check (trait, times = 1, logic = 'and') {
+    const checks = []
+    for (let i = 0; i < times; i++) {
+      checks.push(random.int(1, 100) < this.chance(trait))
+    }
+    return logic === 'or' ? anyTrue(checks) : allTrue(checks)
   }
 }

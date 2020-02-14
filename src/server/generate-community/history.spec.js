@@ -39,6 +39,20 @@ describe('History', () => {
     })
   })
 
+  describe('getEarliest', () => {
+    it('returns the earliest year in the history', () => {
+      const h = new History()
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      expect(h.getEarliest()).toEqual(2019)
+    })
+
+    it('returns undefined if the history is empty', () => {
+      const h = new History()
+      expect(h.getEarliest()).toEqual(undefined)
+    })
+  })
+
   describe('getYear', () => {
     it('returns an empty array if asked for a year with no events', () => {
       const h = new History()

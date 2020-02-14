@@ -58,6 +58,36 @@ describe('History', () => {
     })
   })
 
+  describe('getYears', () => {
+    it('returns the events within a range of years', () => {
+      const h = new History()
+      h.add(2016, { test: true })
+      h.add(2017, { test: true })
+      h.add(2018, { test: true })
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      expect(h.getYears([ 2017, 2019 ]).length).toEqual(3)
+    })
+
+    it('disregards non-numbers', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.getYears([ 2020, false, 2020 ]).length).toEqual(1)
+    })
+
+    it('can work off of just one number', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.getYears([ 2020 ]).length).toEqual(1)
+    })
+
+    it('returns an empty array if not given at least one number', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.getYears([ false ])).toEqual([])
+    })
+  })
+
   describe('get', () => {
     it('can get records for a particular year', () => {
       const h = new History()

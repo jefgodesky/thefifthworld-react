@@ -28,6 +28,28 @@ export default class History {
   }
 
   /**
+   * Return the events recorded for a range of years.
+   * @param years {[number]} - An array of years. The smallest number in this
+   *   array is the starting year, and the largest number in this array is the
+   *   ending year.
+   * @returns {[Object]} - An array of event objects that occurred within the
+   *   range of years given.
+   */
+
+  getYears (years) {
+    let events = []
+    const numbers = years.filter(y => !isNaN(y))
+    if (numbers.length > 0) {
+      const min = Math.min(...years)
+      const max = Math.max(...years)
+      for (let y = min; y <= max; y++) {
+        events = [...events, ...this.getYear(y)]
+      }
+    }
+    return events
+  }
+
+  /**
    * Returns events that match given criteria.
    * @param query {Object} - An object that defines the criteria for the events
    *   to return. Expected properties are one or more of the following:

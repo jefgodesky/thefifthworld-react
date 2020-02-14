@@ -255,6 +255,20 @@ describe('History', () => {
     })
   })
 
+  describe('wasQuiet', () => {
+    it('returns true if nothing happened that year', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.wasQuiet(2019)).toEqual(true)
+    })
+
+    it('returns false if something happened that year', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.wasQuiet(2020)).toEqual(false)
+    })
+  })
+
   describe('combine', () => {
     it('combines multiple histories', () => {
       const h1 = new History()

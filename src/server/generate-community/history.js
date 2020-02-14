@@ -133,6 +133,17 @@ export default class History {
   }
 
   /**
+   * Was the given year a quiet, uneventful year in this history?
+   * @param year {number} - The year to check.
+   * @returns {boolean} - Returns `true` if the history contains no entries for
+   *   this year, or `false` if it does.
+   */
+
+  wasQuiet (year) {
+    return !Boolean(this.record[year])
+  }
+
+  /**
    * Return a combined history.
    * @param histories {[History]} - An array of History objects.
    * @returns {History} - A single history that combines the events from the

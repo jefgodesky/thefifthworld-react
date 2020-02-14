@@ -27,6 +27,16 @@ export default class History {
   }
 
   /**
+   * Return the latest year in the history.
+   * @returns {number} - The latest year in the history.
+   */
+
+  getLatest () {
+    const years = Object.keys(this.record).map(y => parseInt(y)).filter(y => !isNaN(y))
+    return isPopulatedArray(years) ? Math.max(...years) : undefined
+  }
+
+  /**
    * Returns the events recorded for a given year.
    * @param year {number} - The year to return events for.
    * @returns {[Object]} - An array of events that occurred in that year.

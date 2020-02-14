@@ -53,6 +53,20 @@ describe('History', () => {
     })
   })
 
+  describe('getLatest', () => {
+    it('returns the latest year in the history', () => {
+      const h = new History()
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      expect(h.getLatest()).toEqual(2020)
+    })
+
+    it('returns undefined if the history is empty', () => {
+      const h = new History()
+      expect(h.getLatest()).toEqual(undefined)
+    })
+  })
+
   describe('getYear', () => {
     it('returns an empty array if asked for a year with no events', () => {
       const h = new History()

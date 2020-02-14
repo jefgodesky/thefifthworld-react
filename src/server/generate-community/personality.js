@@ -6,6 +6,7 @@ import {
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
 } from '../../shared/utils'
+import { pickRandom } from './utils'
 
 export default class Personality {
   constructor (vals) {
@@ -56,6 +57,18 @@ export default class Personality {
       checks.push(random.int(1, 100) < this.chance(trait))
     }
     return logic === 'or' ? anyTrue(checks) : allTrue(checks)
+  }
+
+  /**
+   * Personality is supposed to be mostly stable over time, but it changes more
+   * than most of us give it credit for.
+   */
+
+  change () {
+    // TODO: Factor in how community influences how your personality changes
+    // TODO: Factor in how your partners influence how your personality changes
+    const trait = pickRandom(Personality.getTraitList())
+    this[trait] += random.boolean() ? 0.1 : -0.1
   }
 
   /**

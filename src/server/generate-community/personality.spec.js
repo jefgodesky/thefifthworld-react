@@ -129,6 +129,20 @@ describe('Personality', () => {
     })
   })
 
+  describe('change', () => {
+    it('changes a trait', () => {
+      const traits = Personality.getTraitList()
+      const starter = {}
+      traits.forEach(trait => { starter[trait] = 0 })
+      const p = new Personality(starter)
+      p.change()
+      const claims = []
+      traits.forEach(trait => { claims.push(p[trait] === 0.1 || p[trait] === -0.1 ) })
+      const trueClaims = claims.filter(c => c === true)
+      expect(trueClaims.length).toEqual(1)
+    })
+  })
+
   describe('getTraitList', () => {
     it('returns an array of the Big Five personality traits', () => {
       const expected = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]

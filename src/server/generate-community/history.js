@@ -75,16 +75,14 @@ export default class History {
    */
 
   getYears (years) {
-    let events = []
     const numbers = years.filter(y => !isNaN(y))
     if (numbers.length > 0) {
       const min = Math.min(...years)
       const max = Math.max(...years)
-      for (let y = min; y <= max; y++) {
-        events = [...events, ...this.getYear(y)]
-      }
+      return this.getEvents().filter(e => e.year >= min && e.year <= max)
+    } else {
+      return []
     }
-    return events
   }
 
   /**

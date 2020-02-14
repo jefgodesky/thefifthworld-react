@@ -67,10 +67,13 @@ export default class History {
 
   get (query) {
     const given = {
-      year: Boolean(query.year) && !isNaN(query.year)
+      year: Boolean(query.year) && !isNaN(query.year),
+      years: Boolean(query.year) && isPopulatedArray(query.year)
     }
 
-    if (given.year) {
+    if (given.years) {
+      return this.getYears(query.year)
+    } else if (given.year) {
       return this.getYear(query.year)
     }
   }

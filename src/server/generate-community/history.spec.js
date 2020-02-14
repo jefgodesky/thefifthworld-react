@@ -95,6 +95,17 @@ describe('History', () => {
       const expected = h.getYear(2020)
       expect(h.get({ year: 2020 })).toEqual(expected)
     })
+
+    it('can get records for a range of years', () => {
+      const h = new History()
+      h.add(2016, { test: true })
+      h.add(2017, { test: true })
+      h.add(2018, { test: true })
+      h.add(2019, { test: true })
+      h.add(2020, { test: true })
+      const expected = h.getYears([ 2017, 2019 ])
+      expect(h.get({ year: [ 2017, 2019 ] })).toEqual(expected)
+    })
   })
 
   describe('combine', () => {

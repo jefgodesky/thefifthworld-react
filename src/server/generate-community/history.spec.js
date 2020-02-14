@@ -32,6 +32,19 @@ describe('History', () => {
     })
   })
 
+  describe('get', () => {
+    it('returns an empty array if asked for a year with no events', () => {
+      const h = new History()
+      expect(h.get({ year: 2020 })).toEqual([])
+    })
+
+    it('returns the records for a given year', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.get({ year: 2020 })).toEqual([ { test: true } ])
+    })
+  })
+
   describe('combine', () => {
     it('combines multiple histories', () => {
       const h1 = new History()

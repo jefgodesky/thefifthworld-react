@@ -16,6 +16,16 @@ export default class History {
     this.record[year] = [ ...existing, event ]
   }
 
+  get (query) {
+    const given = {
+      year: query.year && !isNaN(query.year) ? query.year : false
+    }
+
+    if (given.year) {
+      return this.record[given.year] || []
+    }
+  }
+
   /**
    * Return a combined history.
    * @param histories {[History]} - An array of History objects.

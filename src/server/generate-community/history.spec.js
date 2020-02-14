@@ -39,16 +39,31 @@ describe('History', () => {
     })
   })
 
-  describe('get', () => {
+  describe('getYear', () => {
     it('returns an empty array if asked for a year with no events', () => {
       const h = new History()
-      expect(h.get({ year: 2020 })).toEqual([])
+      expect(h.getYear(2020)).toEqual([])
     })
 
     it('returns the records for a given year', () => {
       const h = new History()
       h.add(2020, { test: true })
-      expect(h.get({ year: 2020 })).toEqual([ { test: true } ])
+      expect(h.getYear(2020).length).toEqual(1)
+    })
+
+    it('adds the year to the event object', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      expect(h.getYear(2020)[0].year).toEqual(2020)
+    })
+  })
+
+  describe('get', () => {
+    it('can get records for a particular year', () => {
+      const h = new History()
+      h.add(2020, { test: true })
+      const expected = h.getYear(2020)
+      expect(h.get({ year: 2020 })).toEqual(expected)
     })
   })
 

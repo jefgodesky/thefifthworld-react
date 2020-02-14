@@ -1,4 +1,4 @@
-import { dedupe, isPopulatedArray } from '../../shared/utils'
+import { clone, dedupe, isPopulatedArray } from '../../shared/utils'
 
 export default class History {
   constructor () {
@@ -16,13 +16,40 @@ export default class History {
     this.record[year] = dedupe([ ...existing, event ])
   }
 
+  /**
+   * Returns the events recorded for a given year.
+   * @param year {number} - The year to return events for.
+   * @returns {[Object]} - An array of events that occurred in that year.
+   */
+
+  getYear (year) {
+    const events = this.record[year] ? clone(this.record[year]) : []
+    return events.map(e => { e.year = year; return e })
+  }
+
+  /**
+   * Returns events that match given criteria.
+   * @param query {Object} - An object that defines the criteria for the events
+   *   to return. Expected properties are one or more of the following:
+   *   - `tags`: Only return those events that have one or more of the tags
+   *       provided.
+   *   - `year`: Either a number or an array of two numbers. If given a single
+   *       number, returns only those events that occurred in that year. If
+   *       given an array, returns only those events that occurred in one of
+   *       those years or between them.
+   *   If given both `tags` and `year`, only those events which match both
+   *   criteria are returned.
+   * @returns {[Object]} - An array of event objects that match the criteria
+   *   provided by the `query`.
+   */
+
   get (query) {
     const given = {
-      year: query.year && !isNaN(query.year) ? query.year : false
+      year: Boolean(query.year) && !isNaN(query.year)
     }
 
     if (given.year) {
-      return this.record[given.year] || []
+      return this.getYear(query.year)
     }
   }
 

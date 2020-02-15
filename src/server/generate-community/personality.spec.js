@@ -3,6 +3,7 @@
 import Personality from './personality'
 
 import { pickRandom } from './utils'
+import { allTrue } from '../../shared/utils'
 
 describe('Personality', () => {
   describe('constructor', () => {
@@ -147,6 +148,30 @@ describe('Personality', () => {
     it('returns an array of the Big Five personality traits', () => {
       const expected = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
       expect(Personality.getTraitList()).toEqual(expected)
+    })
+  })
+
+  describe('copy', () => {
+    it('copies trait values', () => {
+      const p1 = new Personality()
+      const p2 = Personality.copy(p1)
+      const traits = Personality.getTraitList()
+      const tests = []
+      traits.forEach(trait => { tests.push(p1[trait] === p2[trait]) })
+      expect(allTrue(tests)).toEqual(true)
+    })
+
+    it('returns a Personality object', () => {
+      const p1 = new Personality()
+      const p2 = Personality.copy(p1)
+      expect(p2.constructor.name).toEqual('Personality')
+    })
+
+    it('creates a deep copy', () => {
+      const p1 = new Personality({ openness: 0 })
+      const p2 = Personality.copy(p1)
+      p1.openness = 1
+      expect(p2.openness).toEqual(0)
     })
   })
 })

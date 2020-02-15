@@ -80,4 +80,17 @@ export default class Personality {
   static getTraitList () {
     return [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]
   }
+
+  /**
+   * Copy a Personality object into a new Personality object.
+   * @param src {Personality} - The Personality object to copy.
+   * @returns {Personality} - A copy of the Personality object given.
+   */
+
+  static copy (src) {
+    const traits = Personality.getTraitList()
+    const obj = {}
+    traits.forEach(trait => { obj[trait] = src[trait] })
+    return new Personality(obj)
+  }
 }

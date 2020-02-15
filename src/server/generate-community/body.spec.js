@@ -65,5 +65,10 @@ describe('Body', () => {
       const b = new Body()
       expect(typeof b.achondroplasia).toEqual('boolean')
     })
+
+    it('sets fertility', () => {
+      const b = new Body()
+      expect(b.fertility).toEqual(0)
+    })
   })
 })

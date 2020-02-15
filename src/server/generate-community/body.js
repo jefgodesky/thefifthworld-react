@@ -22,5 +22,7 @@ export default class Body {
       right: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy'
     }
     this.achondroplasia = random.int(1, 10000) === 1
+
+    this.fertility = 0
   }
 }

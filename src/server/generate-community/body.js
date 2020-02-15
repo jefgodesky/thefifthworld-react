@@ -10,5 +10,8 @@ export default class Body {
     this.eyes = random.int(1, 1000) <= 16
       ? { left: 'blind', right: 'blind' }
       : { left: 'healthy', right: 'healthy' }
+    this.ears = random.int(1, 1000) <= 16
+      ? { left: 'deaf', right: 'deaf' }
+      : { left: 'healthy', right: 'healthy' }
   }
 }

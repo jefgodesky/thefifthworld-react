@@ -30,5 +30,15 @@ describe('Body', () => {
       ]
       expect(allTrue(tests)).toEqual(true)
     })
+
+    it('creates ears', () => {
+      const b = new Body()
+      const valid = [ 'deaf', 'healthy' ]
+      const tests = [
+        valid.includes(b.ears.left),
+        valid.includes(b.ears.right)
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
   })
 })

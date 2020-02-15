@@ -43,4 +43,13 @@ export default class Body {
     this.fertility = 0
     this.scars = []
   }
+
+  /**
+   * Marks this body as infertile (that is, incapable of reproducing sexually).
+   */
+
+  makeInfertile () {
+    this.fertility = 0
+    this.infertile = true
+  }
 }

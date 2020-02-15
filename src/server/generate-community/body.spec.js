@@ -86,4 +86,18 @@ describe('Body', () => {
       expect(typeof b.female).toEqual('boolean')
     })
   })
+
+  describe('makeInfertile', () => {
+    it('adds an infertile flag', () => {
+      const b = new Body()
+      b.makeInfertile()
+      expect(b.infertile).toEqual(true)
+    })
+
+    it('reduces fertility to zero', () => {
+      const b = new Body()
+      b.makeInfertile()
+      expect(b.fertility).toEqual(0)
+    })
+  })
 })

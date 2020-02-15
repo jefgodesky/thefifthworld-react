@@ -275,4 +275,37 @@ describe('Body', () => {
       expect(b.deafen()).toEqual(false)
     })
   })
+
+  describe('blind', () => {
+    it('will mark one eye as blind', () => {
+      const b = new Body()
+      b.eyes = { left: 'healthy', right: 'healthy' }
+      const actual = b.blind()
+      const tests = [
+        b.eyes.left === 'blind',
+        b.eyes.right === 'blind'
+      ]
+      expect(actual && anyTrue(tests)).toEqual(true)
+    })
+
+    it('will mark both eyes as blind if called twice', () => {
+      const b = new Body()
+      b.eyes = { left: 'healthy', right: 'healthy' }
+      const d1 = b.blind()
+      const d2 = b.blind()
+      const tests = [
+        d1,
+        d2,
+        b.eyes.left === 'blind',
+        b.eyes.right === 'blind'
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
+
+    it('will return false if both eyes are already blind', () => {
+      const b = new Body()
+      b.eyes = { left: 'blind', right: 'blind' }
+      expect(b.blind()).toEqual(false)
+    })
+  })
 })

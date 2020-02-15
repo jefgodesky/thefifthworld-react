@@ -140,4 +140,24 @@ export default class Body {
 
     return `${this.ears.left} ${this.ears.right}` !== before
   }
+
+  /**
+   * Makes the person blind in one eye.
+   * @returns {boolean} - `true` if the person is made blind in one eye, or
+   *   `false` if it failed (because she was already blind in both eyes).
+   */
+
+  blind () {
+    const check = `${this.eyes.left} ${this.eyes.right}`
+    const side = random.boolean() ? 'right' : 'left'
+    const other = side === 'right' ? 'left' : 'right'
+
+    if (this.eyes[side] === 'blind') {
+      this.eyes[other] = 'blind'
+    } else {
+      this.eyes[side] = 'blind'
+    }
+
+    return `${this.eyes.left} ${this.eyes.right}` !== check
+  }
 }

@@ -23,6 +23,23 @@ export default class Body {
     }
     this.achondroplasia = random.int(1, 10000) === 1
 
+    const both = random.int(1, 10000) < 85
+    const neither = random.int(1, 10000) < 85
+
+    if (both) {
+      this.male = true
+      this.female = true
+    } else if (neither) {
+      this.male = false
+      this.female = false
+    } else if (random.boolean()) {
+      this.male = true
+      this.female = false
+    } else {
+      this.male = false
+      this.female = true
+    }
+
     this.fertility = 0
     this.scars = []
   }

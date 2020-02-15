@@ -75,5 +75,15 @@ describe('Body', () => {
       const b = new Body()
       expect(b.scars).toEqual([])
     })
+
+    it('sets male reproductive capability', () => {
+      const b = new Body()
+      expect(typeof b.male).toEqual('boolean')
+    })
+
+    it('sets female reproductive capability', () => {
+      const b = new Body()
+      expect(typeof b.female).toEqual('boolean')
+    })
   })
 })

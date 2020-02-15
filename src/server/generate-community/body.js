@@ -120,4 +120,24 @@ export default class Body {
     })
     return report
   }
+
+  /**
+   * Makes the person deaf in one ear.
+   * @returns {boolean} - `true` if the person is made deaf in one ear, or
+   *   `false` if it failed (because she was already deaf in both ears).
+   */
+
+  deafen () {
+    const before = `${this.ears.left} ${this.ears.right}`
+    const side = random.boolean() ? 'left' : 'right'
+    const other = side === 'left' ? 'right' : 'left'
+
+    if (this.ears[side] === 'deaf') {
+      this.ears[other] = 'deaf'
+    } else {
+      this.ears[side] = 'deaf'
+    }
+
+    return `${this.ears.left} ${this.ears.right}` !== before
+  }
 }

@@ -2,7 +2,7 @@
 
 import Body from './body'
 
-import { allTrue } from '../../shared/utils'
+import { allTrue, anyTrue } from '../../shared/utils'
 
 describe('Body', () => {
   describe('constructor', () => {
@@ -240,6 +240,39 @@ describe('Body', () => {
       b.takeScar('torso')
       b.takeScar('left leg')
       expect(b.reportScars()).toEqual({ 'torso': 2, 'left leg': 1 })
+    })
+  })
+
+  describe('deafen', () => {
+    it('will mark one ear as deaf', () => {
+      const b = new Body()
+      b.ears = { left: 'healthy', right: 'healthy' }
+      const actual = b.deafen()
+      const tests = [
+        b.ears.left === 'deaf',
+        b.ears.right === 'deaf'
+      ]
+      expect(actual && anyTrue(tests)).toEqual(true)
+    })
+
+    it('will mark both ears as deaf if called twice', () => {
+      const b = new Body()
+      b.ears = { left: 'healthy', right: 'healthy' }
+      const d1 = b.deafen()
+      const d2 = b.deafen()
+      const tests = [
+        d1,
+        d2,
+        b.ears.left === 'deaf',
+        b.ears.right === 'deaf'
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
+
+    it('will return false if both ears are already deaf', () => {
+      const b = new Body()
+      b.ears = { left: 'deaf', right: 'deaf' }
+      expect(b.deafen()).toEqual(false)
     })
   })
 })

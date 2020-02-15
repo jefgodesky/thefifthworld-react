@@ -72,6 +72,31 @@ export default class Personality {
   }
 
   /**
+   * Return the personality disorders that this person suffers from, based on
+   * their Big Five personality traits. Based on Geoffrey Miller's "Personality
+   * traits are continuous with mental illnesses."
+   * https://www.edge.org/response-detail/10936
+   * @returns {[string]} - An array of strings describing the personality
+   *   disorders that this person suffers. Note that high neuroticism can cause
+   *   several possible disorders, so this returns a single string with options
+   *   separated by pipes (`|`). This string should be separated, and then one
+   *   option chosen at random. This should be done when results are reported,
+   *   rather than here, as doing so here could result in a different diagnosis
+   *   each time.
+   */
+
+  getDisorders () {
+    const disorders = []
+    if (this.openness > 2) disorders.push('schizophrenia')
+    if (this.conscientiousness > 2) disorders.push('obsessive-compulsive')
+    if (this.conscientiousness < -2) disorders.push('impulse control')
+    if (this.extraversion < -2) disorders.push('schizoid')
+    if (this.agreeableness < -2) disorders.push('antisocial')
+    if (this.neuroticism > 2) disorders.push('depression|anxiety|bipolar|borderline|histrionic')
+    return disorders
+  }
+
+  /**
    * Return a list of the Big Five personality traits.
    * @returns {string[]} - An array of strings identifying the Big Five
    *   personality traits.

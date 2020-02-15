@@ -144,6 +144,85 @@ describe('Personality', () => {
     })
   })
 
+  describe('getDisorders', () => {
+    it('reports schizophrenia if you are excessively open', () => {
+      const p = new Personality({
+        openness: 2.1,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'schizophrenia' ])
+    })
+
+    it('reports obsessive-compulsive disorder if you are excessively conscientious', () => {
+      const p = new Personality({
+        openness: 0,
+        conscientiousness: 2.1,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'obsessive-compulsive' ])
+    })
+
+    it('reports impulse control if your conscientiousness is very low', () => {
+      const p = new Personality({
+        openness: 0,
+        conscientiousness: -2.1,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'impulse control' ])
+    })
+
+    it('reports schizoid personality disorder if you are extremely introverted', () => {
+      const p = new Personality({
+        openness: 0,
+        conscientiousness: 0,
+        extraversion: -2.1,
+        agreeableness: 0,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'schizoid' ])
+    })
+
+    it('reports antisocial personality disorder if you are extremely disagreeable', () => {
+      const p = new Personality({
+        openness: 0,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: -2.1,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'antisocial' ])
+    })
+
+    it('reports several possible disorders if you are extremely neurotic', () => {
+      const p = new Personality({
+        openness: 0,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: 0,
+        neuroticism: 2.1
+      })
+      expect(p.getDisorders()).toEqual([ 'depression|anxiety|bipolar|borderline|histrionic' ])
+    })
+
+    it('can report multiple disorders', () => {
+      const p = new Personality({
+        openness: 2.1,
+        conscientiousness: 0,
+        extraversion: 0,
+        agreeableness: -2.1,
+        neuroticism: 0
+      })
+      expect(p.getDisorders()).toEqual([ 'schizophrenia', 'antisocial' ])
+    })
+  })
+
   describe('getTraitList', () => {
     it('returns an array of the Big Five personality traits', () => {
       const expected = [ 'openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism' ]

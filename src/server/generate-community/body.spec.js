@@ -220,4 +220,26 @@ describe('Body', () => {
       expect(b.scars).toEqual([ 'torso' ])
     })
   })
+
+  describe('reportScars', () => {
+    it('returns an empty object for an unscarred body', () => {
+      const b = new Body()
+      expect(b.reportScars()).toEqual({})
+    })
+
+    it('returns an object with a property for each scar location', () => {
+      const b = new Body()
+      b.takeScar('torso')
+      b.takeScar('left leg')
+      expect(b.reportScars()).toEqual({ 'torso': 1, 'left leg': 1 })
+    })
+
+    it('reports multiple scars to a single location', () => {
+      const b = new Body()
+      b.takeScar('torso')
+      b.takeScar('torso')
+      b.takeScar('left leg')
+      expect(b.reportScars()).toEqual({ 'torso': 2, 'left leg': 1 })
+    })
+  })
 })

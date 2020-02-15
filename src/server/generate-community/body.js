@@ -1,6 +1,6 @@
 import random from 'random'
 
-import {between, isPopulatedArray, randomValFromNormalDistribution} from '../../shared/utils'
+import { between, dedupe, isPopulatedArray, randomValFromNormalDistribution } from '../../shared/utils'
 
 export default class Body {
   constructor () {
@@ -103,5 +103,21 @@ export default class Body {
 
   takeScar (location) {
     this.scars.push(location)
+  }
+
+  /**
+   * Returns an object reporting a body's scars.
+   * @returns {Object} - An object with each location as a property, the value
+   *   of which is the total number of scars found there.
+   */
+
+  reportScars () {
+    const locations = dedupe(this.scars)
+    const report = {}
+    locations.forEach(loc => {
+      const num = this.scars.filter(l => l === loc).length
+      report[loc] = num
+    })
+    return report
   }
 }

@@ -70,5 +70,10 @@ describe('Body', () => {
       const b = new Body()
       expect(b.fertility).toEqual(0)
     })
+
+    it('starts a list of scars', () => {
+      const b = new Body()
+      expect(b.scars).toEqual([])
+    })
   })
 })

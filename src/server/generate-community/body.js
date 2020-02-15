@@ -24,5 +24,6 @@ export default class Body {
     this.achondroplasia = random.int(1, 10000) === 1
 
     this.fertility = 0
+    this.scars = []
   }
 }

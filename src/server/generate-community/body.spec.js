@@ -111,4 +111,73 @@ describe('Body', () => {
       expect(b.fertility).toEqual(0)
     })
   })
+
+  describe('adjustFertility', () => {
+    it('sets fertility to zero if you\'re 16 or younger', () => {
+      const b = new Body()
+      b.adjustFertility(false, 16)
+      expect(b.fertility).toEqual(0)
+    })
+
+    it('peaks at age 20', () => {
+      const b = new Body()
+      b.fertility = 90
+      b.infertile = false
+      b.adjustFertility(false, 20)
+      expect(b.fertility).toEqual(100)
+    })
+
+    it('goes down after 20', () => {
+      const b = new Body()
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility(false, 20)
+      const before = b.fertility
+      b.adjustFertility(false, 25)
+      expect(b.fertility).toBeLessThan(before)
+    })
+
+    it('drops below 50% for a female at age 45', () => {
+      const b = new Body()
+      b.female = true
+      b.male = false
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility(false, 45)
+      expect(b.fertility).toBeLessThan(50)
+    })
+
+    it('drops below 50% for a male at age 56', () => {
+      const b = new Body()
+      b.female = false
+      b.male = true
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility(false, 56)
+      expect(b.fertility).toBeLessThan(50)
+    })
+
+    it('adds 20% up to the maximum in times of peace and plenty', () => {
+      const b = new Body()
+      b.fertility = 0
+      b.infertile = false
+      b.adjustFertility(false, 20)
+      expect(b.fertility).toEqual(20)
+    })
+
+    it('reduces 5% in times of want, sickness, or conflict', () => {
+      const b = new Body()
+      b.fertility = 100
+      b.infertile = false
+      b.adjustFertility(true, 20)
+      expect(b.fertility).toEqual(95)
+    })
+
+    it('does nothing if you\'re infertile', () => {
+      const b = new Body()
+      b.makeInfertile()
+      b.adjustFertility(false, 20)
+      expect(b.fertility).toEqual(0)
+    })
+  })
 })

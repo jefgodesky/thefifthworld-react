@@ -1,6 +1,6 @@
 import random from 'random'
 
-import { randomValFromNormalDistribution } from '../../shared/utils'
+import { between, randomValFromNormalDistribution } from '../../shared/utils'
 
 export default class Body {
   constructor () {
@@ -53,5 +53,27 @@ export default class Body {
   makeInfertile () {
     this.fertility = 0
     this.infertile = true
+  }
+
+  /**
+   * Adjust fertility for a given age.
+   * @param hasProblems {boolean} - `true` if the community is experiencing
+   *   some problems. This causes stress, which reduces fertility.
+   * @param age {number} - The person's age in years.
+   */
+
+  adjustFertility (hasProblems, age) {
+    if (!this.infertile) {
+      const { male, female, fertility } = this
+      const mod = hasProblems ? -5 : 20
+      const max = age <= 20
+        ? Math.max(100 + (-1) * Math.pow(60 + (-3 * age), 2), 0)
+        : age > 20 && female
+          ? Math.max(100 + (-1) * Math.pow(6.5 + (-0.325 * age), 2), 0)
+          : age > 20 && male
+            ? Math.max(100 + (-1) * Math.pow(4 + (-0.2 * age), 2), 0)
+            : 0
+      this.fertility = between(fertility + mod, 0, max)
+    }
   }
 }

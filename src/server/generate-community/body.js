@@ -40,6 +40,8 @@ export default class Body {
       this.female = true
     }
 
+    if (random.int(1, 10) === 1) this.makeInfertile()
+
     this.fertility = 0
     this.scars = []
   }

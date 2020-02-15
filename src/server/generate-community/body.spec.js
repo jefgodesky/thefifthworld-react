@@ -85,6 +85,17 @@ describe('Body', () => {
       const b = new Body()
       expect(typeof b.female).toEqual('boolean')
     })
+
+    it('makes about 1 in 10 bodies infertile', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        if (b.infertile) count++
+      }
+      const notTooFew = count > 0
+      const notTooMany = count < 25
+      expect(notTooFew && notTooMany).toEqual(true)
+    })
   })
 
   describe('makeInfertile', () => {

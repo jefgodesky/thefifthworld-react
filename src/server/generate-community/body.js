@@ -21,5 +21,6 @@ export default class Body {
       left: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy',
       right: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy'
     }
+    this.achondroplasia = random.int(1, 10000) === 1
   }
 }

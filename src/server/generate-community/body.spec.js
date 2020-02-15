@@ -60,5 +60,10 @@ describe('Body', () => {
       ]
       expect(allTrue(tests)).toEqual(true)
     })
+
+    it('determines achondroplasia', () => {
+      const b = new Body()
+      expect(typeof b.achondroplasia).toEqual('boolean')
+    })
   })
 })

@@ -1,6 +1,6 @@
 import random from 'random'
 
-import { between, randomValFromNormalDistribution } from '../../shared/utils'
+import {between, isPopulatedArray, randomValFromNormalDistribution} from '../../shared/utils'
 
 export default class Body {
   constructor () {
@@ -75,5 +75,24 @@ export default class Body {
             : 0
       this.fertility = between(fertility + mod, 0, max)
     }
+  }
+
+  /**
+   * Reports if an eye, ear, arm, or leg is blind, deaf, missing, or disabled.
+   * @param part {string} - The part to look for. This should consist of either
+   *   `'left'` or `'right'`, followed by `'eye'`, '`ear`', '`arm`', or '`leg`'
+   *   (e.g., `'left arm'`).
+   * @returns {boolean} - `true` if that part is blind, deaf, missing, or
+   *   disabled, or `false` if it is not.
+   */
+
+  isGone (part) {
+    const sides = [ 'left', 'right' ]
+    const keys = [ 'eye', 'ear', 'arm', 'leg' ]
+    const gone = [ 'disabled', 'missing', 'blind', 'deaf' ]
+    const parts = part.split(' ')
+    return isPopulatedArray(parts) && parts.length > 1 && sides.includes(parts[0]) && keys.includes(parts[1])
+      ? gone.includes(this[`${parts[1]}s`][parts[0]])
+      : false
   }
 }

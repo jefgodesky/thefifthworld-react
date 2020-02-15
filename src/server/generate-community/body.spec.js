@@ -180,4 +180,36 @@ describe('Body', () => {
       expect(b.fertility).toEqual(0)
     })
   })
+
+  describe('isGone', () => {
+    it('reports if an eye is blind', () => {
+      const b = new Body()
+      b.eyes.left = 'blind'
+      expect(b.isGone('left eye')).toEqual(true)
+    })
+
+    it('reports if an ear is deaf', () => {
+      const b = new Body()
+      b.ears.right = 'deaf'
+      expect(b.isGone('right ear')).toEqual(true)
+    })
+
+    it('reports if an arm is missing', () => {
+      const b = new Body()
+      b.arms.left = 'missing'
+      expect(b.isGone('left arm')).toEqual(true)
+    })
+
+    it('reports if a leg is disabled', () => {
+      const b = new Body()
+      b.legs.right = 'disabled'
+      expect(b.isGone('right leg')).toEqual(true)
+    })
+
+    it('reports if the body part is just fine', () => {
+      const b = new Body()
+      b.legs.right = 'healthy'
+      expect(b.isGone('right leg')).toEqual(false)
+    })
+  })
 })

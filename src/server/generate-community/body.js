@@ -17,5 +17,9 @@ export default class Body {
       left: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy',
       right: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy'
     }
+    this.legs = {
+      left: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy',
+      right: random.int(1, 1000) <= 1 ? 'disabled' : 'healthy'
+    }
   }
 }

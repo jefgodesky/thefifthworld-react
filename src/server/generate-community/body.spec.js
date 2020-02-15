@@ -308,4 +308,59 @@ describe('Body', () => {
       expect(b.blind()).toEqual(false)
     })
   })
+
+  describe('getSick', () => {
+    it('returns an event tagged as a sickness', () => {
+      const b = new Body()
+      const actual = b.getSick()
+      expect(actual.tags.includes('sickness')).toEqual(true)
+    })
+
+    it('returns a prognosis', () => {
+      const b = new Body()
+      const possibilities = [ 'death', 'deaf', 'blind', 'recovery' ]
+      const actual = b.getSick()
+      expect(possibilities.includes(actual.prognosis)).toEqual(true)
+    })
+
+    it('usually returns a recovery', () => {
+      const b = new Body()
+      let recoveries = 0
+      for (let i = 0; i < 100; i++) {
+        const e = b.getSick()
+        if (e.prognosis === 'recovery') recoveries++
+      }
+      expect(recoveries).toBeGreaterThan(85)
+    })
+
+    it('sometimes returns a death', () => {
+      const b = new Body()
+      let deaths = 0
+      for (let i = 0; i < 100; i++) {
+        const e = b.getSick()
+        if (e.prognosis === 'death') deaths++
+      }
+      expect(deaths).toBeLessThan(10)
+    })
+
+    it('sometimes results in someone losing hearing in one ear', () => {
+      const b = new Body()
+      let deaf = 0
+      for (let i = 0; i < 100; i++) {
+        const e = b.getSick()
+        if (e.prognosis === 'deaf') deaf++
+      }
+      expect(deaf).toBeLessThan(10)
+    })
+
+    it('sometimes results in someone losing sight in one eye', () => {
+      const b = new Body()
+      let blind = 0
+      for (let i = 0; i < 100; i++) {
+        const e = b.getSick()
+        if (e.prognosis === 'blind') blind++
+      }
+      expect(blind).toBeLessThan(10)
+    })
+  })
 })

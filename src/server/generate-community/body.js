@@ -1,6 +1,9 @@
 import random from 'random'
 
 import { between, dedupe, isPopulatedArray, randomValFromNormalDistribution } from '../../shared/utils'
+import { checkTable } from './utils'
+
+import tables from '../../data/community-creation'
 
 export default class Body {
   constructor () {
@@ -159,5 +162,33 @@ export default class Body {
     }
 
     return `${this.eyes.left} ${this.eyes.right}` !== check
+  }
+
+  /**
+   * Handles a bout of sickness.
+   * @returns {{prognosis: string, tags: [string]}} = An object with two
+   *   properties: `prognosis` (a string describing the outcome of the
+   *   sickness) and `tags` (an array with a single string, `'sickness'`).
+   *   This object is suitable for adding to a `History` object with
+   *   `History.add`.
+   */
+
+  getSick () {
+    const event = {
+      tags: [ 'sickness' ],
+      prognosis: checkTable(tables.illness)
+    }
+
+    switch (event.prognosis) {
+      case 'deaf':
+        if (!this.deafen()) event.prognosis = 'recovery'
+        break
+      case 'blind':
+        if (!this.blind()) event.prognosis = 'recovery'
+        break
+      default: break
+    }
+
+    return event
   }
 }

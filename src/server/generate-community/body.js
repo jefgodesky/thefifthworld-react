@@ -95,4 +95,13 @@ export default class Body {
       ? gone.includes(this[`${parts[1]}s`][parts[0]])
       : false
   }
+
+  /**
+   * Adds a scar.
+   * @param location {string} - Where the scar is located.
+   */
+
+  takeScar (location) {
+    this.scars.push(location)
+  }
 }

@@ -7,10 +7,10 @@ export default class Body {
     this.longevity = Math.round(randomValFromNormalDistribution(80, 10))
     this.attractiveness = randomValFromNormalDistribution()
     this.type = randomValFromNormalDistribution()
-    this.eyes = random.int(1, 1000) <= 16
+    this.eyes = random.int(1, 1000) <= 4
       ? { left: 'blind', right: 'blind' }
       : { left: 'healthy', right: 'healthy' }
-    this.ears = random.int(1, 1000) <= 16
+    this.ears = random.int(1, 1000) <= 1
       ? { left: 'deaf', right: 'deaf' }
       : { left: 'healthy', right: 'healthy' }
   }

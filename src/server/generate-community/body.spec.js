@@ -2,6 +2,8 @@
 
 import Body from './body'
 
+import { allTrue } from '../../shared/utils'
+
 describe('Body', () => {
   describe('constructor', () => {
     it('assigns a longevity', () => {
@@ -17,6 +19,16 @@ describe('Body', () => {
     it('assigns a body type', () => {
       const b = new Body()
       expect(!isNaN(b.type)).toEqual(true)
+    })
+
+    it('creates eyes', () => {
+      const b = new Body()
+      const valid = [ 'blind', 'healthy' ]
+      const tests = [
+        valid.includes(b.eyes.left),
+        valid.includes(b.eyes.right)
+      ]
+      expect(allTrue(tests)).toEqual(true)
     })
   })
 })

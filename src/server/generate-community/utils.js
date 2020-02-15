@@ -1,5 +1,7 @@
 import random from 'random'
 
+import { randomValFromNormalDistribution } from '../../shared/utils'
+
 /**
  * Checks for a result on a random table.
  * @param table {Array} - The random table to check. This expects an array of
@@ -74,9 +76,31 @@ const pickRandom = arr => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
+/**
+ * Returns a value from a normal distribution with a mean derived from the
+ * values of two parents. Used to derive an inherited value that's normally
+ * distributed, like a Big Five personality trait, intelligence, or body type.
+ * @param mother {number} - The mother's value for this trait. Technically, it
+ *   doesn't matter in the slightest if this is the mother's value or the
+ *   father's value, as long as the next parameter is the other one.
+ * @param father {number} - The father's value for this trait. Technically, it
+ *   doesn't matter in the slightest if this is the father's value or the
+ *   mother's value, as long as the previous parameter is the other one.
+ * @param std {number} - Optional. The standard deviation for the normal
+ *   distribution (Default: `1`).
+ * @returns {number} - A random value selected from the normal distribution
+ *   created by the mean of the parents' values and the given standard
+ *   deviation.
+ */
+
+const inheritNormalDistribution = (mother, father, std = 1) => {
+  return randomValFromNormalDistribution((mother + father) / 2, std)
+}
+
 export {
   checkTable,
   rollTableUntil,
   shuffle,
-  pickRandom
+  pickRandom,
+  inheritNormalDistribution
 }

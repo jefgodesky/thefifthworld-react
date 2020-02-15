@@ -4,7 +4,8 @@ import {
   checkTable,
   rollTableUntil,
   shuffle,
-  pickRandom
+  pickRandom,
+  inheritNormalDistribution
 } from './utils'
 import { allTrue } from '../../shared/utils'
 
@@ -65,5 +66,16 @@ describe('pickRandom', () => {
     const arr = [ 1, 2 ]
     const actual = pickRandom(arr)
     expect(arr.includes(actual)).toEqual(true)
+  })
+})
+
+describe('inheritNormalDistribution', () => {
+  it('selects a random value, using the average of the parents\' values as the mean', () => {
+    let withinOne = 0
+    for (let i = 0; i < 100; i++) {
+      const child = inheritNormalDistribution(1, 1)
+      if (child > 0 && child < 2) withinOne++
+    }
+    expect(withinOne).toBeGreaterThan(50)
   })
 })

@@ -183,10 +183,12 @@ export default class Body {
 
     switch (event.prognosis) {
       case 'deaf':
-        if (!this.deafen()) event.prognosis = 'recovery'
+        const ear = this.deafen()
+        event.prognosis = ear === 'none' ? 'recovery' : `deaf in ${ear}`
         break
       case 'blind':
-        if (!this.blind()) event.prognosis = 'recovery'
+        const eye = this.blind()
+        event.prognosis = eye === 'none' ? 'recovery' : `blind in ${eye}`
         break
       default: break
     }

@@ -183,4 +183,34 @@ describe('Genotype', () => {
       expect(Genotype.either('arms', a, b)).toEqual(false)
     })
   })
+
+  describe('inheritDisability', () => {
+    it('returns true about 75% of the time when both parents have the disability', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Genotype()
+        const b = new Genotype()
+        a.body.arms = { left: 'disabled', right: 'disabled' }
+        b.body.arms = { left: 'disabled', right: 'disabled' }
+        if (Genotype.inheritDisability('arms', a, b)) count++
+      }
+      const notTooFew = count > 60
+      const notTooMany = count < 90
+      expect(notTooMany && notTooFew).toEqual(true)
+    })
+
+    it('returns true about 25% of the time when just one parent has the disability', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Genotype()
+        const b = new Genotype()
+        a.body.arms = { left: 'disabled', right: 'disabled' }
+        b.body.arms = { left: 'healthy', right: 'healthy' }
+        if (Genotype.inheritDisability('arms', a, b)) count++
+      }
+      const notTooFew = count > 10
+      const notTooMany = count < 40
+      expect(notTooMany && notTooFew).toEqual(true)
+    })
+  })
 })

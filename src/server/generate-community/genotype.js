@@ -69,4 +69,19 @@ export default class Genotype {
     const bNotHealthy = b.body[set].left !== 'healthy' || b.body[set].right !== 'healthy'
     return aNotHealthy || bNotHealthy
   }
+
+  /**
+   * Tests whether a child should inherit a problem with sight, hearing, or
+   * disabled arms or legs.
+   * @param set {string} - Valid options are `arms`, `legs`, `eyes`, or `ears`.
+   * @param a {Genotype} - The `Genotype` object for one parent.
+   * @param b {Genotype} - The `Genotype` object for the other parent.
+   * @returns {boolean} - `true` if the child is inheriting a problem, or
+   *   `false` if she isn't.
+   */
+
+  static inheritDisability (set, a, b) {
+    const roll = random.int(1, 4)
+    return (Genotype.both(set, a, b) && roll < 4) || (Genotype.either(set, a, b) && roll === 1)
+  }
 }

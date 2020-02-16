@@ -484,4 +484,40 @@ describe('Body', () => {
       expect(count).toBeGreaterThan(0)
     })
   })
+
+  describe('getHurt', () => {
+    it('returns a report', () => {
+      const b = new Body()
+      const report = b.getHurt()
+      expect(isPopulatedArray(report.tags)).toEqual(true)
+    })
+
+    it('can get infected', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        const report = b.getHurt()
+        if (report.infection) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('can be lethal', () => {
+      let count = 0
+      for (let i = 0; i < 1000; i++) {
+        const b = new Body()
+        const report = b.getHurt()
+        if (report.lethal) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('leaves a scar', () => {
+      const b = new Body()
+      const report = b.getHurt()
+      const lethal = Boolean(report.lethal)
+      const scar = b.scars.length > 0
+      expect(lethal || scar).toEqual(true)
+    })
+  })
 })

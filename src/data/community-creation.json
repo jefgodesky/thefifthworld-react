@@ -19,14 +19,9 @@
   ],
   "injury": [
     { "chance": 1, "event": "death" },
-    { "chance": 2, "event": "face" },
-    { "chance": 2, "event": "left arm" },
-    { "chance": 2, "event": "right arm" },
-    { "chance": 2, "event": "left leg" },
-    { "chance": 2, "event": "right leg" },
-    { "chance": 2, "event": "torso" },
-    { "chance": 30, "event": "infection" },
-    { "chance":  57, "event":  "recovery" }
+    { "chance": 19, "event": "face" },
+    { "chance": 45, "event": "limb" },
+    { "chance": 40, "event": "torso" }
   ],
   "personalEventsAtPeace": [
     { "chance": 10, "event": "+openness" },

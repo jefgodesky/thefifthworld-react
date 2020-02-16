@@ -286,4 +286,38 @@ export default class Body {
 
     return report
   }
+
+  /**
+   * Sustain a serious injury.
+   * @returns {Object} - An object detailing the injury.
+   */
+
+  getHurt () {
+    let report
+    const outcome = checkTable(tables.injury)
+    switch (outcome) {
+      case 'death':
+        report = { tags: [ 'injury' ], lethal: true }
+        break
+      case 'face':
+        report = this.hurtFace()
+        break
+      case 'limb':
+        report = this.hurtLimb()
+        break
+      case 'torso':
+        report = this.hurtTorso()
+        break
+    }
+
+    // Sometimes injuries get infected.
+    if (!report.lethal && random.int(1, 4) === 1) {
+      report.tags.push('infection')
+      const infection = this.getSick()
+      report.infection = infection.prognosis
+      if (infection.prognosis === 'death') report.lethal = true
+    }
+
+    return report
+  }
 }

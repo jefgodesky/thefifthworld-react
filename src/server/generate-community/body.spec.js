@@ -307,6 +307,17 @@ describe('Body', () => {
       b.eyes = { left: 'blind', right: 'blind' }
       expect(b.blind()).toEqual(false)
     })
+
+    it('will mark one eye as missing if it\'s an injury', () => {
+      const b = new Body()
+      b.eyes = { left: 'healthy', right: 'healthy' }
+      const actual = b.blind(true)
+      const tests = [
+        b.eyes.left === 'missing',
+        b.eyes.right === 'missing'
+      ]
+      expect(actual && anyTrue(tests)).toEqual(true)
+    })
   })
 
   describe('getSick', () => {

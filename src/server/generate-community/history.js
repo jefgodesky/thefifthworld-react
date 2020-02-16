@@ -151,7 +151,7 @@ export default class History {
    */
 
   static combine (...histories) {
-    const arr = histories.filter(h => h.constructor && h.constructor.name === 'History')
+    const arr = histories.filter(h => h instanceof History)
     const combined = new History()
     arr.forEach(history => {
       Object.keys(history.record).forEach(year => {

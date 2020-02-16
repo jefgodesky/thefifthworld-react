@@ -11,7 +11,7 @@ describe('Genotype', () => {
   describe('constructor', () => {
     it('adds a body', () => {
       const g = new Genotype()
-      expect(g.body && g.body.constructor && g.body.constructor.name === 'Body').toEqual(true)
+      expect(g.body instanceof Body).toEqual(true)
     })
 
     it('copies a given body', () => {
@@ -19,7 +19,7 @@ describe('Genotype', () => {
       const g = new Genotype(b)
       b.takeScar('concept of self')
       const tests = [
-        g.body && g.body.constructor && g.body.constructor.name === 'Body',
+        g.body instanceof Body,
         g.body.attractiveness === b.attractiveness,
         g.body.scars.length === 0,
         b.scars.length === 1
@@ -29,12 +29,7 @@ describe('Genotype', () => {
 
     it('adds a personality', () => {
       const g = new Genotype()
-      const tests = [
-        Boolean(g.personality),
-        Boolean(g.personality.constructor),
-        g.personality.constructor.name === 'Personality'
-      ]
-      expect(allTrue(tests)).toEqual(true)
+      expect(g.personality instanceof Personality).toEqual(true)
     })
 
     it('copies a given personality', () => {
@@ -50,14 +45,7 @@ describe('Genotype', () => {
         Math.abs(g.personality.neuroticism - p.neuroticism)
       ]
 
-      const tests = [
-        Boolean(g.personality),
-        Boolean(g.personality.constructor),
-        g.personality.constructor.name === 'Personality',
-        deltas.filter(d => d !== 0).length === 1
-      ]
-
-      expect(allTrue(tests)).toEqual(true)
+      expect(deltas.filter(d => d !== 0).length === 1).toEqual(true)
     })
 
     it('defaults to a viable offspring', () => {
@@ -300,7 +288,7 @@ describe('Genotype', () => {
       const a = new Genotype()
       const b = new Genotype()
       const c = Genotype.descend(a, b)
-      expect(c && c.constructor && c.constructor.name === 'Genotype').toEqual(true)
+      expect(c instanceof Genotype).toEqual(true)
     })
 
     it('sets a value close to the parents\' average', () => {

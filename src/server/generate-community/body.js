@@ -129,22 +129,20 @@ export default class Body {
    * @param injury {boolean} - Optional. If `true`, you're losing your ear, not
    *   just your hearing in it, so it's lost rather than deafened (that is, the
    *   string is set to `'missing'` rather than `'deaf'`) (Default: `false`).
-   * @returns {boolean} - `true` if the person is made deaf in one ear, or
-   *   `false` if it failed (because she was already deaf in both ears).
+   * @returns {string} - `'left'` if the left ear lost hearing or was lost,
+   *   `'right'` if the right ear lost hearing or was lost, or `'none'` if
+   *    neither ear lost hearing or was lost (for example, if both ears were
+   *    already missing or not functioning to begin with).
    */
 
   deafen (injury = false) {
-    const before = `${this.ears.left} ${this.ears.right}`
-    const side = random.boolean() ? 'left' : 'right'
-    const other = side === 'left' ? 'right' : 'left'
-
-    if (this.ears[side] === 'deaf') {
-      this.ears[other] = injury ? 'missing' : 'deaf'
-    } else {
-      this.ears[side] = injury ? 'missing' : 'deaf'
-    }
-
-    return `${this.ears.left} ${this.ears.right}` !== before
+    const check = `${this.ears.left} ${this.ears.right}`
+    const deaf = [ 'deaf', 'missing' ]
+    const chosen = random.boolean() ? 'right' : 'left'
+    const other = chosen === 'right' ? 'left' : 'right'
+    const side = deaf.includes(this.ears[chosen]) ? other : chosen
+    this.ears[side] = injury ? 'missing' : 'deaf'
+    return check === `${this.ears.left} ${this.ears.right}` ? 'none' : side
   }
 
   /**

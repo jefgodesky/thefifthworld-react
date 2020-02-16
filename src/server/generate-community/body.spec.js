@@ -248,42 +248,33 @@ describe('Body', () => {
       const b = new Body()
       b.ears = { left: 'healthy', right: 'healthy' }
       const actual = b.deafen()
-      const tests = [
-        b.ears.left === 'deaf',
-        b.ears.right === 'deaf'
-      ]
-      expect(actual && anyTrue(tests)).toEqual(true)
+      const sides = [ 'left', 'right' ]
+      expect(sides.includes(actual) && b.ears[actual] === 'deaf').toEqual(true)
     })
 
     it('will mark one ear as missing if it\'s an injury', () => {
       const b = new Body()
       b.ears = { left: 'healthy', right: 'healthy' }
       const actual = b.deafen(true)
-      const tests = [
-        b.ears.left === 'missing',
-        b.ears.right === 'missing'
-      ]
-      expect(actual && anyTrue(tests)).toEqual(true)
+      const sides = [ 'left', 'right' ]
+      expect(sides.includes(actual) && b.ears[actual] === 'missing').toEqual(true)
     })
 
-    it('will mark both ears as deaf if called twice', () => {
+    it('will mark both ears as blind if called twice', () => {
       const b = new Body()
       b.ears = { left: 'healthy', right: 'healthy' }
-      const d1 = b.deafen()
-      const d2 = b.deafen()
+      b.deafen(); b.deafen()
       const tests = [
-        d1,
-        d2,
         b.ears.left === 'deaf',
         b.ears.right === 'deaf'
       ]
       expect(allTrue(tests)).toEqual(true)
     })
 
-    it('will return false if both ears are already deaf', () => {
+    it('will return \'none\' if both ears are already deaf', () => {
       const b = new Body()
       b.ears = { left: 'deaf', right: 'deaf' }
-      expect(b.deafen()).toEqual(false)
+      expect(b.deafen()).toEqual('none')
     })
   })
 

@@ -4,7 +4,7 @@ import Body  from './body'
 import Genotype from './genotype'
 import Personality from './personality'
 
-import { allTrue } from '../../shared/utils'
+import { allTrue, between } from '../../shared/utils'
 
 describe('Genotype', () => {
   describe('constructor', () => {
@@ -57,6 +57,20 @@ describe('Genotype', () => {
       ]
 
       expect(allTrue(tests)).toEqual(true)
+    })
+  })
+
+  describe('modifyNormal', () => {
+    it('increases or decreases a value by up to 10%', () => {
+      const g = new Genotype()
+      const actual = g.modifyNormal(1)
+      expect(between(actual, 0.9, 1.1)).toEqual(actual)
+    })
+
+    it('increases or decreases a value by up to 10% of the given standard deviation', () => {
+      const g = new Genotype()
+      const actual = g.modifyNormal(100, 15)
+      expect(between(actual, 98.5, 101.5)).toEqual(actual)
     })
   })
 })

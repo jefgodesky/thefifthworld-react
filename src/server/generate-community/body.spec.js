@@ -534,4 +534,75 @@ describe('Body', () => {
       expect(b.checkForDyingOfOldAge(100)).toEqual(true)
     })
   })
+
+  describe('copy', () => {
+    it('copies longevity', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(b.longevity).toEqual(c.longevity)
+    })
+
+    it('copies attractiveness', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(b.attractiveness).toEqual(c.attractiveness)
+    })
+
+    it('copies body type', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(b.type).toEqual(c.type)
+    })
+
+    it('copies eyes', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(`${b.eyes.left} ${b.eyes.right}`).toEqual(`${c.eyes.left} ${c.eyes.right}`)
+    })
+
+    it('copies ears', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(`${b.ears.left} ${b.ears.right}`).toEqual(`${c.ears.left} ${c.ears.right}`)
+    })
+
+    it('copies limbs', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      const blimbs = `${b.arms.left} ${b.arms.right} ${b.legs.left} ${b.legs.right}`
+      const climbs = `${c.arms.left} ${c.arms.right} ${c.legs.left} ${c.legs.right}`
+      expect(blimbs).toEqual(climbs)
+    })
+
+    it('copies achondroplasia', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(b.achondroplasia).toEqual(c.achondroplasia)
+    })
+
+    it('copies sex', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(`${b.male} ${b.female}`).toEqual(`${c.male} ${c.female}`)
+    })
+
+    it('copies fertility', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(`${b.infertile} ${b.fertility}`).toEqual(`${c.infertile} ${c.fertility}`)
+    })
+
+    it('copies scars', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      expect(b.scars).toEqual(c.scars)
+    })
+
+    it('creates a deep copy', () => {
+      const b = new Body()
+      const c = Body.copy(b)
+      b.takeScar('concept of self')
+      expect(b.scars).not.toEqual(c.scars)
+    })
+  })
 })

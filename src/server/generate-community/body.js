@@ -1,6 +1,6 @@
 import random from 'random'
 
-import { between, dedupe, isPopulatedArray, randomValFromNormalDistribution } from '../../shared/utils'
+import { between, clone, dedupe, isPopulatedArray, randomValFromNormalDistribution } from '../../shared/utils'
 import { checkTable, pickRandom } from './utils'
 
 import tables from '../../data/community-creation'
@@ -332,5 +332,30 @@ export default class Body {
     const chance = (age - this.longevity) * 10
     const check = random.int(1, 100) < chance
     return check
+  }
+
+  /**
+   * Create a new Body object with all of the same values as the given `src`
+   * Body object.
+   * @param src {Body} - The Body object to copy.
+   * @returns {Body} - A deep copy of `src`.
+   */
+
+  static copy (src) {
+    const cpy = new Body()
+    cpy.longevity = src.longevity
+    cpy.attractiveness = src.attractiveness
+    cpy.type = src.type
+    cpy.eyes = clone(src.eyes)
+    cpy.ears = clone(src.ears)
+    cpy.arms = clone(src.arms)
+    cpy.legs = clone(src.legs)
+    cpy.achondroplasia = src.achondroplasia
+    cpy.male = src.male
+    cpy.female = src.female
+    cpy.infertile = src.infertile
+    cpy.fertility = src.fertility
+    cpy.scars = clone(src.scars)
+    return cpy
   }
 }

@@ -193,4 +193,38 @@ export default class Body {
 
     return event
   }
+
+  /**
+   * Sustain an injury to the face. This could potentially also involve losing
+   * an eye or an ear.
+   * @returns {{location: string, tags: [string]}} - An object detailing the
+   *   effects of the injury.
+   */
+
+  hurtFace () {
+    const roll = random.int(1, 10)
+    const report = {
+      tags: [ 'injury' ],
+      location: 'face'
+    }
+    this.takeScar('face')
+    switch (roll) {
+      case 1:
+        const eye = this.blind(true)
+        if (eye !== 'none') {
+          report.tags.push('lost eye')
+          report.location = `${eye} eye`
+        }
+        break
+      case 2:
+        const ear = this.deafen(true)
+        if (ear !== 'none') {
+          report.tags.push('lost ear')
+          report.location = `${ear} ear`
+        }
+        break
+      default: break
+    }
+    return report
+  }
 }

@@ -2,7 +2,7 @@
 
 import Body from './body'
 
-import { allTrue, anyTrue } from '../../shared/utils'
+import { allTrue, anyTrue, isPopulatedArray } from '../../shared/utils'
 
 describe('Body', () => {
   describe('constructor', () => {
@@ -365,6 +365,41 @@ describe('Body', () => {
         if (e.prognosis === 'blind') blind++
       }
       expect(blind).toBeLessThan(10)
+    })
+  })
+
+  describe('hurtFace', () => {
+    it('returns a report', () => {
+      const b = new Body()
+      const report = b.hurtFace()
+      const locations = [ 'face', 'left eye', 'right eye', 'left ear', 'right ear' ]
+      expect(isPopulatedArray(report.tags) && locations.includes(report.location)).toEqual(true)
+    })
+
+    it('leaves a scar', () => {
+      const b = new Body()
+      b.hurtFace()
+      expect(b.scars.length).toEqual(1)
+    })
+
+    it('sometimes loses an eye', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        b.hurtFace()
+        if (b.eyes.left === 'missing' || b.eyes.right === 'missing') count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('sometimes loses an ear', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        b.hurtFace()
+        if (b.ears.left === 'missing' || b.ears.right === 'missing') count++
+      }
+      expect(count).toBeGreaterThan(0)
     })
   })
 })

@@ -58,6 +58,11 @@ describe('Genotype', () => {
 
       expect(allTrue(tests)).toEqual(true)
     })
+
+    it('defaults to a viable offspring', () => {
+      const g = new Genotype()
+      expect(g.viable).toEqual(true)
+    })
   })
 
   describe('modifyNormal', () => {
@@ -129,6 +134,58 @@ describe('Genotype', () => {
       const before = g.personality.neuroticism
       g.modify()
       expect(g.personality.neuroticism).not.toEqual(before)
+    })
+  })
+
+  describe('inheritAchondroplasia', () => {
+    it('returns children without achondroplasia from two parents with it about 25% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Genotype()
+        const b = new Genotype()
+        const c = new Genotype()
+        a.body.achondroplasia = true
+        b.body.achondroplasia = true
+        c.inheritAchondroplasia(a, b)
+        if (!c.body.achondroplasia) count++
+      }
+      const notTooFew = count > 10
+      const notTooMany = count < 40
+      expect(notTooFew && notTooMany).toEqual(true)
+    })
+
+    it('returns children with achondroplasia from two parents with it about 75% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Genotype()
+        const b = new Genotype()
+        const c = new Genotype()
+        a.body.achondroplasia = true
+        b.body.achondroplasia = true
+        c.inheritAchondroplasia(a, b)
+        if (c.body.achondroplasia) count++
+      }
+      const notTooFew = count > 60
+      const notTooMany = count < 90
+      expect(notTooFew && notTooMany).toEqual(true)
+    })
+
+
+
+    it('returns non-viable children from two parents with achondroplasia about 25% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Genotype()
+        const b = new Genotype()
+        const c = new Genotype()
+        a.body.achondroplasia = true
+        b.body.achondroplasia = true
+        c.inheritAchondroplasia(a, b)
+        if (!c.viable) count++
+      }
+      const notTooFew = count > 10
+      const notTooMany = count < 40
+      expect(notTooFew && notTooMany).toEqual(true)
     })
   })
 

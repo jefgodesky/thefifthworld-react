@@ -9,6 +9,7 @@ export default class Genotype {
     const givenPersonality = (personality && personality.constructor && personality.constructor.name === 'Personality')
     this.body = givenBody ? Body.copy(body) : new Body()
     this.personality = givenPersonality ? Personality.copy(personality) : new Personality()
+    this.viable = true
   }
 
   /**
@@ -36,6 +37,25 @@ export default class Genotype {
     this.personality.extraversion = this.modifyNormal(this.personality.extraversion)
     this.personality.agreeableness = this.modifyNormal(this.personality.agreeableness)
     this.personality.neuroticism = this.modifyNormal(this.personality.neuroticism)
+  }
+
+  /**
+   * Handles the inheritance of achondroplasia. This maps pretty cleanly to a
+   * classic Punnett square. If you inherit achondroplasia from both parents,
+   * though, you won't survive.
+   * @param a {Genotype} - The `Genotype` object of one parent.
+   * @param b {Genotype} - The `Genotype` object of one parent.
+   */
+
+  inheritAchondroplasia (a, b) {
+    const fromA = a.body.achondroplasia && random.boolean()
+    const fromB = b.body.achondroplasia && random.boolean()
+    if (fromA && fromB) {
+      this.body.achondroplasia = true
+      this.viable = false
+    } else if (fromA || fromB) {
+      this.body.achondroplasia = true
+    }
   }
 
   /**

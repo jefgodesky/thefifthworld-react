@@ -41,6 +41,23 @@ export default class Genotype {
   }
 
   /**
+   * Inherit disabilities from your parents.
+   * @param a {Genotype} - The `Genotype` object of one parent.
+   * @param b {Genotype} - The `Genotype` object of the other parent.
+   */
+
+  inheritDisabilities (a, b) {
+    const disabilities = { eyes: 'blind', ears: 'deaf', arms: 'disabled', legs: 'disabled' }
+    const sets = Object.keys(disabilities)
+    sets.forEach(set => {
+      if (Genotype.inheritDisability(set, a, b)) {
+        this.body[set].left = disabilities[set]
+        this.body[set].right = disabilities[set]
+      }
+    })
+  }
+
+  /**
    * Handles the inheritance of achondroplasia. This maps pretty cleanly to a
    * classic Punnett square. If you inherit achondroplasia from both parents,
    * though, you won't survive.

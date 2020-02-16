@@ -4,6 +4,7 @@ import Body from './body'
 import Genotype from './genotype'
 import Personality from './personality'
 
+import { pickRandom } from './utils'
 import { allTrue, between } from '../../shared/utils'
 
 describe('Genotype', () => {

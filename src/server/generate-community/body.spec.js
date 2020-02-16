@@ -440,7 +440,7 @@ describe('Body', () => {
     it('returns a report', () => {
       const b = new Body()
       const report = b.hurtTorso()
-      const locations = [ 'groin', 'chest', 'belly', 'back', 'left side', 'right side'  ]
+      const locations = [ 'groin', 'chest', 'belly', 'back', 'left side', 'right side' ]
       expect(isPopulatedArray(report.tags) && locations.includes(report.location)).toEqual(true)
     })
 

@@ -138,7 +138,7 @@ describe('Personality', () => {
       const p = new Personality(starter)
       p.change()
       const claims = []
-      traits.forEach(trait => { claims.push(p[trait] === 0.1 || p[trait] === -0.1 ) })
+      traits.forEach(trait => { claims.push(p[trait] === 0.1 || p[trait] === -0.1) })
       const trueClaims = claims.filter(c => c === true)
       expect(trueClaims.length).toEqual(1)
     })

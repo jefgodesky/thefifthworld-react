@@ -140,7 +140,7 @@ export default class History {
    */
 
   wasQuiet (year) {
-    return !Boolean(this.record[year])
+    return !this.record[year]
   }
 
   /**

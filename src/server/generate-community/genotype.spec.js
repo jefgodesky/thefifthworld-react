@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-import Body  from './body'
+import Body from './body'
 import Genotype from './genotype'
 import Personality from './personality'
 
@@ -181,8 +181,6 @@ describe('Genotype', () => {
       const tooMany = count > 90
       expect(!tooFew && !tooMany).toEqual(true)
     })
-
-
 
     it('returns non-viable children from two parents with achondroplasia about 25% of the time', () => {
       let count = 0

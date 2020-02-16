@@ -292,42 +292,33 @@ describe('Body', () => {
       const b = new Body()
       b.eyes = { left: 'healthy', right: 'healthy' }
       const actual = b.blind()
-      const tests = [
-        b.eyes.left === 'blind',
-        b.eyes.right === 'blind'
-      ]
-      expect(actual && anyTrue(tests)).toEqual(true)
+      const sides = [ 'left', 'right' ]
+      expect(sides.includes(actual) && b.eyes[actual] === 'blind').toEqual(true)
     })
 
     it('will mark one eye as missing if it\'s an injury', () => {
       const b = new Body()
       b.eyes = { left: 'healthy', right: 'healthy' }
       const actual = b.blind(true)
-      const tests = [
-        b.eyes.left === 'missing',
-        b.eyes.right === 'missing'
-      ]
-      expect(actual && anyTrue(tests)).toEqual(true)
+      const sides = [ 'left', 'right' ]
+      expect(sides.includes(actual) && b.eyes[actual] === 'missing').toEqual(true)
     })
 
     it('will mark both eyes as blind if called twice', () => {
       const b = new Body()
       b.eyes = { left: 'healthy', right: 'healthy' }
-      const d1 = b.blind()
-      const d2 = b.blind()
+      b.blind(); b.blind()
       const tests = [
-        d1,
-        d2,
         b.eyes.left === 'blind',
         b.eyes.right === 'blind'
       ]
       expect(allTrue(tests)).toEqual(true)
     })
 
-    it('will return false if both eyes are already blind', () => {
+    it('will return \'none\' if both eyes are already blind', () => {
       const b = new Body()
       b.eyes = { left: 'blind', right: 'blind' }
-      expect(b.blind()).toEqual(false)
+      expect(b.blind()).toEqual('none')
     })
   })
 

@@ -152,22 +152,20 @@ export default class Body {
    * @param injury {boolean} - Optional. If `true`, you're losing your eye, not
    *   just your sight in it, so it's lost rather than blinded (that is, the
    *   string is set to `'missing'` rather than `'blind'`) (Default: `false`).
-   * @returns {boolean} - `true` if the person is made blind in one eye, or
-   *   `false` if it failed (because she was already blind in both eyes).
+   * @returns {string} - `'left'` if the left eye was blinded or lost,
+   *   `'right'` if the right eyes was blinded or lost, or `'none'` if neither
+   *   eye was blinded or lost (for example, if both eyes were already blinded
+   *   or lost to begin with).
    */
 
   blind (injury = false) {
     const check = `${this.eyes.left} ${this.eyes.right}`
-    const side = random.boolean() ? 'right' : 'left'
-    const other = side === 'right' ? 'left' : 'right'
-
-    if (this.eyes[side] === 'blind') {
-      this.eyes[other] = injury ? 'missing' : 'blind'
-    } else {
-      this.eyes[side] = injury ? 'missing' : 'blind'
-    }
-
-    return `${this.eyes.left} ${this.eyes.right}` !== check
+    const blind = [ 'blind', 'missing' ]
+    const chosen = random.boolean() ? 'right' : 'left'
+    const other = chosen === 'right' ? 'left' : 'right'
+    const side = blind.includes(this.eyes[chosen]) ? other : chosen
+    this.eyes[side] = injury ? 'missing' : 'blind'
+    return check === `${this.eyes.left} ${this.eyes.right}` ? 'none' : side
   }
 
   /**

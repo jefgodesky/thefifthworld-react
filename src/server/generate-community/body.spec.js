@@ -2,7 +2,7 @@
 
 import Body from './body'
 
-import { allTrue, anyTrue, isPopulatedArray } from '../../shared/utils'
+import { allTrue, isPopulatedArray } from '../../shared/utils'
 
 describe('Body', () => {
   describe('constructor', () => {

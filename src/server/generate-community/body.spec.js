@@ -255,6 +255,17 @@ describe('Body', () => {
       expect(actual && anyTrue(tests)).toEqual(true)
     })
 
+    it('will mark one ear as missing if it\'s an injury', () => {
+      const b = new Body()
+      b.ears = { left: 'healthy', right: 'healthy' }
+      const actual = b.deafen(true)
+      const tests = [
+        b.ears.left === 'missing',
+        b.ears.right === 'missing'
+      ]
+      expect(actual && anyTrue(tests)).toEqual(true)
+    })
+
     it('will mark both ears as deaf if called twice', () => {
       const b = new Body()
       b.ears = { left: 'healthy', right: 'healthy' }
@@ -288,6 +299,17 @@ describe('Body', () => {
       expect(actual && anyTrue(tests)).toEqual(true)
     })
 
+    it('will mark one eye as missing if it\'s an injury', () => {
+      const b = new Body()
+      b.eyes = { left: 'healthy', right: 'healthy' }
+      const actual = b.blind(true)
+      const tests = [
+        b.eyes.left === 'missing',
+        b.eyes.right === 'missing'
+      ]
+      expect(actual && anyTrue(tests)).toEqual(true)
+    })
+
     it('will mark both eyes as blind if called twice', () => {
       const b = new Body()
       b.eyes = { left: 'healthy', right: 'healthy' }
@@ -306,17 +328,6 @@ describe('Body', () => {
       const b = new Body()
       b.eyes = { left: 'blind', right: 'blind' }
       expect(b.blind()).toEqual(false)
-    })
-
-    it('will mark one eye as missing if it\'s an injury', () => {
-      const b = new Body()
-      b.eyes = { left: 'healthy', right: 'healthy' }
-      const actual = b.blind(true)
-      const tests = [
-        b.eyes.left === 'missing',
-        b.eyes.right === 'missing'
-      ]
-      expect(actual && anyTrue(tests)).toEqual(true)
     })
   })
 

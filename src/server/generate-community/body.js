@@ -126,19 +126,22 @@ export default class Body {
 
   /**
    * Makes the person deaf in one ear.
+   * @param injury {boolean} - Optional. If `true`, you're losing your ear, not
+   *   just your hearing in it, so it's lost rather than deafened (that is, the
+   *   string is set to `'missing'` rather than `'deaf'`) (Default: `false`).
    * @returns {boolean} - `true` if the person is made deaf in one ear, or
    *   `false` if it failed (because she was already deaf in both ears).
    */
 
-  deafen () {
+  deafen (injury = false) {
     const before = `${this.ears.left} ${this.ears.right}`
     const side = random.boolean() ? 'left' : 'right'
     const other = side === 'left' ? 'right' : 'left'
 
     if (this.ears[side] === 'deaf') {
-      this.ears[other] = 'deaf'
+      this.ears[other] = injury ? 'missing' : 'deaf'
     } else {
-      this.ears[side] = 'deaf'
+      this.ears[side] = injury ? 'missing' : 'deaf'
     }
 
     return `${this.ears.left} ${this.ears.right}` !== before

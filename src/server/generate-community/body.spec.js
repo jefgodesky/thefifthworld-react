@@ -92,9 +92,9 @@ describe('Body', () => {
         const b = new Body()
         if (b.infertile) count++
       }
-      const notTooFew = count > 0
-      const notTooMany = count < 25
-      expect(notTooFew && notTooMany).toEqual(true)
+      const tooFew = count === 0
+      const tooMany = count > 25
+      expect(!tooFew && !tooMany).toEqual(true)
     })
   })
 

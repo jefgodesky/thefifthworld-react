@@ -238,9 +238,9 @@ describe('randomValFromNormalDistribution', () => {
       const val = randomValFromNormalDistribution()
       if (val > -1 && val < 1) count++
     }
-    const notTooFew = count > 48
-    const notTooMany = count < 88
-    expect(notTooFew && notTooMany).toEqual(true)
+    const tooFew = count < 48
+    const tooMany = count > 88
+    expect(!tooFew && !tooMany).toEqual(true)
   })
 
   it('is within two standard deviations about 95% of the time', () => {

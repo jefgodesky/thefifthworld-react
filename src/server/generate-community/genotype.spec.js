@@ -161,9 +161,9 @@ describe('Genotype', () => {
         c.inheritAchondroplasia(a, b)
         if (!c.body.achondroplasia) count++
       }
-      const notTooFew = count > 10
-      const notTooMany = count < 40
-      expect(notTooFew && notTooMany).toEqual(true)
+      const tooFew = count < 10
+      const tooMany = count > 40
+      expect(!tooFew && !tooMany).toEqual(true)
     })
 
     it('returns children with achondroplasia from two parents with it about 75% of the time', () => {
@@ -177,9 +177,9 @@ describe('Genotype', () => {
         c.inheritAchondroplasia(a, b)
         if (c.body.achondroplasia) count++
       }
-      const notTooFew = count > 60
-      const notTooMany = count < 90
-      expect(notTooFew && notTooMany).toEqual(true)
+      const tooFew = count < 60
+      const tooMany = count > 90
+      expect(!tooFew && !tooMany).toEqual(true)
     })
 
 
@@ -195,9 +195,9 @@ describe('Genotype', () => {
         c.inheritAchondroplasia(a, b)
         if (!c.viable) count++
       }
-      const notTooFew = count > 10
-      const notTooMany = count < 40
-      expect(notTooFew && notTooMany).toEqual(true)
+      const tooFew = count < 10
+      const tooMany = count > 40
+      expect(!tooFew && !tooMany).toEqual(true)
     })
   })
 
@@ -263,9 +263,9 @@ describe('Genotype', () => {
         b.body.arms = { left: 'disabled', right: 'disabled' }
         if (Genotype.inheritDisability('arms', a, b)) count++
       }
-      const notTooFew = count > 60
-      const notTooMany = count < 90
-      expect(notTooMany && notTooFew).toEqual(true)
+      const tooFew = count < 60
+      const tooMany = count > 90
+      expect(!tooMany && !tooFew).toEqual(true)
     })
 
     it('returns true about 25% of the time when just one parent has the disability', () => {
@@ -277,9 +277,9 @@ describe('Genotype', () => {
         b.body.arms = { left: 'healthy', right: 'healthy' }
         if (Genotype.inheritDisability('arms', a, b)) count++
       }
-      const notTooFew = count > 10
-      const notTooMany = count < 40
-      expect(notTooMany && notTooFew).toEqual(true)
+      const tooFew = count < 10
+      const tooMany = count > 40
+      expect(!tooMany && !tooFew).toEqual(true)
     })
   })
 })

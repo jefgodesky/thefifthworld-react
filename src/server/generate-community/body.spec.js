@@ -435,4 +435,53 @@ describe('Body', () => {
       expect(count).toBeGreaterThan(0)
     })
   })
+
+  describe('hurtTorso', () => {
+    it('returns a report', () => {
+      const b = new Body()
+      const report = b.hurtTorso()
+      const locations = [ 'groin', 'chest', 'belly', 'back', 'left side', 'right side'  ]
+      expect(isPopulatedArray(report.tags) && locations.includes(report.location)).toEqual(true)
+    })
+
+    it('leaves a scar', () => {
+      const b = new Body()
+      b.hurtTorso()
+      expect(b.scars.length).toEqual(1)
+    })
+
+    it('can castrate a male', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        b.male = true
+        const report = b.hurtTorso()
+        if (report.tags.includes('castration') && b.infertile === true) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('can make a female infertile', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        b.infertile = false
+        b.female = true
+        const report = b.hurtTorso()
+        if (report.location === 'belly' && b.infertile === true) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('can result in paralysis', () => {
+      let count = 0
+      for (let i = 0; i < 500; i++) {
+        const b = new Body()
+        const report = b.hurtTorso()
+        const isParalyzed = b.legs.left === 'paralyzed' && b.legs.right === 'paralyzed'
+        if (report.tags.includes('paralysis') && isParalyzed) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+  })
 })

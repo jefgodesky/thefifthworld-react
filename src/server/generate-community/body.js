@@ -1,7 +1,7 @@
 import random from 'random'
 
 import { between, dedupe, isPopulatedArray, randomValFromNormalDistribution } from '../../shared/utils'
-import { checkTable } from './utils'
+import { checkTable, pickRandom } from './utils'
 
 import tables from '../../data/community-creation'
 
@@ -255,5 +255,33 @@ export default class Body {
       }
       return report
     }
+  }
+
+  /**
+   * Sustain an injury to the torso. This could involve the loss of fertility
+   * or the loss of one's leg due to paralysis.
+   * @returns {{tags: [string], location: string}} - An object detailing the
+   *   effects of the injury.
+   */
+
+  hurtTorso () {
+    const { male, female } = this
+    const report = {
+      tags: [ 'injury' ],
+      location: pickRandom([ 'groin', 'chest', 'chest', 'belly', 'back', 'back', 'left side', 'right side' ])
+    }
+    this.takeScar(report.location)
+
+    if (male && report.location === 'groin' && random.boolean()) {
+      report.tags.push('castration')
+      this.makeInfertile()
+    } else if (female && report.location === 'belly' && random.boolean()) {
+      this.makeInfertile()
+    } else if (report.location === 'back' && (random.int(1, 10) === 1)) {
+      report.tags.push('paralysis')
+      this.legs = { left: 'paralyzed', right: 'paralyzed' }
+    }
+
+    return report
   }
 }

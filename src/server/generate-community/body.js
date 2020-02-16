@@ -197,7 +197,7 @@ export default class Body {
   /**
    * Sustain an injury to the face. This could potentially also involve losing
    * an eye or an ear.
-   * @returns {{location: string, tags: [string]}} - An object detailing the
+   * @returns {{tags: [string], location: string}} - An object detailing the
    *   effects of the injury.
    */
 
@@ -226,5 +226,34 @@ export default class Body {
       default: break
     }
     return report
+  }
+
+  /**
+   * Sustain an injury to an arm or a leg. This could involve losing the limb.
+   * @returns {{tags: [string], location: string}} - An object detailing the
+   *   effects of the injury.
+   */
+
+  hurtLimb () {
+    const report = { tags: [ 'injury' ] }
+    const limb = random.boolean() ? 'arm' : 'leg'
+    const set = `${limb}s`
+    const side = random.boolean() ? 'left' : 'right'
+    if (this[set][side] === 'missing') {
+      this.takeScar('torso')
+      report.location = 'torso'
+      return report
+    } else {
+      report.location = `${side} ${limb}`
+      const roll = random.int(1, 8)
+      if (roll === 1) {
+        this[set][side] = 'missing'
+        report.tags.push('lost limb', `lost ${limb}`)
+        this.takeScar('torso')
+      } else {
+        this.takeScar(report.location)
+      }
+      return report
+    }
   }
 }

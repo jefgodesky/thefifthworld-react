@@ -402,4 +402,37 @@ describe('Body', () => {
       expect(count).toBeGreaterThan(0)
     })
   })
+
+  describe('hurtLimb', () => {
+    it('returns a report', () => {
+      const b = new Body()
+      const report = b.hurtLimb()
+      const locations = [ 'torso', 'left arm', 'right arm', 'left leg', 'right leg' ]
+      expect(isPopulatedArray(report.tags) && locations.includes(report.location)).toEqual(true)
+    })
+
+    it('leaves a scar', () => {
+      const b = new Body()
+      b.hurtLimb()
+      expect(b.scars.length).toEqual(1)
+    })
+
+    it('hurts the torso if the limb is missing', () => {
+      const b = new Body()
+      b.arms = { left: 'missing', right: 'missing' }
+      b.legs = { left: 'missing', right: 'missing' }
+      b.hurtLimb()
+      expect(b.scars).toEqual([ 'torso' ])
+    })
+
+    it('can mean losing the limb', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const b = new Body()
+        const report = b.hurtLimb()
+        if (report.tags.includes('lost limb')) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+  })
 })

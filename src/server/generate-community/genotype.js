@@ -21,4 +21,20 @@ export default class Genotype {
   modifyNormal (orig, std = 1) {
     return orig + random.float(-0.1, 0.1) * std
   }
+
+  /**
+   * Introduces modification (as in, "descent with modification," i.e.,
+   * random mutations and variations).
+   */
+
+  modify () {
+    this.body.longevity = this.modifyNormal(this.body.longevity, 10)
+    this.body.attractiveness = this.modifyNormal(this.body.attractiveness)
+    this.body.type = this.modifyNormal(this.body.type)
+    this.personality.openness = this.modifyNormal(this.personality.openness)
+    this.personality.conscientiousness = this.modifyNormal(this.personality.conscientiousness)
+    this.personality.extraversion = this.modifyNormal(this.personality.extraversion)
+    this.personality.agreeableness = this.modifyNormal(this.personality.agreeableness)
+    this.personality.neuroticism = this.modifyNormal(this.personality.neuroticism)
+  }
 }

@@ -73,4 +73,62 @@ describe('Genotype', () => {
       expect(between(actual, 98.5, 101.5)).toEqual(actual)
     })
   })
+
+  describe('modify', () => {
+    it('varies longevity', () => {
+      const g = new Genotype()
+      const before = g.body.longevity
+      g.modify()
+      expect(g.body.longevity).not.toEqual(before)
+    })
+
+    it('varies attractiveness', () => {
+      const g = new Genotype()
+      const before = g.body.attractiveness
+      g.modify()
+      expect(g.body.attractiveness).not.toEqual(before)
+    })
+
+    it('varies body type', () => {
+      const g = new Genotype()
+      const before = g.body.type
+      g.modify()
+      expect(g.body.type).not.toEqual(before)
+    })
+
+    it('varies openness to new experiences', () => {
+      const g = new Genotype()
+      const before = g.personality.openness
+      g.modify()
+      expect(g.personality.openness).not.toEqual(before)
+    })
+
+    it('varies conscientiousness', () => {
+      const g = new Genotype()
+      const before = g.personality.conscientiousness
+      g.modify()
+      expect(g.personality.conscientiousness).not.toEqual(before)
+    })
+
+    it('varies extraversion', () => {
+      const g = new Genotype()
+      const before = g.personality.extraversion
+      g.modify()
+      expect(g.personality.extraversion).not.toEqual(before)
+    })
+
+    it('varies agreeableness', () => {
+      const g = new Genotype()
+      const before = g.personality.agreeableness
+      g.modify()
+      expect(g.personality.agreeableness).not.toEqual(before)
+    })
+
+    it('varies neuroticism', () => {
+      const g = new Genotype()
+      const before = g.personality.neuroticism
+      g.modify()
+      expect(g.personality.neuroticism).not.toEqual(before)
+    })
+  })
 })

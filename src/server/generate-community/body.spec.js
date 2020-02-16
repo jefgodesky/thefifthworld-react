@@ -520,4 +520,18 @@ describe('Body', () => {
       expect(lethal || scar).toEqual(true)
     })
   })
+
+  describe('checkForDyingOfOldAge', () => {
+    it('will always return false before longevity', () => {
+      const b = new Body()
+      b.longevity = 90
+      expect(b.checkForDyingOfOldAge(80)).toEqual(false)
+    })
+
+    it('will always return true 10 years after longevity', () => {
+      const b = new Body()
+      b.longevity = 90
+      expect(b.checkForDyingOfOldAge(100)).toEqual(true)
+    })
+  })
 })

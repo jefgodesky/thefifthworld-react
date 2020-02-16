@@ -37,4 +37,20 @@ export default class Genotype {
     this.personality.agreeableness = this.modifyNormal(this.personality.agreeableness)
     this.personality.neuroticism = this.modifyNormal(this.personality.neuroticism)
   }
+
+  /**
+   * Tests whether or not both parents are passing on a problem with a
+   * particular part of the body.
+   * @param set {string} - Valid options are `arms`, `legs`, `eyes`, or `ears`.
+   * @param a {Genotype} - The `Genotype` object for one parent.
+   * @param b {Genotype} - The `Genotype` object for the other parent.
+   * @returns {boolean} - `true` if both parents are passing on a problem with
+   *   the specified part of the body, or `false` if not.
+   */
+
+  static both (set, a, b) {
+    const aHealthy = a.body[set].left === 'healthy' && a.body[set].right === 'healthy'
+    const bHealthy = b.body[set].left === 'healthy' && b.body[set].right === 'healthy'
+    return !aHealthy && !bHealthy
+  }
 }

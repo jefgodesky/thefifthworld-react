@@ -29,6 +29,7 @@ export default class Genotype {
    */
 
   modify () {
+    if (random.int(1, 100) === 1) this.viable = false
     this.body.longevity = this.modifyNormal(this.body.longevity, 10)
     this.body.attractiveness = this.modifyNormal(this.body.attractiveness)
     this.body.type = this.modifyNormal(this.body.type)

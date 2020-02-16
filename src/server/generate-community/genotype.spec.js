@@ -80,6 +80,18 @@ describe('Genotype', () => {
   })
 
   describe('modify', () => {
+    it('makes about 1% of children stillborn', () => {
+      let count = 0
+      for (let i = 0; i < 1000; i++) {
+        const g = new Genotype()
+        g.modify()
+        if (!g.viable) count++
+      }
+      const tooMany = count > 20
+      const tooFew = count === 0
+      expect(!tooMany && !tooFew).toEqual(true)
+    })
+
     it('varies longevity', () => {
       const g = new Genotype()
       const before = g.body.longevity

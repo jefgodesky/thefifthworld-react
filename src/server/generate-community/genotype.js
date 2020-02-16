@@ -53,4 +53,20 @@ export default class Genotype {
     const bHealthy = b.body[set].left === 'healthy' && b.body[set].right === 'healthy'
     return !aHealthy && !bHealthy
   }
+
+  /**
+   * Tests whether or not either parent is passing on a problem with a
+   * particular part of the body.
+   * @param set {string} - Valid options are `arms`, `legs`, `eyes`, or `ears`.
+   * @param a {Genotype} - The `Genotype` object for one parent.
+   * @param b {Genotype} - The `Genotype` object for the other parent.
+   * @returns {boolean} - `true` if either parents is passing on a problem with
+   *   the specified part of the body, or `false` if not.
+   */
+
+  static either (set, a, b) {
+    const aNotHealthy = a.body[set].left !== 'healthy' || a.body[set].right !== 'healthy'
+    const bNotHealthy = b.body[set].left !== 'healthy' || b.body[set].right !== 'healthy'
+    return aNotHealthy || bNotHealthy
+  }
 }

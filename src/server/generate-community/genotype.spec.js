@@ -157,4 +157,30 @@ describe('Genotype', () => {
       expect(Genotype.both('arms', a, b)).toEqual(false)
     })
   })
+
+  describe('either', () => {
+    it('returns true if both parents have a problem', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      a.body.arms = { left: 'healthy', right: 'disabled' }
+      b.body.arms = { left: 'healthy', right: 'disabled' }
+      expect(Genotype.either('arms', a, b)).toEqual(true)
+    })
+
+    it('returns true if only one parent has a problem', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      a.body.arms = { left: 'healthy', right: 'disabled' }
+      b.body.arms = { left: 'healthy', right: 'healthy' }
+      expect(Genotype.either('arms', a, b)).toEqual(true)
+    })
+
+    it('returns false if neither parent has a problem', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      a.body.arms = { left: 'healthy', right: 'healthy' }
+      b.body.arms = { left: 'healthy', right: 'healthy' }
+      expect(Genotype.either('arms', a, b)).toEqual(false)
+    })
+  })
 })

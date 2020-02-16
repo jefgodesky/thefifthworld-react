@@ -122,4 +122,29 @@ export default class Genotype {
     const roll = random.int(1, 4)
     return (Genotype.both(set, a, b) && roll < 4) || (Genotype.either(set, a, b) && roll === 1)
   }
+
+  /**
+   * Return the genotype for the offspring of two parents.
+   * @param a {Genotype} - The `Genotype` object for one parent.
+   * @param b {Genotype} - The `Genotype` object for the other parent.
+   * @returns {Genotype} - The `Genotype` object for a child of these two
+   *   parents, descending from them with variation.
+   */
+
+  static descend (a, b) {
+    const offspring = new Genotype()
+    const traits = [
+      { area: 'body', trait: 'longevity' },
+      { area: 'body', trait: 'attractiveness' },
+      { area: 'body', trait: 'type' },
+      ...Personality.getTraitList().map(trait => ({ area: 'personality', trait }))
+    ]
+
+    traits.forEach(t => { offspring[t.area][t.trait] = (a[t.area][t.trait] + b[t.area][t.trait]) /2 })
+
+    offspring.inheritDisabilities(a, b)
+    offspring.inheritAchondroplasia(a, b)
+    offspring.modify()
+    return offspring
+  }
 }

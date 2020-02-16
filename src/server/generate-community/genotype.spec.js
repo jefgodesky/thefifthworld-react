@@ -150,6 +150,19 @@ describe('Genotype', () => {
     })
   })
 
+  describe('inheritDisabilities', () => {
+    it('tests for and applies disabilities', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      const c = new Genotype()
+      c.inheritDisabilities(a, b)
+      const possibilities = [ 'healthy', 'disabled', 'blind', 'deaf' ]
+      const set = pickRandom([ 'eyes', 'ears', 'arms', 'legs' ])
+      const side = pickRandom([ 'left', 'right' ])
+      expect(possibilities.includes(c.body[set][side])).toEqual(true)
+    })
+  })
+
   describe('inheritAchondroplasia', () => {
     it('returns children without achondroplasia from two parents with it about 25% of the time', () => {
       let count = 0
@@ -279,6 +292,31 @@ describe('Genotype', () => {
       const tooFew = count < 10
       const tooMany = count > 40
       expect(!tooMany && !tooFew).toEqual(true)
+    })
+  })
+
+  describe('descend', () => {
+    it('returns a new genotype', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      const c = Genotype.descend(a, b)
+      expect(c && c.constructor && c.constructor.name === 'Genotype').toEqual(true)
+    })
+
+    it('sets a value close to the parents\' average', () => {
+      const a = new Genotype()
+      const b = new Genotype()
+      const c = Genotype.descend(a, b)
+      const trait = pickRandom([
+        { area: 'body', trait: 'attractiveness' },
+        { area: 'body', trait: 'type' },
+        ...Personality.getTraitList().map(trait => ({ area: 'personality', trait }))
+      ])
+      const avg = (a[trait.area][trait.trait] + b[trait.area][trait.trait]) / 2
+      const min = avg - 0.1
+      const max = avg + 0.1
+      const actual = c[trait.area][trait.trait]
+      expect(between(actual, min, max)).toEqual(actual)
     })
   })
 })

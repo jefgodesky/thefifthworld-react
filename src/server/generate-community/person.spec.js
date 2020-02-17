@@ -6,7 +6,7 @@ import Genotype from './genotype'
 import Person from './person'
 import Personality from './personality'
 
-import { daysFromNow, formatDate, between } from '../../shared/utils'
+import { allTrue, daysFromNow, formatDate, between } from '../../shared/utils'
 
 describe('Person', () => {
   describe('constructor', () => {
@@ -43,6 +43,33 @@ describe('Person', () => {
       mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
       const child = new Person(mother)
       expect(child.mother).toEqual(mother.id)
+    })
+
+    it('can take several parents and sort out the mother and father', () => {
+      const c = new Community()
+      const mother = new Person(c)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const father = new Person(c)
+      father.body.male = true; father.body.female = false; father.body.fertility = 100; father.body.infertile = false
+      const child = new Person(mother, father)
+      expect(`${child.mother} ${child.father}`).toEqual(`${mother.id} ${father.id}`)
+    })
+
+    it('can take parents, a community, and a birth year in any order', () => {
+      const c = new Community()
+      const mother = new Person(c)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const father = new Person(c)
+      father.body.male = true; father.body.female = false; father.body.fertility = 100; father.body.infertile = false
+      const child = new Person(2020, mother, father, c)
+      const tests = [
+        child instanceof Person,
+        child.mother === mother.id,
+        child.father === father.id,
+        child.born.getFullYear() === 2020,
+        c.people[child.id] === child
+      ]
+      expect(allTrue(tests)).toEqual(true)
     })
   })
 
@@ -109,6 +136,20 @@ describe('Person', () => {
       const child = new Person(community)
       child.singleParent(parent)
       expect(child.mother).toEqual(parent.id)
+    })
+  })
+
+  describe('birth', () => {
+    it('picks a mother and father from an array', () => {
+      const community = new Community()
+      const mother = new Person(community)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const father = new Person(community)
+      father.body.male = true; father.body.female = false; father.body.fertility = 100; father.body.infertile = false
+      const other = new Person(community)
+      const child = new Person(community)
+      child.birth(mother, father, other)
+      expect(child.mother === mother.id && child.father === father.id).toEqual(true)
     })
   })
 })

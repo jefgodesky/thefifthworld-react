@@ -4,6 +4,7 @@ import Genotype from './genotype'
 import History from './history'
 import Personality from './personality'
 
+import { pickRandom } from './utils'
 import { isPopulatedArray, daysFromNow, randomDayOfYear } from '../../shared/utils'
 
 export default class Person {
@@ -16,6 +17,8 @@ export default class Person {
     const people = args.filter(a => a instanceof Person)
     if (isPopulatedArray(people) && people.length === 1) {
       this.singleParent(people[0])
+    } else if (isPopulatedArray(people)) {
+      this.birth(...people)
     } else {
       this.setGenes()
     }
@@ -56,6 +59,36 @@ export default class Person {
       this.mother = parent.id
     } else if (parent.id && parent.body.male) {
       this.father = parent.id
+    }
+  }
+
+  /**
+   * Initialize this person with values derived from her parents.
+   * @param parents {Person} - An array of parents.
+   */
+
+  birth (...parents) {
+    const potentialMothers = parents.filter(p => p.body.female && !p.body.infertile && p.body.fertility > 0)
+    const potentialFathers = parents.filter(p => p.body.male && !p.body.infertile && p.body.fertility > 0)
+    let mother, father
+
+    for (let m = 0; m < potentialMothers.length; m++) {
+      mother = potentialMothers[m]
+      for (let f = 0; f < potentialFathers.length; f++) {
+        if (potentialFathers[f] !== m) {
+          father = potentialFathers[f]
+          break
+        }
+      }
+      if (mother && father) { break } else { mother = undefined; father = undefined }
+    }
+
+    if (mother && father) {
+      if (mother.id) this.mother = mother.id
+      if (father.id) this.father = father.id
+      this.setGenes(Genotype.descend(mother.genotype, father.genotype))
+    } else {
+      this.singleParent(pickRandom(parents))
     }
   }
 }

@@ -138,7 +138,7 @@ export default class Genotype {
       ...Personality.getTraitList().map(trait => ({ area: 'personality', trait }))
     ]
 
-    traits.forEach(t => { offspring[t.area][t.trait] = (a[t.area][t.trait] + b[t.area][t.trait]) /2 })
+    traits.forEach(t => { offspring[t.area][t.trait] = (a[t.area][t.trait] + b[t.area][t.trait]) / 2 })
 
     offspring.inheritDisabilities(a, b)
     offspring.inheritAchondroplasia(a, b)

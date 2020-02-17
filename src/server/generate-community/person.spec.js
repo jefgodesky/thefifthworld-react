@@ -71,6 +71,11 @@ describe('Person', () => {
       ]
       expect(allTrue(tests)).toEqual(true)
     })
+
+    it('adds a birth record to the history', () => {
+      const p = new Person()
+      expect(p.history.get({ tag: 'born' })).toHaveLength(1)
+    })
   })
 
   describe('setGenes', () => {

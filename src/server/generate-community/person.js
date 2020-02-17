@@ -28,6 +28,11 @@ export default class Person {
 
     if (!this.born) this.born = daysFromNow(144000)
     this.present = this.born.getFullYear()
+    const event = { tags: [ 'born' ] }
+    if (!this.genotype.viable) {
+      event.tags.push('stillborn')
+    }
+    this.history.add(this.present, event)
   }
 
   /**

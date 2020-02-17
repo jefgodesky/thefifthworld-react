@@ -27,4 +27,8 @@ export default class Sexuality {
     this.gynephilia = Math.round(base * (shares.gyne / shares.total))
     this.skoliophilia = Math.round(base * (shares.skolio / shares.total))
   }
+
+  // TODO: When we have the Person class develop, add a method that takes a
+  //   Person instance as input and returns if this person would be sexually
+  //   attracted to her.
 }

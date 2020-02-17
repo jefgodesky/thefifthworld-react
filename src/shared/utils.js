@@ -215,6 +215,16 @@ const daysFromNow = days => {
 }
 
 /**
+ * Is the given year a leap year?
+ * @param year {number} - The year to test.
+ * @returns {boolean} - `true` if it's a leap year, or `false` if it isn't.
+ */
+
+const isLeapYear = year => {
+  return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0
+}
+
+/**
  * Returns the value only if it is between the `min` and `max`. If the value
  * is less than the `min`, it returns the `min`, and if it is more than the
  * `max`, it returns the `max`.
@@ -273,6 +283,7 @@ export {
   requestLocation,
   alphabetize,
   daysFromNow,
+  isLeapYear,
   between,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution

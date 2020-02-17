@@ -12,6 +12,7 @@ import {
   getFileSizeStr,
   clone,
   alphabetize,
+  isLeapYear,
   between,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
@@ -211,6 +212,24 @@ describe('alphabetize', () => {
   it('can alphabetize an array of strings', () => {
     const actual = alphabetize([ 'banana', 'apple', 'carrot' ])
     expect(actual).toEqual([ 'apple', 'banana', 'carrot' ])
+  })
+})
+
+describe('isLeapYear', () => {
+  it('returns false if the year isn\'t divisible by 4', () => {
+    expect(isLeapYear(2313)).toEqual(false)
+  })
+
+  it('returns true if the year is divisible by 4', () => {
+    expect(isLeapYear(2312)).toEqual(true)
+  })
+
+  it('returns false if the year is divisible by 100', () => {
+    expect(isLeapYear(2300)).toEqual(false)
+  })
+
+  it('returns true if the year is divisible by 400', () => {
+    expect(isLeapYear(2400)).toEqual(true)
   })
 })
 

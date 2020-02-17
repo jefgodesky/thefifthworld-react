@@ -6,7 +6,7 @@ import Genotype from './genotype'
 import Person from './person'
 import Personality from './personality'
 
-import { daysFromNow, formatDate } from '../../shared/utils'
+import { daysFromNow, formatDate, between } from '../../shared/utils'
 
 describe('Person', () => {
   describe('constructor', () => {
@@ -36,6 +36,14 @@ describe('Person', () => {
       const p = new Person(c)
       expect(c.people[p.id]).toEqual(p)
     })
+
+    it('can take a single parent', () => {
+      const c = new Community()
+      const mother = new Person(c)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const child = new Person(mother)
+      expect(child.mother).toEqual(mother.id)
+    })
   })
 
   describe('setGenes', () => {
@@ -55,6 +63,52 @@ describe('Person', () => {
       const p = new Person()
       p.setGenes()
       expect(p.personality).toBeInstanceOf(Personality)
+    })
+  })
+
+  describe('singleParent', () => {
+    it('can take a single parent', () => {
+      const parent = new Person()
+      const child = new Person()
+      child.singleParent(parent)
+      expect(child).toBeInstanceOf(Person)
+    })
+
+    it('will assign values close to the parent\'s', () => {
+      const parent = new Person()
+      const child = new Person()
+      child.singleParent(parent)
+      const actual = child.personality.openness
+      const min = parent.personality.openness - 0.1
+      const max = parent.personality.openness + 0.1
+      expect(between(actual, min, max)).toEqual(actual)
+    })
+
+    it('will tell you who your mother is', () => {
+      const community = new Community()
+      const parent = new Person(community)
+      parent.body.male = false; parent.body.female = true; parent.body.fertility = 100; parent.body.infertile = false
+      const child = new Person(community)
+      child.singleParent(parent)
+      expect(child.mother).toEqual(parent.id)
+    })
+
+    it('will tell you who your father is', () => {
+      const community = new Community()
+      const parent = new Person(community)
+      parent.body.male = true; parent.body.female = false; parent.body.fertility = 100; parent.body.infertile = false
+      const child = new Person(community)
+      child.singleParent(parent)
+      expect(child.father).toEqual(parent.id)
+    })
+
+    it('will make the parent the mother where it could go either way', () => {
+      const community = new Community()
+      const parent = new Person(community)
+      parent.body.male = true; parent.body.female = true; parent.body.fertility = 100; parent.body.infertile = false
+      const child = new Person(community)
+      child.singleParent(parent)
+      expect(child.mother).toEqual(parent.id)
     })
   })
 })

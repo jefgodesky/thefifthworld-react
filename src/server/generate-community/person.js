@@ -13,7 +13,12 @@ export default class Person {
     const numbers = args.filter(a => !isNaN(a))
     if (isPopulatedArray(numbers)) this.born = randomDayOfYear(numbers[0])
 
-    this.setGenes()
+    const people = args.filter(a => a instanceof Person)
+    if (isPopulatedArray(people) && people.length === 1) {
+      this.singleParent(people[0])
+    } else {
+      this.setGenes()
+    }
 
     const communities = args.filter(a => a instanceof Community)
     if (isPopulatedArray(communities)) communities[0].add(this)
@@ -31,5 +36,26 @@ export default class Person {
     this.genotype = genes
     this.body = Body.copy(genes.body)
     this.personality = Personality.copy(genes.personality)
+  }
+
+  /**
+   * If we only know of one parent (or if we have a bunch of parents but we
+   * can't line up a mother and father), then we can kinda represent descent
+   * from that single parent.
+   * @param parent {Person} - The known parent.
+   */
+
+  singleParent (parent) {
+    const b = Body.copy(parent.genotype.body)
+    const p = Personality.copy(parent.genotype.personality)
+    const genes = new Genotype(b, p)
+    genes.modify()
+    this.setGenes(genes)
+
+    if (parent.id && parent.body.female) {
+      this.mother = parent.id
+    } else if (parent.id && parent.body.male) {
+      this.father = parent.id
+    }
   }
 }

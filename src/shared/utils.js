@@ -225,6 +225,19 @@ const isLeapYear = year => {
 }
 
 /**
+ * Returns a random day of the year.
+ * @param year {number} - The year to fetch a random day from.
+ * @returns {Date} - The random date.
+ */
+
+const randomDayOfYear = year => {
+  const total = isLeapYear(year) ? 366 : 365
+  let day = new Date(`December 31 ${year - 1}`)
+  day.setDate(day.getDate() + random.int(1, total))
+  return day
+}
+
+/**
  * Returns the value only if it is between the `min` and `max`. If the value
  * is less than the `min`, it returns the `min`, and if it is more than the
  * `max`, it returns the `max`.
@@ -284,6 +297,7 @@ export {
   alphabetize,
   daysFromNow,
   isLeapYear,
+  randomDayOfYear,
   between,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution

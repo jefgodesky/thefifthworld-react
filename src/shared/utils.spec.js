@@ -13,6 +13,7 @@ import {
   clone,
   alphabetize,
   isLeapYear,
+  randomDayOfYear,
   between,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
@@ -230,6 +231,18 @@ describe('isLeapYear', () => {
 
   it('returns true if the year is divisible by 400', () => {
     expect(isLeapYear(2400)).toEqual(true)
+  })
+})
+
+describe('randomDayOfYear', () => {
+  it('returns a date', () => {
+    const actual = randomDayOfYear(2020)
+    expect(actual instanceof Date).toEqual(true)
+  })
+
+  it('returns a date that is in the given year', () => {
+    const actual = randomDayOfYear(2020)
+    expect(actual.getFullYear()).toEqual(2020)
   })
 })
 

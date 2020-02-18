@@ -157,4 +157,50 @@ describe('Person', () => {
       expect(child.mother === mother.id && child.father === father.id).toEqual(true)
     })
   })
+
+  describe('die', () => {
+    it('sets the year of death', () => {
+      const p = new Person()
+      p.die()
+      expect(p.died).not.toBeNaN()
+    })
+
+    it('returns an event report', () => {
+      const p = new Person()
+      const report = p.die()
+      expect(report.tags).toContain('died')
+    })
+
+    it('notes the cause of death', () => {
+      const p = new Person()
+      const report = p.die('JS bugs')
+      expect(report.cause).toEqual('JS bugs')
+    })
+
+    it('notes the ID of the killer if given a Person', () => {
+      const c = new Community()
+      const p = new Person()
+      const k = new Person(c)
+      const report = p.die('JS bugs', k)
+      expect(report.killer).toEqual(k.id)
+    })
+
+    it('notes the killer\'s ID if it is given', () => {
+      const p = new Person()
+      const report = p.die('JS bugs', 'killer key')
+      expect(report.killer).toEqual('killer key')
+    })
+
+    it('doesn\'t mention a killer if not given a Person or a string', () => {
+      const p = new Person()
+      const report = p.die('JS bugs', 5)
+      expect(report.killer).not.toBeDefined()
+    })
+
+    it('doesn\'t mention a killer if nothing is given', () => {
+      const p = new Person()
+      const report = p.die('JS bugs')
+      expect(report.killer).not.toBeDefined()
+    })
+  })
 })

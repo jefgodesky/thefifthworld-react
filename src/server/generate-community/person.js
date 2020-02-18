@@ -30,7 +30,8 @@ export default class Person {
     this.present = this.born.getFullYear()
     const event = { tags: [ 'born' ] }
     if (!this.genotype.viable) {
-      event.tags.push('stillborn')
+      const report = this.die('stillborn')
+      event.tags = [ ...event.tags, ...report.tags, 'stillborn' ]
     }
     this.history.add(this.present, event)
   }

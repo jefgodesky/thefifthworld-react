@@ -1,3 +1,5 @@
+import random from 'random'
+
 import Body from './body'
 import Community from './community'
 import Genotype from './genotype'
@@ -96,6 +98,32 @@ export default class Person {
     } else {
       this.singleParent(pickRandom(parents))
     }
+  }
+
+  /**
+   * Assign gender.
+   * @param genders {number} - Optional. The number of genders recognized by
+   *   this community (Default: `3`).
+   */
+
+  assignGender (genders = 3) {
+    const roll = random.int(1, 100)
+    const { male, female } = this.body
+    const both = male && female
+    const neither = !male && !female
+    const intersex = both || neither
+    let gender = this.body.male ? 'Man' : 'Woman'
+    if (roll === 100) gender = gender === 'Man' ? 'Woman' : 'Man'
+    if (genders === 3) {
+      if (roll > 90 || (intersex && roll > 10)) gender = 'Third gender'
+    } else if (genders > 3) {
+      if (genders > 4 && (roll > 95 || (intersex && roll > 10))) gender = 'Fifth gender'
+      if ((gender === 'Woman' && intersex) || (gender === 'Woman' && roll > 90)) gender = 'Masculine woman'
+      if ((gender === 'Man' && intersex) || (gender === 'Man' && roll > 90)) gender = 'Feminine man'
+      if (gender === 'Woman') gender = 'Feminine woman'
+      if (gender === 'Man') gender = 'Masculine man'
+    }
+    this.gender = gender
   }
 
   /**

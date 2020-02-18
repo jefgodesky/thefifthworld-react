@@ -6,8 +6,10 @@ import Genotype from './genotype'
 import History from './history'
 import Personality from './personality'
 
+import tables from '../../data/community-creation'
+
 import { pickRandom } from './utils'
-import { isPopulatedArray, daysFromNow, randomDayOfYear, get } from '../../shared/utils'
+import { isPopulatedArray, daysFromNow, randomDayOfYear, get, clone } from '../../shared/utils'
 
 export default class Person {
   constructor (...args) {
@@ -131,6 +133,44 @@ export default class Person {
       if (gender === 'Man') gender = 'Masculine man'
     }
     this.gender = gender
+  }
+
+  /**
+   * Assigns an attraction matrix to this person. Starts with a baseline based
+   * on gender, but then adds random personal variation.
+   */
+
+  assignAttraction () {
+    const traits = Personality.getTraitList()
+    const factors = [ 'attractiveness', ...traits ]
+    let table = clone(tables.encounterFactors[this.gender])
+
+    // Does physical attractiveness matter more or less to you?
+    const deltaVals = []
+    for (let i = -5; i < 6; i++) deltaVals.push(i)
+    const attractivenessDelta = pickRandom(deltaVals)
+    const attractivenessSwap = pickRandom(traits)
+    table.forEach(r => {
+      if (r.event === 'attractiveness') r.chance = r.chance + attractivenessDelta
+      if (r.event === attractivenessSwap) r.chance = r.chance - attractivenessDelta
+    })
+
+    // Do various personality traits matter more or less to you?
+    traits.forEach(trait => {
+      const posDeltaVals = []
+      for (let i = 1; i < 6; i++) posDeltaVals.push(i)
+      if (this.personality.check(trait)) {
+        const delta = pickRandom(posDeltaVals)
+        let swap = trait
+        while (swap === trait) swap = pickRandom(factors)
+        table.forEach(r => {
+          if (r.event === trait) r.chance = r.chance + delta
+          if (r.event === swap) r.chance = r.chance - delta
+        })
+      }
+    })
+
+    this.attraction = table
   }
 
   /**

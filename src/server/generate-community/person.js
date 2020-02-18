@@ -7,7 +7,7 @@ import History from './history'
 import Personality from './personality'
 
 import { pickRandom } from './utils'
-import { isPopulatedArray, daysFromNow, randomDayOfYear } from '../../shared/utils'
+import { isPopulatedArray, daysFromNow, randomDayOfYear, get } from '../../shared/utils'
 
 export default class Person {
   constructor (...args) {
@@ -25,8 +25,12 @@ export default class Person {
       this.setGenes()
     }
 
+    let community
     const communities = args.filter(a => a instanceof Community)
-    if (isPopulatedArray(communities)) communities[0].add(this)
+    if (isPopulatedArray(communities)) {
+      community = communities[0]
+      community.add(this)
+    }
 
     if (!this.born) this.born = daysFromNow(144000)
     this.present = this.born.getFullYear()
@@ -36,6 +40,9 @@ export default class Person {
       event.tags = [ ...event.tags, ...report.tags, 'stillborn' ]
     }
     this.history.add(this.present, event)
+
+    const genders = get(community, 'traditions.genders') || 3
+    this.assignGender(genders)
   }
 
   /**

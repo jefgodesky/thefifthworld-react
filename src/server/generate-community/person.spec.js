@@ -76,6 +76,33 @@ describe('Person', () => {
       const p = new Person()
       expect(p.history.get({ tag: 'born' })).toHaveLength(1)
     })
+
+    it('assigns a gender', () => {
+      const genders = [ 'Man', 'Woman', 'Third gender' ]
+      const p = new Person()
+      expect(genders).toContain(p.gender)
+    })
+
+    it('assigns a gender in a community with just two genders', () => {
+      const genders = [ 'Man', 'Woman' ]
+      const c = new Community({ traditions: { genders: 2 } })
+      const p = new Person()
+      expect(genders).toContain(p.gender)
+    })
+
+    it('assigns a gender in a community with four genders', () => {
+      const genders = [ 'Masculine man', 'Feminine man', 'Masculine woman', 'Feminine woman' ]
+      const c = new Community({ traditions: { genders: 4 } })
+      const p = new Person(c)
+      expect(genders).toContain(p.gender)
+    })
+
+    it('assigns a gender in a community with five genders', () => {
+      const genders = [ 'Masculine man', 'Feminine man', 'Fifth gender', 'Masculine woman', 'Feminine woman' ]
+      const c = new Community({ traditions: { genders: 5 } })
+      const p = new Person(c)
+      expect(genders).toContain(p.gender)
+    })
   })
 
   describe('setGenes', () => {

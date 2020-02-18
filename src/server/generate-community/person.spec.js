@@ -243,6 +243,34 @@ describe('Person', () => {
     })
   })
 
+  describe('getAge', () => {
+    it('returns the character\'s current age', () => {
+      const p = new Person(2005)
+      p.present = 2020
+      expect(p.getAge()).toEqual(15)
+    })
+
+    it('returns the character\'s age as of the given year', () => {
+      const p = new Person(2005)
+      p.present = 2020
+      expect(p.getAge(2015)).toEqual(10)
+    })
+
+    it('returns the character\'s age as of the year she left', () => {
+      const p = new Person(1979)
+      p.present = 2000
+      p.leave()
+      expect(p.getAge(2020)).toEqual(21)
+    })
+
+    it('returns the character\'s age as of the year she died', () => {
+      const p = new Person(1979)
+      p.present = 2000
+      p.die()
+      expect(p.getAge(2020)).toEqual(21)
+    })
+  })
+
   describe('leave', () => {
     it('sets the year you left', () => {
       const p = new Person()

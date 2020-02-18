@@ -174,6 +174,27 @@ export default class Person {
   }
 
   /**
+   * Returns the character's age.
+   * @param year {number} - Optional. If provided, returns the character's age
+   *   in this year. Otherwise, gives the character's age in her own present,
+   *   in the year of her death, or in the year she left the community,
+   *   whichever happened first.
+   * @returns {number} - The character's age (either as of the year given, or
+   *   as of her current present or the year she died or left).
+   */
+
+  getAge (year) {
+    const { born, died, left, present } = this
+    const years = []
+    if (!isNaN(year)) years.push(year)
+    if (!isNaN(present)) years.push(present)
+    if (!isNaN(died)) years.push(died)
+    if (!isNaN(left)) years.push(left)
+    const index = Math.min(...years)
+    return index - born.getFullYear()
+  }
+
+  /**
    * Marks when a character leaves the community.
    * @param crime {string} - Optional. If defined, the character did not leave
    *   the community of her own volition, but was exiled for committing some

@@ -243,6 +243,39 @@ describe('Person', () => {
     })
   })
 
+  describe('leave', () => {
+    it('sets the year you left', () => {
+      const p = new Person()
+      p.leave()
+      expect(p.left).not.toBeNaN()
+    })
+
+    it('returns an event report', () => {
+      const p = new Person()
+      const report = p.leave()
+      expect(report.tags).toContain('left')
+    })
+
+    it('notes when someone leaves in exile', () => {
+      const p = new Person()
+      const report = p.leave('wasting perfectly good pickles')
+      expect(report.tags).toContain('exile')
+    })
+
+    it('notes the crime for which you were exiled', () => {
+      const crime = 'wasting perfectly good pickles'
+      const p = new Person()
+      const report = p.leave(crime)
+      expect(report.crime).toContain(crime)
+    })
+
+    it('doesn\'t report a crime if there wasn\'t one', () => {
+      const p = new Person()
+      const report = p.leave()
+      expect(report.crime).not.toBeDefined()
+    })
+  })
+
   describe('die', () => {
     it('sets the year of death', () => {
       const p = new Person()

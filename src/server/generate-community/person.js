@@ -174,6 +174,25 @@ export default class Person {
   }
 
   /**
+   * Marks when a character leaves the community.
+   * @param crime {string} - Optional. If defined, the character did not leave
+   *   the community of her own volition, but was exiled for committing some
+   *   crime (usually murder or attempted murder). This string is a single word
+   *   or very short phrase to describe the crime. It should be usable as a
+   *   consistent tag (e.g., 'murder' or 'attempted murder').
+   *   (Default: `undefined`)
+   * @returns {Object} - An event object suitable for adding to a history.
+   */
+
+  leave (crime = undefined) {
+    const year = this.present
+    this.left = year
+    const entry = { tags: [ 'left' ] }
+    if (crime) { entry.tags.push('exile'); entry.crime = crime }
+    return entry
+  }
+
+  /**
    * Marks the character as dead.
    * @param cause {string} - Optional. The cause of death (Default: `natural`).
    * @param killer {string} - The key of the person who killed this character,

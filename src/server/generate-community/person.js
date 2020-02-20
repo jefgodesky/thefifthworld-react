@@ -195,6 +195,23 @@ export default class Person {
   }
 
   /**
+   * Processes the character suffering a bout of illness.
+   * @param tags {[string]} - Optional. An array of strings that should be
+   *   added to the sickness event's tags (e.g., if this is an infection from a
+   *   wound, or if it was part of an outbreak sweeping through the community).
+   */
+
+  getSick (tags= []) {
+    const outcome = this.body.getSick()
+    outcome.tags = [ ...outcome.tags, ...tags ]
+    if (outcome.prognosis === 'death') {
+      const death = this.die('illness')
+      outcome.tags = [ ...outcome.tags, ...death.tags ]
+    }
+    this.history.add(this.present, outcome)
+  }
+
+  /**
    * Marks when a character leaves the community.
    * @param crime {string} - Optional. If defined, the character did not leave
    *   the community of her own volition, but was exiled for committing some

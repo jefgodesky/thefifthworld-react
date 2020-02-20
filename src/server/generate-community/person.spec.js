@@ -290,6 +290,25 @@ describe('Person', () => {
     })
   })
 
+  describe('getHurt', () => {
+    it('adds an event to your personal history', () => {
+      const p = new Person()
+      p.getHurt()
+      expect(p.history.get({ tag: 'injury' })).toHaveLength(1)
+    })
+
+    it('adds the given tags to the event', () => {
+      const p = new Person()
+      p.getHurt([ 'test1', 'test2' ])
+      const event = p.history.get({ tag: 'injury' })[0]
+      const tests = [
+        event.tags.includes('test1'),
+        event.tags.includes('test2')
+      ]
+      expect(allTrue(tests)).toEqual(true)
+    })
+  })
+
   describe('leave', () => {
     it('sets the year you left', () => {
       const p = new Person()

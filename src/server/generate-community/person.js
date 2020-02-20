@@ -206,6 +206,26 @@ export default class Person {
     outcome.tags = [ ...outcome.tags, ...tags ]
     if (outcome.prognosis === 'death') {
       const death = this.die('illness')
+      outcome.cause = death.cause
+      outcome.tags = [ ...outcome.tags, ...death.tags ]
+    }
+    this.history.add(this.present, outcome)
+  }
+
+  /**
+   * Processes the character suffering an injury.
+   * @param tags {[string]} - Optional. An array of strings that should be
+   *   added to the injury event's tags (e.g., if this happened as part of a
+   *   conflict the community is engaged in).
+   */
+
+  getHurt (tags = []) {
+    const outcome = this.body.getHurt()
+    outcome.tags = [ ...outcome.tags, ...tags ]
+    if (outcome.lethal || outcome.prognosis === 'death') {
+      const death = this.die('injury')
+      outcome.lethal = true
+      outcome.cause = outcome.tags.includes('infection') ? 'infection' : 'injury'
       outcome.tags = [ ...outcome.tags, ...death.tags ]
     }
     this.history.add(this.present, outcome)

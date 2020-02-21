@@ -1,5 +1,7 @@
 /* global describe, it, expect */
 
+import random from 'random'
+
 import Community from './community'
 import Person from './person'
 
@@ -31,6 +33,36 @@ describe('Community', () => {
       const p = new Person()
       const c = new Community()
       expect(c.add(p)).toEqual('m1')
+    })
+  })
+
+  describe('getPeople', () => {
+    it('returns an array of the people in the community', () => {
+      const num = random.int(1, 25)
+      const c = new Community()
+      for (let i = 0; i < num; i++) {
+        const p = new Person()
+        c.add(p)
+      }
+      expect(c.getPeople()).toHaveLength(num)
+    })
+
+    it('doesn\'t include anyone who\'s left', () => {
+      const c = new Community()
+      const p1 = new Person(); c.add(p1)
+      const p2 = new Person(); c.add(p2)
+      const p3 = new Person(); c.add(p3)
+      p3.leave()
+      expect(c.getPeople()).toHaveLength(2)
+    })
+
+    it('doesn\'t include anyone who\'s died', () => {
+      const c = new Community()
+      const p1 = new Person(); c.add(p1)
+      const p2 = new Person(); c.add(p2)
+      const p3 = new Person(); c.add(p3)
+      p3.die()
+      expect(c.getPeople()).toHaveLength(2)
     })
   })
 

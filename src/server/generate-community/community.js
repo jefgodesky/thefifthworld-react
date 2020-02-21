@@ -26,6 +26,17 @@ export default class Community {
   }
 
   /**
+   * Returns an array of the people who currently make up the community (as of
+   * the community's present). It excludes people who have died or left.
+   * @returns {[Person]} - An array of the people who currently make up the
+   *   community.
+   */
+
+  getPeople () {
+    return Object.values(this.people).filter(p => !p.died && !p.left)
+  }
+
+  /**
    * Returns whether or not the community is currently experiencing any major
    * problems, like conflict, sickness, or lean times.
    * @returns {boolean} - `true` if the community is experiencing any major

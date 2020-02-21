@@ -58,6 +58,7 @@ export default class Person {
     this.genotype = genes
     this.body = Body.copy(genes.body)
     this.personality = Personality.copy(genes.personality)
+    this.intelligence = genes.intelligence
   }
 
   /**

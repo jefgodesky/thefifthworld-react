@@ -123,6 +123,12 @@ describe('Person', () => {
       p.setGenes()
       expect(p.personality).toBeInstanceOf(Personality)
     })
+
+    it('sets intelligence', () => {
+      const p = new Person()
+      p.setGenes()
+      expect(p.intelligence).not.toBeNaN()
+    })
   })
 
   describe('singleParent', () => {

@@ -93,6 +93,17 @@ export default class Personality {
     if (this.extraversion < -2) disorders.push('schizoid')
     if (this.agreeableness < -2) disorders.push('antisocial')
     if (this.neuroticism > 2) disorders.push('depression|anxiety|bipolar|borderline|histrionic')
+
+    const lowOpenness = this.openness <= -0.14
+    const lowConscientiousness = this.conscientiousness <= -0.14
+    const lowExtraversion = this.extraversion <= -0.14
+    const lowAgreeableness = this.agreeableness <= -0.14
+    const highNeuroticism = this.neuroticism > 0.14
+
+    if (lowOpenness && lowConscientiousness && lowExtraversion && lowAgreeableness && highNeuroticism) {
+      disorders.push('autism')
+    }
+
     return disorders
   }
 

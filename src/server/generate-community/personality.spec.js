@@ -211,6 +211,17 @@ describe('Personality', () => {
       expect(p.getDisorders()).toEqual([ 'depression|anxiety|bipolar|borderline|histrionic' ])
     })
 
+    it('reports autism if you\'re low in the first four and high in neuroticism', () => {
+      const p = new Personality({
+        openness: -1,
+        conscientiousness: -1,
+        extraversion: -1,
+        agreeableness: -1,
+        neuroticism: 1
+      })
+      expect(p.getDisorders()).toEqual([ 'autism' ])
+    })
+
     it('can report multiple disorders', () => {
       const p = new Personality({
         openness: 2.1,

@@ -25,6 +25,17 @@ export default class Community {
     return newKey
   }
 
+  /**
+   * Returns whether or not the community is currently experiencing any major
+   * problems, like conflict, sickness, or lean times.
+   * @returns {boolean} - `true` if the community is experiencing any major
+   *   problems, or `false` if it is not.
+   */
+
+  hasProblems () {
+    return this.status && (this.status.lean || this.status.sick || this.status.conflict)
+  }
+
   run () {
     console.log('running community...')
   }

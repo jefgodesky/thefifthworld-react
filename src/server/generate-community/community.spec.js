@@ -33,4 +33,30 @@ describe('Community', () => {
       expect(c.add(p)).toEqual('m1')
     })
   })
+
+  describe('hasProblems', () => {
+    it('returns true if the community is experiencing lean times', () => {
+      const c = new Community()
+      c.status = { conflict: false, sick: false, lean: true }
+      expect(c.hasProblems()).toEqual(true)
+    })
+
+    it('returns true if the community is experiencing a time of sickness', () => {
+      const c = new Community()
+      c.status = { conflict: false, sick: true, lean: false }
+      expect(c.hasProblems()).toEqual(true)
+    })
+
+    it('returns true if the community is experiencing a time of conflict', () => {
+      const c = new Community()
+      c.status = { conflict: true, sick: false, lean: false }
+      expect(c.hasProblems()).toEqual(true)
+    })
+
+    it('returns false if the community is not experiencing any major problems', () => {
+      const c = new Community()
+      c.status = { conflict: false, sick: false, lean: false }
+      expect(c.hasProblems()).toEqual(false)
+    })
+  })
 })

@@ -93,8 +93,8 @@ export default class Personality {
   }
 
   /**
-   * Check if this person has schizophrenia, as measured by excessive openness
-   * to new experiences.
+   * Check if this person has any personality disorders rooted in excessive
+   * openness to new experiences.
    */
 
   diagnoseExcessiveOpenness () {
@@ -102,6 +102,19 @@ export default class Personality {
       this.addDisorder('schizophrenia')
     } else {
       this.removeDisorder('schizophrenia')
+    }
+  }
+
+  /**
+   * Check if this person has any personality disorders rooted in excessive
+   * conscientiousness.
+   */
+
+  diagnoseExcessiveConscientiousness () {
+    if (this.conscientiousness > 2) {
+      this.addDisorder('obsessive-compulsive')
+    } else {
+      this.removeDisorder('obsessive-compulsive')
     }
   }
 

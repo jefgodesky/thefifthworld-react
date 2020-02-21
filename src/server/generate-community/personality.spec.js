@@ -199,6 +199,29 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseExcessiveConscientiousness', () => {
+    it('diagnoses obsessive-compulsive disorder if a person is very conscientiousness', () => {
+      const p = new Personality({ conscientiousness: 3 })
+      p.diagnoseExcessiveConscientiousness()
+      expect(p.disorders).toContain('obsessive-compulsive')
+    })
+
+    it('does not diagnose obsessive-compulsive disorder if a person is not very conscientiousness', () => {
+      const p = new Personality({ conscientiousness: 0 })
+      p.disorders = undefined
+      p.diagnoseExcessiveConscientiousness()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('removes a diagnosis of obsessive-compulsive disorder if she\'s gotten better', () => {
+      const p = new Personality({ conscientiousness: 3 })
+      p.diagnoseExcessiveConscientiousness()
+      p.conscientiousness = 2
+      p.diagnoseExcessiveConscientiousness()
+      expect(p.disorders).not.toContain('obsessive-compulsive')
+    })
+  })
+
   describe('getDisorders', () => {
     it('reports schizophrenia if you are excessively open', () => {
       const p = new Personality({

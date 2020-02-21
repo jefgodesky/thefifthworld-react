@@ -6,7 +6,7 @@ import {
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
 } from '../../shared/utils'
-import { pickRandom } from './utils'
+import { dedupe, pickRandom } from './utils'
 
 export default class Personality {
   constructor (vals) {
@@ -69,6 +69,16 @@ export default class Personality {
     // TODO: Factor in how your partners influence how your personality changes
     const trait = pickRandom(Personality.getTraitList())
     this[trait] += random.boolean() ? 0.1 : -0.1
+  }
+
+  /**
+   * Adds a personality disorder.
+   * @param disorder {string} - The disorder to add.
+   */
+
+  addDisorder (disorder) {
+    if (!this.disorders) this.disorders = []
+    if (!this.disorders.includes(disorder)) this.disorders.push(disorder)
   }
 
   /**

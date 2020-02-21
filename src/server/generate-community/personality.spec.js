@@ -144,6 +144,22 @@ describe('Personality', () => {
     })
   })
 
+  describe('addDisorder', () => {
+    it('adds the disorder given', () => {
+      const p = new Personality()
+      p.addDisorder('test')
+      expect(p.disorders).toContain('test')
+    })
+
+    it('doesn\'t duplicate disorders', () => {
+      const p = new Personality()
+      p.addDisorder('test')
+      p.addDisorder('test')
+      const filtered = p.disorders.filter(d => d === 'test')
+      expect(filtered).toHaveLength(1)
+    })
+  })
+
   describe('getDisorders', () => {
     it('reports schizophrenia if you are excessively open', () => {
       const p = new Personality({

@@ -32,6 +32,18 @@ const checkExists = (val, props) => {
 const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length > 0)
 
 /**
+ * Returns the intersection of two arrays.
+ * @param a1 {Array} - An array.
+ * @param a2 {Array} - Another array.
+ * @returns {Array} - The array of elements that are present in both of the
+ *   arrays provided. This does not work with objects.
+ */
+
+const intersection = (a1, a2) => {
+  return a1.filter(x => a2.includes(x))
+}
+
+/**
  * Returns `true` if each element in the given array is true.
  * @param arr {Array} - An array to evaluate.
  * @returns {*} - `true` if each element in `arr` is true, or `false` if it is
@@ -285,6 +297,7 @@ const probabilityInNormalDistribution = (value = 0, mean = 0, std = 1) => {
 export {
   checkExists,
   isPopulatedArray,
+  intersection,
   allTrue,
   anyTrue,
   avg,

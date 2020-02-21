@@ -3,6 +3,7 @@
 import {
   checkExists,
   isPopulatedArray,
+  intersection,
   allTrue,
   anyTrue,
   avg,
@@ -51,6 +52,12 @@ describe('isPopulatedArray', () => {
 
   it('returns false if its param is false', () => {
     expect(isPopulatedArray(false)).toEqual(false)
+  })
+})
+
+describe('intersection', () => {
+  it('returns the intersection of two arrays', () => {
+    expect(intersection([ 1, 2, 3 ], [ 2, 3, 4 ])).toEqual([ 2, 3 ])
   })
 })
 

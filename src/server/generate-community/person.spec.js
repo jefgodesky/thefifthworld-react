@@ -309,6 +309,25 @@ describe('Person', () => {
     })
   })
 
+  describe('ageBody', () => {
+    it('introduces death from old age', () => {
+      const p = new Person(1900)
+      p.body.longevity = 90
+      p.present = 2020
+      p.ageBody()
+      expect(p.died).toEqual(2020)
+    })
+
+    it('records when you die of old age', () => {
+      const p = new Person(1900)
+      p.body.longevity = 90
+      p.present = 2020
+      p.ageBody()
+      const entry = p.history.get({ tag: 'died' })[0]
+      expect(entry).toEqual({ year: 2020, tags: [ 'died' ], cause: 'natural' })
+    })
+  })
+
   describe('age', () => {
     it('increments the character\'s present', () => {
       const p = new Person()

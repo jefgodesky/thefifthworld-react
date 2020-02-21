@@ -232,12 +232,68 @@ export default class Person {
   }
 
   /**
+   * Applies the various checks for changes to a character's body when she ages
+   * through a year (e.g., changes to fertility, whether or not she dies of old
+   * age, and whether or not she gets hurt or sick).
+   * @param community {Community} - The Community that this person belongs to.
+   */
+
+  ageBody (community = undefined) {
+    const age = this.getAge()
+    const troubledTimes = community ? community.hasProblems() : false
+    this.body.adjustFertility(troubledTimes, age)
+
+    if (this.body.checkForDyingOfOldAge(age)) {
+      this.history.add(this.present, this.die())
+    } else {
+      const status = community && community.status ? community.status : { conflict: false, sick: false, lean: false }
+      const { conflict, sick, lean } = status
+
+      // There's a certain likelihood of injury even in the best of times,
+      // and the more open you are to new experiences, the more adventurous
+      // you are, the more likely it is to happen.
+
+      const chanceOfInjury = 8 * (this.personality.chance('openness') / 50)
+      if (random.int(1, 1000) < chanceOfInjury) this.getHurt()
+
+      // But when your community is embroiled in a conflict, your chances of
+      // getting hurt increase substantially.
+
+      if (conflict && random.int(1, 1000) < chanceOfInjury * 4) this.getHurt([ 'conflict' ])
+
+      // When times are lean, you're forced to push longer and harder to find
+      // food. You have to take more chances, and that leads to more injuries.
+
+      if (lean && random.int(1, 1000) < chanceOfInjury * 2) this.getHurt()
+
+      // Likewise, there's a certain likelihood of getting sick even in the
+      // best of times, and again, the more adventurous you are, the more
+      // likely you are to get yourself into the sort of situation where you're
+      // more likely to get sick.
+
+      const chanceOfIllness = 12 * (this.personality.chance('openness') / 50)
+      if (random.int(1, 1000) < chanceOfIllness) this.getSick()
+
+      // If something's going around, of course, you're much more likely to
+      // catch it.
+
+      if (sick && random.int(1, 1000) < chanceOfIllness * 10) this.getSick([ 'outbreak' ])
+
+      // In lean times, you're not eating as well as you should and your immune
+      // response is compromised, so you're more likely to get sick.
+
+      if (lean && random.int(1, 1000) < chanceOfIllness * 2) this.getHurt()
+    }
+  }
+
+  /**
    * Ages a character through one year.
    * @param community {Community} - The Community that this person belongs to.
    */
 
   age (community = undefined) {
     this.present++
+    this.ageBody(community)
   }
 
   /**

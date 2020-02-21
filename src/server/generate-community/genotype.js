@@ -3,10 +3,13 @@ import random from 'random'
 import Body from './body'
 import Personality from './personality'
 
+import { randomValFromNormalDistribution } from '../../shared/utils'
+
 export default class Genotype {
-  constructor (body, personality) {
+  constructor (body, personality, intelligence) {
     this.body = body instanceof Body ? Body.copy(body) : new Body()
     this.personality = personality instanceof Personality ? Personality.copy(personality) : new Personality()
+    this.intelligence = !isNaN(intelligence) ? intelligence : randomValFromNormalDistribution()
     this.viable = true
   }
 
@@ -36,6 +39,7 @@ export default class Genotype {
     this.personality.extraversion = this.modifyNormal(this.personality.extraversion)
     this.personality.agreeableness = this.modifyNormal(this.personality.agreeableness)
     this.personality.neuroticism = this.modifyNormal(this.personality.neuroticism)
+    this.intelligence = this.modifyNormal(this.intelligence)
   }
 
   /**
@@ -139,6 +143,8 @@ export default class Genotype {
     ]
 
     traits.forEach(t => { offspring[t.area][t.trait] = (a[t.area][t.trait] + b[t.area][t.trait]) / 2 })
+
+    offspring.intelligence = a.intelligence + b.intelligence / 2
 
     offspring.inheritDisabilities(a, b)
     offspring.inheritAchondroplasia(a, b)

@@ -48,6 +48,16 @@ describe('Genotype', () => {
       expect(deltas.filter(d => d !== 0).length === 1).toEqual(true)
     })
 
+    it('defines a random intelligence value', () => {
+      const g = new Genotype()
+      expect(g.intelligence).not.toBeNaN()
+    })
+
+    it('can take an intelligence value', () => {
+      const g = new Genotype(null, null, 0)
+      expect(g.intelligence).toEqual(0)
+    })
+
     it('defaults to a viable offspring', () => {
       const g = new Genotype()
       expect(g.viable).toEqual(true)
@@ -135,6 +145,13 @@ describe('Genotype', () => {
       const before = g.personality.neuroticism
       g.modify()
       expect(g.personality.neuroticism).not.toEqual(before)
+    })
+
+    it('varies intelligence', () => {
+      const g = new Genotype()
+      const before = g.intelligence
+      g.modify()
+      expect(g.intelligence).not.toEqual(before)
     })
   })
 

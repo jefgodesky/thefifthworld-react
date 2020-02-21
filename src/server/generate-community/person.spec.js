@@ -309,6 +309,15 @@ describe('Person', () => {
     })
   })
 
+  describe('age', () => {
+    it('increments the character\'s present', () => {
+      const p = new Person()
+      const before = p.present
+      p.age()
+      expect(p.present).toEqual(before + 1)
+    })
+  })
+
   describe('leave', () => {
     it('sets the year you left', () => {
       const p = new Person()

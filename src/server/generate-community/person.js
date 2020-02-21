@@ -232,6 +232,15 @@ export default class Person {
   }
 
   /**
+   * Ages a character through one year.
+   * @param community {Community} - The Community that this person belongs to.
+   */
+
+  age (community = undefined) {
+    this.present++
+  }
+
+  /**
    * Marks when a character leaves the community.
    * @param crime {string} - Optional. If defined, the character did not leave
    *   the community of her own volition, but was exiled for committing some

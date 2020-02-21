@@ -5,6 +5,7 @@ import Community from './community'
 import Genotype from './genotype'
 import History from './history'
 import Personality from './personality'
+import Skills from './skills'
 
 import tables from '../../data/community-creation'
 
@@ -14,6 +15,7 @@ import { isPopulatedArray, daysFromNow, randomDayOfYear, get, clone } from '../.
 export default class Person {
   constructor (...args) {
     this.history = new History()
+    this.skills = new Skills()
 
     const numbers = args.filter(a => !isNaN(a))
     if (isPopulatedArray(numbers)) this.born = randomDayOfYear(numbers[0])

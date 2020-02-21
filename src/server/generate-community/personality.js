@@ -82,6 +82,17 @@ export default class Personality {
   }
 
   /**
+   * Removes a personality disorder.
+   * @param disorder {string} - THe disorder to remove.
+   */
+
+  removeDisorder (disorder) {
+    if (this.disorders && this.disorders.includes(disorder)) {
+      this.disorders = this.disorders.filter(d => d !== disorder)
+    }
+  }
+
+  /**
    * Return the personality disorders that this person suffers from, based on
    * their Big Five personality traits. Based on Geoffrey Miller's "Personality
    * traits are continuous with mental illnesses."

@@ -160,6 +160,22 @@ describe('Personality', () => {
     })
   })
 
+  describe('removeDisorder', () => {
+    it('removes the disorder given', () => {
+      const p = new Personality()
+      p.disorders = [ 'test' ]
+      p.removeDisorder('test')
+      expect(p.disorders).not.toContain('test')
+    })
+
+    it('does nothing if you don\'t have that disorder', () => {
+      const p = new Personality()
+      p.disorders = [ 'something else' ]
+      p.removeDisorder('test')
+      expect(p.disorders).toEqual([ 'something else' ])
+    })
+  })
+
   describe('getDisorders', () => {
     it('reports schizophrenia if you are excessively open', () => {
       const p = new Personality({

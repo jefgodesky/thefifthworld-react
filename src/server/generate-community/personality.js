@@ -93,6 +93,19 @@ export default class Personality {
   }
 
   /**
+   * Check if this person has schizophrenia, as measured by excessive openness
+   * to new experiences.
+   */
+
+  diagnoseExcessiveOpenness () {
+    if (this.openness > 2) {
+      this.addDisorder('schizophrenia')
+    } else {
+      this.removeDisorder('schizophrenia')
+    }
+  }
+
+  /**
    * Return the personality disorders that this person suffers from, based on
    * their Big Five personality traits. Based on Geoffrey Miller's "Personality
    * traits are continuous with mental illnesses."

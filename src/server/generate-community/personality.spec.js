@@ -176,6 +176,29 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseExcessiveOpenness', () => {
+    it('diagnoses schizophrenia if a person is very open to new experience', () => {
+      const p = new Personality({ openness: 3 })
+      p.diagnoseExcessiveOpenness()
+      expect(p.disorders).toContain('schizophrenia')
+    })
+
+    it('does not diagnose schizophrenia if a person is not very open to new experience', () => {
+      const p = new Personality({ openness: 0 })
+      p.disorders = undefined
+      p.diagnoseExcessiveOpenness()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('removes a diagnosis of schizophrenia if she\'s gotten better', () => {
+      const p = new Personality({ openness: 3 })
+      p.diagnoseExcessiveOpenness()
+      p.openness = 2
+      p.diagnoseExcessiveOpenness()
+      expect(p.disorders).not.toContain('schizophrenia')
+    })
+  })
+
   describe('getDisorders', () => {
     it('reports schizophrenia if you are excessively open', () => {
       const p = new Personality({

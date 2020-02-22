@@ -86,14 +86,14 @@ export default class Skills {
     const magic = get(community, 'traditions.magic') || 'open'
     const isSecret = magic !== 'open'
     const factors = {
-      motherIsWizard: isSecret ? 75 : 25,
-      fatherIsWizard: isSecret ? 75 : 25,
-      isIntersex: isSecret ? 5 : 35,
-      isMagicalGender: isSecret ? 5 : 35,
-      isDwarf: isSecret ? 5 : 35,
-      disorders: isSecret ? 1 : 25,
-      sickness: isSecret ? 1 : 25,
-      injury: isSecret ? 1 : 10
+      motherIsWizard: isSecret ? 50 : 5,
+      fatherIsWizard: isSecret ? 50 : 5,
+      isIntersex: isSecret ? 1 : 10,
+      isMagicalGender: isSecret ? 1 : 10,
+      isDwarf: isSecret ? 1 : 10,
+      disorders: isSecret ? 1 : 5,
+      sickness: isSecret ? 1 : 4,
+      injury: isSecret ? 1 : 2
     }
 
     const mother = person.mother && community && community.people[person.mother] ? community.people[person.mother] : null
@@ -125,7 +125,7 @@ export default class Skills {
       disorders, injuries, sickness
     ]
 
-    return between(myFactors.reduce((acc, curr) => acc + curr, 0), isSecret ? 1 : 10, 95)
+    return between(myFactors.reduce((acc, curr) => acc + curr, 0), isSecret ? 1 : 2, 90)
   }
 
   /**

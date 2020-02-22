@@ -205,8 +205,15 @@ export default class Skills {
   static pick (person, community) {
     const skills = Skills.weightLearnableSkills(person, community)
     let skill = pickRandom(skills)
-    if (skill === 'Magic' && Skills.considerMagic(person, community)) skill = undefined
-    if (skill) person.skills.startLearning(skill)
+    const info = Skills.getSkill(skill)
+    const { coastal } = info
+    const isCoastal = get(community, 'territory.coastal') || false
+    if (coastal && !isCoastal) {
+      Skills.pick(person, community)
+    } else {
+      if (skill === 'Magic' && Skills.considerMagic(person, community)) skill = undefined
+      if (skill) person.skills.startLearning(skill)
+    }
   }
 
   /**

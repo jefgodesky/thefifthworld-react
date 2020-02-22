@@ -232,6 +232,14 @@ describe('Skills', () => {
       Skills.pick(p, c)
       expect(p.skills.learning).toBeDefined()
     })
+
+    it('never picks a coastal skill if you\'re not in a coastal community', () => {
+      const c = new Community({ territory: { coastal: false } })
+      const p = new Person(c)
+      Skills.pick(p, c)
+      const s = Skills.getSkill(p.skills.learning.skill)
+      expect(s.coastal).not.toBeDefined()
+    })
   })
 
   describe('advance', () => {

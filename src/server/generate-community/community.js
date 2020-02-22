@@ -1,5 +1,7 @@
 import { clone } from '../../shared/utils'
 
+import History from './history'
+
 export default class Community {
   constructor (data) {
     if (data) {
@@ -9,6 +11,7 @@ export default class Community {
     }
 
     this.people = {}
+    this.history = new History()
   }
 
   /**
@@ -34,6 +37,19 @@ export default class Community {
 
   getPeople () {
     return Object.values(this.people).filter(p => !p.died && !p.left)
+  }
+
+  /**
+   * Returns the most recent years in the community's history.
+   * @param years {number} - Optional. The number of years to go back in the
+   *   history that is returned (Default: `10`).
+   * @returns {[Object]} - An array of event objects that occurred in the
+   *   community in the past number of years given.
+   */
+
+  getRecentHistory (years = 10) {
+    const latest = this.history.getLatest()
+    return this.history.getYears([ latest, latest - years + 1 ])
   }
 
   /**

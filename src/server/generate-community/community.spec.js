@@ -66,6 +66,25 @@ describe('Community', () => {
     })
   })
 
+  describe('getRecentHistory', () => {
+    it('returns the most recent 10 years', () => {
+      const c = new Community()
+      for (let y = 2000; y < 2020; y++) {
+        c.history.add(y, { tags: [ 'test' ] })
+      }
+      expect(c.getRecentHistory()).toHaveLength(10)
+    })
+
+    it('returns the most recent years requested', () => {
+      const c = new Community()
+      for (let y = 2000; y < 2020; y++) {
+        c.history.add(y, { tags: [ 'test' ] })
+      }
+      const num = random.int(5, 15)
+      expect(c.getRecentHistory(num)).toHaveLength(num)
+    })
+  })
+
   describe('hasProblems', () => {
     it('returns true if the community is experiencing lean times', () => {
       const c = new Community()

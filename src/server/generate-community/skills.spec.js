@@ -233,4 +233,22 @@ describe('Skills', () => {
       expect(p.skills.learning).toBeDefined()
     })
   })
+
+  describe('advance', () => {
+    it('picks a skill to learn if you\'re not learning anything yet', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.skills.learning = undefined
+      Skills.advance(p, c)
+      expect(p.skills.learning).toBeDefined()
+    })
+
+    it('progresses the skill you\'re learning if you\'re learning a skill', () => {
+      const c = new Community()
+      const p = new Person(c)
+      Skills.pick(p, c)
+      Skills.advance(p, c)
+      expect(p.skills.learning.progress).toEqual(1)
+    })
+  })
 })

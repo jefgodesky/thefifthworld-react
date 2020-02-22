@@ -208,4 +208,19 @@ export default class Skills {
     if (skill === 'Magic' && Skills.considerMagic(person, community)) skill = undefined
     if (skill) person.skills.startLearning(skill)
   }
+
+  /**
+   * If the person isn't learning a skill yet, this method picks one. If she's
+   * already learning a skill, that learning process progresses.
+   * @param person {Person} - The person who is learning.
+   * @param community {Community} - The community this person belongs to.
+   */
+
+  static advance (person, community) {
+    if (person.skills.learning) {
+      person.skills.progress()
+    } else {
+      Skills.pick(person, community)
+    }
+  }
 }

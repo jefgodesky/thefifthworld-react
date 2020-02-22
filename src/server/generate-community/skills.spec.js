@@ -156,4 +156,72 @@ describe('Skills', () => {
       expect(!res || (res && p.skills.learning.skill === 'Magic')).toEqual(true)
     })
   })
+
+  describe('weightLearnableSkills', () => {
+    it('weights the community\'s favored skill', () => {
+      const c = new Community({ traditions: { skill: 'Acting' } })
+      const p = new Person(c)
+      p.personality.agreeableness = 0
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Acting').length).toEqual(4)
+    })
+
+    it('weights the community\'s favored skill more heavily if you\'re more agreeable', () => {
+      const c = new Community({ traditions: { skill: 'Acting' } })
+      const p = new Person(c)
+      p.personality.agreeableness = 1
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Acting').length).toEqual(5)
+    })
+
+    it('weights medicine', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.personality.agreeableness = 0
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Medicine').length).toEqual(3)
+    })
+
+    it('weights medicine more if you\'re more agreeable', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.personality.agreeableness = 2
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Medicine').length).toEqual(4)
+    })
+
+    it('weights medicine more if the community has recently faced sickness', () => {
+      const c = new Community()
+      for (let y = 2000; y < 2020; y++) c.history.add(y, { sick: true })
+      const p = new Person(c)
+      p.personality.agreeableness = 0
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Medicine').length).toEqual(16)
+    })
+
+    it('weights deescalation', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.personality.agreeableness = 0
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Deescalation').length).toEqual(3)
+    })
+
+    it('weights deescalation more if you\'re more agreeable', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.personality.agreeableness = 2
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Deescalation').length).toEqual(4)
+    })
+
+    it('weights deescalation more if the community has recently faced conflict', () => {
+      const c = new Community()
+      for (let y = 2000; y < 2020; y++) c.history.add(y, { conflict: true })
+      const p = new Person(c)
+      p.personality.agreeableness = 0
+      const skills = Skills.weightLearnableSkills(p, c)
+      expect(skills.filter(s => s === 'Deescalation').length).toEqual(16)
+    })
+  })
 })

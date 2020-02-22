@@ -245,6 +245,29 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseDeficientExtraversion', () => {
+    it('diagnoses schizoid disorder if a person is very introverted', () => {
+      const p = new Personality({ extraversion: -3 })
+      p.diagnoseDeficientExtraversion()
+      expect(p.disorders).toContain('schizoid')
+    })
+
+    it('does not diagnose schizoid disorder if a person is not very introverted', () => {
+      const p = new Personality({ extraversion: 0 })
+      p.disorders = undefined
+      p.diagnoseDeficientExtraversion()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('removes a diagnosis of schizoid disorder if she\'s gotten better', () => {
+      const p = new Personality({ extraversion: -3 })
+      p.diagnoseDeficientExtraversion()
+      p.extraversion = -2
+      p.diagnoseDeficientExtraversion()
+      expect(p.disorders).not.toContain('schizoid')
+    })
+  })
+
   describe('diagnoseExcessiveNeuroticism', () => {
     it('adds several possible disorders if you are excessively neurotic', () => {
       const p = new Personality({ neuroticism: 2.5 })

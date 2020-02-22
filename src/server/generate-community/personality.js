@@ -108,7 +108,7 @@ export default class Personality {
   }
 
   /**
-   * Check if this person has any personality disorders rooted in excessive
+   * Check if this person has any personality disorders rooted in deficient
    * conscientiousness.
    */
 
@@ -121,7 +121,7 @@ export default class Personality {
   }
 
   /**
-   * Check if this person has any personality disorders rooted in excessive
+   * Check if this person has any personality disorders rooted in deficient
    * conscientiousness.
    */
 
@@ -130,6 +130,19 @@ export default class Personality {
       this.addDisorder('impulse control')
     } else {
       this.removeDisorder('impulse control')
+    }
+  }
+
+  /**
+   * Check if this person has any personality disorders rooted in excessive
+   * extraversion.
+   */
+
+  diagnoseDeficientExtraversion () {
+    if (this.extraversion < -2) {
+      this.addDisorder('schizoid')
+    } else {
+      this.removeDisorder('schizoid')
     }
   }
 

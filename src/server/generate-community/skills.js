@@ -165,4 +165,25 @@ export default class Skills {
     }
     return false
   }
+
+  /**
+   * Should this person begin learning medicine in response to recent sickness?
+   * @param person {Person} - The person we're considering.
+   * @param yearsSick {number} - How many years in the past decade has the
+   *   community faced sickness? (Default: `0`)
+   * @returns {boolean} - `true` if this person begins learning medicine, or
+   *   `false` if she doesn't.
+   */
+
+  static considerHealing (person, yearsSick = 0) {
+    if (!person.skills.mastered.includes('Medicine')) {
+      const chance = (person.personality.chance('agreeableness') / 15) * Math.max(yearsSick, 1)
+      const willConform = random.int(1, 100) < chance
+      if (willConform) {
+        person.skills.startLearning('Medicine', person.intelligence)
+        return true
+      }
+    }
+    return false
+  }
 }

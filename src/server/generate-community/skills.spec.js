@@ -181,4 +181,42 @@ describe('Skills', () => {
       expect(count).toBeGreaterThan(50)
     })
   })
+
+  describe('considerHealing', () => {
+    it('returns a boolean', () => {
+      const p = new Person()
+      expect(typeof Skills.considerHealing(p)).toEqual('boolean')
+    })
+
+    it('returns false if the person already knows medicine', () => {
+      const p = new Person()
+      p.skills.mastered.push('Medicine')
+      expect(Skills.considerHealing(p)).toEqual(false)
+    })
+
+    it('starts the person learning medicine if it returns true', () => {
+      const p = new Person()
+      const res = Skills.considerHealing(p)
+      expect(!res || (res && p.skills.learning.skill === 'Medicine')).toEqual(true)
+    })
+
+    it('returns true more often if someone is agreeable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const p = new Person()
+        p.personality.agreeableness = 1
+        if (Skills.considerHealing(p)) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('returns true more often if the community has faced a lot of sickness recently', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const p = new Person()
+        if (Skills.considerHealing(p, 10)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+  })
 })

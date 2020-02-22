@@ -42,11 +42,9 @@ describe('Skills', () => {
 
     it('adds opportunities to learn from others in the community', () => {
       const c = new Community()
-      const p1 = new Person()
+      const p1 = new Person(c)
       p1.skills.mastered = [ 'Acting' ]
-      c.add(p1)
-      const p2 = new Person()
-      c.add(p2)
+      const p2 = new Person(c)
       const list = p2.skills.getLearnableSkills(c)
       const actual = list.filter(s => s === 'Acting').length
       expect(actual).toEqual(2)
@@ -54,11 +52,9 @@ describe('Skills', () => {
 
     it('doesn\'t include specializations of skills you don\'t know that someone has mastered', () => {
       const c = new Community()
-      const p1 = new Person()
+      const p1 = new Person(c)
       p1.skills.mastered = [ 'Science', 'Ecology' ]
-      c.add(p1)
-      const p2 = new Person()
-      c.add(p2)
+      const p2 = new Person(c)
       const list = p2.skills.getLearnableSkills(c)
       const tests = [
         list.includes('Science'),
@@ -122,22 +118,19 @@ describe('Skills', () => {
   describe('getMagicalCalling', () => {
     it('returns a number', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(Skills.getMagicalCalling(p, c)).not.toBeNaN()
     })
 
     it('returns a number greater than zero', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(Skills.getMagicalCalling(p, c)).toBeGreaterThan(0)
     })
 
     it('returns a number less than 100', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(Skills.getMagicalCalling(p, c)).toBeLessThan(100)
     })
   })
@@ -145,15 +138,13 @@ describe('Skills', () => {
   describe('considerMagic', () => {
     it('returns a boolean', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(typeof Skills.considerMagic(p, c)).toEqual('boolean')
     })
 
     it('starts the person learning magic if it returns true', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       const res = Skills.considerMagic(p, c)
       expect(!res || (res && p.skills.learning.skill === 'Magic')).toEqual(true)
     })
@@ -162,22 +153,19 @@ describe('Skills', () => {
   describe('considerFavoredSkill', () => {
     it('returns a boolean', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(typeof Skills.considerFavoredSkill(p, c)).toEqual('boolean')
     })
 
     it('returns false if the community doesn\'t have a favored skill', () => {
       const c = new Community()
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       expect(Skills.considerFavoredSkill(p, c)).toEqual(false)
     })
 
     it('starts the person learning the favored skill if it returns true', () => {
       const c = new Community({ traditions: { skill: 'Unit testing' } })
-      const p = new Person()
-      c.add(p)
+      const p = new Person(c)
       const res = Skills.considerFavoredSkill(p, c)
       expect(!res || (res && p.skills.learning.skill === 'Unit testing')).toEqual(true)
     })
@@ -186,7 +174,7 @@ describe('Skills', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const c = new Community({ traditions: { skill: 'Unit testing' } })
-        const p = new Person()
+        const p = new Person(c)
         p.personality.agreeableness = 1
         if (Skills.considerFavoredSkill(p, c)) count++
       }

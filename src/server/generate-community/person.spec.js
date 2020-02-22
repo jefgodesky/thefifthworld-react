@@ -86,7 +86,7 @@ describe('Person', () => {
     it('assigns a gender in a community with just two genders', () => {
       const genders = [ 'Man', 'Woman' ]
       const c = new Community({ traditions: { genders: 2 } })
-      const p = new Person()
+      const p = new Person(c)
       expect(genders).toContain(p.gender)
     })
 

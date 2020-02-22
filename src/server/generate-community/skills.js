@@ -1,7 +1,7 @@
 import random from 'random'
 
 import skills from '../../data/skills'
-import { between, get, intersection, isPopulatedArray } from "../../shared/utils";
+import { between, get, intersection, isPopulatedArray } from '../../shared/utils'
 
 export default class Skills {
   constructor () {

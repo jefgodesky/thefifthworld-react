@@ -204,7 +204,7 @@ export default class Person {
    *   wound, or if it was part of an outbreak sweeping through the community).
    */
 
-  getSick (tags= []) {
+  getSick (tags = []) {
     const outcome = this.body.getSick()
     outcome.tags = [ ...outcome.tags, ...tags ]
     if (outcome.prognosis === 'death') {

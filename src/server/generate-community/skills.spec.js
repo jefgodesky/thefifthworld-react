@@ -224,4 +224,13 @@ describe('Skills', () => {
       expect(skills.filter(s => s === 'Deescalation').length).toEqual(16)
     })
   })
+
+  describe('pick', () => {
+    it('sets a new skill to learn', () => {
+      const c = new Community()
+      const p = new Person(c)
+      Skills.pick(p, c)
+      expect(p.skills.learning).toBeDefined()
+    })
+  })
 })

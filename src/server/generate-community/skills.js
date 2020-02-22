@@ -1,6 +1,7 @@
 import random from 'random'
 
 import skills from '../../data/skills'
+import { pickRandom } from './utils'
 import { between, get, intersection, isPopulatedArray } from '../../shared/utils'
 
 export default class Skills {
@@ -193,5 +194,18 @@ export default class Skills {
     }
 
     return skills
+  }
+
+  /**
+   * Pick a skill to begin learning.
+   * @param person {Person} - The person we're considering.
+   * @param community {Community} - The community this person belongs to.
+   */
+
+  static pick (person, community) {
+    const skills = Skills.weightLearnableSkills(person, community)
+    let skill = pickRandom(skills)
+    if (skill === 'Magic' && Skills.considerMagic(person, community)) skill = undefined
+    if (skill) person.skills.startLearning(skill)
   }
 }

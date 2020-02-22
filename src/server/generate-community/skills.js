@@ -40,6 +40,24 @@ export default class Skills {
   }
 
   /**
+   * Sets a new skill that the person begins learning.
+   * @param skill {string} - The name of the skill to begin learning.
+   * @param intelligence {number} - The intelligence of the learner. This is a
+   *   normally-distributed value with a mean of zero and a standard deviation
+   *   of 1. A higher intelligence means that it takes less time to learn a
+   *   skill, while a lower intelligence will require a longer time.
+   */
+
+  startLearning (skill, intelligence = 0) {
+    const required = Math.round(7 + (intelligence * -1))
+    this.learning = {
+      skill,
+      progress: 0,
+      required
+    }
+  }
+
+  /**
    * Returns a person magical calling, based on the person's own personal
    * history and her community's beliefs about magic.
    * @param person {Person} - The person who's calling we're testing.

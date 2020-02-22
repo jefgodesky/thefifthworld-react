@@ -68,6 +68,32 @@ describe('Skills', () => {
     })
   })
 
+  describe('startLearning', () => {
+    it('defines the skill you\'re learning', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      expect(s.learning.skill).toEqual('Unit testing')
+    })
+
+    it('defines how long it will take to learn the skill', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      expect(s.learning.required).toEqual(7)
+    })
+
+    it('starts progress at zero', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      expect(s.learning.progress).toEqual(0)
+    })
+
+    it('takes less time if you\'re smarter', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing', 1)
+      expect(s.learning.required).toEqual(6)
+    })
+  })
+
   describe('getMagicalCalling', () => {
     it('returns a number', () => {
       const c = new Community()

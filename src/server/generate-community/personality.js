@@ -16,6 +16,7 @@ export default class Personality {
     traits.forEach(trait => {
       this[trait] = vals && !isNaN(vals[trait]) ? vals[trait] : randomValFromNormalDistribution()
     })
+    this.diagnose()
   }
 
   /**
@@ -71,6 +72,7 @@ export default class Personality {
     // TODO: Factor in how your partners influence how your personality changes
     const trait = pickRandom(Personality.getTraitList())
     this[trait] += random.boolean() ? 0.1 : -0.1
+    this.diagnose()
   }
 
   /**
@@ -204,39 +206,19 @@ export default class Personality {
   }
 
   /**
-   * Return the personality disorders that this person suffers from, based on
-   * their Big Five personality traits. Based on Geoffrey Miller's "Personality
-   * traits are continuous with mental illnesses."
-   * https://www.edge.org/response-detail/10936
-   * @returns {[string]} - An array of strings describing the personality
-   *   disorders that this person suffers. Note that high neuroticism can cause
-   *   several possible disorders, so this returns a single string with options
-   *   separated by pipes (`|`). This string should be separated, and then one
-   *   option chosen at random. This should be done when results are reported,
-   *   rather than here, as doing so here could result in a different diagnosis
-   *   each time.
+   * Diagnose personality disorders based on exceptionally high and
+   * exceptionally low scores in your Big Five personality traits.
    */
 
-  getDisorders () {
-    const disorders = []
-    if (this.openness > 2) disorders.push('schizophrenia')
-    if (this.conscientiousness > 2) disorders.push('obsessive-compulsive')
-    if (this.conscientiousness < -2) disorders.push('impulse control')
-    if (this.extraversion < -2) disorders.push('schizoid')
-    if (this.agreeableness < -2) disorders.push('antisocial')
-    if (this.neuroticism > 2) disorders.push('depression|anxiety|bipolar|borderline|histrionic')
-
-    const lowOpenness = this.openness <= -0.14
-    const lowConscientiousness = this.conscientiousness <= -0.14
-    const lowExtraversion = this.extraversion <= -0.14
-    const lowAgreeableness = this.agreeableness <= -0.14
-    const highNeuroticism = this.neuroticism > 0.14
-
-    if (lowOpenness && lowConscientiousness && lowExtraversion && lowAgreeableness && highNeuroticism) {
-      disorders.push('autism')
-    }
-
-    return disorders
+  diagnose () {
+    if (!this.disorders) this.disorders = []
+    this.diagnoseExcessiveOpenness()
+    this.diagnoseExcessiveConscientiousness()
+    this.diagnoseDeficientConscientiousness()
+    this.diagnoseDeficientExtraversion()
+    this.diagnoseDeficientAgreeableness()
+    this.diagnoseExcessiveNeuroticism()
+    this.diagnoseAutism()
   }
 
   /**

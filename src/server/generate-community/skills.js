@@ -200,17 +200,40 @@ export default class Skills {
    * Pick a skill to begin learning.
    * @param person {Person} - The person we're considering.
    * @param community {Community} - The community this person belongs to.
+   * @param before {[string]} - An array of strings of skills that were already
+   *   chosen in this process. If you pick a skill that's rare, discouraged, or
+   *   you're simply getting too old for, you're asked to pick again. If you do
+   *   pick it again, then you start learning it. This array is passed on those
+   *   subsequent picks so that we can know when we've picked such a skill for
+   *   the second time.
    */
 
-  static pick (person, community) {
+  static pick (person, community, before = []) {
     const skills = Skills.weightLearnableSkills(person, community)
     let skill = pickRandom(skills)
     const info = Skills.getSkill(skill)
-    const { coastal } = info
+    const { rare, discouraged, younger, coastal } = info
     const isCoastal = get(community, 'territory.coastal') || false
+    const isOld = younger && person.getAge() > 40
     if (coastal && !isCoastal) {
-      Skills.pick(person, community)
+      // If you don't live on the coast, it doesn't matter, you just don't
+      // have the opportunity to learn a coastal skill.
+      Skills.pick(person, community, before)
+    } else if ((rare || isOld) && !before.includes(skill)) {
+      // If a skill is rare, or you're a little old for it, think again. If you
+      // pick it a second time, OK, we'll do it.
+      Skills.pick(person, community, [...before, skill ])
+    } else if (discouraged && !before.includes(skill) && person.personality.check('agreeableness')) {
+      // If you pick  discouraged skill, you need to fail an agreeableness
+      // check to learn it or pick it twice.
+      Skills.pick(person, community, [ ...before, skill ])
     } else {
+      // You're not trying to learn a coastal skill from a landlocked
+      // community, this isn't a rare skill or one that's best learned a few
+      // decades earlier in life, it's not socially sanctioned (or you just
+      // don't care and have resolved to learn it anyway). One last check is if
+      // it's magic, you need to have a calling for that, but otherwise, OK,
+      // let's start learning a new skill.
       if (skill === 'Magic' && Skills.considerMagic(person, community)) skill = undefined
       if (skill) person.skills.startLearning(skill)
     }

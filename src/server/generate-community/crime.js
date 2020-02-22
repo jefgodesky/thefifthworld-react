@@ -1,6 +1,6 @@
 import random from 'random'
 
-import { anyTrue, allTrue, intersection, isPopulatedArray, probabilityInNormalDistribution } from '../../shared/utils'
+import { anyTrue, allTrue, intersection, probabilityInNormalDistribution } from '../../shared/utils'
 
 /**
  * Consider assaulting or murdering someone.

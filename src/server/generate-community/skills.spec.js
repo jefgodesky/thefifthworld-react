@@ -251,4 +251,19 @@ describe('Skills', () => {
       expect(p.skills.learning.progress).toEqual(1)
     })
   })
+
+  describe('getSkill', () => {
+    it('returns the object for the requested skill', () => {
+      const name = skills[0].name
+      expect(Skills.getSkill(name)).toEqual(skills[0])
+    })
+
+    it('can find a specialization', () => {
+      expect(Skills.getSkill('Healing')).toBeDefined()
+    })
+
+    it('returns undefined if it can\'t find the skill', () => {
+      expect(Skills.getSkill('Unit testing')).not.toBeDefined()
+    })
+  })
 })

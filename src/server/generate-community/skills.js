@@ -223,4 +223,23 @@ export default class Skills {
       Skills.pick(person, community)
     }
   }
+
+  /**
+   * Returns the skill with the given name.
+   * @param name {string} - The name of the skill.
+   * @returns {Object|undefined} - The skill object if it can be found, or
+   *   `undefined` if it could not be found.
+   */
+
+  static getSkill (name) {
+    const flat = []
+    skills.forEach(skill => {
+      flat.push(skill)
+      if (skill.specializations) {
+        skill.specializations.forEach(skill => { flat.push(skill) })
+      }
+    })
+    const filtered = flat.filter(s => s.name === name)
+    return isPopulatedArray(filtered) ? filtered[0] : undefined
+  }
 }

@@ -231,24 +231,6 @@ describe('Person', () => {
     })
   })
 
-  describe('getAttraction', () => {
-    it('returns a table of attraction priorities', () => {
-      const p = new Person()
-      p.assignAttraction()
-      const actual = [
-        p.attraction.length === 6,
-        p.attraction[0].event === 'attractiveness',
-        p.attraction[1].event === 'openness',
-        p.attraction[2].event === 'conscientiousness',
-        p.attraction[3].event === 'extraversion',
-        p.attraction[4].event === 'agreeableness',
-        p.attraction[5].event === 'neuroticism',
-        p.attraction.reduce((acc, curr) => acc + curr.chance, 0) === 100
-      ]
-      expect(allTrue(actual)).toEqual(true)
-    })
-  })
-
   describe('getAge', () => {
     it('returns the character\'s current age', () => {
       const p = new Person(2005)

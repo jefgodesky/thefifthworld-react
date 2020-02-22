@@ -4,7 +4,8 @@ import Person from './person'
 
 import {
   considerViolence,
-  assault
+  assault,
+  evade
 } from './crime'
 
 describe('considerViolence', () => {
@@ -88,5 +89,60 @@ describe('assault', () => {
       if (assault(attacker, defender)) count++
     }
     expect(count).toBeLessThan(50)
+  })
+})
+
+describe('evade', () => {
+  it('returns a boolean', () => {
+    const p = new Person()
+    expect(typeof evade(p)).toEqual('boolean')
+  })
+
+  it('succeeds more than 25% of the time with ordinary people', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const p = new Person()
+      if (evade(p)) count++
+    }
+    expect(count).toBeGreaterThan(25)
+  })
+
+  it('succeeds less than 75% of the time with ordinary people', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const p = new Person()
+      if (evade(p)) count++
+    }
+    expect(count).toBeLessThan(75)
+  })
+
+  it('succeeds less often with a more in-depth investigation', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const p = new Person()
+      if (evade(p, 10)) count++
+    }
+    expect(count).toBeLessThan(50)
+  })
+
+  it('succeeds more often if you\'re a skilled liar', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const p = new Person()
+      p.skills.mastered.push('Deception')
+      if (evade(p)) count++
+    }
+    expect(count).toBeGreaterThan(50)
+  })
+
+  it('succeeds more often if you\'re more Machiavellian', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const p = new Person()
+      p.intelligence = 1
+      p.personality.agreeableness = -1
+      if (evade(p)) count++
+    }
+    expect(count).toBeGreaterThan(50)
   })
 })

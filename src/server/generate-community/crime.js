@@ -1,6 +1,6 @@
 import random from 'random'
 
-import { anyTrue, intersection, isPopulatedArray } from '../../shared/utils'
+import { anyTrue, allTrue, intersection, isPopulatedArray, probabilityInNormalDistribution } from '../../shared/utils'
 
 /**
  * Consider assaulting or murdering someone.
@@ -47,7 +47,42 @@ const assault = (attacker, defender) => {
   return isPopulatedArray(attackRolls) ? attackRolls[0] : false
 }
 
+/**
+ * Determines whether or not a criminal can get away with her crime (assuming
+ * she even has that opportunity — assault someone who survives, and she'll be
+ * able to tell everyone who attacked her).
+ * @param criminal {Person} - The person who is trying to get away with the
+ *   crime.
+ * @param investigation {number} - A numerical rating of how deeply people are
+ *   looking into this. People investigate murders more deeply than some light
+ *   sabotage, and more significant sabotage more deeply than less significant
+ *   acts. If there are a lot of unsolved crimes, they'll investigate more
+ *   deeply (Default: `1`).
+ * @returns {boolean} - `true` if she gets away with it, or `false` if her
+ *   crimes are discovered.
+ */
+
+const evade = (criminal, investigation = 1) => {
+  const { intelligence } = criminal
+  const disagreeableness = 100 - criminal.personality.chance('agreeableness')
+  const machiavellian = Math.min(intelligence, disagreeableness)
+  const trainedDeception = criminal.skills.mastered.includes('Deception')
+  const attempts = []
+
+  for (let i = 0; i < investigation; i++) {
+    const prob = probabilityInNormalDistribution(machiavellian)
+    const checks = [ random.int(1, 100), random.int(1, 100) ]
+    const lie = trainedDeception
+      ? checks[0] < prob || checks[1] < prob
+      : checks[0] < prob
+    attempts.push(lie)
+  }
+
+  return allTrue(attempts)
+}
+
 export {
   considerViolence,
-  assault
+  assault,
+  evade
 }

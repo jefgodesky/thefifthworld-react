@@ -242,4 +242,17 @@ export default class Personality {
     traits.forEach(trait => { obj[trait] = src[trait] })
     return new Personality(obj)
   }
+
+  /**
+   * Returns the average for a trait in a group.
+   * @param trait {string} - The trait to find an average value for. Can be
+   *   `openness`, `conscientiousness`, `extraversion`, `agreeableness`, or
+   *   `neuroticism`.
+   * @param people {Person[]} - An array of people (Default: `[]`).
+   * @returns {number} - The average value for this trait across the group.
+   */
+
+  static avg (trait, people = []) {
+    return people.map(p => p.personality[trait]).reduce((acc, curr) => acc + curr, 0) / people.length
+  }
 }

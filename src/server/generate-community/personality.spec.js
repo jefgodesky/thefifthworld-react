@@ -1,5 +1,8 @@
 /* global describe, it, expect */
 
+import random from 'random'
+
+import Person from './person'
 import Personality from './personality'
 
 import { pickRandom } from './utils'
@@ -387,6 +390,32 @@ describe('Personality', () => {
       const p2 = Personality.copy(p1)
       p1.openness = 1
       expect(p2.openness).toEqual(0)
+    })
+  })
+
+  describe('avg', () => {
+    it('returns a number', () => {
+      const people = []
+      const num = random.int(5, 10)
+      const trait = pickRandom(Personality.getTraitList())
+      for (let i = 0; i < num; i++) people.push(new Person())
+      expect(Personality.avg(trait, people)).not.toBeNaN()
+    })
+
+    it('returns something greater than -1 for a random sample', () => {
+      const people = []
+      const num = random.int(20, 30)
+      const trait = pickRandom(Personality.getTraitList())
+      for (let i = 0; i < num; i++) people.push(new Person())
+      expect(Personality.avg(trait, people)).toBeGreaterThan(-1)
+    })
+
+    it('returns something less than 1 for a random sample', () => {
+      const people = []
+      const num = random.int(20, 30)
+      const trait = pickRandom(Personality.getTraitList())
+      for (let i = 0; i < num; i++) people.push(new Person())
+      expect(Personality.avg(trait, people)).toBeLessThan(1)
     })
   })
 })

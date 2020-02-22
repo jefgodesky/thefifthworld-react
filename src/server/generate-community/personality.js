@@ -122,6 +122,19 @@ export default class Personality {
 
   /**
    * Check if this person has any personality disorders rooted in excessive
+   * conscientiousness.
+   */
+
+  diagnoseDeficientConscientiousness () {
+    if (this.conscientiousness < -2) {
+      this.addDisorder('impulse control')
+    } else {
+      this.removeDisorder('impulse control')
+    }
+  }
+
+  /**
+   * Check if this person has any personality disorders rooted in excessive
    * neuroticism.
    */
 

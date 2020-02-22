@@ -222,6 +222,29 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseDeficientConscientiousness', () => {
+    it('diagnoses impulse control if a person is very unconscientiousness', () => {
+      const p = new Personality({ conscientiousness: -3 })
+      p.diagnoseDeficientConscientiousness()
+      expect(p.disorders).toContain('impulse control')
+    })
+
+    it('does not diagnose impulse control if a person is not very unconscientiousness', () => {
+      const p = new Personality({ conscientiousness: 0 })
+      p.disorders = undefined
+      p.diagnoseDeficientConscientiousness()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('removes a diagnosis of impulse control if she\'s gotten better', () => {
+      const p = new Personality({ conscientiousness: -3 })
+      p.diagnoseDeficientConscientiousness()
+      p.conscientiousness = -2
+      p.diagnoseDeficientConscientiousness()
+      expect(p.disorders).not.toContain('impulse control')
+    })
+  })
+
   describe('diagnoseExcessiveNeuroticism', () => {
     it('adds several possible disorders if you are excessively neurotic', () => {
       const p = new Personality({ neuroticism: 2.5 })

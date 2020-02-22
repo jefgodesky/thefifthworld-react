@@ -4,7 +4,7 @@ import Person from './person'
 
 import {
   considerViolence,
-  assault,
+  assaultOutcome,
   evade
 } from './crime'
 
@@ -42,11 +42,11 @@ describe('considerViolence', () => {
   })
 })
 
-describe('assault', () => {
+describe('assaultOutcome', () => {
   it('returns a boolean', () => {
     const attacker = new Person()
     const defender = new Person()
-    expect(typeof assault(attacker, defender)).toEqual('boolean')
+    expect(typeof assaultOutcome(attacker, defender)).toEqual('boolean')
   })
 
   it('succeeds more than 25% of the time with average people', () => {
@@ -54,7 +54,7 @@ describe('assault', () => {
     for (let i = 0; i < 100; i++) {
       const attacker = new Person()
       const defender = new Person()
-      if (assault(attacker, defender)) count++
+      if (assaultOutcome(attacker, defender)) count++
     }
     expect(count).toBeGreaterThan(25)
   })
@@ -64,7 +64,7 @@ describe('assault', () => {
     for (let i = 0; i < 100; i++) {
       const attacker = new Person()
       const defender = new Person()
-      if (assault(attacker, defender)) count++
+      if (assaultOutcome(attacker, defender)) count++
     }
     expect(count).toBeLessThan(75)
   })
@@ -75,7 +75,7 @@ describe('assault', () => {
       const attacker = new Person()
       const defender = new Person()
       attacker.skills.mastered.push('Deception','Running', 'Scouting', 'Archery')
-      if (assault(attacker, defender)) count++
+      if (assaultOutcome(attacker, defender)) count++
     }
     expect(count).toBeGreaterThan(75)
   })
@@ -86,7 +86,7 @@ describe('assault', () => {
       const attacker = new Person()
       const defender = new Person()
       defender.skills.mastered.push('Running', 'Scouting')
-      if (assault(attacker, defender)) count++
+      if (assaultOutcome(attacker, defender)) count++
     }
     expect(count).toBeLessThan(50)
   })

@@ -22,14 +22,15 @@ const considerViolence = (attacker) => {
 }
 
 /**
- * Figures out if an assault is successful or not.
+ * Determines if an attacker is able to successfully injure a defender, or if
+ * the defender is able to fend off the attack.
  * @param attacker {Person} - The person who is assaulting the defender.
  * @param defender {Person} - The person being assaulted by the attacker.
  * @returns {boolean} - `true` if the attacker succeeds in doing injury to the
  *   defender, or `false` if the defender successfully fends her off.
  */
 
-const assault = (attacker, defender) => {
+const assaultOutcome = (attacker, defender) => {
   const skillsForAttacker = [
     'Deception', 'Sorcery', 'Running', 'Scouting', 'Archery', 'Throwing atlatl darts',
     'Shooting a blowgun', 'Throwing a bola', 'Shooting a sling', 'Using a spear'
@@ -44,7 +45,7 @@ const assault = (attacker, defender) => {
     attackRolls.push(!anyTrue(defenseRolls))
   }
   attackRolls = attackRolls.sort(a => { return a ? -1 : 1 })
-  return isPopulatedArray(attackRolls) ? attackRolls[0] : false
+  return attackRolls[0]
 }
 
 /**
@@ -83,6 +84,6 @@ const evade = (criminal, investigation = 1) => {
 
 export {
   considerViolence,
-  assault,
+  assaultOutcome,
   evade
 }

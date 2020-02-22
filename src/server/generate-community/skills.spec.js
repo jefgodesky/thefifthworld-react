@@ -219,4 +219,42 @@ describe('Skills', () => {
       expect(count).toBeGreaterThan(25)
     })
   })
+
+  describe('considerDeescalation', () => {
+    it('returns a boolean', () => {
+      const p = new Person()
+      expect(typeof Skills.considerDeescalation(p)).toEqual('boolean')
+    })
+
+    it('returns false if the person already knows deescalation', () => {
+      const p = new Person()
+      p.skills.mastered.push('Deescalation')
+      expect(Skills.considerDeescalation(p)).toEqual(false)
+    })
+
+    it('starts the person learning deescalation if it returns true', () => {
+      const p = new Person()
+      const res = Skills.considerDeescalation(p)
+      expect(!res || (res && p.skills.learning.skill === 'Deescalation')).toEqual(true)
+    })
+
+    it('returns true more often if someone is agreeable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const p = new Person()
+        p.personality.agreeableness = 1
+        if (Skills.considerDeescalation(p)) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('returns true more often if the community has faced a lot of conflict recently', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const p = new Person()
+        if (Skills.considerDeescalation(p, 10)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+  })
 })

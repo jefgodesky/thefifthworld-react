@@ -186,4 +186,26 @@ export default class Skills {
     }
     return false
   }
+
+  /**
+   * Should this person begin learning deescalation in response to recent
+   * conflict?
+   * @param person {Person} - The person we're considering.
+   * @param yearsConflict {number} - How many years in the past decade has the
+   *   community been in a conflict? (Default: `0`)
+   * @returns {boolean} - `true` if this person begins learning deescalation,
+   *   or `false` if she doesn't.
+   */
+
+  static considerDeescalation (person, yearsConflict = 0) {
+    if (!person.skills.mastered.includes('Deescalation')) {
+      const chance = (person.personality.chance('agreeableness') / 15) * Math.max(yearsConflict, 1)
+      const willConform = random.int(1, 100) < chance
+      if (willConform) {
+        person.skills.startLearning('Deescalation', person.intelligence)
+        return true
+      }
+    }
+    return false
+  }
 }

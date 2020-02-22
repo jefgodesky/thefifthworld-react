@@ -2,6 +2,7 @@ import { clone } from '../../shared/utils'
 
 import History from './history'
 import Person from './person'
+import Polycule from './polycule'
 
 export default class Community {
   constructor (data) {
@@ -32,6 +33,19 @@ export default class Community {
     arr[newKey] = addition
     addition.id = newKey
     return newKey
+  }
+
+  /**
+   * Start a new polycule in the community.
+   * @param people {Person} - The people who should make up this polycule at
+   *   its beginning.
+   */
+
+  startPolycule (...people) {
+    const p = new Polycule()
+    const key = this.add(p)
+    for (let i = 0; i < people.length; i++) p.add(people[i])
+    return key
   }
 
   /**

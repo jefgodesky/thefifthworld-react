@@ -82,6 +82,45 @@ describe('Community', () => {
     })
   })
 
+  describe('startPolycule', () => {
+    it('returns the polycule\'s key', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      expect(community.startPolycule(a, b, c)).toEqual('p1')
+    })
+
+    it('adds the polycule to the community', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b, c)
+      expect(community.polycules[key]).toBeInstanceOf(Polycule)
+    })
+
+    it('adds the given people to the community', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b, c)
+      expect(community.polycules[key].people).toEqual([ 'm1', 'm2', 'm3' ])
+    })
+
+    it('adds polycule ID to each of the members', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b, c)
+      const actual = [ a.polycule, b.polycule, c.polycule ]
+      const expected = [ key, key, key ]
+      expect(actual).toEqual(expected)
+    })
+  })
+
   describe('getPeople', () => {
     it('returns an array of the people in the community', () => {
       const num = random.int(1, 25)

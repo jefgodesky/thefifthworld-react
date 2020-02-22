@@ -59,6 +59,10 @@ describe('intersection', () => {
   it('returns the intersection of two arrays', () => {
     expect(intersection([ 1, 2, 3 ], [ 2, 3, 4 ])).toEqual([ 2, 3 ])
   })
+
+  it('returns an empty array if not given two arrays', () => {
+    expect(intersection(undefined, [ 2, 3, 4 ])).toEqual([])
+  })
 })
 
 describe('allTrue', () => {

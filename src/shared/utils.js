@@ -40,7 +40,9 @@ const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length 
  */
 
 const intersection = (a1, a2) => {
-  return a1.filter(x => a2.includes(x))
+  const arr1 = isPopulatedArray(a1) ? a1 : []
+  const arr2 = isPopulatedArray(a2) ? a2 : []
+  return arr1.filter(x => arr2.includes(x))
 }
 
 /**

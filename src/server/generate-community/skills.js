@@ -1,3 +1,5 @@
+import random from 'random'
+
 import skills from '../../data/skills'
 import { between, get, intersection, isPopulatedArray } from "../../shared/utils";
 
@@ -124,5 +126,23 @@ export default class Skills {
     ]
 
     return between(myFactors.reduce((acc, curr) => acc + curr, 0), isSecret ? 1 : 10, 95)
+  }
+
+  /**
+   * Should this person begin learning magic?
+   * @param person {Person} - The person we're considering.
+   * @param community {Community} - The community this person belongs to.
+   * @returns {boolean} - `true` if this person begins learning magic, or
+   *   `false` if she does not.
+   */
+
+  static considerMagic (person, community) {
+    if (!person.skills.mastered.includes('Magic')) {
+      if (random.int(1, 100) < Skills.getMagicalCalling(person, community)) {
+        person.skills.startLearning('Magic', person.intelligence)
+        return true
+      }
+    }
+    return false
   }
 }

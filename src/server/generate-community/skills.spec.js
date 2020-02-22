@@ -141,4 +141,21 @@ describe('Skills', () => {
       expect(Skills.getMagicalCalling(p, c)).toBeLessThan(100)
     })
   })
+
+  describe('considerMagic', () => {
+    it('returns a boolean', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(typeof Skills.considerMagic(p, c)).toEqual('boolean')
+    })
+
+    it('starts the person learning magic if it returns true', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      const res = Skills.considerMagic(p, c)
+      expect(!res || (res && p.skills.learning.skill === 'Magic')).toEqual(true)
+    })
+  })
 })

@@ -3,7 +3,7 @@ import random from 'random'
 import Body from './body'
 import Personality from './personality'
 
-import { between, probabilityInNormalDistribution } from '../../shared/utils'
+import { probabilityInNormalDistribution } from '../../shared/utils'
 import { checkTable } from './utils'
 
 export default class Sexuality {

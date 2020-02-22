@@ -222,7 +222,7 @@ export default class Skills {
     } else if ((rare || isOld) && !before.includes(skill)) {
       // If a skill is rare, or you're a little old for it, think again. If you
       // pick it a second time, OK, we'll do it.
-      Skills.pick(person, community, [...before, skill ])
+      Skills.pick(person, community, [ ...before, skill ])
     } else if (discouraged && !before.includes(skill) && person.personality.check('agreeableness')) {
       // If you pick  discouraged skill, you need to fail an agreeableness
       // check to learn it or pick it twice.

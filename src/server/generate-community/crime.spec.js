@@ -20,7 +20,7 @@ describe('considerViolence', () => {
     const stats = { no: 0, kill: 0, attack: 0 }
     for (let i = 0; i < 100; i++) {
       const p = new Person()
-      switch (considerViolence(p)){
+      switch (considerViolence(p)) {
         case 'no': stats.no++; break
         case 'kill': stats.kill++; break
         case 'attack': stats.attack++; break
@@ -34,7 +34,7 @@ describe('considerViolence', () => {
     for (let i = 0; i < 100; i++) {
       const p = new Person()
       p.personality.agreeableness = -2
-      switch (considerViolence(p)){
+      switch (considerViolence(p)) {
         case 'no': stats.no++; break
         case 'kill': stats.kill++; break
         case 'attack': stats.attack++; break
@@ -76,7 +76,7 @@ describe('assaultOutcome', () => {
     for (let i = 0; i < 100; i++) {
       const attacker = new Person()
       const defender = new Person()
-      attacker.skills.mastered.push('Deception','Running', 'Scouting', 'Archery')
+      attacker.skills.mastered.push('Deception', 'Running', 'Scouting', 'Archery')
       if (assaultOutcome(attacker, defender)) count++
     }
     expect(count).toBeGreaterThan(75)

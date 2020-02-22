@@ -25,7 +25,11 @@ export default class Sexuality {
     shares.skolio += Math.round(personality.chance('openness') / 10)
     shares.total = shares.andro + shares.gyne + shares.skolio
 
-    const base = random.int(1, 100) < 5 ? random.int(0, 50) : random.int(75, 100)
+    const isAce = random.int(1, 100) === 1
+    const rolls = []
+    for (let i = 0; i < 4; i++) rolls.push(random.int(1, 100))
+    const base = isAce ? 0 : Math.max(...rolls)
+
     this.androphilia = Math.round(base * (shares.andro / shares.total))
     this.gynephilia = Math.round(base * (shares.gyne / shares.total))
     this.skoliophilia = Math.round(base * (shares.skolio / shares.total))

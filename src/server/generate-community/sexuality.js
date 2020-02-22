@@ -49,25 +49,6 @@ export default class Sexuality {
     if (gynephilic.includes(person.gender)) chance += this.gynephilia
     if (skoliophilic.includes(person.gender)) chance += this.skoliophilia
 
-    const sexual = random.int(1, 100) < chance
-    let other = false
-
-    if (this.attraction) {
-      const criterion = checkTable(this.attraction, random.int(1, 100))
-      chance = 0
-      switch (criterion) {
-        case 'attraction':
-          chance = probabilityInNormalDistribution(person.body.attractiveness)
-          break
-        case 'neuroticism':
-          chance = 100 - person.personality.chance('neuroticism')
-          break
-        default:
-          chance = person.personality.chance(criterion)
-      }
-      other = random.int(1, 100) < chance
-    }
-
-    return sexual && other
+    return random.int(1, 100) < chance
   }
 }

@@ -231,6 +231,57 @@ describe('Person', () => {
     })
   })
 
+  describe('assignAttraction', () => {
+    it('assigns an attraction matrix', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction).toHaveLength(6)
+    })
+
+    it('assigns a value to physical attractiveness', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'attractiveness')[0].chance).not.toBeNaN()
+    })
+
+    it('assigns a value to openness to new experience', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'openness')[0].chance).not.toBeNaN()
+    })
+
+    it('assigns a value to conscientiousness', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'conscientiousness')[0].chance).not.toBeNaN()
+    })
+
+    it('assigns a value to extraversion', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'extraversion')[0].chance).not.toBeNaN()
+    })
+
+    it('assigns a value to agreeableness', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'agreeableness')[0].chance).not.toBeNaN()
+    })
+
+    it('assigns a value to neuroticism', () => {
+      const p = new Person()
+      p.gender = 'Woman'
+      p.assignAttraction()
+      expect(p.attraction.filter(e => e.event === 'neuroticism')[0].chance).not.toBeNaN()
+    })
+  })
+
   describe('getAge', () => {
     it('returns the character\'s current age', () => {
       const p = new Person(2005)

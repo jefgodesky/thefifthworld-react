@@ -74,12 +74,6 @@ describe('Sexuality', () => {
       expect(typeof s.isAttractedTo(object)).toEqual('boolean')
     })
 
-    it('returns false if you have no attraction matrix', () => {
-      const s = new Sexuality()
-      const object = new Person()
-      expect(s.isAttractedTo(object)).toEqual(false)
-    })
-
     it('sometimes returns true', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {

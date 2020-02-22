@@ -176,7 +176,7 @@ export default class Person {
       }
     })
 
-    if (this.sexuality) this.sexuality.attraction = table
+    this.attraction = table
   }
 
   /**

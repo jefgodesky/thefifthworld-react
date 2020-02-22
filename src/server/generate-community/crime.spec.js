@@ -1,10 +1,12 @@
 /* global describe, it, expect */
 
+import Community from './community'
 import Person from './person'
 
 import {
   considerViolence,
   assaultOutcome,
+  assault,
   evade
 } from './crime'
 
@@ -92,6 +94,38 @@ describe('assaultOutcome', () => {
   })
 })
 
+describe('assault', () => {
+  it('adds record to the attacker\'s history', () => {
+    const community = new Community()
+    const attacker = new Person(community)
+    const defender = new Person(community)
+    assault(attacker, defender)
+    const records = attacker.history.get({ tag: 'assault' })
+    expect(records).toHaveLength(1)
+  })
+
+  it('adds record to the defender\'s history', () => {
+    const community = new Community()
+    const attacker = new Person(community)
+    const defender = new Person(community)
+    assault(attacker, defender)
+    const records = defender.history.get({ tag: 'assault' })
+    expect(records).toHaveLength(1)
+  })
+
+  it('is sometimes lethal', () => {
+    let count = 0
+    for (let i = 0; i < 1000; i++) {
+      const community = new Community()
+      const attacker = new Person(community)
+      const defender = new Person(community)
+      assault(attacker, defender)
+      if (defender.died) count++
+    }
+    expect(count).toBeGreaterThan(0)
+  })
+})
+
 describe('evade', () => {
   it('returns a boolean', () => {
     const p = new Person()
@@ -132,7 +166,7 @@ describe('evade', () => {
       p.skills.mastered.push('Deception')
       if (evade(p)) count++
     }
-    expect(count).toBeGreaterThan(50)
+    expect(count).toBeGreaterThan(33)
   })
 
   it('succeeds more often if you\'re more Machiavellian', () => {
@@ -143,6 +177,6 @@ describe('evade', () => {
       p.personality.agreeableness = -1
       if (evade(p)) count++
     }
-    expect(count).toBeGreaterThan(50)
+    expect(count).toBeGreaterThan(33)
   })
 })

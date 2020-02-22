@@ -49,6 +49,42 @@ const assaultOutcome = (attacker, defender) => {
 }
 
 /**
+ * Processes an assault.
+ * @param attacker {Person} - The person assaulting the defender.
+ * @param defender {Person} - The person being assaulted.
+ * @param recentViolentDeaths {number} - How many people have died violently
+ *   recently? The more there have been, the more intensely the community will
+ *   search for the killer if another person is killed.
+ */
+
+const assault = (attacker, defender, recentViolentDeaths = 0) => {
+  const year = attacker.present
+  const outcome = assaultOutcome(attacker, defender)
+  const event = {
+    tags: [ 'crime', 'assault' ],
+    attacker: attacker.id,
+    defender: defender.id,
+    succeeded: outcome
+  }
+
+  if (outcome) {
+    const res = defender.body.getHurt()
+    event.tags = [ ...event.tags, ...res.tags ]
+    event.location = res.location
+    if (res.lethal || res.prognosis === 'death') {
+      const death = defender.die('assault', attacker.id)
+      event.lethal = true
+      event.cause = res.tags.includes('infection') ? 'infection' : 'injury'
+      event.tags = [ ...event.tags, ...death.tags ]
+      event.discovered = !evade(attacker, 8 * (recentViolentDeaths + 1))
+    }
+  }
+
+  attacker.history.add(year, event)
+  defender.history.add(year, event)
+}
+
+/**
  * Determines whether or not a criminal can get away with her crime (assuming
  * she even has that opportunity — assault someone who survives, and she'll be
  * able to tell everyone who attacked her).
@@ -64,26 +100,25 @@ const assaultOutcome = (attacker, defender) => {
  */
 
 const evade = (criminal, investigation = 1) => {
-  const { intelligence } = criminal
-  const disagreeableness = 100 - criminal.personality.chance('agreeableness')
+  const intelligence = criminal.intelligence
+  const disagreeableness = criminal.personality.agreeableness * -1
   const machiavellian = Math.min(intelligence, disagreeableness)
-  const trainedDeception = criminal.skills.mastered.includes('Deception')
-  const attempts = []
+  const evasions = []
 
   for (let i = 0; i < investigation; i++) {
     const prob = probabilityInNormalDistribution(machiavellian)
-    const checks = [ random.int(1, 100), random.int(1, 100) ]
-    const lie = trainedDeception
-      ? checks[0] < prob || checks[1] < prob
-      : checks[0] < prob
-    attempts.push(lie)
+    const checks = [ random.int(1, 100) < prob, random.int(1, 100) < prob ]
+    const lie = criminal.skills.mastered.includes('Deception')
+      ? anyTrue(checks)
+      : checks[0]
+    evasions.push(lie)
   }
-
-  return allTrue(attempts)
+  return allTrue(evasions)
 }
 
 export {
   considerViolence,
   assaultOutcome,
+  assault,
   evade
 }

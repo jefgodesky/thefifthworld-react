@@ -38,7 +38,6 @@ export default class Skills {
     // magic has a whole other thing going on.
     return [ ...base, ...masters ]
       .filter(s => !this.mastered.includes(s))
-      .filter(s => s !== 'Magic')
   }
 
   /**

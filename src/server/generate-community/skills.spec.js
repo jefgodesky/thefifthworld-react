@@ -20,14 +20,14 @@ describe('Skills', () => {
     it('returns an array of skill names', () => {
       const s = new Skills()
       const list = s.getLearnableSkills()
-      expect(list.length).toEqual(skills.length - 1)
+      expect(list.length).toEqual(skills.length)
     })
 
     it('doesn\'t include any items that you\'ve already mastered', () => {
       const s = new Skills()
       s.mastered = [ 'Acting' ]
       const list = s.getLearnableSkills()
-      expect(list.length).toEqual(skills.length - 2)
+      expect(list.length).toEqual(skills.length - 1)
     })
 
     it('includes subskills of skills you\'ve mastered', () => {
@@ -37,7 +37,7 @@ describe('Skills', () => {
       const skillObj = skills.filter(s => s.name === skill).pop()
       const subskills = skillObj.specializations
       const list = s.getLearnableSkills()
-      expect(list.length).toEqual(skills.length - 2 + subskills.length)
+      expect(list.length).toEqual(skills.length - 1 + subskills.length)
     })
 
     it('adds opportunities to learn from others in the community', () => {

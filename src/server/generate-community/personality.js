@@ -3,10 +3,12 @@ import random from 'random'
 import {
   anyTrue,
   allTrue,
+  clone,
+  intersection,
   randomValFromNormalDistribution,
   probabilityInNormalDistribution
 } from '../../shared/utils'
-import { dedupe, pickRandom } from './utils'
+import { shuffle, pickRandom } from './utils'
 
 export default class Personality {
   constructor (vals) {
@@ -115,6 +117,31 @@ export default class Personality {
       this.addDisorder('obsessive-compulsive')
     } else {
       this.removeDisorder('obsessive-compulsive')
+    }
+  }
+
+  /**
+   * Check if this person has any personality disorders rooted in excessive
+   * neuroticism.
+   */
+
+  diagnoseExcessiveNeuroticism () {
+    const disorders = [ 'depression', 'anxiety', 'bipolar', 'borderline', 'histrionic' ]
+    const num = Math.min(Math.max(Math.round((this.neuroticism - 2) * 4), 0), disorders.length)
+    const myDisorders = this.disorders ? intersection(disorders, this.disorders) : []
+    const delta = num - myDisorders.length
+
+    if (delta > 0) {
+      if (!this.disorders) this.disorders = []
+      const available = shuffle(disorders.filter(d => !this.disorders.includes(d)))
+      for (let i = 0; i < delta; i++) {
+        this.addDisorder(available[i])
+      }
+    } else if (delta < 0) {
+      const available = shuffle(myDisorders)
+      for (let i = 0; i < Math.abs(delta); i++) {
+        this.removeDisorder(available[i])
+      }
     }
   }
 

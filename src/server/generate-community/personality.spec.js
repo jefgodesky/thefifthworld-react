@@ -3,7 +3,7 @@
 import Personality from './personality'
 
 import { pickRandom } from './utils'
-import { allTrue } from '../../shared/utils'
+import { allTrue, clone } from '../../shared/utils'
 
 describe('Personality', () => {
   describe('constructor', () => {
@@ -219,6 +219,40 @@ describe('Personality', () => {
       p.conscientiousness = 2
       p.diagnoseExcessiveConscientiousness()
       expect(p.disorders).not.toContain('obsessive-compulsive')
+    })
+  })
+
+  describe('diagnoseExcessiveNeuroticism', () => {
+    it('adds several possible disorders if you are excessively neurotic', () => {
+      const p = new Personality({ neuroticism: 2.5 })
+      p.disorders = []
+      p.diagnoseExcessiveNeuroticism()
+      expect(p.disorders).toHaveLength(2)
+    })
+
+    it('does not diagnose any disorders if a person is not very neurotic', () => {
+      const p = new Personality({ neuroticism: 0 })
+      p.disorders = undefined
+      p.diagnoseExcessiveNeuroticism()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('does not change which disorders were diagnosed when it\'s run again', () => {
+      const p = new Personality({ neuroticism: 2.5 })
+      p.disorders = []
+      p.diagnoseExcessiveNeuroticism()
+      const before = clone(p.disorders)
+      p.diagnoseExcessiveNeuroticism()
+      expect(p.disorders).toEqual(before)
+    })
+
+    it('removes disorders if she\'s gotten better', () => {
+      const p = new Personality({ neuroticism: 3 })
+      p.diagnoseExcessiveNeuroticism()
+      const before = p.disorders.length
+      p.neuroticism = 2.5
+      p.diagnoseExcessiveNeuroticism()
+      expect(p.disorders.length).toBeLessThan(before)
     })
   })
 

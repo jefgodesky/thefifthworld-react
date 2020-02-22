@@ -1,6 +1,7 @@
 import { clone } from '../../shared/utils'
 
 import History from './history'
+import Person from './person'
 
 export default class Community {
   constructor (data) {
@@ -16,16 +17,20 @@ export default class Community {
   }
 
   /**
-   * Add someone to the community.
-   * @param person {Person} - The person to add to the community.
-   * @returns {string} - The person's key.
+   * Add a person or a polycule to the community.
+   * @param addition {Person|Polycule} - The person or polycule to add to the
+   *   community.
+   * @returns {string} - The person or polycule's key.
    */
 
-  add (person) {
-    const total = Object.keys(this.people).length
-    const newKey = `m${total + 1}`
-    this.people[newKey] = person
-    person.id = newKey
+  add (addition) {
+    const isPerson = addition instanceof Person
+    const arr = isPerson ? this.people : this.polycules
+    const prefix = isPerson ? 'm' : 'p'
+    const total = Object.keys(arr).length
+    const newKey = `${prefix}${total + 1}`
+    arr[newKey] = addition
+    addition.id = newKey
     return newKey
   }
 

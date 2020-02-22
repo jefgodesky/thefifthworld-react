@@ -5,6 +5,7 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
+import Polycule from './polycule'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -49,6 +50,35 @@ describe('Community', () => {
       const p = new Person()
       const c = new Community()
       expect(c.add(p)).toEqual('m1')
+    })
+
+    it('adds a polycule to the community', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      community.add(p)
+      expect(Object.keys(community.polycules).length).toEqual(1)
+    })
+
+    it('sets the polycule\'s ID', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      community.add(p)
+      expect(p.id).toEqual('p1')
+    })
+
+    it('returns the polycule\'s ID', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      expect(community.add(p)).toEqual('p1')
     })
   })
 

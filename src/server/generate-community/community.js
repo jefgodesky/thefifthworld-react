@@ -11,6 +11,7 @@ export default class Community {
     }
 
     this.people = {}
+    this.polycules = {}
     this.history = new History()
   }
 

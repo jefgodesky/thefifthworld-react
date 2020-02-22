@@ -3,6 +3,7 @@
 import random from 'random'
 
 import Community from './community'
+import History from './history'
 import Person from './person'
 
 describe('Community', () => {
@@ -11,6 +12,21 @@ describe('Community', () => {
       const data = { test: { val: 57 } }
       const c = new Community(data)
       expect(c.test.val).toEqual(57)
+    })
+
+    it('starts a new history', () => {
+      const c = new Community()
+      expect(c.history).toBeInstanceOf(History)
+    })
+
+    it('starts an empty object for people', () => {
+      const c = new Community()
+      expect(c.people).toEqual({})
+    })
+
+    it('starts an empty object for polycules', () => {
+      const c = new Community()
+      expect(c.polycules).toEqual({})
     })
   })
 

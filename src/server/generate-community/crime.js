@@ -52,12 +52,14 @@ const assaultOutcome = (attacker, defender) => {
  * Processes an assault.
  * @param attacker {Person} - The person assaulting the defender.
  * @param defender {Person} - The person being assaulted.
+ * @param lethalIntent {boolean} - Optional. Does the attacker intend to kill
+ *   the defender? (Default: `false`)
  * @param recentViolentDeaths {number} - How many people have died violently
  *   recently? The more there have been, the more intensely the community will
  *   search for the killer if another person is killed.
  */
 
-const assault = (attacker, defender, recentViolentDeaths = 0) => {
+const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths = 0) => {
   const year = attacker.present
   const outcome = assaultOutcome(attacker, defender)
   const event = {
@@ -67,7 +69,12 @@ const assault = (attacker, defender, recentViolentDeaths = 0) => {
     succeeded: outcome
   }
 
-  if (outcome) {
+  if (outcome && lethalIntent) {
+    const death = defender.die('murder', attacker.id)
+    event.tags = [ ...event.tags, ...death.tags ]
+    event.cause = 'homicide'
+    event.discovered = !evade(attacker, 8 * (recentViolentDeaths + 1))
+  } else if (outcome) {
     const res = defender.body.getHurt()
     event.tags = [ ...event.tags, ...res.tags ]
     event.location = res.location

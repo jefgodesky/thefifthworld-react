@@ -124,6 +124,18 @@ describe('assault', () => {
     }
     expect(count).toBeGreaterThan(0)
   })
+
+  it('is more often lethal when you attack with lethal intent', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const attacker = new Person(community)
+      const defender = new Person(community)
+      assault(attacker, defender, true)
+      if (defender.died) count++
+    }
+    expect(count).toBeGreaterThan(25)
+  })
 })
 
 describe('evade', () => {

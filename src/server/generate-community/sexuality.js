@@ -70,8 +70,4 @@ export default class Sexuality {
 
     return sexual && other
   }
-
-  // TODO: When we have the Person class develop, add a method that takes a
-  //   Person instance as input and returns if this person would be sexually
-  //   attracted to her.
 }

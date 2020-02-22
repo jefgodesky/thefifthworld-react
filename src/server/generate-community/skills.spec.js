@@ -67,4 +67,27 @@ describe('Skills', () => {
       expect(allTrue(tests)).toEqual(true)
     })
   })
+
+  describe('getMagicalCalling', () => {
+    it('returns a number', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(Skills.getMagicalCalling(p, c)).not.toBeNaN()
+    })
+
+    it('returns a number greater than zero', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(Skills.getMagicalCalling(p, c)).toBeGreaterThan(0)
+    })
+
+    it('returns a number less than 100', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(Skills.getMagicalCalling(p, c)).toBeLessThan(100)
+    })
+  })
 })

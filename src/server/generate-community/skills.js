@@ -1,4 +1,5 @@
 import skills from '../../data/skills'
+import { between, get, intersection, isPopulatedArray } from "../../shared/utils";
 
 export default class Skills {
   constructor () {
@@ -36,5 +37,60 @@ export default class Skills {
     return [ ...base, ...masters ]
       .filter(s => !this.mastered.includes(s))
       .filter(s => s !== 'Magic')
+  }
+
+  /**
+   * Returns a person magical calling, based on the person's own personal
+   * history and her community's beliefs about magic.
+   * @param person {Person} - The person who's calling we're testing.
+   * @param community {Community} - The community that the person belongs to.
+   * @returns {number} - A number between 0 and 100, providing the chance that
+   *   she'll experience a calling to learn magic.
+   */
+
+  static getMagicalCalling (person, community) {
+    const magic = get(community, 'traditions.magic') || 'open'
+    const isSecret = magic !== 'open'
+    const factors = {
+      motherIsWizard: isSecret ? 75 : 25,
+      fatherIsWizard: isSecret ? 75 : 25,
+      isIntersex: isSecret ? 5 : 35,
+      isMagicalGender: isSecret ? 5 : 35,
+      isDwarf: isSecret ? 5 : 35,
+      disorders: isSecret ? 1 : 25,
+      sickness: isSecret ? 1 : 25,
+      injury: isSecret ? 1 : 10
+    }
+
+    const mother = person.mother && community && community.people[person.mother] ? community.people[person.mother] : null
+    const motherSkills = mother ? get(mother, 'skills.mastered') : []
+    const motherIsWizard = isPopulatedArray(motherSkills) && motherSkills.includes('Magic') ? factors.motherIsWizard : 0
+
+    const father = person.father && community && community.people[person.father] ? community.people[person.father] : null
+    const fatherSkills = father ? get(father, 'skills.mastered') : []
+    const fatherIsWizard = isPopulatedArray(fatherSkills) && fatherSkills.includes('Magic') ? factors.fatherIsWizard : 0
+
+    const hasBothGenitalia = person.body.male && person.body.female
+    const hasNeitherGenitalia = !person.body.male && !person.body.female
+    const isIntersex = hasBothGenitalia || hasNeitherGenitalia ? factors.isIntersex : 0
+
+    const magicalGenders = [ 'Third gender', 'Fifth gender', 'Masculine woman', 'Feminine man' ]
+    const isMagicalGender = magicalGenders.includes(person.gender) ? factors.isMagicalGender : 0
+
+    const isDwarf = person.body.achondroplasia ? factors.isDwarf : 0
+
+    const specialDisorders = [ 'schizophrenia', 'obsessive-compulsive', 'schizoid', 'depression', 'anxiety', 'bipolar', 'borderline', 'histrionic', 'autism' ]
+    const mySpecialDisorders = intersection(person.personality.disorders, specialDisorders)
+    const disorders = mySpecialDisorders.length * factors.disorders
+
+    const injuries = person.history.get({ tag: 'injury' }).length * factors.injury
+    const sickness = person.history.get({ tag: 'sickness' }).length * factors.sickness
+
+    const myFactors = [
+      motherIsWizard, fatherIsWizard, isIntersex, isMagicalGender, isDwarf,
+      disorders, injuries, sickness
+    ]
+
+    return between(myFactors.reduce((acc, curr) => acc + curr, 0), isSecret ? 1 : 10, 95)
   }
 }

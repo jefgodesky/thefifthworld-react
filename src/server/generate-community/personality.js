@@ -5,7 +5,7 @@ import {
   allTrue,
   intersection,
   randomValFromNormalDistribution,
-  probabilityInNormalDistribution
+  probabilityInNormalDistribution, isPopulatedArray
 } from '../../shared/utils'
 import { shuffle, pickRandom } from './utils'
 
@@ -64,13 +64,42 @@ export default class Personality {
   /**
    * Personality is supposed to be mostly stable over time, but it changes more
    * than most of us give it credit for.
+   * @params influences {Object} - An object detailing who might influence how
+   *   this person changes, and what influence they might have. All of its
+   *   properties are optional. They are:
+   *   - `parents`: An array of the people raising this person. Use this option
+   *     for how a minor develops.
+   *   - `partners`: An array of this person's intimate partners.
+   *   - `community`: An array of the people in this person's community.
+   *   - `impressionable`: A boolean set to `true` if this person is
+   *     particularly susceptible to persuasion (as in the case of a minor or
+   *     someone with very low intelligence).
    */
 
-  change () {
-    // TODO: Factor in how community influences how your personality changes
-    // TODO: Factor in how your partners influence how your personality changes
+  change (influences = {}) {
+    const amt = 0.1
     const trait = pickRandom(Personality.getTraitList())
-    this[trait] += random.boolean() ? 0.1 : -0.1
+
+    const { impressionable, parents, partners, community } = influences
+    const willConformToClose = impressionable
+      ? this.check('agreeableness', 4, 'or')
+      : this.check('agreeableness', 2)
+    const willConformToCommunity = impressionable
+      ? this.check('agreeableness', 2, 'or')
+      : this.check('agreeableness')
+    const willConformToParents = isPopulatedArray(parents) && willConformToClose
+    const willConformToPartners = isPopulatedArray(partners) && willConformToClose
+
+    if (willConformToPartners) {
+      this[trait] += Personality.avg(trait, partners) ? amt : amt * -1
+    } else if (willConformToParents) {
+      this[trait] += Personality.avg(trait, parents) ? amt : amt * -1
+    } else if (willConformToCommunity) {
+      this[trait] += Personality.avg(trait, community) ? amt : amt * -1
+    } else {
+      this[trait] += random.boolean() ? amt : amt * -1
+    }
+
     this.diagnose()
   }
 

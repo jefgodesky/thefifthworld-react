@@ -58,6 +58,20 @@ export default class Skills {
   }
 
   /**
+   * Progress in learning a skill.
+   */
+
+  progress () {
+    if (this.learning && !isNaN(this.learning.progress)) {
+      this.learning.progress++
+      if (this.learning.progress >= this.learning.required) {
+        this.mastered = [ ...this.mastered, this.learning.skill ]
+        delete this.learning
+      }
+    }
+  }
+
+  /**
    * Returns a person magical calling, based on the person's own personal
    * history and her community's beliefs about magic.
    * @param person {Person} - The person who's calling we're testing.

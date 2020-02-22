@@ -94,6 +94,31 @@ describe('Skills', () => {
     })
   })
 
+  describe('progress', () => {
+    it('increments progress', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      s.progress()
+      expect(s.learning.progress).toEqual(1)
+    })
+
+    it('adds the skill to those you\'ve mastered when you reach required progress', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      s.learning.progress = 6
+      s.progress()
+      expect(s.mastered).toContain('Unit testing')
+    })
+
+    it('deletes the entire learning object when you reach required progress', () => {
+      const s = new Skills()
+      s.startLearning('Unit testing')
+      s.learning.progress = 6
+      s.progress()
+      expect(s.learning).toEqual(undefined)
+    })
+  })
+
   describe('getMagicalCalling', () => {
     it('returns a number', () => {
       const c = new Community()

@@ -158,4 +158,39 @@ describe('Skills', () => {
       expect(!res || (res && p.skills.learning.skill === 'Magic')).toEqual(true)
     })
   })
+
+  describe('considerFavoredSkill', () => {
+    it('returns a boolean', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(typeof Skills.considerFavoredSkill(p, c)).toEqual('boolean')
+    })
+
+    it('returns false if the community doesn\'t have a favored skill', () => {
+      const c = new Community()
+      const p = new Person()
+      c.add(p)
+      expect(Skills.considerFavoredSkill(p, c)).toEqual(false)
+    })
+
+    it('starts the person learning the favored skill if it returns true', () => {
+      const c = new Community({ traditions: { skill: 'Unit testing' } })
+      const p = new Person()
+      c.add(p)
+      const res = Skills.considerFavoredSkill(p, c)
+      expect(!res || (res && p.skills.learning.skill === 'Unit testing')).toEqual(true)
+    })
+
+    it('returns true more often if someone is agreeable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community({ traditions: { skill: 'Unit testing' } })
+        const p = new Person()
+        p.personality.agreeableness = 1
+        if (Skills.considerFavoredSkill(p, c)) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+  })
 })

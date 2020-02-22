@@ -145,4 +145,24 @@ export default class Skills {
     }
     return false
   }
+
+  /**
+   * Should this person begin learning the skill that the community favors?
+   * @param person {Person} - The person we're considering.
+   * @param community {Community} - The community this person belongs to.
+   * @returns {boolean} - `true` if this person begins learning the community's
+   *   favored skill, or `false` if she doesn't.
+   */
+
+  static considerFavoredSkill (person, community) {
+    const favored = get(community, 'traditions.skill')
+    if (favored && !person.skills.mastered.includes(favored)) {
+      const willConform = person.personality.check('agreeableness', 2)
+      if (willConform) {
+        person.skills.startLearning(favored, person.intelligence)
+        return true
+      }
+    }
+    return false
+  }
 }

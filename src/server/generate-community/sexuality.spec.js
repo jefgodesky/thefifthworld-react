@@ -1,6 +1,7 @@
 /* global describe, it, expect */
 
 import Body from './body'
+import Person from './person'
 import Personality from './personality'
 import Sexuality from './sexuality'
 
@@ -63,6 +64,30 @@ describe('Sexuality', () => {
       const tavg = test.reduce((acc, curr) => acc + curr) / 10
 
       expect(tavg).toBeGreaterThan(cavg)
+    })
+  })
+
+  describe('isAttractedTo', () => {
+    it('returns a boolean', () => {
+      const s = new Sexuality()
+      const object = new Person()
+      expect(typeof s.isAttractedTo(object)).toEqual('boolean')
+    })
+
+    it('returns false if you have no attraction matrix', () => {
+      const s = new Sexuality()
+      const object = new Person()
+      expect(s.isAttractedTo(object)).toEqual(false)
+    })
+
+    it('sometimes returns true', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const subject = new Person()
+        const object = new Person()
+        if (subject.sexuality.isAttractedTo(object)) count++
+      }
+      expect(count).toBeGreaterThan(0)
     })
   })
 })

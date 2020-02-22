@@ -5,6 +5,7 @@ import Community from './community'
 import Genotype from './genotype'
 import History from './history'
 import Personality from './personality'
+import Sexuality from './sexuality'
 import Skills from './skills'
 
 import tables from '../../data/community-creation'
@@ -47,6 +48,7 @@ export default class Person {
 
     const genders = get(community, 'traditions.genders') || 3
     this.assignGender(genders)
+    this.assignAttraction()
   }
 
   /**
@@ -58,6 +60,7 @@ export default class Person {
     this.genotype = genes
     this.body = Body.copy(genes.body)
     this.personality = Personality.copy(genes.personality)
+    this.sexuality = new Sexuality(this.body, this.personality)
     this.intelligence = genes.intelligence
   }
 

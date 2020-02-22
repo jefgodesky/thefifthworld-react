@@ -348,6 +348,68 @@ describe('Person', () => {
     })
   })
 
+  describe('encounter', () => {
+    it('returns a boolean', () => {
+      const a = new Person()
+      const b = new Person()
+      expect(typeof a.encounter(b)).toEqual('boolean')
+    })
+
+    it('returns true for two random people more than 25% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        const b = new Person()
+        if (a.encounter(b)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+
+    it('returns true for two random people less than 75% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        const b = new Person()
+        if (a.encounter(b)) count++
+      }
+      expect(count).toBeLessThan(75)
+    })
+
+    it('returns true when the other person is exactly what you\'ve always wanted', () => {
+      const a = new Person()
+      const b = new Person()
+
+      a.attraction = [
+        { event: 'attractiveness', chance: 100 },
+        { event: 'openness', chance: 0 },
+        { event: 'conscientiousness', chance: 0 },
+        { event: 'extraversion', chance: 0 },
+        { event: 'agreeableness', chance: 0 },
+        { event: 'neuroticism', chance: 0 }
+      ]
+      b.body.attractiveness = 100
+
+      expect(a.encounter(b)).toEqual(true)
+    })
+
+    it('returns false when the other person is nothing like what you want', () => {
+      const a = new Person()
+      const b = new Person()
+
+      a.attraction = [
+        { event: 'attractiveness', chance: 100 },
+        { event: 'openness', chance: 0 },
+        { event: 'conscientiousness', chance: 0 },
+        { event: 'extraversion', chance: 0 },
+        { event: 'agreeableness', chance: 0 },
+        { event: 'neuroticism', chance: 0 }
+      ]
+      b.body.attractiveness = -100
+
+      expect(a.encounter(b)).toEqual(false)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

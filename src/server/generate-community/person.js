@@ -10,8 +10,15 @@ import Skills from './skills'
 
 import tables from '../../data/community-creation'
 
-import { pickRandom } from './utils'
-import { isPopulatedArray, daysFromNow, randomDayOfYear, get, clone } from '../../shared/utils'
+import { pickRandom, checkTable } from './utils'
+import {
+  isPopulatedArray,
+  daysFromNow,
+  randomDayOfYear,
+  get,
+  clone,
+  randomValFromNormalDistribution
+} from '../../shared/utils'
 
 export default class Person {
   constructor (...args) {
@@ -235,6 +242,32 @@ export default class Person {
       outcome.tags = [ ...outcome.tags, ...death.tags ]
     }
     this.history.add(this.present, outcome)
+  }
+
+  /**
+   * Have an encounter with a person. Did you like that person? This is based
+   * on your attraction matrix.
+   * @param person {Person} - The person you're encountering.
+   * @return {boolean} - `true` if you liked the person you met, or `false` if
+   *   you did not.
+   */
+
+  encounter (person) {
+    if (!this.attraction) this.assignAttraction()
+    const criterion = checkTable(this.attraction, random.int(1, 100))
+    let chance
+    switch (criterion) {
+      case 'attractiveness':
+        chance = randomValFromNormalDistribution(person.body.attractiveness)
+        break
+      case 'neuroticism':
+        chance = 100 - person.personality.chance('neuroticism')
+        break
+      default:
+        chance = person.personality.chance(criterion)
+        break
+    }
+    return random.int(1, 100) < chance
   }
 
   /**

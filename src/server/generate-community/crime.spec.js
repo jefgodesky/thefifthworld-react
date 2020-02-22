@@ -4,11 +4,29 @@ import Community from './community'
 import Person from './person'
 
 import {
+  getCrimes,
   considerViolence,
   assaultOutcome,
   assault,
   evade
 } from './crime'
+
+describe('getCrimes', () => {
+  it('returns a person\'s crimes', () => {
+    const p = new Person()
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], victim: 1 })
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], victim: 2 })
+    p.history.add(p.present, { tags: [ 'crime', 'murder' ], victim: 3 })
+    expect(getCrimes(p)).toEqual([ 'assault', 'assault', 'murder' ])
+  })
+
+  it('counts an event that is both assault and murder as murder', () => {
+    const p = new Person()
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ] })
+    p.history.add(p.present, { tags: [ 'crime', 'murder', 'assault' ] })
+    expect(getCrimes(p)).toEqual([ 'assault', 'murder' ])
+  })
+})
 
 describe('considerViolence', () => {
   it('returns a string', () => {

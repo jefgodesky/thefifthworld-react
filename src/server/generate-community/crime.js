@@ -1,6 +1,27 @@
 import random from 'random'
 
-import { anyTrue, allTrue, intersection, probabilityInNormalDistribution } from '../../shared/utils'
+import {
+  anyTrue,
+  allTrue,
+  intersection,
+  probabilityInNormalDistribution,
+  isPopulatedArray
+} from '../../shared/utils'
+
+/**
+ * Returns a list of crimes committed by this person.
+ * @param criminal {Person} - The person whose criminal record we're looking
+ *   for.
+ * @return {string[]} - An array of strings listing this person's crimes.
+ */
+
+const getCrimes = criminal => {
+  const crimes = [ 'murder', 'assault' ]
+  return criminal.history.get({ tag: 'crime' }).map(entry => {
+    const myCrimes = intersection(crimes, entry.tags)
+    return isPopulatedArray(myCrimes) ? myCrimes[0] : false
+  }).filter(crime => crime !== false)
+}
 
 /**
  * Consider assaulting or murdering someone.
@@ -71,7 +92,7 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
 
   if (outcome && lethalIntent) {
     const death = defender.die('murder', attacker.id)
-    event.tags = [ ...event.tags, ...death.tags ]
+    event.tags = [ ...event.tags, 'murder', ...death.tags ]
     event.cause = 'homicide'
     event.discovered = !evade(attacker, 8 * (recentViolentDeaths + 1))
   } else if (outcome) {
@@ -124,6 +145,7 @@ const evade = (criminal, investigation = 1) => {
 }
 
 export {
+  getCrimes,
   considerViolence,
   assaultOutcome,
   assault,

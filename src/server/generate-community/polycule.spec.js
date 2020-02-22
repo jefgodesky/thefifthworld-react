@@ -1,0 +1,141 @@
+/* global describe, it, expect */
+
+import Community from './community'
+import History from './history'
+import Person from './person'
+import Polycule from './polycule'
+
+describe('Polycule', () => {
+  describe('constructor', () => {
+    it('sets up an array of members', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      expect(p.people).toEqual([ a.id, b.id, c.id ])
+    })
+
+    it('sets up a love matrix', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+
+      const expected = {
+        'm1': { 'm2': 1, 'm3': 1 },
+        'm2': { 'm1': 1, 'm3': 1 },
+        'm3': { 'm1': 1, 'm2': 1 }
+      }
+
+      expect(p.love).toEqual(expected)
+    })
+
+    it('initializes an array for children', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      expect(p.children).toEqual([])
+    })
+
+    it('starts a history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      expect(p.history).toBeInstanceOf(History)
+    })
+
+    it('creates an entry for the formation of the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      const records = p.history.get({ tag: 'formed' })
+      expect(records).toHaveLength(1)
+    })
+
+    it('records who the original members of the polycule were', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      const records = p.history.get({ tag: 'formed' })
+      expect(records[0].members).toEqual([ 'm1', 'm2', 'm3' ])
+    })
+  })
+
+  describe('add', () => {
+    it('increases the size of the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.people).toHaveLength(3)
+    })
+
+    it('adds the new member to the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.people).toEqual([ 'm1', 'm2', 'm3' ])
+    })
+
+    it('notes that this person belongs to a polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(c.polycule).toEqual(true)
+    })
+
+    it('notes the ID of the polycule you joined', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.id = 'p1'
+      p.add(c)
+      expect(c.polycule).toEqual('p1')
+    })
+
+    it('creates a matrix of how much you love the others', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.love.m3).toEqual({ 'm1': 1, 'm2': 1 })
+    })
+
+    it('creates a matrix of how much the others love you', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      const actual = [ p.love.m1, p.love.m2 ]
+      const expected = [
+        { 'm2': 1, 'm3': 1 },
+        { 'm1': 1, 'm3': 1 }
+      ]
+      expect(actual).toEqual(expected)
+    })
+  })
+})

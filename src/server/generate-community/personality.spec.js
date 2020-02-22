@@ -268,6 +268,29 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseDeficientAgreeablenness', () => {
+    it('diagnoses antisocial disorder if a person is very disagreeable', () => {
+      const p = new Personality({ agreeableness: -3 })
+      p.diagnoseDeficientAgreeableness()
+      expect(p.disorders).toContain('antisocial')
+    })
+
+    it('does not diagnose antisocial disorder if a person is not very disagreeable', () => {
+      const p = new Personality({ agreeableness: 0 })
+      p.disorders = undefined
+      p.diagnoseDeficientAgreeableness()
+      expect(p.disorders).toEqual(undefined)
+    })
+
+    it('removes a diagnosis of antisocial disorder if she\'s gotten better', () => {
+      const p = new Personality({ agreeableness: -3 })
+      p.diagnoseDeficientAgreeableness()
+      p.agreeableness = -2
+      p.diagnoseDeficientAgreeableness()
+      expect(p.disorders).not.toContain('antisocial')
+    })
+  })
+
   describe('diagnoseExcessiveNeuroticism', () => {
     it('adds several possible disorders if you are excessively neurotic', () => {
       const p = new Personality({ neuroticism: 2.5 })

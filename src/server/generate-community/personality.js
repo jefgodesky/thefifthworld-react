@@ -134,7 +134,7 @@ export default class Personality {
   }
 
   /**
-   * Check if this person has any personality disorders rooted in excessive
+   * Check if this person has any personality disorders rooted in deficient
    * extraversion.
    */
 
@@ -143,6 +143,19 @@ export default class Personality {
       this.addDisorder('schizoid')
     } else {
       this.removeDisorder('schizoid')
+    }
+  }
+
+  /**
+   * Check if this person has any personality disorders rooted in deficient
+   * agreeableness.
+   */
+
+  diagnoseDeficientAgreeableness () {
+    if (this.agreeableness < -2) {
+      this.addDisorder('antisocial')
+    } else {
+      this.removeDisorder('antisocial')
     }
   }
 

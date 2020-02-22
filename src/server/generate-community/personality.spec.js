@@ -325,6 +325,35 @@ describe('Personality', () => {
     })
   })
 
+  describe('diagnoseAutism', () => {
+    it('diagnoses autism if neuroticism is very high and all others are very low', () => {
+      const p = new Personality({
+        openness: -2,
+        conscientiousness: -2,
+        extraversion: -2,
+        agreeableness: -2,
+        neuroticism: 2
+      })
+      p.diagnoseAutism()
+      expect(p.disorders).toContain('autism')
+    })
+
+    it('removes autism diagnosis if any trait moves towards the mean', () => {
+      const p = new Personality({
+        openness: -2,
+        conscientiousness: -2,
+        extraversion: -2,
+        agreeableness: -2,
+        neuroticism: 2
+      })
+      p.diagnoseAutism()
+      const trait = pickRandom(Personality.getTraitList())
+      p[trait] = 0
+      p.diagnoseAutism()
+      expect(p.disorders).not.toContain('autism')
+    })
+  })
+
   describe('getDisorders', () => {
     it('reports schizophrenia if you are excessively open', () => {
       const p = new Personality({

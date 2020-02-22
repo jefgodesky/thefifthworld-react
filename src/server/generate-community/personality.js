@@ -185,6 +185,25 @@ export default class Personality {
   }
 
   /**
+   * Diagnoses autism based on a very low score in the first four of the Big
+   * Five personality traits, plus a correspondingly high score on neuroticism.
+   */
+
+  diagnoseAutism () {
+    const lowOpenness = this.openness <= -0.14
+    const lowConscientiousness = this.conscientiousness <= -0.14
+    const lowExtraversion = this.extraversion <= -0.14
+    const lowAgreeableness = this.agreeableness <= -0.14
+    const highNeuroticism = this.neuroticism > 0.14
+
+    if (lowOpenness && lowConscientiousness && lowExtraversion && lowAgreeableness && highNeuroticism) {
+      this.addDisorder('autism')
+    } else {
+      this.removeDisorder('autism')
+    }
+  }
+
+  /**
    * Return the personality disorders that this person suffers from, based on
    * their Big Five personality traits. Based on Geoffrey Miller's "Personality
    * traits are continuous with mental illnesses."

@@ -118,7 +118,7 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
  * @param community {Community} - The community this person belongs to.
  */
 
-const considerCheating = (subject, community) => {
+const considerAdultery = (subject, community) => {
   if (subject.polycule) {
     const love = community.polycules[subject.polycule].love[subject.id]
     const total = Object.values(love).reduce((acc, curr) => acc + curr, 0)
@@ -165,6 +165,6 @@ export {
   considerViolence,
   assaultOutcome,
   assault,
-  considerCheating,
+  considerAdultery,
   evade
 }

@@ -8,7 +8,7 @@ import {
   considerViolence,
   assaultOutcome,
   assault,
-  considerCheating,
+  considerAdultery,
   evade
 } from './crime'
 
@@ -157,14 +157,14 @@ describe('assault', () => {
   })
 })
 
-describe('considerCheating', () => {
+describe('considerAdultery', () => {
   it('returns a boolean', () => {
     const community = new Community()
     const a = new Person(community)
     const b = new Person(community)
     const c = new Person(community)
     community.startPolycule(a, b, c)
-    expect(typeof considerCheating(c, community)).toEqual('boolean')
+    expect(typeof considerAdultery(c, community)).toEqual('boolean')
   })
 
   it('sometimes returns true', () => {
@@ -175,7 +175,7 @@ describe('considerCheating', () => {
       const b = new Person(community)
       const c = new Person(community)
       community.startPolycule(a, b, c)
-      if (considerCheating(c, community)) count++
+      if (considerAdultery(c, community)) count++
     }
     expect(count).toBeGreaterThanOrEqual(0)
   })
@@ -188,7 +188,7 @@ describe('considerCheating', () => {
       const b = new Person(community)
       const c = new Person(community)
       community.startPolycule(a, b, c)
-      if (considerCheating(c, community)) count++
+      if (considerAdultery(c, community)) count++
     }
     expect(count).toBeLessThan(25)
   })
@@ -202,7 +202,7 @@ describe('considerCheating', () => {
       const c = new Person(community)
       c.personality.agreeableness = -2
       community.startPolycule(a, b, c)
-      if (considerCheating(c, community)) count++
+      if (considerAdultery(c, community)) count++
     }
     expect(count).toBeGreaterThan(50)
   })

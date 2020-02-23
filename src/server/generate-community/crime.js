@@ -113,6 +113,22 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
 }
 
 /**
+ * Will this person cheat on her polycule?
+ * @param subject {Person} - The person considering cheating.
+ * @param community {Community} - The community this person belongs to.
+ */
+
+const considerCheating = (subject, community) => {
+  if (subject.polycule) {
+    const love = community.polycules[subject.polycule].love[subject.id]
+    const total = Object.values(love).reduce((acc, curr) => acc + curr, 0)
+    const tries = Math.max(total * 8, 8)
+    return !subject.personality.check('agreeableness', tries, 'or')
+  }
+  return false
+}
+
+/**
  * Determines whether or not a criminal can get away with her crime (assuming
  * she even has that opportunity — assault someone who survives, and she'll be
  * able to tell everyone who attacked her).
@@ -149,5 +165,6 @@ export {
   considerViolence,
   assaultOutcome,
   assault,
+  considerCheating,
   evade
 }

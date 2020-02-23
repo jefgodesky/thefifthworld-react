@@ -8,6 +8,7 @@ import {
   considerViolence,
   assaultOutcome,
   assault,
+  considerCheating,
   evade
 } from './crime'
 
@@ -153,6 +154,57 @@ describe('assault', () => {
       if (defender.died) count++
     }
     expect(count).toBeGreaterThan(25)
+  })
+})
+
+describe('considerCheating', () => {
+  it('returns a boolean', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    community.startPolycule(a, b, c)
+    expect(typeof considerCheating(c, community)).toEqual('boolean')
+  })
+
+  it('sometimes returns true', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      community.startPolycule(a, b, c)
+      if (considerCheating(c, community)) count++
+    }
+    expect(count).toBeGreaterThanOrEqual(0)
+  })
+
+  it('returns true less than 25% of the time under normal starting circumstances', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      community.startPolycule(a, b, c)
+      if (considerCheating(c, community)) count++
+    }
+    expect(count).toBeLessThan(25)
+  })
+
+  it('returns true more often if you\'re more disagreeable', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      c.personality.agreeableness = -2
+      community.startPolycule(a, b, c)
+      if (considerCheating(c, community)) count++
+    }
+    expect(count).toBeGreaterThan(50)
   })
 })
 

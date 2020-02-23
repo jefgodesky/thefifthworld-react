@@ -62,15 +62,23 @@ export default class Community {
   /**
    * Returns the members of a polycule.
    * @param id {string} - The ID of the polycule.
+   * @param self {Person} - Optional. A person to consider a point of
+   *   reference. If provided, this returns an array of this person's partners,
+   *   that is, everyone in the polycule besides this person. If the person
+   *   provided is not in the polycule, it returns an empty array.
    * @returns {Person[]} - An array of the people in the polycule.
    */
 
-  getPolyculeMembers (id) {
+  getPolyculeMembers (id, self) {
     if (this.polycules[id]) {
-      return this.polycules[id].people.map(id => this.people[id])
-    } else {
-      return []
+      const people = this.polycules[id].people.map(id => this.people[id])
+      if (self && people.includes(self)) {
+        return people.filter(p => p !== self)
+      } else if (!self) {
+        return people
+      }
     }
+    return []
   }
 
   /**

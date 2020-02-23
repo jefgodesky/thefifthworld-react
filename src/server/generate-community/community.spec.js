@@ -161,6 +161,24 @@ describe('Community', () => {
       expect(community.getPolyculeMembers(key)).toEqual([ a, b, c ])
     })
 
+    it('returns the other members of a polycule if given a self as a point of reference', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b, c)
+      expect(community.getPolyculeMembers(key, c)).toEqual([ a, b ])
+    })
+
+    it('returns an empty array if self isn\'t in the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b)
+      expect(community.getPolyculeMembers(key, c)).toEqual([])
+    })
+
     it('returns an empty array if given an invalid ID', () => {
       const community = new Community()
       expect(community.getPolyculeMembers('p1')).toEqual([])

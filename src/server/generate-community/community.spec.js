@@ -151,6 +151,22 @@ describe('Community', () => {
     })
   })
 
+  describe('getPolyculeMembers', () => {
+    it('returns the members of a polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const key = community.startPolycule(a, b, c)
+      expect(community.getPolyculeMembers(key)).toEqual([ a, b, c ])
+    })
+
+    it('returns an empty array if given an invalid ID', () => {
+      const community = new Community()
+      expect(community.getPolyculeMembers('p1')).toEqual([])
+    })
+  })
+
   describe('getRecentHistory', () => {
     it('returns the most recent 10 years', () => {
       const c = new Community()

@@ -60,6 +60,20 @@ export default class Community {
   }
 
   /**
+   * Returns the members of a polycule.
+   * @param id {string} - The ID of the polycule.
+   * @returns {Person[]} - An array of the people in the polycule.
+   */
+
+  getPolyculeMembers (id) {
+    if (this.polycules[id]) {
+      return this.polycules[id].people.map(id => this.people[id])
+    } else {
+      return []
+    }
+  }
+
+  /**
    * Returns the most recent years in the community's history.
    * @param years {number} - Optional. The number of years to go back in the
    *   history that is returned (Default: `10`).

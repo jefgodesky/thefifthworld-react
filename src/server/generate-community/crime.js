@@ -78,9 +78,12 @@ const assaultOutcome = (attacker, defender) => {
  * @param recentViolentDeaths {number} - How many people have died violently
  *   recently? The more there have been, the more intensely the community will
  *   search for the killer if another person is killed.
+ * @param report {boolean} - Optional. If `true`, it returns an object
+ *   reporting the details, and does not add anything to the histories of the
+ *   people involved (Default: `false`).
  */
 
-const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths = 0) => {
+const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths = 0, report = false) => {
   const year = attacker.present
   const outcome = assaultOutcome(attacker, defender)
   const event = {
@@ -108,8 +111,12 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
     }
   }
 
-  attacker.history.add(year, event)
-  defender.history.add(year, event)
+  if (report) {
+    return event
+  } else {
+    attacker.history.add(year, event)
+    defender.history.add(year, event)
+  }
 }
 
 /**

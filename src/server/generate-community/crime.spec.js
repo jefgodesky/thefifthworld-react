@@ -11,6 +11,7 @@ import {
   considerAdultery,
   evade
 } from './crime'
+import { allTrue } from '../../shared/utils'
 
 describe('getCrimes', () => {
   it('returns a person\'s crimes', () => {
@@ -154,6 +155,26 @@ describe('assault', () => {
       if (defender.died) count++
     }
     expect(count).toBeGreaterThan(25)
+  })
+
+  it('can return a report', () => {
+    const community = new Community()
+    const attacker = new Person(community)
+    const defender = new Person(community)
+    const report = assault(attacker, defender, true, 0, true)
+    expect(report.tags).toContain('assault')
+  })
+
+  it('doesn\'t add to personal histories if it returns a report', () => {
+    const community = new Community()
+    const attacker = new Person(community)
+    const defender = new Person(community)
+    assault(attacker, defender, true, 0, true)
+    const checks = [
+      attacker.history.get({ tag: 'assault' }).length === 0,
+      defender.history.get({ tag: 'assault' }).length === 0
+    ]
+    expect(allTrue(checks)).toEqual(true)
   })
 })
 

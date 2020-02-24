@@ -1,12 +1,17 @@
 import random from 'random'
 
+import Community from './community'
+import Person from './person'
+
 import {
   anyTrue,
   allTrue,
+  dedupe,
   intersection,
   probabilityInNormalDistribution,
   isPopulatedArray
 } from '../../shared/utils'
+import { pickRandom } from './utils'
 
 /**
  * Returns a list of crimes committed by this person.
@@ -135,6 +140,39 @@ const considerAdultery = (subject, community) => {
   return false
 }
 
+const adultery = (...args) => {
+  const people = args.filter(a => a instanceof Person)
+  const communities = args.filter(c => c instanceof Community)
+  const community = isPopulatedArray(communities) ? communities[0] : undefined
+  let report = {
+    tags: [ 'crime', 'adultery' ],
+    adulterers: people.map(p => p.id),
+    polycules: people.map(p => p.polycule).filter(p => Boolean(p))
+  }
+
+  if (community) {
+    const polycules = dedupe(people.map(p => p.polycule)).filter(id => Boolean(id)).map(id => community.polycules[id])
+    const victims = polycules.flatMap(p => p.people).map(id => community.people[id]).filter(p => !people.includes(p))
+    report.cheatedOn = victims.map(p => p.id).filter(p => Boolean(p))
+
+    const revenge = victims.map(p => ({ self: p,  decision: considerViolence(p) }))
+    const attackers = revenge.filter(r => r.decision !== 'no')
+
+    if (attackers.length > 0) {
+      const attacker = pickRandom(attackers)
+      const victim = pickRandom(people)
+      // TODO: Pass along number of recent violent deaths in the community.
+      const outcome = assault(attacker.self, victim, attacker.decision === 'kill', 0, true)
+      if (outcome) {
+        report = Object.assign({}, report, outcome, {
+          tags: dedupe([...report.tags, ...outcome.tags])
+        })
+      }
+    }
+  }
+  return report
+}
+
 /**
  * Determines whether or not a criminal can get away with her crime (assuming
  * she even has that opportunity — assault someone who survives, and she'll be
@@ -173,5 +211,6 @@ export {
   assaultOutcome,
   assault,
   considerAdultery,
+  adultery,
   evade
 }

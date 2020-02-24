@@ -9,6 +9,7 @@ import {
   assaultOutcome,
   assault,
   considerAdultery,
+  adultery,
   evade
 } from './crime'
 import { allTrue } from '../../shared/utils'
@@ -226,6 +227,88 @@ describe('considerAdultery', () => {
       if (considerAdultery(c, community)) count++
     }
     expect(count).toBeGreaterThan(50)
+  })
+})
+
+describe('adultery', () => {
+  it('returns a report tagged as an incident of adultery', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    community.startPolycule(a, b)
+    const report = adultery(b, c, community)
+    expect(report.tags).toContain('adultery')
+  })
+
+  it('lists the people involved in the adultery', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    community.startPolycule(a, b)
+    const report = adultery(b, c, community)
+    expect(report.adulterers).toEqual([ b.id, c.id ])
+  })
+
+  it('lists the people cheated on', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    community.startPolycule(a, b)
+    const report = adultery(b, c, community)
+    expect(report.cheatedOn).toEqual([ a.id ])
+  })
+
+  it('lists the polycules involved', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    const pid = community.startPolycule(a, b)
+    const report = adultery(b, c, community)
+    expect(report.polycules).toEqual([ pid ])
+  })
+
+  it('can involve multiple polycules', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    const c = new Person(community)
+    const d = new Person(community)
+    const p1 = community.startPolycule(a, b)
+    const p2 = community.startPolycule(c, d)
+    const report = adultery(b, c, community)
+    expect(report.polycules).toEqual([ p1, p2 ])
+  })
+
+  it('sometimes leads to violence', () => {
+    let count = 0
+    for (let i = 0; i < 500; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      community.startPolycule(a, b)
+      const report = adultery(b, c, community)
+      if (report.tags.includes('assault')) count++
+    }
+    expect(count).toBeGreaterThan(0)
+  })
+
+  it('sometimes leads to murder', () => {
+    let count = 0
+    for (let i = 0; i < 1000; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      community.startPolycule(a, b)
+      const report = adultery(b, c, community)
+      if (report.tags.includes('murder')) count++
+    }
+    expect(count).toBeGreaterThan(0)
   })
 })
 

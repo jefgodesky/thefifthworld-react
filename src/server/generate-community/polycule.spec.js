@@ -67,7 +67,26 @@ describe('Polycule', () => {
       const c = new Person(community)
       const p = new Polycule(a, b, c)
       const records = p.history.get({ tag: 'formed' })
-      expect(records[0].members).toEqual([ 'm1', 'm2', 'm3' ])
+      expect(records[0].members).toEqual([ a.id, b.id, c.id ])
+    })
+
+    it('notes in your personal history that you formed a polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      new Polycule(a, b, c)
+      expect(a.history.get({ tag: 'formed' })).toHaveLength(1)
+    })
+
+    it('notes your partners in your history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      new Polycule(a, b, c)
+      const records = a.history.get({ tag: 'formed' })
+      expect(records[0].partners).toEqual([ b.id, c.id ])
     })
   })
 

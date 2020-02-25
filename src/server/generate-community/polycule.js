@@ -13,7 +13,15 @@ export default class Polycule {
     this.history = new History()
     const years = people.map(p => p.present).filter(y => !isNaN(y))
     const year = isPopulatedArray(years) ? years[0] : undefined
-    if (year) this.history.add(year, { tags: [ 'formed' ], members: clone(this.people) })
+    if (year) {
+      this.history.add(year, { tags: [ 'formed' ], members: clone(this.people) })
+      people.forEach(person => {
+        person.history.add(year, {
+          tags: [ 'polycule', 'formed' ],
+          partners: people.filter(p => p !== person).map(p => p.id)
+        })
+      })
+    }
   }
 
   /**

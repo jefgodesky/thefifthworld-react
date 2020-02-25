@@ -178,7 +178,7 @@ describe('Polycule', () => {
       expect(c.history.get({ tag: 'joined' })).toEqual([ expected ])
     })
 
-    it('notes the expansion in the personal history of the other people', () => {
+    it('notes the expansion in the personal histories of the other people', () => {
       const community = new Community()
       const a = new Person(community)
       const b = new Person(community)
@@ -240,6 +240,28 @@ describe('Polycule', () => {
       const p = new Polycule(a, b, c)
       p.remove(c)
       expect(p.history.get({ tag: 'contracted' })).toHaveLength(1)
+    })
+
+    it('notes the removal in the personal history of the person removed', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c, community)
+      const expected = { year: c.present, tags: [ 'polycule', 'removed' ], polycule: p.id }
+      expect(c.history.get({ tag: 'removed' })).toEqual([ expected ])
+    })
+
+    it('notes the contraction in the personal histories of the other people', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c, community)
+      const expected = { year: a.present, tags: [ 'polycule', 'contracted' ], polycule: p.id, removed: c.id, partners: [ b.id ], size: 2 }
+      expect(a.history.get({ tag: 'contracted' })).toEqual([ expected ])
     })
   })
 })

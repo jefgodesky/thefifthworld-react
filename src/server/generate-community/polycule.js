@@ -62,9 +62,11 @@ export default class Polycule {
   /**
    * Remove a person from the polycule.
    * @param person {Person} - The person to remove.
+   * @param community {Community} - The community that this polycule is a
+   *   part of.
    */
 
-  remove (person) {
+  remove (person, community) {
     this.people = this.people.filter(p => p !== person.id)
     delete this.love[person.id]
     this.people.forEach(id => {
@@ -73,7 +75,24 @@ export default class Polycule {
     delete person.polycule
 
     if (this.history && person.present) {
-      this.history.add(person.present, { tags: [ 'contracted' ], members: clone(this.people) })
+      const goneID = person.id
+      const year = person.present
+      this.history.add(year, { tags: [ 'contracted' ], members: clone(this.people) })
+      person.history.add(year, { tags: [ 'polycule', 'removed' ], polycule: this.id })
+      if (community && community.people) {
+        this.people.forEach(id => {
+          const person = community.people[id]
+          if (person instanceof Person) {
+            person.history.add(person.present, {
+              tags: [ 'polycule', 'contracted' ],
+              polycule: this.id,
+              removed: goneID,
+              partners: this.people.filter(id => id !== person.id),
+              size: this.people.length
+            })
+          }
+        })
+      }
     }
   }
 }

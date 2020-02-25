@@ -35,4 +35,22 @@ export default class Polycule {
       this.history.add(person.present, { tags: [ 'expanded' ], members: clone(this.people) })
     }
   }
+
+  /**
+   * Remove a person from the polycule.
+   * @param person {Person} - The person to remove.
+   */
+
+  remove (person) {
+    this.people = this.people.filter(p => p !== person.id)
+    delete this.love[person.id]
+    this.people.forEach(id => {
+      delete this.love[id][person.id]
+    })
+    delete person.polycule
+
+    if (this.history && person.present) {
+      this.history.add(person.present, { tags: [ 'contracted' ], members: clone(this.people) })
+    }
+  }
 }

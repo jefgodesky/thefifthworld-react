@@ -89,7 +89,7 @@ describe('Polycule', () => {
       const c = new Person(community)
       const p = new Polycule(a, b)
       p.add(c)
-      expect(p.people).toEqual([ 'm1', 'm2', 'm3' ])
+      expect(p.people).toEqual([ a.id, b.id, c.id ])
     })
 
     it('notes that this person belongs to a polycule', () => {
@@ -136,6 +136,69 @@ describe('Polycule', () => {
         { 'm1': 1, 'm3': 1 }
       ]
       expect(actual).toEqual(expected)
+    })
+
+    it('notes the expansion in the polycule history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c)
+      expect(p.history.get({ tag: 'expanded' })).toHaveLength(1)
+    })
+  })
+
+  describe('remove', () => {
+    it('decreases the size of the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      expect(p.people).toHaveLength(2)
+    })
+
+    it('removes the person from the polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      expect(p.people).toEqual([ a.id, b.id ])
+    })
+
+    it('deletes that person\'s polycule reference altogether', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      expect(c.polycule).not.toBeDefined()
+    })
+
+    it('removes the person from the love matrix', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      const expected = { 'm1': { 'm2': 1 }, 'm2': { 'm1': 1 } }
+      expect(p.love).toEqual(expected)
+    })
+
+    it('notes the contraction in the polycule history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c)
+      expect(p.history.get({ tag: 'contracted' })).toHaveLength(1)
     })
   })
 })

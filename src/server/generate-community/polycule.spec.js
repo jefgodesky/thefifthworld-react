@@ -7,6 +7,15 @@ import Polycule from './polycule'
 
 describe('Polycule', () => {
   describe('constructor', () => {
+    it('marks the polycule as active', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      expect(p.active).toEqual(true)
+    })
+
     it('sets up an array of members', () => {
       const community = new Community()
       const a = new Person(community)
@@ -262,6 +271,63 @@ describe('Polycule', () => {
       p.remove(c, community)
       const expected = { year: a.present, tags: [ 'polycule', 'contracted' ], polycule: p.id, removed: c.id, partners: [ b.id ], size: 2 }
       expect(a.history.get({ tag: 'contracted' })).toEqual([ expected ])
+    })
+
+    it('goes to breakup instead if given a community and you\'re removing one of the last two', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const p = new Polycule(a, b)
+      p.remove(b, community)
+      expect(p.history.get({ tag: 'breakup' })).toHaveLength(1)
+    })
+  })
+
+  describe('breakup', () => {
+    it('marks the polycule as not active', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community)
+      expect(p.active).toEqual(false)
+    })
+
+    it('deletes each member\'s polycule reference', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community)
+      const actual = [ a.polycule, b.polycule, c.polycule ]
+      const expected = [ undefined, undefined, undefined ]
+      expect(actual).toEqual(expected)
+    })
+
+    it('adds the event to the polycule\'s history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community)
+      const record = p.history.get({ tag: 'breakup' })
+      const expected = { year: a.present, tags: [ 'breakup' ], partners: [ a.id, b.id, c.id ], size: 3 }
+      expect(record).toEqual([ expected ])
+    })
+
+    it('adds the event to the personal histories of each member', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community)
+      const record = a.history.get({ tag: 'breakup' })
+      const expected = { year: a.present, tags: [ 'polycule', 'breakup' ], partners: [ b.id, c.id ], size: 3 }
+      expect(record).toEqual([ expected ])
     })
   })
 })

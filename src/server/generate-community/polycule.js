@@ -8,6 +8,7 @@ export default class Polycule {
     this.people = []
     this.love = {}
     this.children = []
+    this.active = true
 
     for (let i = 0; i < people.length; i++) this.add(people[i])
 
@@ -67,6 +68,7 @@ export default class Polycule {
    */
 
   remove (person, community) {
+    if (this.people.length <= 2) return this.breakup(community)
     this.people = this.people.filter(p => p !== person.id)
     delete this.love[person.id]
     this.people.forEach(id => {
@@ -93,6 +95,28 @@ export default class Polycule {
           }
         })
       }
+    }
+  }
+
+  /**
+   * Breaks up the polycule.
+   * @param community {Community} - The community that this polycule is a
+   *   part of.
+   */
+
+  breakup (community) {
+    const people = this.people.map(id => community.people[id]).filter(p => p instanceof Person)
+    const identified = [ this.id, true ]
+    people.forEach(p => { if (identified.includes(p.polycule)) delete p.polycule })
+    this.active = false
+
+    const year = Math.max(...people.map(p => p.present))
+    const size = this.people.length
+    if (!isNaN(year)) {
+      this.history.add(year, { tags: [ 'breakup' ], partners: clone(this.people), size })
+      people.forEach(person => {
+        person.history.add(year, { tags: [ 'polycule', 'breakup' ], partners: this.people.filter(id => id !== person.id), size })
+      })
     }
   }
 }

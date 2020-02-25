@@ -166,6 +166,28 @@ describe('Polycule', () => {
       p.add(c)
       expect(p.history.get({ tag: 'expanded' })).toHaveLength(1)
     })
+
+    it('notes the expansion in the personal history of the person added', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c, community)
+      const expected = { year: c.present, tags: [ 'polycule', 'joined' ], polycule: p.id, partners: [ a.id, b.id ], size: 3 }
+      expect(c.history.get({ tag: 'joined' })).toEqual([ expected ])
+    })
+
+    it('notes the expansion in the personal history of the other people', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b)
+      p.add(c, community)
+      const expected = { year: c.present, tags: [ 'polycule', 'expanded' ], polycule: p.id, joined: c.id, size: 3 }
+      expect(a.history.get({ tag: 'expanded' })).toEqual([ expected ])
+    })
   })
 
   describe('remove', () => {

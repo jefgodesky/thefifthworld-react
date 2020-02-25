@@ -1,4 +1,5 @@
 import History from './history'
+import Person from './person'
 
 import { clone, isPopulatedArray } from '../../shared/utils'
 
@@ -27,9 +28,11 @@ export default class Polycule {
   /**
    * Add a person to the polycule.
    * @param person {Person} - The person to add to the polycule.
+   * @param community {Community} - The community that this polycule is a
+   *   part of.
    */
 
-  add (person) {
+  add (person, community) {
     const newLove = {}
     this.people.forEach(id => {
       newLove[id] = 1
@@ -41,6 +44,18 @@ export default class Polycule {
 
     if (this.history && person.present) {
       this.history.add(person.present, { tags: [ 'expanded' ], members: clone(this.people) })
+      if (community && community.people) {
+        const newID = person.id
+        this.people.forEach(id => {
+          const person = community.people[id]
+          if (person instanceof Person) {
+            const event = id === newID
+              ? ({ tags: [ 'polycule', 'joined' ], polycule: this.id, partners: this.people.filter(id => id !== person.id), size: this.people.length })
+              : ({ tags: [ 'polycule', 'expanded' ], polycule: this.id, joined: newID, size: this.people.length })
+            person.history.add(person.present, event)
+          }
+        })
+      }
     }
   }
 

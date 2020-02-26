@@ -128,6 +128,8 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
  * Will this person cheat on her polycule?
  * @param subject {Person} - The person considering cheating.
  * @param community {Community} - The community this person belongs to.
+ * @returns {boolean} - `true` if `subject` is willing to commit adultery, or
+ *   `false` if she is not.
  */
 
 const considerAdultery = (subject, community) => {
@@ -139,6 +141,15 @@ const considerAdultery = (subject, community) => {
   }
   return false
 }
+
+/**
+ * Commit adultery.
+ * @param args {Any} - Instances of Person are treated as the individuals
+ *   involved in the adultery. The first instance of Community is interpreted
+ *   as the community in which this takes place. All other parameters are
+ *   ignored.
+ * @returns {Object} - An object detailing what happened.
+ */
 
 const adultery = (...args) => {
   const people = args.filter(a => a instanceof Person)

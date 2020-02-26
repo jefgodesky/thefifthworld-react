@@ -119,6 +119,15 @@ describe('Community', () => {
       const expected = [ key, key, key ]
       expect(actual).toEqual(expected)
     })
+
+    it('adds anyone not in the community to the community', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person()
+      community.startPolycule(a, b, c)
+      expect(Object.keys(community.people)).toContain(c.id)
+    })
   })
 
   describe('getPeople', () => {

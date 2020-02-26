@@ -197,6 +197,16 @@ describe('Polycule', () => {
       const expected = { year: c.present, tags: [ 'polycule', 'expanded' ], polycule: p.id, joined: c.id, size: 3 }
       expect(a.history.get({ tag: 'expanded' })).toEqual([ expected ])
     })
+
+    it('adds her to the community if she isn\'t already in it', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person()
+      const p = new Polycule(a, b)
+      p.add(c, community)
+      expect(Object.keys(community.people)).toContain(c.id)
+    })
   })
 
   describe('remove', () => {

@@ -42,6 +42,7 @@ export default class Polycule {
     this.love[person.id] = newLove
     this.people.push(person.id)
     person.polycule = this.id || true
+    if (community && !Object.keys(community.people).includes(person.id)) community.add(person)
 
     if (this.history && person.present) {
       this.history.add(person.present, { tags: [ 'expanded' ], members: clone(this.people) })
@@ -76,6 +77,8 @@ export default class Polycule {
     })
     delete person.polycule
 
+    // TODO: Does the person removed from the polycule leave the community?
+
     if (this.history && person.present) {
       const goneID = person.id
       const year = person.present
@@ -109,6 +112,8 @@ export default class Polycule {
     const identified = [ this.id, true ]
     people.forEach(p => { if (identified.includes(p.polycule)) delete p.polycule })
     this.active = false
+
+    // TODO: Do any of the people who were in the polycule leave the community?
 
     const year = Math.max(...people.map(p => p.present))
     const size = this.people.length

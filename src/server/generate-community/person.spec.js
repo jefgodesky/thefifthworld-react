@@ -504,6 +504,50 @@ describe('Person', () => {
     })
   })
 
+  describe('considerLeaving', () => {
+    it('has you leave if you want to leave and have no immediate family', () => {
+      const c = new Community()
+      const p = new Person(c)
+      c.history.add(p.present, { conflict: false, sick: false, lean: true })
+      p.considerLeaving(c)
+      expect(p.left).toEqual(p.present)
+    })
+
+    it('has you leave if everyone in your immediate family agrees', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      community.startPolycule(a, b)
+      new Person(a, b, community)
+      community.history.add(a.present, { conflict: false, sick: false, lean: true })
+      a.considerLeaving(community)
+      expect(a.left).toEqual(a.present)
+    })
+
+    it('adds an entry to your personal history when you leave', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      community.startPolycule(a, b)
+      new Person(a, b, community)
+      community.history.add(a.present, { conflict: false, sick: false, lean: true })
+      a.considerLeaving(community)
+      expect(a.history.get({ tag: 'left' })).toHaveLength(1)
+    })
+
+    it('records the ID\'s of the people you left with', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      community.startPolycule(a, b)
+      const c = new Person(a, b, community)
+      community.history.add(a.present, { conflict: false, sick: false, lean: true })
+      a.considerLeaving(community)
+      const records = a.history.get({ tag: 'left' })
+      expect(records[0].group).toEqual([ a.id, b.id, c.id ])
+    })
+  })
+
   describe('leave', () => {
     it('sets the year you left', () => {
       const p = new Person()

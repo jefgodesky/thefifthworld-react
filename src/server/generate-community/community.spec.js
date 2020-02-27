@@ -264,4 +264,66 @@ describe('Community', () => {
       expect(c.hadProblems(2020)).toEqual(false)
     })
   })
+
+  describe('hadProblemsRecently', () => {
+    it('returns the percentage of recent years that had problems', () => {
+      const c = new Community()
+      c.history.add(2015, { conflict: false, sick: false, lean: false })
+      c.history.add(2016, { conflict: true, sick: false, lean: false })
+      c.history.add(2017, { conflict: false, sick: false, lean: false })
+      c.history.add(2018, { conflict: false, sick: false, lean: false })
+      c.history.add(2019, { conflict: false, sick: false, lean: false })
+      c.history.add(2020, { conflict: false, sick: true, lean: false })
+      expect(c.hadProblemsRecently()).toEqual(40)
+    })
+
+    it('always returns a value equal to or greater than zero', () => {
+      const c = new Community()
+      for (let i = 6; i > -1; i--) {
+        c.history.add(2020 - i, {
+          conflict: random.boolean(),
+          sick: random.boolean(),
+          lean: random.boolean()
+        })
+      }
+      expect(c.hadProblemsRecently()).toBeGreaterThanOrEqual(0)
+    })
+
+    it('always returns a value equal to or less than 100', () => {
+      const c = new Community()
+      for (let i = 6; i > -1; i--) {
+        c.history.add(2020 - i, {
+          conflict: random.boolean(),
+          sick: random.boolean(),
+          lean: random.boolean()
+        })
+      }
+      expect(c.hadProblemsRecently()).toBeLessThanOrEqual(100)
+    })
+
+    it('checks the number of years requested', () => {
+      const c = new Community()
+      c.history.add(2008, { conflict: false, sick: false, lean: true })
+      c.history.add(2009, { conflict: false, sick: false, lean: false })
+      c.history.add(2010, { conflict: false, sick: false, lean: false })
+      c.history.add(2011, { conflict: false, sick: false, lean: false })
+      c.history.add(2012, { conflict: false, sick: false, lean: false })
+      c.history.add(2013, { conflict: false, sick: false, lean: false })
+      c.history.add(2014, { conflict: false, sick: false, lean: false })
+      c.history.add(2015, { conflict: false, sick: false, lean: false })
+      c.history.add(2016, { conflict: false, sick: false, lean: false })
+      c.history.add(2017, { conflict: false, sick: false, lean: false })
+      c.history.add(2018, { conflict: false, sick: false, lean: false })
+      c.history.add(2019, { conflict: false, sick: false, lean: false })
+      c.history.add(2020, { conflict: false, sick: false, lean: false })
+      expect(c.hadProblemsRecently(13)).toBeGreaterThan(0)
+    })
+
+    it('checks the years that are in the history', () => {
+      const c = new Community()
+      c.history.add(2019, { conflict: false, sick: false, lean: false })
+      c.history.add(2020, { conflict: true, sick: false, lean: false })
+      expect(c.hadProblemsRecently()).toEqual(50)
+    })
+  })
 })

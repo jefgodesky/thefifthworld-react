@@ -121,6 +121,22 @@ export default class Community {
     return isPopulatedArray(record) && (record[0].lean || record[0].sick || record[0].conflict)
   }
 
+  /**
+   * Returns the percentage of the past `years` years in which the community
+   * faced one or more major problems.
+   * @param years {number} - The number of years to go back (Default: `5`).
+   * @returns {number} - the percentage of the past `years` years in which the
+   *   community faced one or more major problems. This will be a value
+   *   between 0 and 100.
+   */
+
+  hadProblemsRecently (years = 5) {
+    const present = this.history.getLatest()
+    const y = []
+    for (let i = present - years + 1; i <= present; i++) y.push(this.hadProblems(i))
+    return (y.filter(y => y === true).length / Math.min(years, Object.keys(this.history.record).length)) * 100
+  }
+
   run () {
     console.log('running community...')
   }

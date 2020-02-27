@@ -247,6 +247,43 @@ describe('Community', () => {
     })
   })
 
+  describe('getImmediateFamily', () => {
+    it('returns yourself', () => {
+      const community = new Community()
+      const a = new Person(community)
+      expect(community.getImmediateFamily(a)).toEqual([ a ])
+    })
+
+    it('returns you and your fellow polycule members', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      community.startPolycule(a, b, c)
+      expect(community.getImmediateFamily(a)).toEqual([ a, b, c ])
+    })
+
+    it('returns you and your kids', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(a, community)
+      const c = new Person(a, community)
+      expect(community.getImmediateFamily(a)).toEqual([ a, b, c ])
+    })
+
+    it('returns you, your lovers, your kids, and your stepkids', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const d = new Person(a, b, community)
+      const e = new Person(b, c, community)
+      const f = new Person(c, community)
+      community.startPolycule(a, b, c)
+      expect(community.getImmediateFamily(a)).toEqual([ a, b, c, d, e, f ])
+    })
+  })
+
   describe('getRecentHistory', () => {
     it('returns the most recent 10 years', () => {
       const c = new Community()

@@ -2,7 +2,7 @@ import History from './history'
 import Person from './person'
 import Polycule from './polycule'
 
-import { clone, isPopulatedArray } from '../../shared/utils'
+import { clone, dedupe, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -63,6 +63,22 @@ export default class Community {
   }
 
   /**
+   * Returns whether or not a person with the given ID is a current member of
+   * the community.
+   * @param person {Person|string} - Either the person or the ID of the person
+   *   to check on.
+   * @returns {boolean} - `true` if the person is a current member of the
+   *   community, or `false` if she is not (whether because she never was part
+   *   of the community or because she died or left).
+   */
+
+  isCurrentMember (person) {
+    const id = person instanceof Person ? person.id : person
+    const p = this.people[id]
+    return Boolean(p) && p instanceof Person && !p.died && !p.left
+  }
+
+  /**
    * Returns the members of a polycule.
    * @param id {string} - The ID of the polycule.
    * @param self {Person} - Optional. A person to consider a point of
@@ -85,19 +101,23 @@ export default class Community {
   }
 
   /**
-   * Returns whether or not a person with the given ID is a current member of
-   * the community.
-   * @param person {Person|string} - Either the person or the ID of the person
-   *   to check on.
-   * @returns {boolean} - `true` if the person is a current member of the
-   *   community, or `false` if she is not (whether because she never was part
-   *   of the community or because she died or left).
+   * Return an array of the people in this person's immediate family, i.e.,
+   * the other members of her polycule and the set of all of their children.
+   * @param person {Person} - The person whose family we are fetching.
+   * @returns {Person[]} - an array of the people `person`'s immediate family.
    */
 
-  isCurrentMember (person) {
+  getImmediateFamily (person) {
     const id = person instanceof Person ? person.id : person
-    const p = this.people[id]
-    return Boolean(p) && p instanceof Person && !p.died && !p.left
+    const self = this.people[id]
+    if (self && !self.died && !self.left) {
+      const lovers = self.polycule ? this.getPolyculeMembers(self.polycule) : []
+      const ownChildren = self.children || []
+      const otherChildren = lovers.filter(p => isPopulatedArray(p.children)).flatMap(p => p.children)
+      return dedupe([ id, ...lovers.map(p => p.id), ...ownChildren, ...otherChildren ]).map(id => this.people[id])
+    } else {
+      return []
+    }
   }
 
   /**

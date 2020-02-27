@@ -7,7 +7,6 @@ export default class Polycule {
   constructor (...people) {
     this.people = []
     this.love = {}
-    this.children = []
     this.active = true
 
     for (let i = 0; i < people.length; i++) this.add(people[i])

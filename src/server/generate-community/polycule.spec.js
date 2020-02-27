@@ -41,15 +41,6 @@ describe('Polycule', () => {
       expect(p.love).toEqual(expected)
     })
 
-    it('initializes an array for children', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const p = new Polycule(a, b, c)
-      expect(p.children).toEqual([])
-    })
-
     it('starts a history', () => {
       const community = new Community()
       const a = new Person(community)

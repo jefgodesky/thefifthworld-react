@@ -345,6 +345,21 @@ export default class Person {
   }
 
   /**
+   * Does this person think about leaving the community? The less open you are
+   * to new experiences, the more you crave safety, so the more years without
+   * major problems you need to feel secure in your community.
+   * @param community {Community} - The community that you're considering
+   *   leaving.
+   * @returns {boolean} - `true` if you're thinking about leaving, or `false`
+   *   if you aren't.
+   */
+
+  thinksAboutLeaving (community) {
+    const years = Math.round((100 - this.personality.chance('openness')) / 10)
+    return community.hadProblemsRecently(years) > 0
+  }
+
+  /**
    * Marks when a character leaves the community.
    * @param crime {string} - Optional. If defined, the character did not leave
    *   the community of her own volition, but was exiled for committing some

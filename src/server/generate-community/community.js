@@ -1,8 +1,8 @@
-import { clone } from '../../shared/utils'
-
 import History from './history'
 import Person from './person'
 import Polycule from './polycule'
+
+import { clone, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -106,6 +106,19 @@ export default class Community {
 
   hasProblems () {
     return this.status && (this.status.lean || this.status.sick || this.status.conflict)
+  }
+
+  /**
+   * Returns whether or not the community was facing any major problems, like
+   * conflict, sickness, or lean times, in a given year.
+   * @param year {number} - The year to check.
+   * @returns {boolean} - `true` if the community was facing a major problem
+   *   that year, or `false` if it did not.
+   */
+
+  hadProblems (year) {
+    const record = this.history.get({ year })
+    return isPopulatedArray(record) && (record[0].lean || record[0].sick || record[0].conflict)
   }
 
   run () {

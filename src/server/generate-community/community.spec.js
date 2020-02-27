@@ -238,4 +238,30 @@ describe('Community', () => {
       expect(c.hasProblems()).toEqual(false)
     })
   })
+
+  describe('hadProblems', () => {
+    it('returns true if the community experienced lean times', () => {
+      const c = new Community()
+      c.history.add(2020, { conflict: false, sick: false, lean: true })
+      expect(c.hadProblems(2020)).toEqual(true)
+    })
+
+    it('returns true if the community experienced sickness', () => {
+      const c = new Community()
+      c.history.add(2020, { conflict: false, sick: true, lean: false })
+      expect(c.hadProblems(2020)).toEqual(true)
+    })
+
+    it('returns true if the community experienced conflict', () => {
+      const c = new Community()
+      c.history.add(2020, { conflict: true, sick: false, lean: false })
+      expect(c.hadProblems(2020)).toEqual(true)
+    })
+
+    it('returns false if the community did not experience any major problems that year', () => {
+      const c = new Community()
+      c.history.add(2020, { conflict: false, sick: false, lean: false })
+      expect(c.hadProblems(2020)).toEqual(false)
+    })
+  })
 })

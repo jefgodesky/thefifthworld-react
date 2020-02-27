@@ -160,6 +160,59 @@ describe('Community', () => {
     })
   })
 
+  describe('isCurrentMember', () => {
+    it('returns false if given someone who isn\'t in the community', () => {
+      const c = new Community()
+      const p = new Person()
+      expect(c.isCurrentMember(p)).toEqual(false)
+    })
+
+    it('returns true if given someone who is in the community', () => {
+      const c = new Community()
+      const p = new Person(c)
+      expect(c.isCurrentMember(p)).toEqual(true)
+    })
+
+    it('returns false if given someone who left the community', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.leave()
+      expect(c.isCurrentMember(p)).toEqual(false)
+    })
+
+    it('returns false if given someone who has died', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.die()
+      expect(c.isCurrentMember(p)).toEqual(false)
+    })
+
+    it('returns false if given an ID that isn\'t in the community', () => {
+      const c = new Community()
+      expect(c.isCurrentMember('nope')).toEqual(false)
+    })
+
+    it('returns true if given the ID of someone who is in the community', () => {
+      const c = new Community()
+      const p = new Person(c)
+      expect(c.isCurrentMember(p.id)).toEqual(true)
+    })
+
+    it('returns false if given the ID of someone who left the community', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.leave()
+      expect(c.isCurrentMember(p.id)).toEqual(false)
+    })
+
+    it('returns false if given the ID of someone who has died', () => {
+      const c = new Community()
+      const p = new Person(c)
+      p.die()
+      expect(c.isCurrentMember(p.id)).toEqual(false)
+    })
+  })
+
   describe('getPolyculeMembers', () => {
     it('returns the members of a polycule', () => {
       const community = new Community()

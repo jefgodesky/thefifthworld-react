@@ -85,6 +85,22 @@ export default class Community {
   }
 
   /**
+   * Returns whether or not a person with the given ID is a current member of
+   * the community.
+   * @param person {Person|string} - Either the person or the ID of the person
+   *   to check on.
+   * @returns {boolean} - `true` if the person is a current member of the
+   *   community, or `false` if she is not (whether because she never was part
+   *   of the community or because she died or left).
+   */
+
+  isCurrentMember (person) {
+    const id = person instanceof Person ? person.id : person
+    const p = this.people[id]
+    return Boolean(p) && p instanceof Person && !p.died && !p.left
+  }
+
+  /**
    * Returns the most recent years in the community's history.
    * @param years {number} - Optional. The number of years to go back in the
    *   history that is returned (Default: `10`).

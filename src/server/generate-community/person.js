@@ -42,6 +42,15 @@ export default class Person {
     if (isPopulatedArray(communities)) {
       community = communities[0]
       community.add(this)
+      if (isPopulatedArray(people)) {
+        people.forEach(p => {
+          if (isPopulatedArray(p.children)) {
+            p.children.push(this.id)
+          } else {
+            p.children = [ this.id ]
+          }
+        })
+      }
     }
 
     if (!this.born) this.born = daysFromNow(144000)

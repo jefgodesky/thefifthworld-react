@@ -45,6 +45,14 @@ describe('Person', () => {
       expect(child.mother).toEqual(mother.id)
     })
 
+    it('can take a single parent and adds the child to that parent\'s children', () => {
+      const c = new Community()
+      const mother = new Person(c)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const child = new Person(mother, c)
+      expect(mother.children).toContain(child.id)
+    })
+
     it('can take several parents and sort out the mother and father', () => {
       const c = new Community()
       const mother = new Person(c)
@@ -52,6 +60,16 @@ describe('Person', () => {
       const father = new Person(c)
       father.body.male = true; father.body.female = false; father.body.fertility = 100; father.body.infertile = false
       const child = new Person(mother, father)
+      expect(`${child.mother} ${child.father}`).toEqual(`${mother.id} ${father.id}`)
+    })
+
+    it('can take several parents and add the child to the father\'s children', () => {
+      const c = new Community()
+      const mother = new Person(c)
+      mother.body.male = false; mother.body.female = true; mother.body.fertility = 100; mother.body.infertile = false
+      const father = new Person(c)
+      father.body.male = true; father.body.female = false; father.body.fertility = 100; father.body.infertile = false
+      const child = new Person(mother, father, c)
       expect(`${child.mother} ${child.father}`).toEqual(`${mother.id} ${father.id}`)
     })
 

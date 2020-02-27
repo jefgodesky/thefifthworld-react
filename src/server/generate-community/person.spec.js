@@ -488,7 +488,7 @@ describe('Person', () => {
     it('returns false if the community had problems last year and you\'re pretty open', () => {
       const c = new Community()
       const p = new Person(c)
-      p.openness = 3
+      p.personality.openness = 3
       c.history.add(p.present - 1, { conflict: false, sick: false, lean: true })
       c.history.add(p.present, { conflict: false, sick: false, lean: false })
       expect(p.thinksAboutLeaving(c)).toEqual(false)

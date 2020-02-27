@@ -345,9 +345,10 @@ export default class Person {
   }
 
   /**
-   * Does this person think about leaving the community? The less open you are
-   * to new experiences, the more you crave safety, so the more years without
-   * major problems you need to feel secure in your community.
+   * Does this person think about leaving the community? The more open you are
+   * to new experiences, the more you're willing to take risks, and the more
+   * the community's recent history might include problems without making you
+   * want to leave.
    * @param community {Community} - The community that you're considering
    *   leaving.
    * @returns {boolean} - `true` if you're thinking about leaving, or `false`
@@ -355,8 +356,7 @@ export default class Person {
    */
 
   thinksAboutLeaving (community) {
-    const years = Math.round((100 - this.personality.chance('openness')) / 10)
-    return community.hadProblemsRecently(years) > 0
+    return community.hadProblemsRecently() > this.personality.chance('openness')
   }
 
   /**

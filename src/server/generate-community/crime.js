@@ -166,7 +166,7 @@ const adultery = (...args) => {
     const victims = polycules.flatMap(p => p.people).map(id => community.people[id]).filter(p => !people.includes(p))
     report.cheatedOn = victims.map(p => p.id).filter(p => Boolean(p))
 
-    const revenge = victims.map(p => ({ self: p,  decision: considerViolence(p) }))
+    const revenge = victims.map(p => ({ self: p, decision: considerViolence(p) }))
     const attackers = revenge.filter(r => r.decision !== 'no')
 
     if (attackers.length > 0) {

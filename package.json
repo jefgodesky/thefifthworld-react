@@ -144,7 +144,8 @@
       "ecmaVersion": 8
     },
     "rules": {
-      "no-useless-escape": 0
+      "no-useless-escape": 0,
+      "no-new": 0
     }
   },
   "jest": {

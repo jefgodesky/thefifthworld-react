@@ -369,7 +369,7 @@ export default class Person {
 
   considerLeaving (community) {
     const family = community.getImmediateFamily(this.id)
-    const opinions = family.map(person => ({person, opinion: person.thinksAboutLeaving(community)}))
+    const opinions = family.map(person => ({ person, opinion: person.thinksAboutLeaving(community) }))
     const leavers = opinions.filter(o => o.opinion === true).map(o => o.person)
     const remainers = opinions.filter(o => o.opinion === false).map(o => o.person)
 

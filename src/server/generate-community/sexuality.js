@@ -3,9 +3,6 @@ import random from 'random'
 import Body from './body'
 import Personality from './personality'
 
-import { probabilityInNormalDistribution } from '../../shared/utils'
-import { checkTable } from './utils'
-
 export default class Sexuality {
   constructor (body = new Body(), personality = new Personality()) {
     const homosexual = random.int(1, 100) > 85

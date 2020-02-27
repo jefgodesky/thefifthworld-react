@@ -97,10 +97,34 @@ const inheritNormalDistribution = (mother, father, std = 1) => {
   return randomValFromNormalDistribution((mother + father) / 2, std)
 }
 
+/**
+ * Reach a consensus between two sides.
+ * @param agree {Person[]} - An array of people who agree with the proposal.
+ * @param disagree {Person[]} - An array of people who do not agree with the
+ *   proposal.
+ * @returns {boolean} - `true` if the two sides reach a consensus to adopt the
+ *   proposal, or `false` if they reach a consensus to reject the proposal.
+ */
+
+const consensus = (agree, disagree) => {
+  while (agree.length > 0 && disagree.length > 0) {
+    const oratorsAgree = agree.filter(p => p.skills.mastered.includes('Communication')).length
+    const oratorsDisagree = disagree.filter(p => p.skills.mastered.includes('Communication')).length
+    const argumentsFor = agree.length + oratorsAgree
+    const argumentsAgainst = disagree.length + oratorsDisagree
+    const swayedFor = disagree.filter(p => p.personality.check('agreeableness', argumentsFor, 'or'))
+    const swayedAgainst = agree.filter(p => p.personality.check('agreeableness', argumentsAgainst, 'or'))
+    agree = [ ...agree.filter(p => !swayedAgainst.includes(p)), ...swayedFor ]
+    disagree = [ ...disagree.filter(p => !swayedFor.includes(p)), ...swayedAgainst ]
+  }
+  return agree.length > 0
+}
+
 export {
   checkTable,
   rollTableUntil,
   shuffle,
   pickRandom,
-  inheritNormalDistribution
+  inheritNormalDistribution,
+  consensus
 }

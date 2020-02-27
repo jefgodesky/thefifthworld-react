@@ -1,11 +1,14 @@
 /* global describe, it, expect */
 
+import Person from './person'
+
 import {
   checkTable,
   rollTableUntil,
   shuffle,
   pickRandom,
-  inheritNormalDistribution
+  inheritNormalDistribution,
+  consensus
 } from './utils'
 import { allTrue } from '../../shared/utils'
 
@@ -77,5 +80,56 @@ describe('inheritNormalDistribution', () => {
       if (child > 0 && child < 2) withinOne++
     }
     expect(withinOne).toBeGreaterThan(50)
+  })
+})
+
+describe('consensus', () => {
+  it('reaches a consensus', () => {
+    const a = new Person()
+    const b = new Person()
+    expect(typeof consensus([ a ], [ b ])).toEqual('boolean')
+  })
+
+  it('returns true more than 25% of the time under normal circumstances', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const a = new Person()
+      const b = new Person()
+      if (consensus([ a ], [ b ])) count++
+    }
+    expect(count).toBeGreaterThan(25)
+  })
+
+  it('returns false less than 75% of the time under normal circumstances', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const a = new Person()
+      const b = new Person()
+      if (consensus([ a ], [ b ])) count++
+    }
+    expect(count).toBeLessThan(75)
+  })
+
+  it('favors those skilled in communication', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const a = new Person()
+      a.skills.mastered.push('Communication')
+      const b = new Person()
+      if (consensus([ a ], [ b ])) count++
+    }
+    expect(count).toBeGreaterThan(45)
+  })
+
+  it('favors the side with more people', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const a = new Person()
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      if (consensus([ a, b, c ], [ d ])) count++
+    }
+    expect(count).toBeGreaterThan(45)
   })
 })

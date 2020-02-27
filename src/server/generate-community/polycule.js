@@ -76,8 +76,6 @@ export default class Polycule {
     })
     delete person.polycule
 
-    // TODO: Does the person removed from the polycule leave the community?
-
     if (this.history && person.present) {
       const goneID = person.id
       const year = person.present
@@ -98,6 +96,8 @@ export default class Polycule {
         })
       }
     }
+
+    person.considerLeaving(community)
   }
 
   /**
@@ -112,8 +112,6 @@ export default class Polycule {
     people.forEach(p => { if (identified.includes(p.polycule)) delete p.polycule })
     this.active = false
 
-    // TODO: Do any of the people who were in the polycule leave the community?
-
     const year = Math.max(...people.map(p => p.present))
     const size = this.people.length
     if (!isNaN(year)) {
@@ -122,5 +120,7 @@ export default class Polycule {
         person.history.add(year, { tags: [ 'polycule', 'breakup' ], partners: this.people.filter(id => id !== person.id), size })
       })
     }
+
+    people.forEach(p => { p.considerLeaving(community) })
   }
 }

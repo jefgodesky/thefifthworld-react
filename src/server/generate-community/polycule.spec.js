@@ -282,6 +282,38 @@ describe('Polycule', () => {
       p.remove(b, community)
       expect(p.history.get({ tag: 'breakup' })).toHaveLength(1)
     })
+
+    it('adds the event it\'s given in the polycule history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c, community, { test: true })
+      expect(p.history.get({ tag: 'contracted' })[0].test).toEqual(true)
+    })
+
+    it('adds the event it\'s given to the personal history of the person removed', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c, community, { test: true })
+      const expected = { year: c.present, tags: [ 'polycule', 'removed' ], polycule: p.id, test: true }
+      expect(c.history.get({ tag: 'removed' })).toEqual([ expected ])
+    })
+
+    it('adds the event it\'s given to the personal histories of the other people', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.remove(c, community, { test: true })
+      const expected = { year: a.present, tags: [ 'polycule', 'contracted' ], polycule: p.id, removed: c.id, partners: [ b.id ], size: 2, test: true }
+      expect(a.history.get({ tag: 'contracted' })).toEqual([ expected ])
+    })
   })
 
   describe('breakup', () => {

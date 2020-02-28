@@ -406,18 +406,23 @@ export default class Person {
   /**
    * Marks the character as dead.
    * @param cause {string} - Optional. The cause of death (Default: `natural`).
+   * @param community {Community} - The community that this person belonged to.
    * @param killer {string} - The key of the person who killed this character,
    *   if this character was killed by someone.
    * @returns {Object} - A report object suitable for adding to the character's
    *   personal history.
    */
 
-  die (cause = 'natural', killer) {
+  die (cause = 'natural', community, killer) {
     const year = this.present
     this.died = year
     const event = { tags: [ 'died' ], cause }
     const k = killer instanceof Person && killer.id ? killer.id : typeof killer === 'string' ? killer : false
     if (k) event.killer = k
+    if (community && this.polycule) {
+      const polycule = community.polycules[this.polycule]
+      if (polycule) polycule.remove(this, community, Object.assign({}, event, { who: this.id }))
+    }
     return event
   }
 }

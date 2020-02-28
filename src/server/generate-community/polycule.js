@@ -77,7 +77,7 @@ export default class Polycule {
       delete this.love[id][person.id]
     })
     delete person.polycule
-    if (community) person.considerLeaving(community)
+    if (!person.died && !person.left && community) person.considerLeaving(community)
 
     if (this.history && person.present) {
       const goneID = person.id

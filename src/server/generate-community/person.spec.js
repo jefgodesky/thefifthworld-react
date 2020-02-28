@@ -604,13 +604,13 @@ describe('Person', () => {
       const c = new Community()
       const p = new Person()
       const k = new Person(c)
-      const report = p.die('JS bugs', k)
+      const report = p.die('JS bugs', c, k)
       expect(report.killer).toEqual(k.id)
     })
 
     it('notes the killer\'s ID if it is given', () => {
       const p = new Person()
-      const report = p.die('JS bugs', 'killer key')
+      const report = p.die('JS bugs', null, 'killer key')
       expect(report.killer).toEqual('killer key')
     })
 
@@ -624,6 +624,39 @@ describe('Person', () => {
       const p = new Person()
       const report = p.die('JS bugs')
       expect(report.killer).not.toBeDefined()
+    })
+
+    it('removes her from her polycule', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      const id = community.startPolycule(a, b, c)
+      a.die('JS bugs', community)
+      expect(community.polycules[id].people).toHaveLength(2)
+    })
+
+    it('notes the loss in the polycule history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      const id = community.startPolycule(a, b, c)
+      a.die('JS bugs', community)
+      const polycule = community.polycules[id]
+      const expected = { year: a.present, tags: [ 'died', 'contracted' ], members: [ b.id, c.id ], cause: 'JS bugs', who: a.id }
+      expect(polycule.history.get({ tag: 'died' })).toEqual([ expected ])
+    })
+
+    it('notes the loss in the personal history of other polycule members', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      const id = community.startPolycule(a, b, c)
+      a.die('JS bugs', community)
+      const expected = { year: a.present, tags: [ 'died', 'polycule', 'contracted' ], partners: [ c.id ], removed: a.id, size: 2, polycule: id, cause: 'JS bugs', who: a.id }
+      expect(b.history.get({ tag: 'died' })).toEqual([ expected ])
     })
   })
 })

@@ -78,17 +78,17 @@ const assaultOutcome = (attacker, defender) => {
  * Processes an assault.
  * @param attacker {Person} - The person assaulting the defender.
  * @param defender {Person} - The person being assaulted.
+ * @param community {Community} - The community being generated.
  * @param lethalIntent {boolean} - Optional. Does the attacker intend to kill
  *   the defender? (Default: `false`)
- * @param recentViolentDeaths {number} - How many people have died violently
- *   recently? The more there have been, the more intensely the community will
- *   search for the killer if another person is killed.
  * @param report {boolean} - Optional. If `true`, it returns an object
  *   reporting the details, and does not add anything to the histories of the
  *   people involved (Default: `false`).
  */
 
-const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths = 0, report = false) => {
+const assault = (attacker, defender, community, lethalIntent = false, report = false) => {
+  // TODO: Get recent violent deaths.
+  const recentViolentDeaths = 0
   const year = attacker.present
   const outcome = assaultOutcome(attacker, defender)
   const event = {
@@ -99,7 +99,7 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
   }
 
   if (outcome && lethalIntent) {
-    const death = defender.die('murder', attacker.id)
+    const death = defender.die('murder', community, attacker.id)
     event.tags = [ ...event.tags, 'murder', ...death.tags ]
     event.cause = 'homicide'
     event.discovered = !evade(attacker, 8 * (recentViolentDeaths + 1))
@@ -108,7 +108,7 @@ const assault = (attacker, defender, lethalIntent = false, recentViolentDeaths =
     event.tags = [ ...event.tags, ...res.tags ]
     event.location = res.location
     if (res.lethal || res.prognosis === 'death') {
-      const death = defender.die('assault', attacker.id)
+      const death = defender.die('assault', community, attacker.id)
       event.lethal = true
       event.cause = res.tags.includes('infection') ? 'infection' : 'injury'
       event.tags = [ ...event.tags, ...death.tags ]
@@ -173,7 +173,7 @@ const adultery = (...args) => {
       const attacker = pickRandom(attackers)
       const victim = pickRandom(people)
       // TODO: Pass along number of recent violent deaths in the community.
-      const outcome = assault(attacker.self, victim, attacker.decision === 'kill', 0, true)
+      const outcome = assault(attacker.self, victim, community, attacker.decision === 'kill', true)
       if (outcome) {
         report = Object.assign({}, report, outcome, {
           tags: dedupe([...report.tags, ...outcome.tags])

@@ -120,7 +120,7 @@ describe('assault', () => {
     const community = new Community()
     const attacker = new Person(community)
     const defender = new Person(community)
-    assault(attacker, defender)
+    assault(attacker, defender, community)
     const records = attacker.history.get({ tag: 'assault' })
     expect(records).toHaveLength(1)
   })
@@ -129,7 +129,7 @@ describe('assault', () => {
     const community = new Community()
     const attacker = new Person(community)
     const defender = new Person(community)
-    assault(attacker, defender)
+    assault(attacker, defender, community)
     const records = defender.history.get({ tag: 'assault' })
     expect(records).toHaveLength(1)
   })
@@ -140,7 +140,7 @@ describe('assault', () => {
       const community = new Community()
       const attacker = new Person(community)
       const defender = new Person(community)
-      assault(attacker, defender)
+      assault(attacker, defender, community)
       if (defender.died) count++
     }
     expect(count).toBeGreaterThan(0)
@@ -152,7 +152,7 @@ describe('assault', () => {
       const community = new Community()
       const attacker = new Person(community)
       const defender = new Person(community)
-      assault(attacker, defender, true)
+      assault(attacker, defender, community, true)
       if (defender.died) count++
     }
     expect(count).toBeGreaterThan(25)
@@ -162,7 +162,7 @@ describe('assault', () => {
     const community = new Community()
     const attacker = new Person(community)
     const defender = new Person(community)
-    const report = assault(attacker, defender, true, 0, true)
+    const report = assault(attacker, defender, community, true, true)
     expect(report.tags).toContain('assault')
   })
 
@@ -170,7 +170,7 @@ describe('assault', () => {
     const community = new Community()
     const attacker = new Person(community)
     const defender = new Person(community)
-    assault(attacker, defender, true, 0, true)
+    assault(attacker, defender, community, true, true)
     const checks = [
       attacker.history.get({ tag: 'assault' }).length === 0,
       defender.history.get({ tag: 'assault' }).length === 0

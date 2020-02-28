@@ -106,9 +106,11 @@ export default class Polycule {
    * Breaks up the polycule.
    * @param community {Community} - The community that this polycule is a
    *   part of.
+   * @param event {Object} - An existing event report object that the removal
+   *   should add to.
    */
 
-  breakup (community) {
+  breakup (community, event = { tags: [] }) {
     const people = this.people.map(id => community.people[id]).filter(p => p instanceof Person)
     const identified = [ this.id, true ]
     people.forEach(p => { if (identified.includes(p.polycule)) delete p.polycule })
@@ -117,9 +119,18 @@ export default class Polycule {
     const year = Math.max(...people.map(p => p.present))
     const size = this.people.length
     if (!isNaN(year)) {
-      this.history.add(year, { tags: [ 'breakup' ], partners: clone(this.people), size })
+      const tags = isPopulatedArray(event.tags) ? event.tags : []
+      this.history.add(year, Object.assign({}, event, {
+        tags: [ ...tags, 'breakup' ],
+        partners: clone(this.people),
+        size
+      }))
       people.forEach(person => {
-        person.history.add(year, { tags: [ 'polycule', 'breakup' ], partners: this.people.filter(id => id !== person.id), size })
+        person.history.add(year, Object.assign({}, event, {
+          tags: [ ...tags, 'polycule', 'breakup' ],
+          partners: this.people.filter(id => id !== person.id),
+          size
+        }))
       })
     }
 

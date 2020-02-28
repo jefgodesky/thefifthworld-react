@@ -362,5 +362,29 @@ describe('Polycule', () => {
       const expected = { year: a.present, tags: [ 'polycule', 'breakup' ], partners: [ b.id, c.id ], size: 3 }
       expect(record).toEqual([ expected ])
     })
+
+    it('adds the event given to the polycule\'s history', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community, { test: true })
+      const record = p.history.get({ tag: 'breakup' })
+      const expected = { year: a.present, tags: [ 'breakup' ], partners: [ a.id, b.id, c.id ], size: 3, test: true }
+      expect(record).toEqual([ expected ])
+    })
+
+    it('adds the event given to the personal histories of each member', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const p = new Polycule(a, b, c)
+      p.breakup(community, { test: true })
+      const record = a.history.get({ tag: 'breakup' })
+      const expected = { year: a.present, tags: [ 'polycule', 'breakup' ], partners: [ b.id, c.id ], size: 3, test: true }
+      expect(record).toEqual([ expected ])
+    })
   })
 })

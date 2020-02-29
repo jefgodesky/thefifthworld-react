@@ -33,6 +33,7 @@ export default class Polycule {
    */
 
   add (person, community) {
+    if (community && !Object.keys(community.people).includes(person.id)) community.add(person)
     const newLove = {}
     this.people.forEach(id => {
       newLove[id] = 1
@@ -41,7 +42,6 @@ export default class Polycule {
     this.love[person.id] = newLove
     this.people.push(person.id)
     person.polycule = this.id || true
-    if (community && !Object.keys(community.people).includes(person.id)) community.add(person)
 
     if (this.history && person.present) {
       this.history.add(person.present, { tags: [ 'expanded' ], members: clone(this.people) })

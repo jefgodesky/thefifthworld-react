@@ -158,12 +158,12 @@ const adultery = (...args) => {
   let report = {
     tags: [ 'crime', 'adultery' ],
     adulterers: people.map(p => p.id),
-    polycules: people.map(p => p.polycule).filter(p => Boolean(p))
+    polycules: dedupe(people.map(p => p.polycule).filter(p => Boolean(p)))
   }
 
   if (community) {
     const polycules = dedupe(people.map(p => p.polycule)).filter(id => Boolean(id)).map(id => community.polycules[id])
-    const victims = polycules.flatMap(p => p.people).map(id => community.people[id]).filter(p => !people.includes(p))
+    const victims = polycules.flatMap(p => p.people).map(id => community.people[id]).filter(p => Boolean(p) && !report.adulterers.includes(p.id))
     report.cheatedOn = victims.map(p => p.id).filter(p => Boolean(p))
 
     const revenge = victims.map(p => ({ self: p, decision: considerViolence(p) }))

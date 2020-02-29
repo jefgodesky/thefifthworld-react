@@ -168,8 +168,7 @@
     ]
   },
   "cheatingOutcomes": [
-    { "chance": 1, "event": "murder" },
-    { "chance": 14, "event": "breakup" },
+    { "chance": 15, "event": "breakup" },
     { "chance": 25, "event": "ejected" },
     { "chance": 60, "event": "recovery" }
   ]

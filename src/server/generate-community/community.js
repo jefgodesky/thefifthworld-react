@@ -42,12 +42,12 @@ export default class Community {
    */
 
   startPolycule (...people) {
-    const p = new Polycule()
+    const p = new Polycule(...people)
     const key = this.add(p)
-    for (let i = 0; i < people.length; i++) {
-      if (!Object.keys(this.people).includes(people[i].id)) this.add(people[i])
-      p.add(people[i])
-    }
+    people.forEach(person => {
+      if (!Object.keys(this.people).includes(person.id)) this.add(person)
+      person.polycule = key
+    })
     return key
   }
 

@@ -90,6 +90,32 @@ describe('Polycule', () => {
     })
   })
 
+  describe('considerAddition', () => {
+    it('returns a boolean', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      const id = community.startPolycule(a, b)
+      const p = community.polycules[id]
+      expect(typeof p.considerAddition(c, b, community)).toEqual('boolean')
+    })
+
+    it('sometimes returns true', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community)
+        const b = new Person()
+        const c = new Person()
+        const id = community.startPolycule(a, b)
+        const p = community.polycules[id]
+        if (p.considerAddition(c, b, community)) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+  })
+
   describe('add', () => {
     it('increases the size of the polycule', () => {
       const community = new Community()

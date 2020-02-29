@@ -1,7 +1,8 @@
 import History from './history'
 import Person from './person'
 
-import { clone, isPopulatedArray } from '../../shared/utils'
+import { encounter } from './love'
+import { allTrue, clone, isPopulatedArray } from '../../shared/utils'
 
 export default class Polycule {
   constructor (...people) {
@@ -23,6 +24,27 @@ export default class Polycule {
         })
       })
     }
+  }
+
+  /**
+   * Consider adding a new person to the polycule.
+   * @param person {Person} - The person being considered for addition.
+   * @param presenter {Person} - The person who's introducing this new person
+   *   to the polycule. Presumably, she already likes her, so we won't run a
+   *   second encounter with her, or we'd be severely cutting her odds by
+   *   forcing her to impress this person twice.
+   * @param community {Community} - The community that this polycule exists in.
+   * @returns {boolean} - `true` if everyone approves, or `false` if someone
+   *   in the polycule doesn't like the new person.
+   */
+
+  considerAddition (person, presenter, community) {
+    const others = this.people.filter(id => presenter.id !== id).map(id => community.people[id])
+    console.log({
+      len: others.length,
+      encounters: others.map(p => encounter(p, person))
+    })
+    return allTrue(others.map(p => encounter(p, person)).map(e => e.sexual && e.other))
   }
 
   /**

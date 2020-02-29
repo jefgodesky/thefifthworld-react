@@ -45,9 +45,10 @@ export default class Community {
     const p = new Polycule(...people)
     const key = this.add(p)
     people.forEach(person => {
-      if (!Object.keys(this.people).includes(person.id)) this.add(person)
+      if (!person.id || !Object.keys(this.people).includes(person.id)) this.add(person)
       person.polycule = key
     })
+    p.people = people.map(p => p.id)
     return key
   }
 

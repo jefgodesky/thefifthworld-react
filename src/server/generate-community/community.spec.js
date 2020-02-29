@@ -103,8 +103,8 @@ describe('Community', () => {
     it('adds the given people to the community', () => {
       const community = new Community()
       const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
+      const b = new Person()
+      const c = new Person()
       const key = community.startPolycule(a, b, c)
       expect(community.polycules[key].people).toEqual([ 'm1', 'm2', 'm3' ])
     })

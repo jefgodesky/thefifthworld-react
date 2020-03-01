@@ -9,6 +9,7 @@ import {
   assaultOutcome,
   assault,
   respondToAdultery,
+  adultery,
   evade
 } from './crime'
 import { allTrue } from '../../shared/utils'
@@ -193,11 +194,7 @@ describe('respondToAdultery', () => {
     const b = new Person()
     const c = new Person()
     a.takePartner(b, community, true)
-    const report = {
-      tags: [ 'crime', 'adultery' ],
-      adulterers: [ b.id, c.id ]
-    }
-    const actual = respondToAdultery(a, [ b, c ], community, report)
+    const actual = respondToAdultery(a, [ b, c ], community)
     expect(typeof actual).toEqual('object')
   })
 
@@ -209,8 +206,8 @@ describe('respondToAdultery', () => {
       const b = new Person()
       const c = new Person()
       a.takePartner(b, community, true)
-      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
-      if (report.tags.includes('separation')) count++
+      const report = respondToAdultery(a, [ b, c ], community)
+      if (report.tags && report.tags.includes('separation')) count++
     }
     expect(count).toBeGreaterThan(25)
   })
@@ -223,8 +220,8 @@ describe('respondToAdultery', () => {
       const b = new Person()
       const c = new Person()
       a.takePartner(b, community, true)
-      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
-      if (report.tags.includes('separation')) count++
+      const report = respondToAdultery(a, [ b, c ], community)
+      if (report.tags && report.tags.includes('separation')) count++
     }
     expect(count).toBeLessThan(75)
   })
@@ -237,10 +234,50 @@ describe('respondToAdultery', () => {
       const b = new Person()
       const c = new Person()
       a.takePartner(b, community, true)
-      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
-      if (report.tags.includes('assault')) count++
+      const report = respondToAdultery(a, [ b, c ], community)
+      if (report.tags && report.tags.includes('assault')) count++
     }
     expect(count).toBeGreaterThanOrEqual(0)
+  })
+})
+
+describe('adultery', () => {
+  it('adds the incident to the adulterers\' histories', () => {
+    const community = new Community()
+    const a = new Person()
+    const b = new Person()
+    const c = new Person()
+    const d = new Person()
+    a.takePartner(b, community, true)
+    c.takePartner(d, community, true)
+    adultery([ b, d ], community)
+    const actual = [
+      b.history.get({ tag: 'adultery' }).length === 1,
+      d.history.get({ tag: 'adultery' }).length === 1
+    ]
+    expect(allTrue(actual)).toEqual(true)
+  })
+
+  it('adds the incident to all partners\' histories if it\'s found out', () => {
+    const community = new Community()
+    const a = new Person()
+    const b = new Person()
+    const c = new Person()
+    const d = new Person()
+    const e = new Person()
+    a.takePartner(b, community, true)
+    c.takePartner(d, community, true)
+    c.takePartner(e, community, false)
+    adultery([ a, c ], community)
+    const keptSecret = a.history.get({ tag: 'adultery' })[0].keepAdulterySecret
+    const actual = [
+      a.history.get({ tag: 'adultery' }).length === 1,
+      b.history.get({ tag: 'adultery' }).length === 1,
+      c.history.get({ tag: 'adultery' }).length === 1,
+      d.history.get({ tag: 'adultery' }).length === 1,
+      e.history.get({ tag: 'adultery' }).length === 1
+    ]
+    expect(keptSecret || allTrue(actual)).toEqual(true)
   })
 })
 

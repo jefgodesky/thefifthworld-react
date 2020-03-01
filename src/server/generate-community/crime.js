@@ -3,6 +3,7 @@ import random from 'random'
 import {
   anyTrue,
   allTrue,
+  dedupe,
   intersection,
   probabilityInNormalDistribution,
   isPopulatedArray
@@ -131,27 +132,24 @@ const assault = (attacker, defender, community, lethalIntent = false, report = f
  *   of adultery that the `subject` is responding to.
  * @param community {Community} - The community that the `subject` belongs to
  *   and the adultery is occurring within.
- * @param report {Object} - An object containing information about the incident
- *   so far.
- * @returns {Object} - the `report` expanded to include the subject's response.
+ * @returns {Object} - an object detailing the response.
  */
 
-const respondToAdultery = (subject, adulterers, community, report) => {
+const respondToAdultery = (subject, adulterers, community) => {
   const myExclusivePartners = subject.partners.filter(rel => rel.exclusive).map(rel => rel.id)
   const partners = adulterers.filter(a => myExclusivePartners.includes(a.id))
   const partner = isPopulatedArray(partners) ? partners[0] : undefined
 
+  let report = {}
   if (partner) {
     if (random.boolean()) {
-      const separation = subject.separate(partner, true)
-      report = Object.assign({}, report, separation, { tags: [ ...report.tags, ...separation.tags ] })
+      report = subject.separate(partner, true)
     } else {
       const violence = considerViolence(subject)
       if (violence !== 'no') {
         const lethal = violence === 'kill'
         const target = pickRandom(adulterers)
-        const attack = assault(subject, target, community, lethal, true)
-        report = Object.assign({}, report, attack, { tags: [ ...report.tags, ...attack.tags ] })
+        report = assault(subject, target, community, lethal, true)
       } else {
         const rel = subject.partners.filter(rel => rel.id === partner.id)
         if (isPopulatedArray(rel)) rel[0].love -= 5
@@ -159,6 +157,39 @@ const respondToAdultery = (subject, adulterers, community, report) => {
     }
   }
   return report
+}
+
+/**
+ * Commit adultery.
+ * @param adulterers {Person[]} - The people committing adultery.
+ * @param community {Community} - The community that this act is occurring in.
+ */
+
+const adultery = (adulterers, community) => {
+  const cheatedOn = dedupe(adulterers.flatMap(a => a.partners).filter(rel => rel.exclusive).map(rel => rel.id)).map(id => community.people[id])
+  const allPartners = dedupe(adulterers.flatMap(a => a.partners).map(rel => rel.id)).map(id => community.people[id])
+  const keepAdulterySecret = allTrue(adulterers.map(a => evade(a, cheatedOn.length)))
+  let report = {
+    tags: [ 'crime', 'adultery' ],
+    adulterers: adulterers.map(a => a.id),
+    cheatedOn: cheatedOn.map(p => p.id),
+    keepAdulterySecret
+  }
+
+  if (!keepAdulterySecret) {
+    report.responses = cheatedOn.map(person => {
+      const response = respondToAdultery(person, adulterers, community)
+      if (isPopulatedArray(response.tags)) report.tags = dedupe([ ...report.tags, ...response.tags ])
+      delete response.tags
+      return response
+    }).filter(res => Object.entries(res).length > 0)
+  }
+
+  const parties = keepAdulterySecret ? adulterers : dedupe([ ...adulterers, ...allPartners ])
+  const year = Math.max(...parties.map(p => p.present))
+  parties.forEach(person => {
+    person.history.add(year, report)
+  })
 }
 
 /**
@@ -199,5 +230,6 @@ export {
   assaultOutcome,
   assault,
   respondToAdultery,
+  adultery,
   evade
 }

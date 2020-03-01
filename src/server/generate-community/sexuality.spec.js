@@ -83,5 +83,33 @@ describe('Sexuality', () => {
       }
       expect(count).toBeGreaterThan(0)
     })
+
+    it('returns true for someone who matches your sexual preferences more than 50% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const subject = new Person()
+        subject.sexuality.androphilia = 80
+        subject.sexuality.gynephilia = 10
+        subject.sexuality.skoliophilia = 10
+        const object = new Person()
+        object.gender = 'Man'
+        if (subject.sexuality.isAttractedTo(object)) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+
+    it('returns true for someone who matches your sexual preferences less than 90% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const subject = new Person()
+        subject.sexuality.androphilia = 80
+        subject.sexuality.gynephilia = 10
+        subject.sexuality.skoliophilia = 10
+        const object = new Person()
+        object.gender = 'Man'
+        if (subject.sexuality.isAttractedTo(object)) count++
+      }
+      expect(count).toBeLessThan(90)
+    })
   })
 })

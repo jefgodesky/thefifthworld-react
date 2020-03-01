@@ -644,6 +644,38 @@ describe('Person', () => {
       a.takePartner(b, c)
       expect(b.partners[0].love).toEqual(1)
     })
+
+    it('adds your new relationship to your history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.history.get({ tag: 'new relationship' })).toHaveLength(1)
+    })
+
+    it('adds the people in your new relationship to your history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.history.get({ tag: 'new relationship' })[0].parties).toEqual([ a.id, b.id ])
+    })
+
+    it('adds your new relationship to your partner\'s history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.history.get({ tag: 'new relationship' })).toHaveLength(1)
+    })
+
+    it('adds the people in your new relationship to your partner\'s history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.history.get({ tag: 'new relationship' })[0].parties).toEqual([ a.id, b.id ])
+    })
   })
 
   describe('separate', () => {

@@ -319,6 +319,14 @@ export default class Person {
 
     this.partners.push({ exclusive, id: partner.id, love: 1 })
     partner.partners.push({ exclusive, id: this.id, love: 1 })
+
+    const year = Math.max(this.present, partner.present)
+    const report = {
+      tags: [ 'new relationship' ],
+      parties: [ this.id, partner.id ]
+    }
+    this.history.add(year, report)
+    partner.history.add(year, report)
   }
 
   /**

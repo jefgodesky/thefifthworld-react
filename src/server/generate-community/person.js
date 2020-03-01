@@ -12,6 +12,7 @@ import tables from '../../data/community-creation'
 
 import { pickRandom, checkTable } from './utils'
 import {
+  allTrue,
   isPopulatedArray,
   daysFromNow,
   randomDayOfYear,
@@ -288,6 +289,29 @@ export default class Person {
     const like = this.encounter(person)
     const lust = this.sexuality.isAttractedTo(person)
     return like && lust
+  }
+
+  /**
+   * Take a partner.
+   * @param partner {Person} - Your new partner.
+   * @param community {Community} - The community that you both belong to.
+   */
+
+  takePartner (partner, community) {
+    const monogamy = get(community, 'traditions.monogamy') || 0.9
+    const myAgreeableness = this.personality.chance('openness')
+    const myNeuroticism = this.personality.chance('neuroticism')
+    const yourAgreeableness = partner.personality.chance('openness')
+    const yourNeuroticism = partner.personality.chance('neuroticism')
+    const iWantExclusivity = random.int(1, 100) < Math.max(myAgreeableness * monogamy, myNeuroticism)
+    const youWantExclusivity = random.int(1, 100) < Math.max(yourAgreeableness * monogamy, yourNeuroticism)
+    const exclusive = iWantExclusivity || youWantExclusivity
+
+    if (!community.isCurrentMember(this)) community.add(this)
+    if (!community.isCurrentMember(partner)) community.add(partner)
+
+    this.partners.push({ exclusive, id: partner.id })
+    partner.partners.push({ exclusive, id: this.id })
   }
 
   /**

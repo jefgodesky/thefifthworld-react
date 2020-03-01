@@ -484,6 +484,96 @@ describe('Person', () => {
     })
   })
 
+  describe('takePartner', () => {
+    it('adds your new partner to your list', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.partners).toHaveLength(1)
+    })
+
+    it('adds you to your new partner\'s list', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.partners).toHaveLength(1)
+    })
+
+    it('gives you an ID', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.id).toBeDefined()
+    })
+
+    it('gives your partner an ID', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.id).toBeDefined()
+    })
+
+    it('adds you to the community', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(c.isCurrentMember(a)).toEqual(true)
+    })
+
+    it('adds your partner to the community', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(c.isCurrentMember(b)).toEqual(true)
+    })
+
+    it('lists your partner\'s ID', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.partners[0].id).toEqual(b.id)
+    })
+
+    it('lists your ID for your partner', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.partners[0].id).toEqual(a.id)
+    })
+
+    it('sets an exclusivity flag for you', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(typeof a.partners[0].exclusive).toEqual('boolean')
+    })
+
+    it('sets an exclusivity flag for your partner', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(typeof b.partners[0].exclusive).toEqual('boolean')
+    })
+
+    it('sets the same exclusivity flag for you and your partner', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.partners[0].exclusive).toEqual(b.partners[0].exclusive)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

@@ -14,21 +14,19 @@ import { allTrue } from '../../shared/utils'
 
 describe('getCrimes', () => {
   it('returns a person\'s crimes', () => {
-    const p = new Person()
-    p.id = 'p1'
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 1 })
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 2 })
-    p.history.add(p.present, { tags: [ 'crime', 'murder' ], attacker: p.id, victim: 3 })
-    expect(getCrimes(p)).toEqual([ 'assault', 'assault', 'murder' ])
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    assault(a, b, community)
+    expect(getCrimes(a)).toHaveLength(1)
   })
 
-  it('doesn\'t include crimes you were the victim of', () => {
-    const p = new Person()
-    p.id = 'p1'
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 1 })
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 2 })
-    p.history.add(p.present, { tags: [ 'crime', 'murder' ], attacker: undefined, victim: p.id })
-    expect(getCrimes(p)).toEqual([ 'assault', 'assault' ])
+  it('doesn\'t include crimes you didn\'t commit', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person(community)
+    assault(a, b, community)
+    expect(getCrimes(b)).toHaveLength(0)
   })
 
   it('counts an event that is both assault and murder as murder', () => {

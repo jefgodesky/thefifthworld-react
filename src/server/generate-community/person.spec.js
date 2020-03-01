@@ -646,6 +646,62 @@ describe('Person', () => {
     })
   })
 
+  describe('separate', () => {
+    it('removes the partner from your list', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(a.partners).toHaveLength(0)
+    })
+
+    it('removes you from your partner\'s list', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(b.partners).toHaveLength(0)
+    })
+
+    it('notes the separation in your history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(a.history.get({ tag: 'separation' })).toHaveLength(1)
+    })
+
+    it('notes who separated in your history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(a.history.get({ tag: 'separation' })[0].parties).toEqual([ a.id, b.id ])
+    })
+
+    it('notes the separation in your former partner\'s history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(b.history.get({ tag: 'separation' })).toHaveLength(1)
+    })
+
+    it('notes who separated in your former partner\'s history', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.separate(b)
+      expect(b.history.get({ tag: 'separation' })[0].parties).toEqual([ a.id, b.id ])
+    })
+  })
+
   describe('developRelationships', () => {
     it('changes your love score', () => {
       const c = new Community()

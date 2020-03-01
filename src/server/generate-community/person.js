@@ -322,6 +322,31 @@ export default class Person {
   }
 
   /**
+   * End a relationship.
+   * @param partner {Person} - The person you're ending your relationship with.
+   * @param report {boolean} - Optional. If `true`, returns a report of the
+   *   separation, but doesn't add it to any histories. If `false`, the report
+   *   is added to each person's history (Default: `false`).
+   */
+
+  separate (partner, report = false) {
+    this.partners = this.partners.filter(rel => rel.id !== partner.id)
+    partner.partners = partner.partners.filter(rel => rel.id !== this.id)
+
+    const r = {
+      tags: [ 'separation' ],
+      parties: [ this.id, partner.id ]
+    }
+    if (report) {
+      return r
+    } else {
+      const year = Math.max(this.present, partner.present)
+      this.history.add(year, r)
+      partner.history.add(year, r)
+    }
+  }
+
+  /**
    * Your love for your partners can deepen or erode over time.
    * @param community {Community} - The community that you belong to.
    */

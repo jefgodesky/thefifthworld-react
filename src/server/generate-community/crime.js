@@ -86,8 +86,7 @@ const assaultOutcome = (attacker, defender) => {
  */
 
 const assault = (attacker, defender, community, lethalIntent = false, report = false) => {
-  // TODO: Get recent violent deaths.
-  const recentViolentDeaths = 0
+  const recentViolentDeaths = community.getRecentViolentDeaths()
   const year = attacker.present
   const outcome = assaultOutcome(attacker, defender)
   const event = {

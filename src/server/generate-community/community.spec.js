@@ -5,7 +5,6 @@ import random from 'random'
 import Community from './community'
 import History from './history'
 import Person from './person'
-import Polycule from './polycule'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -23,11 +22,6 @@ describe('Community', () => {
     it('starts an empty object for people', () => {
       const c = new Community()
       expect(c.people).toEqual({})
-    })
-
-    it('starts an empty object for polycules', () => {
-      const c = new Community()
-      expect(c.polycules).toEqual({})
     })
   })
 
@@ -50,83 +44,6 @@ describe('Community', () => {
       const p = new Person()
       const c = new Community()
       expect(c.add(p)).toEqual('m1')
-    })
-
-    it('adds a polycule to the community', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const p = new Polycule(a, b, c)
-      community.add(p)
-      expect(Object.keys(community.polycules).length).toEqual(1)
-    })
-
-    it('sets the polycule\'s ID', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const p = new Polycule(a, b, c)
-      community.add(p)
-      expect(p.id).toEqual('p1')
-    })
-
-    it('returns the polycule\'s ID', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const p = new Polycule(a, b, c)
-      expect(community.add(p)).toEqual('p1')
-    })
-  })
-
-  describe('startPolycule', () => {
-    it('returns the polycule\'s key', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      expect(community.startPolycule(a, b, c)).toEqual('p1')
-    })
-
-    it('adds the polycule to the community', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const key = community.startPolycule(a, b, c)
-      expect(community.polycules[key]).toBeInstanceOf(Polycule)
-    })
-
-    it('adds the given people to the community', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person()
-      const c = new Person()
-      const key = community.startPolycule(a, b, c)
-      expect(community.polycules[key].people).toEqual([ 'm1', 'm2', 'm3' ])
-    })
-
-    it('adds polycule ID to each of the members', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const key = community.startPolycule(a, b, c)
-      const actual = [ a.polycule, b.polycule, c.polycule ]
-      const expected = [ key, key, key ]
-      expect(actual).toEqual(expected)
-    })
-
-    it('adds anyone not in the community to the community', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person()
-      community.startPolycule(a, b, c)
-      expect(Object.keys(community.people)).toContain(c.id)
     })
   })
 
@@ -210,77 +127,6 @@ describe('Community', () => {
       const p = new Person(c)
       p.die()
       expect(c.isCurrentMember(p.id)).toEqual(false)
-    })
-  })
-
-  describe('getPolyculeMembers', () => {
-    it('returns the members of a polycule', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const key = community.startPolycule(a, b, c)
-      expect(community.getPolyculeMembers(key)).toEqual([ a, b, c ])
-    })
-
-    it('returns the other members of a polycule if given a self as a point of reference', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const key = community.startPolycule(a, b, c)
-      expect(community.getPolyculeMembers(key, c)).toEqual([ a, b ])
-    })
-
-    it('returns an empty array if self isn\'t in the polycule', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const key = community.startPolycule(a, b)
-      expect(community.getPolyculeMembers(key, c)).toEqual([])
-    })
-
-    it('returns an empty array if given an invalid ID', () => {
-      const community = new Community()
-      expect(community.getPolyculeMembers('p1')).toEqual([])
-    })
-  })
-
-  describe('getImmediateFamily', () => {
-    it('returns yourself', () => {
-      const community = new Community()
-      const a = new Person(community)
-      expect(community.getImmediateFamily(a)).toEqual([ a ])
-    })
-
-    it('returns you and your fellow polycule members', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person()
-      const c = new Person()
-      community.startPolycule(a, b, c)
-      expect(community.getImmediateFamily(a)).toEqual([ a, b, c ])
-    })
-
-    it('returns you and your kids', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(a, community)
-      const c = new Person(a, community)
-      expect(community.getImmediateFamily(a)).toEqual([ a, b, c ])
-    })
-
-    it('returns you, your lovers, your kids, and your stepkids', () => {
-      const community = new Community()
-      const a = new Person(community)
-      const b = new Person(community)
-      const c = new Person(community)
-      const d = new Person(a, b, community)
-      const e = new Person(b, c, community)
-      const f = new Person(c, community)
-      community.startPolycule(a, b, c)
-      expect(community.getImmediateFamily(a)).toEqual([ a, b, c, d, e, f ])
     })
   })
 

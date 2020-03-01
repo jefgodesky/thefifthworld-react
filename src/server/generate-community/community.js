@@ -1,8 +1,7 @@
 import History from './history'
 import Person from './person'
-import Polycule from './polycule'
 
-import { clone, dedupe, isPopulatedArray } from '../../shared/utils'
+import { clone, isPopulatedArray } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -13,40 +12,21 @@ export default class Community {
     }
 
     this.people = {}
-    this.polycules = {}
     this.history = new History()
   }
 
   /**
-   * Add a person or a polycule to the community.
-   * @param addition {Person|Polycule} - The person or polycule to add to the
-   *   community.
-   * @returns {string} - The person or polycule's key.
+   * Add a person to the community.
+   * @param person {Person} - The person to add to the community.
+   * @returns {string} - The person's key.
    */
 
-  add (addition) {
-    const isPerson = addition instanceof Person
-    const arr = isPerson ? this.people : this.polycules
-    const prefix = isPerson ? 'm' : 'p'
-    const total = Object.keys(arr).length
-    const newKey = `${prefix}${total + 1}`
-    arr[newKey] = addition
-    addition.id = newKey
+  add (person) {
+    const total = Object.keys(this.people).length
+    const newKey = `m${total + 1}`
+    this.people[newKey] = person
+    person.id = newKey
     return newKey
-  }
-
-  /**
-   * Start a new polycule in the community.
-   * @param people {Person} - The people who should make up this polycule at
-   *   its beginning.
-   */
-
-  startPolycule (...people) {
-    people.forEach(person => { if (!person.id || !Object.keys(this.people).includes(person.id)) this.add(person) })
-    const p = new Polycule(...people)
-    const key = this.add(p)
-    people.forEach(person => { person.polycule = key })
-    return key
   }
 
   /**
@@ -74,48 +54,6 @@ export default class Community {
     const id = person instanceof Person ? person.id : person
     const p = this.people[id]
     return Boolean(p) && p instanceof Person && !p.died && !p.left
-  }
-
-  /**
-   * Returns the members of a polycule.
-   * @param id {string} - The ID of the polycule.
-   * @param self {Person} - Optional. A person to consider a point of
-   *   reference. If provided, this returns an array of this person's partners,
-   *   that is, everyone in the polycule besides this person. If the person
-   *   provided is not in the polycule, it returns an empty array.
-   * @returns {Person[]} - An array of the people in the polycule.
-   */
-
-  getPolyculeMembers (id, self) {
-    if (this.polycules[id]) {
-      const people = this.polycules[id].people.map(id => this.people[id])
-      if (self && people.includes(self)) {
-        return people.filter(p => p !== self)
-      } else if (!self) {
-        return people
-      }
-    }
-    return []
-  }
-
-  /**
-   * Return an array of the people in this person's immediate family, i.e.,
-   * the other members of her polycule and the set of all of their children.
-   * @param person {Person} - The person whose family we are fetching.
-   * @returns {Person[]} - an array of the people `person`'s immediate family.
-   */
-
-  getImmediateFamily (person) {
-    const id = person instanceof Person ? person.id : person
-    const self = this.people[id]
-    if (self && !self.died && !self.left) {
-      const lovers = self.polycule ? this.getPolyculeMembers(self.polycule) : []
-      const ownChildren = self.children || []
-      const otherChildren = lovers.filter(p => isPopulatedArray(p.children)).flatMap(p => p.children)
-      return dedupe([ id, ...lovers.map(p => p.id), ...ownChildren, ...otherChildren ]).map(id => this.people[id])
-    } else {
-      return []
-    }
   }
 
   /**

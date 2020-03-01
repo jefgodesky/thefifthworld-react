@@ -10,7 +10,7 @@ import Skills from './skills'
 
 import tables from '../../data/community-creation'
 
-import { pickRandom, checkTable, consensus } from './utils'
+import { pickRandom, checkTable } from './utils'
 import {
   isPopulatedArray,
   daysFromNow,
@@ -345,46 +345,6 @@ export default class Person {
   }
 
   /**
-   * Does this person think about leaving the community? The more open you are
-   * to new experiences, the more you're willing to take risks, and the more
-   * the community's recent history might include problems without making you
-   * want to leave.
-   * @param community {Community} - The community that you're considering
-   *   leaving.
-   * @returns {boolean} - `true` if you're thinking about leaving, or `false`
-   *   if you aren't.
-   */
-
-  thinksAboutLeaving (community) {
-    return community.hadProblemsRecently() > this.personality.chance('openness')
-  }
-
-  /**
-   * Make a decision on whether or not to leave the community. Talk to your
-   * family and reach a consensus. If everyone agrees, the family leaves as a
-   * group. Otherwise, everyone stays.
-   * @param community {Community} - The community that you're considering
-   *   leaving.
-   */
-
-  considerLeaving (community) {
-    const family = community.getImmediateFamily(this.id)
-    const opinions = family.map(person => ({ person, opinion: person.thinksAboutLeaving(community) }))
-    const leavers = opinions.filter(o => o.opinion === true).map(o => o.person)
-    const remainers = opinions.filter(o => o.opinion === false).map(o => o.person)
-
-    if (consensus(leavers, remainers)) {
-      const year = Math.max(...family.map(p => p.present))
-      const group = family.map(p => p.id)
-      family.forEach(person => {
-        const entry = person.leave()
-        entry.group = group
-        person.history.add(year, entry)
-      })
-    }
-  }
-
-  /**
    * Marks when a character leaves the community.
    * @param crime {string} - Optional. If defined, the character did not leave
    *   the community of her own volition, but was exiled for committing some
@@ -419,10 +379,6 @@ export default class Person {
     const event = { tags: [ 'died' ], cause }
     const k = killer instanceof Person && killer.id ? killer.id : typeof killer === 'string' ? killer : false
     if (k) event.killer = k
-    if (community && this.polycule) {
-      const polycule = community.polycules[this.polycule]
-      if (polycule) polycule.remove(this, community, Object.assign({}, event, { who: this.id }))
-    }
     return event
   }
 }

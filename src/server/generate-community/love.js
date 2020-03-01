@@ -1,14 +1,3 @@
-import random from 'random'
-
-import Community from './community'
-import Person from './person'
-
-import tables from '../../data/community-creation'
-
-import { dedupe, isPopulatedArray } from '../../shared/utils'
-import { adultery } from './crime'
-import { checkTable } from './utils'
-
 /**
  * What happens when two people spend some time together?
  * @param a {Person} - One person.
@@ -43,37 +32,6 @@ const encounter = (a, b) => {
   return report
 }
 
-const commitAdultery = (...parties) => {
-  const adulterers = parties.filter(p => p instanceof Person)
-  const communities = parties.filter(p => p instanceof Community)
-  const community = isPopulatedArray(communities) ? communities[0] : null
-  const polycules = dedupe(adulterers.map(p => p.polycule).filter(p => Boolean(p))).map(id => community.polycules[id])
-  const year = Math.max(...adulterers.map(p => p.present))
-
-  if (community) {
-    const report = adultery(...adulterers, community)
-    polycules.forEach(polycule => {
-      const times = report.lethal ? 10 : report.tags.includes('assault') ? 5 : 1
-      const rolls = []
-      for (let i = 0; i < times; i++) rolls.push(random.int(1, 100))
-      const outcome = checkTable(tables.cheatingOutcomes, Math.min(...rolls))
-
-      switch (outcome) {
-        case 'breakup':
-          polycule.breakup(community, report)
-          break
-        case 'ejected':
-          const insiders = adulterers.filter(p => polycule.people.includes(p.id))
-          insiders.forEach(insider => { polycule.remove(insider, community, report) })
-          break
-        case 'recovery':
-          polycule.history.add(year, Object.assign({}, report, { outcome }))
-      }
-    })
-  }
-}
-
 export {
-  encounter,
-  commitAdultery
+  encounter
 }

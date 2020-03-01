@@ -1,17 +1,12 @@
 import random from 'random'
 
-import Community from './community'
-import Person from './person'
-
 import {
   anyTrue,
   allTrue,
-  dedupe,
   intersection,
   probabilityInNormalDistribution,
   isPopulatedArray
 } from '../../shared/utils'
-import { pickRandom } from './utils'
 
 /**
  * Returns a list of crimes committed by this person.
@@ -125,66 +120,6 @@ const assault = (attacker, defender, community, lethalIntent = false, report = f
 }
 
 /**
- * Will this person cheat on her polycule?
- * @param subject {Person} - The person considering cheating.
- * @param community {Community} - The community this person belongs to.
- * @returns {boolean} - `true` if `subject` is willing to commit adultery, or
- *   `false` if she is not.
- */
-
-const considerAdultery = (subject, community) => {
-  if (subject.polycule) {
-    const love = community.polycules[subject.polycule].love[subject.id]
-    const total = Object.values(love).reduce((acc, curr) => acc + curr, 0)
-    const tries = Math.max(total * 8, 8)
-    return !subject.personality.check('agreeableness', tries, 'or')
-  }
-  return false
-}
-
-/**
- * Commit adultery.
- * @param args {Any} - Instances of Person are treated as the individuals
- *   involved in the adultery. The first instance of Community is interpreted
- *   as the community in which this takes place. All other parameters are
- *   ignored.
- * @returns {Object} - An object detailing what happened.
- */
-
-const adultery = (...args) => {
-  const people = args.filter(a => a instanceof Person)
-  const communities = args.filter(c => c instanceof Community)
-  const community = isPopulatedArray(communities) ? communities[0] : undefined
-  let report = {
-    tags: [ 'crime', 'adultery' ],
-    adulterers: people.map(p => p.id),
-    polycules: dedupe(people.map(p => p.polycule).filter(p => Boolean(p)))
-  }
-
-  if (community) {
-    const polycules = dedupe(people.map(p => p.polycule)).filter(id => Boolean(id)).map(id => community.polycules[id])
-    const victims = polycules.flatMap(p => p.people).map(id => community.people[id]).filter(p => Boolean(p) && !report.adulterers.includes(p.id))
-    report.cheatedOn = victims.map(p => p.id).filter(p => Boolean(p))
-
-    const revenge = victims.map(p => ({ self: p, decision: considerViolence(p) }))
-    const attackers = revenge.filter(r => r.decision !== 'no')
-
-    if (attackers.length > 0) {
-      const attacker = pickRandom(attackers)
-      const victim = pickRandom(people)
-      // TODO: Pass along number of recent violent deaths in the community.
-      const outcome = assault(attacker.self, victim, community, attacker.decision === 'kill', true)
-      if (outcome) {
-        report = Object.assign({}, report, outcome, {
-          tags: dedupe([...report.tags, ...outcome.tags])
-        })
-      }
-    }
-  }
-  return report
-}
-
-/**
  * Determines whether or not a criminal can get away with her crime (assuming
  * she even has that opportunity — assault someone who survives, and she'll be
  * able to tell everyone who attacked her).
@@ -221,7 +156,5 @@ export {
   considerViolence,
   assaultOutcome,
   assault,
-  considerAdultery,
-  adultery,
   evade
 }

@@ -712,7 +712,7 @@ describe('Person', () => {
       const b = new Person()
       a.takePartner(b, c)
       a.separate(b)
-      expect(a.history.get({ tag: 'separation' })[0].parties).toEqual([ a.id, b.id ])
+      expect(a.history.get({ tag: 'separation' })[0].separated).toEqual([ a.id, b.id ])
     })
 
     it('notes the separation in your former partner\'s history', () => {
@@ -730,7 +730,7 @@ describe('Person', () => {
       const b = new Person()
       a.takePartner(b, c)
       a.separate(b)
-      expect(b.history.get({ tag: 'separation' })[0].parties).toEqual([ a.id, b.id ])
+      expect(b.history.get({ tag: 'separation' })[0].separated).toEqual([ a.id, b.id ])
     })
   })
 

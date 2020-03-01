@@ -343,7 +343,7 @@ export default class Person {
 
     const r = {
       tags: [ 'separation' ],
-      parties: [ this.id, partner.id ]
+      separated: [ this.id, partner.id ]
     }
     if (report) {
       return r

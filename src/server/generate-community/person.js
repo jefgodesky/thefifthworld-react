@@ -317,8 +317,8 @@ export default class Person {
     if (!community.isCurrentMember(this)) community.add(this)
     if (!community.isCurrentMember(partner)) community.add(partner)
 
-    this.partners.push({ exclusive, id: partner.id })
-    partner.partners.push({ exclusive, id: this.id })
+    this.partners.push({ exclusive, id: partner.id, love: 1 })
+    partner.partners.push({ exclusive, id: this.id, love: 1 })
   }
 
   /**

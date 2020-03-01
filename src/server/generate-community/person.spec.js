@@ -628,6 +628,22 @@ describe('Person', () => {
       }
       expect(count).toBeLessThan(95)
     })
+
+    it('sets your initial love score', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.partners[0].love).toEqual(1)
+    })
+
+    it('sets your partner\'s initial love score', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(b.partners[0].love).toEqual(1)
+    })
   })
 
   describe('getPartners', () => {

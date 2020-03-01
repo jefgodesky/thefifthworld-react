@@ -295,17 +295,24 @@ export default class Person {
    * Take a partner.
    * @param partner {Person} - Your new partner.
    * @param community {Community} - The community that you both belong to.
+   * @param e {boolean} - Optional. If defined, sets this as the relationship's
+   *   `exclusive` flag, rather than using the community's traditions and the
+   *   personalities of the people involved. This is mostly for testing. Using
+   *   this in any real application is not advised.
    */
 
-  takePartner (partner, community) {
-    const monogamy = get(community, 'traditions.monogamy') || 0.9
-    const myAgreeableness = this.personality.chance('openness')
-    const myNeuroticism = this.personality.chance('neuroticism')
-    const yourAgreeableness = partner.personality.chance('openness')
-    const yourNeuroticism = partner.personality.chance('neuroticism')
-    const iWantExclusivity = random.int(1, 100) < Math.max(myAgreeableness * monogamy, myNeuroticism)
-    const youWantExclusivity = random.int(1, 100) < Math.max(yourAgreeableness * monogamy, yourNeuroticism)
-    const exclusive = iWantExclusivity || youWantExclusivity
+  takePartner (partner, community, e) {
+    let exclusive = e
+    if (exclusive === undefined) {
+      const monogamy = get(community, 'traditions.monogamy') || 0.9
+      const myAgreeableness = this.personality.chance('openness')
+      const myNeuroticism = this.personality.chance('neuroticism')
+      const yourAgreeableness = partner.personality.chance('openness')
+      const yourNeuroticism = partner.personality.chance('neuroticism')
+      const iWantExclusivity = random.int(1, 100) < Math.max(myAgreeableness * monogamy, myNeuroticism)
+      const youWantExclusivity = random.int(1, 100) < Math.max(yourAgreeableness * monogamy, yourNeuroticism)
+      exclusive = iWantExclusivity || youWantExclusivity
+    }
 
     if (!community.isCurrentMember(this)) community.add(this)
     if (!community.isCurrentMember(partner)) community.add(partner)

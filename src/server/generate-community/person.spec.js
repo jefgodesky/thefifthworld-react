@@ -572,6 +572,62 @@ describe('Person', () => {
       a.takePartner(b, c)
       expect(a.partners[0].exclusive).toEqual(b.partners[0].exclusive)
     })
+
+    it('will let you specify exclusivity', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c, true)
+      expect(a.partners[0].exclusive && b.partners[0].exclusive).toEqual(true)
+    })
+
+    it('is exclusive more than 75% of the time if that\'s the community\'s tradition', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community({ traditions: { monogamy: 1 } })
+        const a = new Person()
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.partners[0].exclusive) count++
+      }
+      expect(count).toBeGreaterThan(75)
+    })
+
+    it('is exclusive less than 100% of the time even if that is the community\'s tradition', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community({ traditions: { monogamy: 1 } })
+        const a = new Person()
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.partners[0].exclusive) count++
+      }
+      expect(count).toBeLessThan(100)
+    })
+
+    it('is exclusive more than 50% of the time if that isn\'t the community\'s tradition', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community({ traditions: { monogamy: 0 } })
+        const a = new Person()
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.partners[0].exclusive) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+
+    it('is exclusive less than 95% of the time if that isn\'t the community\'s tradition', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community({ traditions: { monogamy: 0 } })
+        const a = new Person()
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.partners[0].exclusive) count++
+      }
+      expect(count).toBeLessThan(95)
+    })
   })
 
   describe('getPartners', () => {

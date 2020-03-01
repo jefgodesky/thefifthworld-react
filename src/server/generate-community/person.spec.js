@@ -646,6 +646,17 @@ describe('Person', () => {
     })
   })
 
+  describe('developRelationships', () => {
+    it('changes your love score', () => {
+      const c = new Community()
+      const a = new Person()
+      const b = new Person()
+      a.takePartner(b, c)
+      a.developRelationships(c)
+      expect(a.partners[0].love).not.toEqual(1)
+    })
+  })
+
   describe('getPartners', () => {
     it('returns an array of your partners', () => {
       const community = new Community()
@@ -738,11 +749,20 @@ describe('Person', () => {
   })
 
   describe('age', () => {
-    it('increments the character\'s present', () => {
+    it('increments the person\'s present', () => {
       const p = new Person()
       const before = p.present
       p.age()
       expect(p.present).toEqual(before + 1)
+    })
+
+    it('develops the person\'s relationships', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person(b)
+      a.takePartner(b, c)
+      a.age(c)
+      expect(a.partners[0].love).not.toEqual(1)
     })
   })
 

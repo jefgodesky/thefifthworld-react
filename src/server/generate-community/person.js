@@ -322,6 +322,21 @@ export default class Person {
   }
 
   /**
+   * Your love for your partners can deepen or erode over time.
+   * @param community {Community} - The community that you belong to.
+   */
+
+  developRelationships (community) {
+    this.partners.forEach(p => {
+      if (community.isCurrentMember(p.id)) {
+        const partner = community.people[p.id]
+        const delta = this.encounter(partner) ? 1 : -1
+        p.love += delta
+      }
+    })
+  }
+
+  /**
    * Return an array of your current partners.
    * @param community {Community} - The community that you belong ot.
    * @returns {Person[]} - An array of your current partners.
@@ -405,6 +420,7 @@ export default class Person {
   age (community = undefined) {
     this.present++
     this.ageBody(community)
+    this.developRelationships(community)
   }
 
   /**

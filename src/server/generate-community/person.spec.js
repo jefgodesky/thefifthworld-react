@@ -574,6 +574,46 @@ describe('Person', () => {
     })
   })
 
+  describe('getPartners', () => {
+    it('returns an array of your partners', () => {
+      const community = new Community()
+      const self = new Person()
+      const a = new Person()
+      self.takePartner(a, community)
+      const b = new Person()
+      self.takePartner(b, community)
+      const c = new Person()
+      self.takePartner(c, community)
+      expect(self.getPartners(community)).toEqual([ a, b, c ])
+    })
+
+    it('doesn\'t include partners who have left', () => {
+      const community = new Community()
+      const self = new Person()
+      const a = new Person()
+      self.takePartner(a, community)
+      const b = new Person()
+      self.takePartner(b, community)
+      const c = new Person()
+      self.takePartner(c, community)
+      c.leave()
+      expect(self.getPartners(community)).toEqual([ a, b ])
+    })
+
+    it('doesn\'t include partners who have died', () => {
+      const community = new Community()
+      const self = new Person()
+      const a = new Person()
+      self.takePartner(a, community)
+      const b = new Person()
+      self.takePartner(b, community)
+      const c = new Person()
+      self.takePartner(c, community)
+      c.die()
+      expect(self.getPartners(community)).toEqual([ a, b ])
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

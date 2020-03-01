@@ -315,6 +315,16 @@ export default class Person {
   }
 
   /**
+   * Return an array of your current partners.
+   * @param community {Community} - The community that you belong ot.
+   * @returns {Person[]} - An array of your current partners.
+   */
+
+  getPartners (community) {
+    return this.partners.map(p => community.people[p.id]).filter(p => community.isCurrentMember(p))
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

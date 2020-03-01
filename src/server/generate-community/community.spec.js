@@ -149,6 +149,78 @@ describe('Community', () => {
     })
   })
 
+  describe('getRecentViolentDeaths', () => {
+    it('returns the number of recent deaths due to assault', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      a.die('homicide')
+      a.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'murder', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      b.die('infection')
+      b.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'infection', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      expect(community.getRecentViolentDeaths()).toEqual(2)
+    })
+
+    it('looks at the past 10 years', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      a.die('homicide')
+      a.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'murder', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      b.present += 15
+      c.present += 15
+      b.die('infection')
+      b.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'infection', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      expect(community.getRecentViolentDeaths()).toEqual(1)
+    })
+
+    it('looks at a specified number of years', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      a.die('homicide')
+      a.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'murder', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      b.present += 5
+      c.present += 5
+      b.die('infection')
+      b.history.add(a.present, {
+        tags: [ 'crime', 'assault', 'infection', 'died' ],
+        attacker: c.id,
+        defender: a.id,
+        lethal: true
+      })
+      expect(community.getRecentViolentDeaths(4)).toEqual(1)
+    })
+  })
+
   describe('hasProblems', () => {
     it('returns true if the community is experiencing lean times', () => {
       const c = new Community()

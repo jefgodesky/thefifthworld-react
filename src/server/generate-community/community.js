@@ -70,6 +70,32 @@ export default class Community {
   }
 
   /**
+   * Return the number of deaths due to assault that the community has suffered
+   * in recent years.
+   * @param years {number} - Optional. The number of years to go back in our
+   *   consideration of what's recent (Default: `10`).
+   * @returns {number} - the number of deaths due to assault that the community
+   *   gas suffered in the past `years` years.
+   */
+
+  getRecentViolentDeaths (years = 10) {
+    const people = Object.values(this.people)
+    const present = Math.max(...people.map(p => p.present))
+    const start = present - years
+
+    return people
+      .filter(p => p.died >= start && p.died <= present)
+      .filter(p => {
+        const record = p.history.get({ tag: 'died' })
+        if (isPopulatedArray(record)) {
+          return record[0].tags.includes('assault')
+        }
+        return false
+      })
+      .length
+  }
+
+  /**
    * Returns whether or not the community is currently experiencing any major
    * problems, like conflict, sickness, or lean times.
    * @returns {boolean} - `true` if the community is experiencing any major

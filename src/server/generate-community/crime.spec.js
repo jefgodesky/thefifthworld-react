@@ -15,10 +15,20 @@ import { allTrue } from '../../shared/utils'
 describe('getCrimes', () => {
   it('returns a person\'s crimes', () => {
     const p = new Person()
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], victim: 1 })
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ], victim: 2 })
-    p.history.add(p.present, { tags: [ 'crime', 'murder' ], victim: 3 })
+    p.id = 'p1'
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 1 })
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 2 })
+    p.history.add(p.present, { tags: [ 'crime', 'murder' ], attacker: p.id, victim: 3 })
     expect(getCrimes(p)).toEqual([ 'assault', 'assault', 'murder' ])
+  })
+
+  it('doesn\'t include crimes you were the victim of', () => {
+    const p = new Person()
+    p.id = 'p1'
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 1 })
+    p.history.add(p.present, { tags: [ 'crime', 'assault' ], attacker: p.id, victim: 2 })
+    p.history.add(p.present, { tags: [ 'crime', 'murder' ], attacker: undefined, victim: p.id })
+    expect(getCrimes(p)).toEqual([ 'assault', 'assault' ])
   })
 
   it('counts an event that is both assault and murder as murder', () => {

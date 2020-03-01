@@ -18,8 +18,12 @@ import {
 const getCrimes = criminal => {
   const crimes = [ 'murder', 'assault' ]
   return criminal.history.get({ tag: 'crime' }).map(entry => {
-    const myCrimes = intersection(crimes, entry.tags)
-    return isPopulatedArray(myCrimes) ? myCrimes[0] : false
+    if (entry.attacker === criminal.id) {
+      const myCrimes = intersection(crimes, entry.tags)
+      return isPopulatedArray(myCrimes) ? myCrimes[0] : false
+    } else {
+      return false
+    }
   }).filter(crime => crime !== false)
 }
 

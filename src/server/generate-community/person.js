@@ -332,6 +332,17 @@ export default class Person {
   }
 
   /**
+   * Reports whether or not you're available to start a new relationship (i.e.,
+   * you don't have any exclusive partners).
+   * @returns {boolean} - `true` if you are not in an exclusive relationship
+   *   right now, or `false` if you are.
+   */
+
+  isAvailable () {
+    return allTrue(this.partners.map(p => !p.exclusive))
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

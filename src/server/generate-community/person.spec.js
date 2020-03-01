@@ -670,6 +670,38 @@ describe('Person', () => {
     })
   })
 
+  describe('isAvailable', () => {
+    it('returns true if you don\'t have any partners', () => {
+      const community = new Community()
+      const self = new Person(community)
+      expect(self.isAvailable()).toEqual(true)
+    })
+
+    it('returns true if all of your relationships are non-exclusive', () => {
+      const community = new Community()
+      const self = new Person(community)
+      const a = new Person()
+      self.takePartner(a, community, false)
+      const b = new Person()
+      self.takePartner(b, community, false)
+      const c = new Person()
+      self.takePartner(c, community, false)
+      expect(self.isAvailable()).toEqual(true)
+    })
+
+    it('returns true if any of your relationships are exclusive', () => {
+      const community = new Community()
+      const self = new Person(community)
+      const a = new Person()
+      self.takePartner(a, community, false)
+      const b = new Person()
+      self.takePartner(b, community, false)
+      const c = new Person()
+      self.takePartner(c, community, true)
+      expect(self.isAvailable()).toEqual(false)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

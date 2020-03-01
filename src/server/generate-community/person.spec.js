@@ -31,6 +31,16 @@ describe('Person', () => {
       expect(p.present).toEqual(2020)
     })
 
+    it('adds an empty array of partners', () => {
+      const p = new Person()
+      expect(p.partners).toEqual([])
+    })
+
+    it('adds an empty array of children', () => {
+      const p = new Person()
+      expect(p.children).toEqual([])
+    })
+
     it('can add the person to a community', () => {
       const c = new Community()
       const p = new Person(c)

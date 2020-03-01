@@ -24,6 +24,8 @@ export default class Person {
   constructor (...args) {
     this.history = new History()
     this.skills = new Skills()
+    this.partners = []
+    this.children = []
 
     const numbers = args.filter(a => !isNaN(a))
     if (isPopulatedArray(numbers)) this.born = randomDayOfYear(numbers[0])
@@ -44,11 +46,7 @@ export default class Person {
       community.add(this)
       if (isPopulatedArray(people)) {
         people.forEach(p => {
-          if (isPopulatedArray(p.children)) {
-            p.children.push(this.id)
-          } else {
-            p.children = [ this.id ]
-          }
+          p.children.push(this.id)
         })
       }
     }

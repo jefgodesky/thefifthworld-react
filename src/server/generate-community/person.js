@@ -280,6 +280,19 @@ export default class Person {
   }
 
   /**
+   * Are you attracted to a given person?
+   * @param person {Person} - The person we're seeing if you're attracted to.
+   * @returns {boolean} - `true` if you're attracted to this person, or `false`
+   *   if you are not.
+   */
+
+  isAttractedTo (person) {
+    const like = this.encounter(person)
+    const lust = this.sexuality.isAttractedTo(person)
+    return like && lust
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

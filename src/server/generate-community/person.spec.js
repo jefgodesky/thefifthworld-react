@@ -428,6 +428,52 @@ describe('Person', () => {
     })
   })
 
+  describe('isAttractedTo', () => {
+    it('returns a boolean', () => {
+      const a = new Person()
+      const b = new Person()
+      expect(typeof a.isAttractedTo(b)).toEqual('boolean')
+    })
+
+    it('sometimes returns true', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        const b = new Person()
+        if (a.isAttractedTo(b)) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('returns true more than 25% of the time when a person matches your sexual preference', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.sexuality.androphilia = 10
+        a.sexuality.gynephilia = 80
+        a.sexuality.skoliophilia = 10
+        const b = new Person()
+        b.gender = 'Woman'
+        if (a.isAttractedTo(b)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+
+    it('returns true less than 50% of the time when a person matches your sexual preference', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.sexuality.androphilia = 10
+        a.sexuality.gynephilia = 80
+        a.sexuality.skoliophilia = 10
+        const b = new Person()
+        b.gender = 'Woman'
+        if (a.isAttractedTo(b)) count++
+      }
+      expect(count).toBeLessThan(50)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

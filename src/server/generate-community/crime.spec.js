@@ -8,6 +8,7 @@ import {
   considerViolence,
   assaultOutcome,
   assault,
+  respondToAdultery,
   evade
 } from './crime'
 import { allTrue } from '../../shared/utils'
@@ -182,6 +183,64 @@ describe('assault', () => {
       defender.history.get({ tag: 'assault' }).length === 0
     ]
     expect(allTrue(checks)).toEqual(true)
+  })
+})
+
+describe('respondToAdultery', () => {
+  it('returns a report', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person()
+    const c = new Person()
+    a.takePartner(b, community, true)
+    const report = {
+      tags: [ 'crime', 'adultery' ],
+      adulterers: [ b.id, c.id ]
+    }
+    const actual = respondToAdultery(a, [ b, c ], community, report)
+    expect(typeof actual).toEqual('object')
+  })
+
+  it('results in separation more than 25% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      a.takePartner(b, community, true)
+      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
+      if (report.tags.includes('separation')) count++
+    }
+    expect(count).toBeGreaterThan(25)
+  })
+
+  it('results in separation more than 75% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      a.takePartner(b, community, true)
+      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
+      if (report.tags.includes('separation')) count++
+    }
+    expect(count).toBeLessThan(75)
+  })
+
+  it('sometimes leads to assault', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      a.takePartner(b, community, true)
+      const report = respondToAdultery(a, [ b, c ], community, { tags: [ 'crime', 'adultery' ] })
+      if (report.tags.includes('assault')) count++
+    }
+    expect(count).toBeGreaterThanOrEqual(0)
   })
 })
 

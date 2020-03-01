@@ -7,6 +7,7 @@ import {
   probabilityInNormalDistribution,
   isPopulatedArray
 } from '../../shared/utils'
+import { pickRandom } from './utils'
 
 /**
  * Returns a list of crimes committed by this person.
@@ -123,6 +124,44 @@ const assault = (attacker, defender, community, lethalIntent = false, report = f
 }
 
 /**
+ * Respond to an act of adultery.
+ * @param subject {Person} - The person who was cheated on and is considering
+ *   her response.
+ * @param adulterers {Person[]} - An array of the people involved in the act
+ *   of adultery that the `subject` is responding to.
+ * @param community {Community} - The community that the `subject` belongs to
+ *   and the adultery is occurring within.
+ * @param report {Object} - An object containing information about the incident
+ *   so far.
+ * @returns {Object} - the `report` expanded to include the subject's response.
+ */
+
+const respondToAdultery = (subject, adulterers, community, report) => {
+  const myExclusivePartners = subject.partners.filter(rel => rel.exclusive).map(rel => rel.id)
+  const partners = adulterers.filter(a => myExclusivePartners.includes(a.id))
+  const partner = isPopulatedArray(partners) ? partners[0] : undefined
+
+  if (partner) {
+    if (random.boolean()) {
+      const separation = subject.separate(partner, true)
+      report = Object.assign({}, report, separation, { tags: [ ...report.tags, ...separation.tags ] })
+    } else {
+      const violence = considerViolence(subject)
+      if (violence !== 'no') {
+        const lethal = violence === 'kill'
+        const target = pickRandom(adulterers)
+        const attack = assault(subject, target, community, lethal, true)
+        report = Object.assign({}, report, attack, { tags: [ ...report.tags, ...attack.tags ] })
+      } else {
+        const rel = subject.partners.filter(rel => rel.id === partner.id)
+        if (isPopulatedArray(rel)) rel[0].love -= 5
+      }
+    }
+  }
+  return report
+}
+
+/**
  * Determines whether or not a criminal can get away with her crime (assuming
  * she even has that opportunity — assault someone who survives, and she'll be
  * able to tell everyone who attacked her).
@@ -159,5 +198,6 @@ export {
   considerViolence,
   assaultOutcome,
   assault,
+  respondToAdultery,
   evade
 }

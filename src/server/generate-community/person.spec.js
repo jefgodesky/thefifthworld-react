@@ -729,6 +729,68 @@ describe('Person', () => {
     })
   })
 
+  describe('willingToCheat', () => {
+    it('returns a boolean', () => {
+      const p = new Person()
+      expect(typeof p.willingToCheat()).toEqual('boolean')
+    })
+
+    it('returns true if you don\'t have any partners', () => {
+      const p = new Person()
+      expect(p.willingToCheat()).toEqual(true)
+    })
+
+    it('returns true more than 10% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        const partner = new Person()
+        self.takePartner(partner, community, true)
+        if (self.willingToCheat()) count++
+      }
+      expect(count).toBeGreaterThan(10)
+    })
+
+    it('returns true less than 35% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        const partner = new Person()
+        self.takePartner(partner, community, true)
+        if (self.willingToCheat()) count++
+      }
+      expect(count).toBeLessThan(35)
+    })
+
+    it('returns true less often if you\'re more deeply in love', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        const partner = new Person()
+        self.takePartner(partner, community, true)
+        self.partners[0].love = 10
+        if (self.willingToCheat()) count++
+      }
+      expect(count).toBeLessThan(15)
+    })
+
+    it('returns true less often if you\'re more agreeable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        self.personality.agreeableness = 1
+        const partner = new Person()
+        self.takePartner(partner, community, true)
+        if (self.willingToCheat()) count++
+      }
+      expect(count).toBeLessThan(15)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

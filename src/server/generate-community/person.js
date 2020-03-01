@@ -358,6 +358,24 @@ export default class Person {
   }
 
   /**
+   * Are you willing to cheat on those partners who have told you they expect
+   * you to be faithful?
+   * @returns {boolean} - `true` if you're willing to cheat on your exclusive
+   *   partners, or `false` if you are not.
+   */
+
+  willingToCheat () {
+    let willing = true
+    const exclusivePartners = this.partners.filter(p => p.exclusive)
+    if (isPopulatedArray(exclusivePartners)) {
+      exclusivePartners.forEach(rel => {
+        willing = willing && !this.personality.check('agreeableness', rel.love + 2, 'or')
+      })
+    }
+    return willing
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

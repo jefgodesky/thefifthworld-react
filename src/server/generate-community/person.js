@@ -10,7 +10,8 @@ import Skills from './skills'
 
 import tables from '../../data/community-creation'
 
-import { pickRandom, checkTable } from './utils'
+import { adultery } from './crime'
+import { pickRandom, checkTable, consensus } from './utils'
 import {
   allTrue,
   isPopulatedArray,
@@ -309,6 +310,33 @@ export default class Person {
       return (myAge > ageOfConsent) && (herAge > ageOfConsent) && oldEnoughForMe && oldEnoughForHer
     } else {
       return false
+    }
+  }
+
+  /**
+   * Consider starting a relationship with someone.
+   * @param other {Person} - The person you're considering starting a
+   *   relationship with someone.
+   * @param community {Community} - The community being generated.
+   */
+
+  considerRelationship (other, community) {
+    if (this.isAttractedTo(other) && other.isAttractedTo(this)) {
+      const me = { available: this.isAvailable(), willingToCheat: this.willingToCheat() }
+      const you = { available: other.isAvailable(), willingToCheat: other.willingToCheat() }
+      if (me.available && you.available) {
+        const parties = [ this, other ]
+        const leavers = parties.filter(p => p.considerLeaving(community))
+        const remainers = parties.filter(p => !leavers.map(p => p.id).includes(p.id))
+        if (leavers.length === parties.length || consensus(leavers, remainers)) {
+          console.log('leaving?')
+          this.leave(); other.leave()
+        } else {
+          this.takePartner(other, community)
+        }
+      } else if (me.willingToCheat && you.willingToCheat) {
+        adultery([ this, other ], community)
+      }
     }
   }
 

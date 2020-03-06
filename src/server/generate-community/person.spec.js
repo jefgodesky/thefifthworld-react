@@ -532,6 +532,56 @@ describe('Person', () => {
     })
   })
 
+  describe('considerRelationship', () => {
+    it('results in a new relationship for compatible people more than 10% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c, 1990)
+        a.present = 2020
+        a.gender = 'Man'
+        a.sexuality.androphilia = 5
+        a.sexuality.gynephilia = 75
+        a.sexuality.skoliophilia = 5
+
+        const b = new Person(1990)
+        b.present = 2020
+        b.gender = 'Woman'
+        b.sexuality.androphilia = 75
+        b.sexuality.gynephilia = 5
+        b.sexuality.skoliophilia = 5
+
+        a.considerRelationship(b, c)
+        if (a.partners.length > 0) count++
+      }
+      expect(count).toBeGreaterThan(10)
+    })
+
+    it('results in a new relationship for compatible people less than 60% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c, 1990)
+        a.present = 2020
+        a.gender = 'Man'
+        a.sexuality.androphilia = 5
+        a.sexuality.gynephilia = 75
+        a.sexuality.skoliophilia = 5
+
+        const b = new Person(1990)
+        b.present = 2020
+        b.gender = 'Woman'
+        b.sexuality.androphilia = 75
+        b.sexuality.gynephilia = 5
+        b.sexuality.skoliophilia = 5
+
+        a.considerRelationship(b, c)
+        if (a.partners.length > 0) count++
+      }
+      expect(count).toBeLessThan(60)
+    })
+  })
+
   describe('takePartner', () => {
     it('adds your new partner to your list', () => {
       const c = new Community()

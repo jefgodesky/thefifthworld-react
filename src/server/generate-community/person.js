@@ -379,6 +379,26 @@ export default class Person {
   }
 
   /**
+   * Consider ending a relationship.
+   * @param partner {Person} - The person you're considering ending your
+   *   relationship with.
+   * @returns {boolean} - `true` if you want to end the relationship, or
+   *   `false` if you decide not to.
+   */
+
+  considerSeparation (partner) {
+    const filtered = this.partners.filter(r => r.id === partner.id)
+    const rel = isPopulatedArray(filtered) ? filtered[0] : false
+    if (rel) {
+      if (rel.love < 0) {
+        const times = Math.max(5 + rel.love, 1)
+        if (!this.personality.check('agreeableness', times, 'or')) return true
+      }
+    }
+    return false
+  }
+
+  /**
    * End a relationship.
    * @param partner {Person} - The person you're ending your relationship with.
    * @param report {boolean} - Optional. If `true`, returns a report of the

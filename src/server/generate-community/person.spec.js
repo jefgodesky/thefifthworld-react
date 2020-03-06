@@ -776,6 +776,50 @@ describe('Person', () => {
     })
   })
 
+  describe('considerSeparation', () => {
+    it('returns false for a new relationship', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.takePartner(b, c)
+      expect(a.considerSeparation(b)).toEqual(false)
+    })
+
+    it('returns false if you\'re not in a relationship', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      expect(a.considerSeparation(b)).toEqual(false)
+    })
+
+    it('returns true more often when you\'re less agreeable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person()
+        a.personality.agreeableness = -1
+        const b = new Person()
+        a.takePartner(b, c)
+        a.partners[0].love = -1
+        if (a.considerSeparation(b)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+
+    it('returns true more often if you don\'t love the other person', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person()
+        const b = new Person()
+        a.takePartner(b, c)
+        a.partners[0].love = -10
+        if (a.considerSeparation(b)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+  })
+
   describe('separate', () => {
     it('removes the partner from your list', () => {
       const c = new Community()

@@ -274,6 +274,11 @@ describe('Community', () => {
   })
 
   describe('hadProblemsRecently', () => {
+    it('returns 0 if the community has no history', () => {
+      const c = new Community()
+      expect(c.hadProblemsRecently()).toEqual(0)
+    })
+
     it('returns the percentage of recent years that had problems', () => {
       const c = new Community()
       c.history.add(2015, { conflict: false, sick: false, lean: false })

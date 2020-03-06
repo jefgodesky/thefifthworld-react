@@ -132,7 +132,8 @@ export default class Community {
     const present = this.history.getLatest()
     const y = []
     for (let i = present - years + 1; i <= present; i++) y.push(this.hadProblems(i))
-    return (y.filter(y => y === true).length / Math.min(years, Object.keys(this.history.record).length)) * 100
+    const num = Math.min(years, Object.keys(this.history.record).length)
+    return num > 0 ? (y.filter(y => y === true).length / num) * 100 : 0
   }
 
   run () {

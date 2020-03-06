@@ -439,7 +439,7 @@ export default class Person {
 
   considerLeaving (community) {
     const years = Math.max(Math.round((100 - this.personality.chance('openness')) / 10), 1)
-    return community.hadProblemsRecently(years) < this.personality.chance('agreeableness')
+    return community.hadProblemsRecently(years) > this.personality.chance('agreeableness')
   }
 
   /**

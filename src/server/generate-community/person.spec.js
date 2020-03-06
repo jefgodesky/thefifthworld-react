@@ -929,10 +929,10 @@ describe('Person', () => {
       expect(typeof p.considerLeaving(c)).toEqual('boolean')
     })
 
-    it('returns true if the community hasn\'t had any problems recently', () => {
+    it('returns false if the community hasn\'t had any problems recently', () => {
       const c = new Community()
       const p = new Person(c)
-      expect(p.considerLeaving(c)).toEqual(true)
+      expect(p.considerLeaving(c)).toEqual(false)
     })
   })
 

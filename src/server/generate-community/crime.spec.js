@@ -31,11 +31,50 @@ describe('getCrimes', () => {
     expect(getCrimes(b)).toHaveLength(0)
   })
 
-  it('counts an event that is both assault and murder as murder', () => {
-    const p = new Person()
-    p.history.add(p.present, { tags: [ 'crime', 'assault' ] })
-    p.history.add(p.present, { tags: [ 'crime', 'murder', 'assault' ] })
-    expect(getCrimes(p)).toEqual([ 'assault', 'murder' ])
+  it('returns assaults that you committed in response to adultery', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person()
+    const c = new Person()
+    a.takePartner(b, community)
+    a.history.add(a.present, {
+      tags: ['crime', 'adultery', 'separation', 'assault'],
+      adulterers: [b.id, c.id],
+      cheatedOn: [a.id],
+      keepAdulterySecret: false,
+      responses: [
+        {
+          attacker: a.id,
+          defender: c.id,
+          succeeded: false
+        }
+      ]
+    })
+    expect(getCrimes(a)).toHaveLength(1)
+  })
+
+  it('doesn\'t return adultery where you were the one cheated on', () => {
+    const community = new Community()
+    const a = new Person(community)
+    const b = new Person()
+    const c = new Person()
+    const d = new Person()
+    a.takePartner(b, community)
+    c.takePartner(d, community)
+    a.history.add(a.present, {
+      tags: ['crime', 'adultery', 'separation', 'assault'],
+      adulterers: [b.id, c.id],
+      cheatedOn: [a.id, d.id],
+      keepAdulterySecret: false,
+      responses: [
+        {
+          attacker: a.id,
+          defender: c.id,
+          succeeded: false
+        }
+      ]
+    })
+    expect(getCrimes(d)).toHaveLength(0)
   })
 })
 

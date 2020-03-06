@@ -1,6 +1,7 @@
 import random from 'random'
 
 import {
+  clone,
   anyTrue,
   allTrue,
   dedupe,
@@ -14,15 +15,31 @@ import { pickRandom } from './utils'
  * Returns a list of crimes committed by this person.
  * @param criminal {Person} - The person whose criminal record we're looking
  *   for.
- * @return {string[]} - An array of strings listing this person's crimes.
+ * @return {Object[]} - An array of events listing this person's crimes.
  */
 
 const getCrimes = criminal => {
-  const crimes = [ 'murder', 'assault' ]
+  const { id } = criminal
   return criminal.history.get({ tag: 'crime' }).map(entry => {
-    if (entry.attacker === criminal.id) {
-      const myCrimes = intersection(crimes, entry.tags)
-      return isPopulatedArray(myCrimes) ? myCrimes[0] : false
+    const isAttacker = entry.attacker === id
+    const isAdultery = entry.tags.includes('adultery')
+    const isAdulterer = isAdultery && entry.adulterers.includes(id)
+    if (isAttacker) {
+      return entry
+    } else if (isAdulterer) {
+      const e = clone(entry)
+      delete e.responses
+      return e
+    } else if (isAdultery) {
+      const responseAttack = entry.responses.filter(e => e.attacker === id)
+      return !isPopulatedArray(responseAttack)
+        ? false
+        : Object.assign({}, responseAttack[0], {
+          tags: entry.tags,
+          inResponseToAdultery: true,
+          adulterers: entry.adulterers,
+          year: entry.year
+        })
     } else {
       return false
     }

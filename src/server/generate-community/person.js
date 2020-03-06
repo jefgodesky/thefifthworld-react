@@ -409,6 +409,19 @@ export default class Person {
   }
 
   /**
+   * Do you want to leave the community?
+   * @param community {Community} - The community that you belong to and are
+   *   thinking about leaving.
+   * @returns {boolean} - `true` if you would like to leave the community, or
+   *   `false` if you would not.
+   */
+
+  considerLeaving (community) {
+    const years = Math.max(Math.round((100 - this.personality.chance('openness')) / 10), 1)
+    return community.hadProblemsRecently(years) < this.personality.chance('agreeableness')
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

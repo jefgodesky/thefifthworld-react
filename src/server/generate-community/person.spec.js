@@ -448,8 +448,9 @@ describe('Person', () => {
     it('sometimes returns true', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
-        const a = new Person()
-        const b = new Person()
+        const a = new Person(1990)
+        const b = new Person(1990)
+        a.present = 2020; b.present = 2020
         if (a.isAttractedTo(b)) count++
       }
       expect(count).toBeGreaterThan(0)
@@ -458,29 +459,33 @@ describe('Person', () => {
     it('returns true more than 25% of the time when a person matches your sexual preference', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
-        const a = new Person()
+        const a = new Person(1990)
+        a.present = 2020
         a.sexuality.androphilia = 10
         a.sexuality.gynephilia = 80
         a.sexuality.skoliophilia = 10
-        const b = new Person()
+        const b = new Person(1990)
+        b.present = 2020
         b.gender = 'Woman'
         if (a.isAttractedTo(b)) count++
       }
       expect(count).toBeGreaterThan(25)
     })
 
-    it('returns true less than 50% of the time when a person matches your sexual preference', () => {
+    it('returns true less than 75% of the time when a person matches your sexual preference', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
-        const a = new Person()
+        const a = new Person(1990)
+        a.present = 2020
         a.sexuality.androphilia = 10
         a.sexuality.gynephilia = 80
         a.sexuality.skoliophilia = 10
-        const b = new Person()
+        const b = new Person(1990)
+        b.present = 2020
         b.gender = 'Woman'
         if (a.isAttractedTo(b)) count++
       }
-      expect(count).toBeLessThan(50)
+      expect(count).toBeLessThan(75)
     })
   })
 

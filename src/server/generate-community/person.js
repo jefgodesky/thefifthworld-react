@@ -286,9 +286,9 @@ export default class Person {
    */
 
   isAttractedTo (person) {
-    const like = this.encounter(person)
-    const lust = this.sexuality.isAttractedTo(person)
-    return like && lust
+    const age = this.isAppropriateAge(person)
+    const lust = age && this.sexuality.isAttractedTo(person)
+    return lust ? this.encounter(person) || this.encounter(person) : false
   }
 
   /**

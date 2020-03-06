@@ -1084,13 +1084,13 @@ describe('Person', () => {
       const c = new Community()
       const p = new Person()
       const k = new Person(c)
-      const report = p.die('JS bugs', c, k)
+      const report = p.die('JS bugs', k)
       expect(report.killer).toEqual(k.id)
     })
 
     it('notes the killer\'s ID if it is given', () => {
       const p = new Person()
-      const report = p.die('JS bugs', null, 'killer key')
+      const report = p.die('JS bugs', 'killer key')
       expect(report.killer).toEqual('killer key')
     })
 

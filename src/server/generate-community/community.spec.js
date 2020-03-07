@@ -339,4 +339,51 @@ describe('Community', () => {
       expect(c.hadProblemsRecently()).toEqual(50)
     })
   })
+
+  describe('generateStrangers', () => {
+    it('returns at least 5 strangers', () => {
+      const c = new Community()
+      c.generateStrangers()
+      expect(c.strangers.length).toBeGreaterThanOrEqual(5)
+    })
+
+    it('returns at most 10 strangers', () => {
+      const c = new Community()
+      c.present = 2020
+      c.generateStrangers()
+      expect(c.strangers.length).toBeLessThanOrEqual(10)
+    })
+
+    it('returns a number of strangers at least as large as 1/8 of the community\'s population', () => {
+      const c = new Community()
+      c.present = 2020
+      for (let i = 0; i < 120; i++) { const p = new Person(); c.add(p) }
+      c.generateStrangers()
+      expect(c.strangers.length).toBeGreaterThanOrEqual(15)
+    })
+
+    it('returns a number of strangers at most as large as 1/4 of the community\'s population', () => {
+      const c = new Community()
+      c.present = 2020
+      for (let i = 0; i < 120; i++) { const p = new Person(); c.add(p) }
+      c.generateStrangers()
+      expect(c.strangers.length).toBeLessThanOrEqual(30)
+    })
+
+    it('returns strangers that are at least 16 years old', () => {
+      const c = new Community()
+      c.present = 2020
+      c.generateStrangers()
+      const ages = c.strangers.map(p => p.getAge())
+      expect(Math.min(...ages)).toBeGreaterThanOrEqual(16)
+    })
+
+    it('returns strangers that are at most 65 years old', () => {
+      const c = new Community()
+      c.present = 2020
+      c.generateStrangers()
+      const ages = c.strangers.map(p => p.getAge())
+      expect(Math.max(...ages)).toBeLessThanOrEqual(66)
+    })
+  })
 })

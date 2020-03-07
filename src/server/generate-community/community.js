@@ -1,3 +1,5 @@
+import random from 'random'
+
 import History from './history'
 import Person from './person'
 
@@ -134,6 +136,28 @@ export default class Community {
     for (let i = present - years + 1; i <= present; i++) y.push(this.hadProblems(i))
     const num = Math.min(years, Object.keys(this.history.record).length)
     return num > 0 ? (y.filter(y => y === true).length / num) * 100 : 0
+  }
+
+  /**
+   * Generate some number of random strangers.
+   */
+
+  generateStrangers () {
+    const people = this.getPeople()
+    const population = people.length
+    const maxYear = Math.max(...people.map(p => p.present))
+    const present = maxYear === -Infinity ? new Date().getFullYear() : maxYear
+    const min = Math.floor(Math.max(5, population / 8))
+    const max = Math.ceil(Math.max(10, population / 4))
+    const num = random.int(min, max)
+    this.strangers = []
+    for (let i = 0; i < num; i++) {
+      const age = random.int(16, 65)
+      const born = present - age
+      const stranger = new Person({ born })
+      for (let y = born; y <= present; y++) stranger.age()
+      this.strangers.push(stranger)
+    }
   }
 
   run () {

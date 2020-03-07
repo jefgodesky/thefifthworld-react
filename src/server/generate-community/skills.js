@@ -164,33 +164,36 @@ export default class Skills {
 
   static weightLearnableSkills (person, community) {
     const skills = person.skills.getLearnableSkills(community)
-    const a = Math.round(person.personality.chance('agreeableness') / 20)
-    const recent = community.getRecentHistory()
 
-    // If the community has a favored skill, there's pressure to "learn the
-    // family business."
+    if (community && community instanceof Community) {
+      const a = Math.round(person.personality.chance('agreeableness') / 20)
+      const recent = community.getRecentHistory()
 
-    const favored = get(community, 'traditions.skill') || false
-    if (favored && !person.skills.mastered.includes(favored)) {
-      for (let i = 0; i < a; i++) skills.push(favored)
-    }
+      // If the community has a favored skill, there's pressure to "learn the
+      // family business."
 
-    // If the community has experienced a lot of sickness recently, there will
-    // be pressure to learn medicine.
+      const favored = get(community, 'traditions.skill') || false
+      if (favored && !person.skills.mastered.includes(favored)) {
+        for (let i = 0; i < a; i++) skills.push(favored)
+      }
 
-    if (!person.skills.mastered.includes('Medicine')) {
-      const yearsSick = recent.filter(e => e.sick).length
-      const medicinePressure = Math.round((a / 2) * Math.max(yearsSick, 1))
-      for (let i = 0; i < medicinePressure; i++) skills.push('Medicine')
-    }
+      // If the community has experienced a lot of sickness recently, there will
+      // be pressure to learn medicine.
 
-    // If the community has experienced a lot of conflict recently, there will
-    // be pressure to learn deescalation.
+      if (!person.skills.mastered.includes('Medicine')) {
+        const yearsSick = recent.filter(e => e.sick).length
+        const medicinePressure = Math.round((a / 2) * Math.max(yearsSick, 1))
+        for (let i = 0; i < medicinePressure; i++) skills.push('Medicine')
+      }
 
-    if (!person.skills.mastered.includes('Deescalation')) {
-      const yearsConflict = recent.filter(e => e.conflict).length
-      const deescalationPressure = Math.round((a / 2) * Math.max(yearsConflict, 1))
-      for (let i = 0; i < deescalationPressure; i++) skills.push('Deescalation')
+      // If the community has experienced a lot of conflict recently, there will
+      // be pressure to learn deescalation.
+
+      if (!person.skills.mastered.includes('Deescalation')) {
+        const yearsConflict = recent.filter(e => e.conflict).length
+        const deescalationPressure = Math.round((a / 2) * Math.max(yearsConflict, 1))
+        for (let i = 0; i < deescalationPressure; i++) skills.push('Deescalation')
+      }
     }
 
     return skills

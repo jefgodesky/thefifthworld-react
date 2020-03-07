@@ -434,6 +434,7 @@ export default class Person {
         const partner = community.people[p.id]
         const delta = this.encounter(partner) ? 1 : -1
         p.love += delta
+        if (p.love < 0 && this.considerSeparation(partner)) this.separate(partner, community)
       }
     })
   }

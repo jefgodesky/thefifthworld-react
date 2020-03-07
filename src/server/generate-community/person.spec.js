@@ -1095,6 +1095,112 @@ describe('Person', () => {
     })
   })
 
+  describe('tryToConceive', () => {
+    it('returns true if you have two perfectly fertile parents', () => {
+      const a = new Person()
+      a.body.female = true
+      a.body.male = false
+      a.body.infertile = false
+      a.body.fertility = 100
+
+      const b = new Person()
+      b.body.female = false
+      b.body.male = true
+      b.body.infertile = false
+      b.body.fertility = 100
+
+      expect(a.tryToConceive(b)).toEqual(true)
+    })
+
+    it('returns false if not given a male and a female', () => {
+      const a = new Person()
+      a.body.female = true
+      a.body.male = false
+      a.body.infertile = false
+      a.body.fertility = 100
+
+      const b = new Person()
+      b.body.female = true
+      b.body.male = false
+      b.body.infertile = false
+      b.body.fertility = 100
+
+      expect(a.tryToConceive(b)).toEqual(false)
+    })
+
+    it('returns false if given an infertile mother', () => {
+      const a = new Person()
+      a.body.female = true
+      a.body.male = false
+      a.body.infertile = true
+      a.body.fertility = 100
+
+      const b = new Person()
+      b.body.female = false
+      b.body.male = true
+      b.body.infertile = false
+      b.body.fertility = 100
+
+      expect(a.tryToConceive(b)).toEqual(false)
+    })
+
+    it('returns false if given an infertile father', () => {
+      const a = new Person()
+      a.body.female = true
+      a.body.male = false
+      a.body.infertile = false
+      a.body.fertility = 100
+
+      const b = new Person()
+      b.body.female = false
+      b.body.male = true
+      b.body.infertile = true
+      b.body.fertility = 100
+
+      expect(a.tryToConceive(b)).toEqual(false)
+    })
+
+    it('returns true no more than 15% more than the lowest fertility', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.body.female = true
+        a.body.male = false
+        a.body.infertile = false
+        a.body.fertility = 60
+
+        const b = new Person()
+        b.body.female = false
+        b.body.male = true
+        b.body.infertile = false
+        b.body.fertility = 40
+
+        if (a.tryToConceive(b)) count++
+      }
+      expect(count).toBeLessThan(55)
+    })
+
+    it('returns true no less than 15% less than the lowest fertility', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const a = new Person()
+        a.body.female = true
+        a.body.male = false
+        a.body.infertile = false
+        a.body.fertility = 60
+
+        const b = new Person()
+        b.body.female = false
+        b.body.male = true
+        b.body.infertile = false
+        b.body.fertility = 40
+
+        if (a.tryToConceive(b)) count++
+      }
+      expect(count).toBeGreaterThan(25)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

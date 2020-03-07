@@ -511,6 +511,33 @@ export default class Person {
   }
 
   /**
+   * Try to conceive a child.
+   * @param partner {Person} - The person you'd like to conceive a child with.
+   * @returns {boolean} - `true` if you can conceive a child together, or
+   *   `false` if you can't.
+   */
+
+  tryToConceive (partner) {
+    const me = {
+      mother: this.body.female && !this.body.infertile && this.body.fertility > 0,
+      father: this.body.male && !this.body.infertile && this.body.fertility > 0
+    }
+
+    const you = {
+      mother: partner.body.female && !partner.body.infertile && partner.body.fertility > 0,
+      father: partner.body.male && !partner.body.infertile && partner.body.fertility > 0
+    }
+
+    if ((me.mother && you.father) || (me.father && you.mother)) {
+      const mother = me.mother ? this : partner
+      const father = this === mother ? partner : this
+      const chance = Math.min(mother.body.fertility, father.body.fertility)
+      return random.int(1, 100) <= chance
+    }
+    return false
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

@@ -1296,6 +1296,16 @@ describe('Person', () => {
       a.age(c)
       expect(a.partners[0].love).not.toEqual(1)
     })
+
+    it('develops skills if you\'re old enough and nothing else happened', () => {
+      const c = new Community()
+      const a = new Person(c, 1990)
+      a.present = 2020
+      a.age(c)
+      const wasNotQuiet = !a.history.wasQuiet(2021)
+      const developedSkills = a.skills.learning.skill !== undefined
+      expect(wasNotQuiet || developedSkills).toEqual(true)
+    })
   })
 
   describe('leave', () => {

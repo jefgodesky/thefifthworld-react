@@ -631,6 +631,10 @@ export default class Person {
     this.present++
     this.ageBody(community)
     this.developRelationships(community)
+
+    if (this.history.wasQuiet(this.present)) {
+      if (this.getAge(this.present) > 15) Skills.advance(this, community)
+    }
   }
 
   /**

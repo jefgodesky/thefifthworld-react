@@ -634,12 +634,20 @@ export default class Person {
 
   age (community = undefined) {
     this.present++
+    const age = this.getAge()
     this.ageBody(community)
     this.developRelationships(community)
 
-    if (this.history.wasQuiet(this.present)) {
-      if (this.getAge(this.present) > 15) Skills.advance(this, community)
+    if (age > 16 && community && isPopulatedArray(community.strangers)) {
+      let looking = true
+      let i = 0
+      while (looking && i < community.strangers.length) {
+        if (this.considerRelationship(community.strangers[i], community)) { looking = false } else { i++ }
+      }
+      if (!looking) community.strangers = community.strangers.filter(s => s !== community.strangers[i])
     }
+
+    if (age > 14 && this.history.wasQuiet(this.present)) Skills.advance(this, community)
   }
 
   /**

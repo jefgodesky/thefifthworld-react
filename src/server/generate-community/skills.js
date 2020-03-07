@@ -1,5 +1,7 @@
 import random from 'random'
 
+import Community from './community'
+
 import skills from '../../data/skills'
 import { pickRandom } from './utils'
 import { between, get, intersection, isPopulatedArray } from '../../shared/utils'

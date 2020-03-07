@@ -1304,6 +1304,19 @@ describe('Person', () => {
       expect(a.partners[0].love).not.toEqual(1)
     })
 
+    it('sometimes starts a relationship', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c, 2000)
+        a.present = 2020
+        c.generateStrangers()
+        a.age(c)
+        if (a.partners.length > 0) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
     it('develops skills if you\'re old enough and nothing else happened', () => {
       const c = new Community()
       const a = new Person(c, 1990)

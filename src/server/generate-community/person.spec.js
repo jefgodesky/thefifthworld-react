@@ -1201,6 +1201,66 @@ describe('Person', () => {
     })
   })
 
+  describe('conceive', () => {
+    it('produces a child', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.conceive(b, c)
+      expect(a.children.length).toBeGreaterThan(0)
+    })
+
+    it('sometimes results in stillbirth', () => {
+      let count = 0
+      for (let i = 0; i < 1000; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        const b = new Person()
+        a.conceive(b, c)
+        const children = a.children.map(id => c.people[id])
+        if (children.filter(c => c.died).length > 0) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('rarely produces multiple children born at once', () => {
+      let count = 0
+      for (let i = 0; i < 2000; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        const b = new Person()
+        a.conceive(b, c)
+        if (a.children.length > 1) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('records your child\'s birth in your personal history', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.conceive(b, c)
+      expect(a.history.get({ tag: 'birth' })).toHaveLength(1)
+    })
+
+    it('records your child\'s birth in your partner\'s personal history', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.conceive(b, c)
+      expect(b.history.get({ tag: 'birth' })).toHaveLength(1)
+    })
+
+    it('records your child\'s birth in your child\'s personal history', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      a.conceive(b, c)
+      const child = c.people[a.children[0]]
+      expect(child.history.get({ tag: 'birth' })).toHaveLength(1)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

@@ -538,6 +538,29 @@ export default class Person {
   }
 
   /**
+   * Conceive a child.
+   * @param partner {Person} - The partner you're having a child with.
+   * @param community {Community} - The community that the child is being born
+   *   into.
+   */
+
+  conceive (partner, community) {
+    let num = 1
+    let check = true
+    while (check) { if (random.int(1, 250) === 1) { num++ } else { check = false } }
+    const children = []
+    for (let i = 0; i < num; i++) children.push(new Person(this, partner, community))
+    const event = { tags: [ 'birth' ], children: children.map(p => p.id), parents: [ this.id, partner.id ] }
+    if (num > 1) event.tags.push('multiple births')
+    const stillborn = children.filter(p => p.died)
+    if (stillborn.length > 0) event.stillborn = stillborn.map(p => p.id)
+    const year = this.present
+    this.history.add(year, event)
+    partner.history.add(year, event)
+    children.forEach(child => { child.history.add(year, event) })
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

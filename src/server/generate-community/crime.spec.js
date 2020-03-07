@@ -24,6 +24,14 @@ describe('getCrimes', () => {
     expect(getCrimes(a)).toHaveLength(1)
   })
 
+  it('returns acts of sabotage', () => {
+    const community = new Community()
+    community.territory = { yield: 10 }
+    const a = new Person(community)
+    sabotage(a, community)
+    expect(getCrimes(a)).toHaveLength(1)
+  })
+
   it('doesn\'t include crimes you didn\'t commit', () => {
     const community = new Community()
     const a = new Person(community)

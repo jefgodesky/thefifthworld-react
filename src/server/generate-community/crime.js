@@ -21,10 +21,13 @@ import { pickRandom } from './utils'
 const getCrimes = criminal => {
   const { id } = criminal
   return criminal.history.get({ tag: 'crime' }).map(entry => {
+    const isSaboteur = entry.saboteur === id
     const isAttacker = entry.attacker === id
     const isAdultery = entry.tags.includes('adultery')
     const isAdulterer = isAdultery && entry.adulterers.includes(id)
-    if (isAttacker) {
+    if (isSaboteur) {
+      return entry
+    } else if (isAttacker) {
       return entry
     } else if (isAdulterer) {
       const e = clone(entry)

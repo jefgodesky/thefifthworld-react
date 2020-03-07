@@ -318,6 +318,9 @@ export default class Person {
    * @param other {Person} - The person you're considering starting a
    *   relationship with someone.
    * @param community {Community} - The community being generated.
+   * @returns {boolean} - `true` if the two pursue some kind of relationship
+   *   (either becoming a pair, leaving the community to become a pair
+   *   somewhere else, or starting an affair), or `false` if not.
    */
 
   considerRelationship (other, community) {
@@ -329,15 +332,17 @@ export default class Person {
         const leavers = parties.filter(p => !p.feelSecure(community))
         const remainers = parties.filter(p => !leavers.map(p => p.id).includes(p.id))
         if (leavers.length === parties.length || consensus(leavers, remainers)) {
-          console.log('leaving?')
           this.leave(); other.leave()
         } else {
           this.takePartner(other, community)
         }
+        return true
       } else if (me.willingToCheat && you.willingToCheat) {
         adultery([ this, other ], community)
+        return true
       }
     }
+    return false
   }
 
   /**

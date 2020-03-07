@@ -533,6 +533,13 @@ describe('Person', () => {
   })
 
   describe('considerRelationship', () => {
+    it('returns a boolean', () => {
+      const c = new Community()
+      const a = new Person(c)
+      const b = new Person()
+      expect(typeof a.considerRelationship(b)).toEqual('boolean')
+    })
+
     it('results in a new relationship for compatible people more than 10% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {

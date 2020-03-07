@@ -326,7 +326,7 @@ export default class Person {
       const you = { available: other.isAvailable(), willingToCheat: other.willingToCheat() }
       if (me.available && you.available) {
         const parties = [ this, other ]
-        const leavers = parties.filter(p => p.considerLeaving(community))
+        const leavers = parties.filter(p => !p.feelSecure(community))
         const remainers = parties.filter(p => !leavers.map(p => p.id).includes(p.id))
         if (leavers.length === parties.length || consensus(leavers, remainers)) {
           console.log('leaving?')
@@ -479,16 +479,15 @@ export default class Person {
   }
 
   /**
-   * Do you want to leave the community?
-   * @param community {Community} - The community that you belong to and are
-   *   thinking about leaving.
-   * @returns {boolean} - `true` if you would like to leave the community, or
-   *   `false` if you would not.
+   * Do you feel secure in your community?
+   * @param community {Community} - The community that you belong to.
+   * @returns {boolean} - `true` if you feel safe and secure in your community,
+   *   or `false` if you do not.
    */
 
-  considerLeaving (community) {
+  feelSecure (community) {
     const years = Math.max(Math.round((100 - this.personality.chance('openness')) / 10), 1)
-    return community.hadProblemsRecently(years) > this.personality.chance('agreeableness')
+    return community.hadProblemsRecently(years) < this.personality.chance('agreeableness')
   }
 
   /**

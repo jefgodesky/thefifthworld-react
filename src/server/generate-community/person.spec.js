@@ -1021,17 +1021,17 @@ describe('Person', () => {
     })
   })
 
-  describe('considerLeaving', () => {
+  describe('feelSecure', () => {
     it('returns a boolean', () => {
       const c = new Community()
       const p = new Person(c)
-      expect(typeof p.considerLeaving(c)).toEqual('boolean')
+      expect(typeof p.feelSecure(c)).toEqual('boolean')
     })
 
-    it('returns false if the community hasn\'t had any problems recently', () => {
+    it('returns true if the community hasn\'t had any problems recently', () => {
       const c = new Community()
       const p = new Person(c)
-      expect(p.considerLeaving(c)).toEqual(false)
+      expect(p.feelSecure(c)).toEqual(true)
     })
   })
 

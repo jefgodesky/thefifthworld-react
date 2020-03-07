@@ -491,6 +491,26 @@ export default class Person {
   }
 
   /**
+   * Do you want to have kids?
+   * @param community {Community} - The community that you belong to.
+   * @returns {boolean} - `true` if you want to have a child, or `false` if you
+   *   don't want to have a child.
+   */
+
+  considerChildren (community) {
+    if (this.partners.length > 0 && this.feelSecure(community)) {
+      const children = this.children.map(id => community.people[id])
+      const livingChildren = children.filter(p => !p.died).length
+      let want = this.personality.check('extraversion') ? 1 : 0
+      want += this.personality.check('openness') ? 1 : 0
+      want += !this.personality.check('neuroticism') ? 1 : 0
+      want += random.boolean() ? 1 : -1
+      return want > livingChildren
+    }
+    return false
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).

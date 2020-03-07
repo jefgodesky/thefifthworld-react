@@ -1035,6 +1035,66 @@ describe('Person', () => {
     })
   })
 
+  describe('considerChildren', () => {
+    it('returns false if you don\'t have any partners', () => {
+      const c = new Community()
+      const p = new Person(c)
+      expect(p.considerChildren(c)).toEqual(false)
+    })
+
+    it('returns false if you already have four children', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      a.takePartner(b, community)
+      const c = new Person(community)
+      const d = new Person(community)
+      const e = new Person(community)
+      const f = new Person(community)
+      a.children = [ c.id, d.id, e.id, f.id ]
+      expect(a.considerChildren(community)).toEqual(false)
+    })
+
+    it('returns true more often if you\'re very extraverted', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        a.personality.extraversion = 1
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.considerChildren(c)) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+
+    it('returns true more often if you\'re very open to new experience', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        a.personality.openness = 1
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.considerChildren(c)) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+
+    it('returns true more often if you\'re very emotionally stable', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        a.personality.neuroticism = -1
+        const b = new Person()
+        a.takePartner(b, c)
+        if (a.considerChildren(c)) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+  })
+
   describe('ageBody', () => {
     it('introduces death from old age', () => {
       const p = new Person(1900)

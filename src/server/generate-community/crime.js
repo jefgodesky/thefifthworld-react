@@ -47,6 +47,31 @@ const getCrimes = criminal => {
 }
 
 /**
+ * Sabotage the community.
+ * @param saboteur {Person} - The person who is sabotaging the community.
+ * @param community {Community} - The community that is being sabotaged.
+ * @param report {boolean} - Optional. If `true`, returns a report of the
+ *   crime. If `false`, the report is added to the saboteur's personal history
+ *   (Default: `false`).
+ */
+
+const sabotage = (saboteur, community, report = false) => {
+  const event = { tags: [ 'crime', 'sabotage' ], saboteur: saboteur.id }
+  if (community && community.territory && !isNaN(community.territory.yield)) {
+    const impact = random.int(1, 5)
+    community.territory.yield -= impact
+    event.impact = impact
+    event.discovered = !evade(saboteur, impact)
+
+    if (report) {
+      return event
+    } else {
+      saboteur.history.add(saboteur.present, event)
+    }
+  }
+}
+
+/**
  * Consider assaulting or murdering someone.
  * @param attacker {Person} - The person who is considering an act of violence.
  * @return {string} - Either `attack` if the person decides to attack, `kill`
@@ -243,6 +268,7 @@ const evade = (criminal, investigation = 1) => {
 
 export {
   getCrimes,
+  sabotage,
   considerViolence,
   assaultOutcome,
   assault,

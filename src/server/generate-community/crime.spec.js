@@ -5,6 +5,7 @@ import Person from './person'
 
 import {
   getCrimes,
+  sabotage,
   considerViolence,
   assaultOutcome,
   assault,
@@ -75,6 +76,72 @@ describe('getCrimes', () => {
       ]
     })
     expect(getCrimes(d)).toHaveLength(0)
+  })
+})
+
+describe('sabotage', () => {
+  it('does nothing if the community has no yield set', () => {
+    const c = new Community()
+    c.territory = { yield: undefined }
+    const a = new Person(c)
+    sabotage(a, c)
+    expect(c.territory.yield).toEqual(undefined)
+  })
+
+  it('reduces the yield of the community\'s territory', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    sabotage(a, c)
+    expect(c.territory.yield).toBeLessThan(10)
+  })
+
+  it('adds a record to the saboteur\'s personal history', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    sabotage(a, c)
+    expect(a.history.get({ tag: 'sabotage' })).toHaveLength(1)
+  })
+
+  it('can return a record', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    expect(typeof sabotage(a, c, true)).toEqual('object')
+  })
+
+  it('tags the event as a crime and as sabotage', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    const record = sabotage(a, c, true)
+    expect(record.tags).toEqual([ 'crime', 'sabotage' ])
+  })
+
+  it('notes the saboteur\'s ID', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    const record = sabotage(a, c, true)
+    expect(record.saboteur).toEqual(a.id)
+  })
+
+  it('records the impact of the sabotage', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    const record = sabotage(a, c, true)
+    expect(record.impact > 0 && record.impact <= 5).toEqual(true)
+  })
+
+  it('tells us if the saboteur was discovered', () => {
+    const c = new Community()
+    c.territory = { yield: 10 }
+    const a = new Person(c)
+    const record = sabotage(a, c, true)
+    console.log(record)
+    expect(typeof record.discovered).toEqual('boolean')
   })
 })
 

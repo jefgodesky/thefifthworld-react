@@ -335,6 +335,18 @@ export default class Community {
     return random.int(1, 100) < prosecution
   }
 
+  /**
+   * Adds a founder to the community.
+   * @param year {number} - The year this founder is born.
+   * @returns {Person} - The founder added.
+   */
+
+  addFounder (year) {
+    const p = new Person(this, year)
+    p.founder = true
+    return p
+  }
+
   run () {
     console.log('running community...')
   }

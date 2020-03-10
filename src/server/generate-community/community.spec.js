@@ -838,4 +838,23 @@ describe('Community', () => {
       expect(count).toBeLessThan(100)
     })
   })
+
+  describe('addFounder', () => {
+    it('returns the founder', () => {
+      const community = new Community()
+      expect(community.addFounder(2020)).toBeInstanceOf(Person)
+    })
+
+    it('tags the person as a founder', () => {
+      const community = new Community()
+      const p = community.addFounder(2020)
+      expect(p.founder).toEqual(true)
+    })
+
+    it('sets the founder\'s birth year', () => {
+      const community = new Community()
+      const p = community.addFounder(2020)
+      expect(p.born.getFullYear()).toEqual(2020)
+    })
+  })
 })

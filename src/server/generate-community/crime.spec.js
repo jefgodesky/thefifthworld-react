@@ -393,6 +393,21 @@ describe('adultery', () => {
     ]
     expect(keptSecret || allTrue(actual)).toEqual(true)
   })
+
+  it('notes when one or more polygamous individuals are involved', () => {
+    const community = new Community()
+    const a = new Person()
+    const b = new Person()
+    const c = new Person()
+    const d = new Person()
+    const e = new Person()
+    a.takePartner(b, community, true)
+    c.takePartner(d, community, true)
+    c.takePartner(e, community, false)
+    adultery([ a, c ], community)
+    const record = a.history.get({ tag: 'adultery' })[0]
+    expect(record.polygamyInvolved).toEqual(true)
+  })
 })
 
 describe('evade', () => {

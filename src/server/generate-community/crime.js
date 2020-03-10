@@ -214,11 +214,14 @@ const respondToAdultery = (subject, adulterers, community) => {
 const adultery = (adulterers, community) => {
   const cheatedOn = dedupe(adulterers.flatMap(a => a.partners).filter(rel => rel.exclusive).map(rel => rel.id)).map(id => community.people[id])
   const allPartners = dedupe(adulterers.flatMap(a => a.partners).map(rel => rel.id)).map(id => community.people[id])
+  const parties = keepAdulterySecret ? adulterers : dedupe([ ...adulterers, ...allPartners ])
+  const polygamyInvolved = parties.filter(p => (p.partners.length > 1)).length > 0
   const keepAdulterySecret = allTrue(adulterers.map(a => evade(a, cheatedOn.length)))
   let report = {
     tags: [ 'crime', 'adultery' ],
     adulterers: adulterers.map(a => a.id),
     cheatedOn: cheatedOn.map(p => p.id),
+    polygamyInvolved,
     keepAdulterySecret
   }
 
@@ -231,7 +234,6 @@ const adultery = (adulterers, community) => {
     }).filter(res => Object.entries(res).length > 0)
   }
 
-  const parties = keepAdulterySecret ? adulterers : dedupe([ ...adulterers, ...allPartners ])
   const year = Math.max(...parties.map(p => p.present))
   parties.forEach(person => {
     person.history.add(year, report)

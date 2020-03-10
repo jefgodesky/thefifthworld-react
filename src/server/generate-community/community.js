@@ -3,7 +3,9 @@ import random from 'random'
 import History from './history'
 import Person from './person'
 
-import { clone, isPopulatedArray } from '../../shared/utils'
+import { getCrimes } from './crime'
+import { pickRandom } from './utils'
+import { clone, isPopulatedArray, between } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -40,6 +42,23 @@ export default class Community {
 
   getPeople () {
     return Object.values(this.people).filter(p => !p.died && !p.left)
+  }
+
+  /**
+   * Pick a random person in the community.
+   * @param except {Person} - Individuals to not pick.
+   * @returns {Person|boolean} - A randomly selected person from the community,
+   *   or `false` if the exceptions don't leave anyone.
+   */
+
+  pickRandom (...except) {
+    const everybody = this.getPeople()
+    const candidates = everybody.filter(p => !except.includes(p))
+    if (candidates.length > 0) {
+      return pickRandom(candidates)
+    } else {
+      return false
+    }
   }
 
   /**

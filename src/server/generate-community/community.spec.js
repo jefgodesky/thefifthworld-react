@@ -77,6 +77,47 @@ describe('Community', () => {
     })
   })
 
+  describe('pickRandom', () => {
+    it('chooses a random person from the community', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      community.people = [ a, b, c ]
+      expect(community.people.includes(community.pickRandom())).toEqual(true)
+    })
+
+    it('doesn\'t pick someone who\'s left', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      c.leave()
+      const expected = [ a, b ]
+      expect(expected.includes(community.pickRandom())).toEqual(true)
+    })
+
+    it('doesn\'t pick someone who\'s died', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      c.die()
+      const expected = [ a, b ]
+      expect(expected.includes(community.pickRandom())).toEqual(true)
+    })
+
+    it('doesn\'t pick someone who\'s excluded', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person(community)
+      const c = new Person(community)
+      const d = new Person(community)
+      const expected = [ a, b ]
+      expect(expected.includes(community.pickRandom(c, d))).toEqual(true)
+    })
+  })
+
   describe('isCurrentMember', () => {
     it('returns false if given someone who isn\'t in the community', () => {
       const c = new Community()

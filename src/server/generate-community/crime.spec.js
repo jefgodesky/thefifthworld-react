@@ -148,7 +148,6 @@ describe('sabotage', () => {
     c.territory = { yield: 10 }
     const a = new Person(c)
     const record = sabotage(a, c, true)
-    console.log(record)
     expect(typeof record.discovered).toEqual('boolean')
   })
 })

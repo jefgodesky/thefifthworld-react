@@ -6,7 +6,6 @@ import Genotype from './genotype'
 import Person from './person'
 import Personality from './personality'
 
-import { sabotage, assault } from './crime'
 import { allTrue, daysFromNow, formatDate, between } from '../../shared/utils'
 
 describe('Person', () => {
@@ -1319,7 +1318,7 @@ describe('Person', () => {
     it('develops the person\'s relationships', () => {
       const c = new Community()
       const a = new Person(c)
-      const b = new Person(b)
+      const b = new Person(c)
       a.takePartner(b, c)
       a.age(c)
       expect(a.partners[0].love).not.toEqual(1)

@@ -233,6 +233,28 @@ export default class Community {
   }
 
   /**
+   * See if the community has solved its problems.
+   */
+
+  solveProblems () {
+    // If yield has risen to zero or higher, lean times are over
+    const y = get(this, 'territory.yield')
+    if (typeof y === 'number' && y >= 0) this.status.lean = false
+
+    // Can you cure sickness?
+    if (this.status.sick) {
+      const chance = 50 + this.calculateHelp('Medicine', 10)
+      if (random.int(1, 100) < chance) this.status.sick = false
+    }
+
+    // Can you end conflict?
+    if (this.status.conflict) {
+      const chance = 25 + this.calculateHelp('Deescalation', 10)
+      if (random.int(1, 100) < chance) this.status.conflict = false
+    }
+  }
+
+  /**
    * Generate some number of random strangers.
    */
 

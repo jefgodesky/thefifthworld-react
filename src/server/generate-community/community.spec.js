@@ -565,6 +565,74 @@ describe('Community', () => {
     })
   })
 
+  describe('solveProblems', () => {
+    it('removes lean times if yield is above zero', () => {
+      const c = new Community()
+      c.status.lean = true
+      c.territory.yield = 10
+      c.solveProblems()
+      expect(c.status.lean).toEqual(false)
+    })
+
+    it('removes lean times if yield equals zero', () => {
+      const c = new Community()
+      c.status.lean = true
+      c.territory.yield = 0
+      c.solveProblems()
+      expect(c.status.lean).toEqual(false)
+    })
+
+    it('is more likely to end sickness if the community has more healers', () => {
+      let control = 0
+      let test = 0
+      const c = new Community()
+
+      // Control group
+      for (let i = 0; i < 100; i++) {
+        c.status.sick = true
+        c.solveProblems()
+        if (!c.status.sick) control++
+      }
+
+      // Test group
+      const h1 = new Person(); h1.skills.mastered = [ 'Medicine' ]; c.add(h1)
+      const h2 = new Person(); h2.skills.mastered = [ 'Medicine' ]; c.add(h2)
+      const h3 = new Person(); h3.skills.mastered = [ 'Medicine' ]; c.add(h3)
+      for (let i = 0; i < 100; i++) {
+        c.status.sick = true
+        c.solveProblems()
+        if (!c.status.sick) test++
+      }
+
+      expect(test).toBeGreaterThanOrEqual(control)
+    })
+
+    it('is more likely to end conflict if the community has more peacemakers', () => {
+      let control = 0
+      let test = 0
+      const c = new Community()
+
+      // Control group
+      for (let i = 0; i < 100; i++) {
+        c.status.conflict = true
+        c.solveProblems()
+        if (!c.status.conflict) control++
+      }
+
+      // Test group
+      const p1 = new Person(); p1.skills.mastered = [ 'Deescalation' ]; c.add(p1)
+      const p2 = new Person(); p2.skills.mastered = [ 'Deescalation' ]; c.add(p2)
+      const p3 = new Person(); p3.skills.mastered = [ 'Deescalation' ]; c.add(p3)
+      for (let i = 0; i < 100; i++) {
+        c.status.conflict = true
+        c.solveProblems()
+        if (!c.status.conflict) test++
+      }
+
+      expect(test).toBeGreaterThanOrEqual(control)
+    })
+  })
+
   describe('generateStrangers', () => {
     it('returns at least 5 strangers', () => {
       const c = new Community()

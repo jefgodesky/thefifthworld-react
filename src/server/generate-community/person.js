@@ -332,7 +332,8 @@ export default class Person {
         const leavers = parties.filter(p => !p.feelSecure(community))
         const remainers = parties.filter(p => !leavers.map(p => p.id).includes(p.id))
         if (leavers.length === parties.length || consensus(leavers, remainers)) {
-          this.leave(); other.leave()
+          const event = { tags: [ 'new relationship' ] }
+          this.leave(event); other.leave(event)
         } else {
           this.takePartner(other, community)
         }

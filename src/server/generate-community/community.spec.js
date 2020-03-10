@@ -6,6 +6,8 @@ import Community from './community'
 import History from './history'
 import Person from './person'
 
+import { sabotage, assault } from './crime'
+
 describe('Community', () => {
   describe('constructor', () => {
     it('copies data provided', () => {
@@ -425,6 +427,120 @@ describe('Community', () => {
       c.generateStrangers()
       const ages = c.strangers.map(p => p.getAge())
       expect(Math.max(...ages)).toBeLessThanOrEqual(66)
+    })
+  })
+
+  describe('judge', () => {
+    it('renders a judgement', () => {
+      const community = new Community()
+      community.territory = { yield: 10 }
+      const a = new Person(community, 1990)
+      const b = new Person(community, 1990)
+      const c = new Person(community, 1990)
+      a.present = 2020; b.present = 2020; c.present = 2020
+      community.people = [ a, b, c ]
+      const report = sabotage(a, community, true)
+      expect(typeof community.judge(a, report)).toEqual('boolean')
+    })
+
+    it('condemns a single case of sabotage less than 15% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        community.territory = { yield: 10 }
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c ]
+        const report = sabotage(a, community, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(15)
+    })
+
+    it('condemns three cases of sabotage less than 100% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        community.territory = { yield: 10 }
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c ]
+        sabotage(a, community)
+        sabotage(a, community)
+        const report = sabotage(a, community, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(100)
+    })
+
+    it('condemns a single assault less than 40% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c ]
+        const report = assault(a, b, community, false, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(40)
+    })
+
+    it('condemns three cases of assault less than 100% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c ]
+        assault(a, b, community, false)
+        assault(a, b, community, false)
+        const report = assault(a, b, community, false, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(100)
+    })
+
+    it('condemns a single case of murder less than 75% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c ]
+        const report = assault(a, b, community, true, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(75)
+    })
+
+    it('condemns three cases of murder less than 100% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community, 1990)
+        const b = new Person(community, 1990)
+        const c = new Person(community, 1990)
+        const d = new Person(community, 1990)
+        const e = new Person(community, 1990)
+        a.present = 2020; b.present = 2020; c.present = 2020
+        community.people = [ a, b, c, d, e ]
+        assault(a, b, community, true)
+        assault(a, c, community, true)
+        const report = assault(a, d, community, true, true)
+        if (community.judge(a, report)) count++
+      }
+      expect(count).toBeLessThan(100)
     })
   })
 })

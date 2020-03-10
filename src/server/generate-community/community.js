@@ -179,6 +179,41 @@ export default class Community {
     }
   }
 
+  /**
+   * Judge someone who was discovered committing a crime (sabotage, assault, or
+   * murder). Decides if this person needs to be exiled from the community.
+   * @param accused {Person} - The person who committed the crime.
+   * @param report {Object} - An object detailing the incident.
+   * @returns {boolean} - `true` if the community decides to exile this person,
+   *   or `false` if they decide not to.
+   */
+
+  judge (accused, report) {
+    const record = [ ...getCrimes(accused), report ]
+    const known = record.filter(r => r.discovered)
+    const counts = { murder: 0, assault: 0, attempted: 0, sabotage: 0, impact: 0 }
+
+    known.forEach(entry => {
+      if (entry.tags.includes('murder') && entry.succeeded) {
+        counts.murder++
+      } else if (entry.tags.includes('murder') || (entry.tags.includes('assault') && entry.succeeded)) {
+        counts.assault++
+      } else if (entry.tags.includes('assault')) {
+        counts.attempted++
+      } else if (entry.tags.includes('sabotage')) {
+        counts.sabotage++
+        counts.impact += entry.impact
+      }
+    })
+
+    const murder = counts.murder ? Math.pow(50, counts.murder) : 0
+    const assault = counts.assault ? Math.pow(25, counts.assault) : 0
+    const attempted = counts.attempted ? Math.pow(10, counts.attempted) : 0
+    const sabotage = counts.sabotage ? Math.pow(counts.impact, counts.sabotage) : 0
+    const prosecution = between(murder + assault + attempted + sabotage, 0, 95)
+    return random.int(1, 100) < prosecution
+  }
+
   run () {
     console.log('running community...')
   }

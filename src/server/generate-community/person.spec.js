@@ -6,6 +6,7 @@ import Genotype from './genotype'
 import Person from './person'
 import Personality from './personality'
 
+import { sabotage, assault } from './crime'
 import { allTrue, daysFromNow, formatDate, between } from '../../shared/utils'
 
 describe('Person', () => {
@@ -1265,6 +1266,26 @@ describe('Person', () => {
       a.conceive(b, c)
       const child = c.people[a.children[0]]
       expect(child.history.get({ tag: 'birth' })).toHaveLength(1)
+    })
+  })
+
+  describe('commitCrime', () => {
+    it('does nothing if you\'re not antisocial', () => {
+      const community = new Community()
+      const a = new Person(community)
+      a.personality.agreeableness = 0; a.personality.diagnose()
+      const before = a.history.record.length
+      a.commitCrime(community)
+      expect(a.history.record.length).toEqual(before)
+    })
+
+    it('prompts an antisocial person to commit an act of sabotage by 25', () => {
+      const community = new Community()
+      community.territory = { yield: 10 }
+      const a = new Person(community, 1990)
+      a.present = 2020; a.personality.agreeableness = -3; a.personality.diagnose()
+      a.commitCrime(community)
+      expect(a.history.get({ tag: 'sabotage' })).toHaveLength(1)
     })
   })
 

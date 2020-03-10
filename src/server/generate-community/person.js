@@ -10,13 +10,15 @@ import Skills from './skills'
 
 import tables from '../../data/community-creation'
 
-import { adultery } from './crime'
+import { getCrimes, adultery, sabotage, assault } from './crime'
 import { pickRandom, checkTable, consensus } from './utils'
 import {
   allTrue,
   isPopulatedArray,
   daysFromNow,
   randomDayOfYear,
+  dedupe,
+  intersection,
   get,
   clone,
   randomValFromNormalDistribution
@@ -574,6 +576,59 @@ export default class Person {
   }
 
   /**
+   * Most personality disorders can affect the people around you, but the way
+   * in which antisocial personality disorder specifically drives individuals
+   * to take aggressive, criminal action impacts many of the things that we're
+   * modeling in this process.
+   * @param community {Community} - The community that this person belongs to.
+   */
+
+  commitCrime (community) {
+    const age = this.getAge()
+    if (age > 15 && this.personality.disorders.includes('antisocial')) {
+      const record = getCrimes(this)
+      const drive = isPopulatedArray(record)
+        ? (this.present - Math.max(...record.map(e => e.year))) * 10
+        : (age - 15) * 10
+
+      if (random.int(1, 100) < drive) {
+        const escalation = ['sabotage', 'assault', 'murder']
+        const crimes = intersection(escalation, dedupe(record.flatMap(entry => entry.tags)))
+        const lastIndex = escalation.indexOf(crimes[crimes.length - 1])
+        const index = lastIndex < 0 || random.boolean() ? Math.min(lastIndex + 1, escalation.length - 1) : lastIndex
+        const crime = escalation[index]
+        let report, victim
+
+        switch (crime) {
+          case 'sabotage':
+            report = sabotage(this, community, true)
+            break
+          case 'assault':
+            victim = community.pickRandom(this)
+            report = assault(this, victim, community, false, true)
+            break
+          case 'murder':
+            victim = community.pickRandom(this)
+            report = assault(this, victim, community, false, true)
+            break
+          default:
+            break
+        }
+
+        const exiled = report.discovered && community.judge(this, report)
+        if (exiled) {
+          report.tags.push('exile')
+          this.leave(report)
+        } else {
+          this.history.add(this.present, report)
+        }
+
+        if (victim) victim.history.add(this.present, report)
+      }
+    }
+  }
+
+  /**
    * Applies the various checks for changes to a character's body when she ages
    * through a year (e.g., changes to fertility, whether or not she dies of old
    * age, and whether or not she gets hurt or sick).
@@ -638,6 +693,7 @@ export default class Person {
     const age = this.getAge()
     this.ageBody(community)
     this.developRelationships(community)
+    this.commitCrime(community)
 
     if (age > 16 && community && isPopulatedArray(community.strangers)) {
       let looking = true

@@ -31,8 +31,13 @@ export default class Person {
     this.partners = []
     this.children = []
 
+    const dates = args.filter(a => a instanceof Date)
     const numbers = args.filter(a => !isNaN(a))
-    if (isPopulatedArray(numbers)) this.born = randomDayOfYear(numbers[0])
+    if (isPopulatedArray(dates)) {
+      this.born = dates[0]
+    } else if (isPopulatedArray(numbers)) {
+      this.born = randomDayOfYear(numbers[0])
+    }
 
     const people = args.filter(a => a instanceof Person)
     if (isPopulatedArray(people) && people.length === 1) {

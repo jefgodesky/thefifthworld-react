@@ -26,6 +26,13 @@ describe('Person', () => {
       expect(p.born.getFullYear()).toEqual(2020)
     })
 
+    it('can take a birth date', () => {
+      const born = new Date('10 March 2020')
+      const p = new Person(born)
+      const actual = [ p.born.getDate(), p.born.getMonth(), p.born.getFullYear() ]
+      expect(actual).toEqual([ 10, 2, 2020 ])
+    })
+
     it('establishes a present year', () => {
       const p = new Person(2020)
       expect(p.present).toEqual(2020)

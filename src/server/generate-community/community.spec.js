@@ -290,6 +290,26 @@ describe('Community', () => {
     })
   })
 
+  describe('calculateHelp', () => {
+    it('can help with a skill', () => {
+      const c = new Community()
+      const h = new Person(c)
+      h.skills.mastered = [ 'Medicine' ]
+      expect(c.calculateHelp('Medicine', 25)).toEqual(25)
+    })
+
+    it('suffers from diminishing marginal returns', () => {
+      const c = new Community()
+      const h1 = new Person(c)
+      h1.skills.mastered = [ 'Medicine' ]
+      const h2 = new Person(c)
+      h2.skills.mastered = [ 'Medicine' ]
+      const h3 = new Person(c)
+      h3.skills.mastered = [ 'Medicine' ]
+      expect(c.calculateHelp('Medicine', 25)).toEqual(57.8125)
+    })
+  })
+
   describe('newProblems', () => {
     it('will not add lean times if yield is positive', () => {
       const c = new Community()

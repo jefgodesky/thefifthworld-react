@@ -20,6 +20,10 @@ export default class Community {
     if (!this.territory) this.territory = {}
     if (!this.territory.yield) this.territory.yield = 0
 
+    // We'll also need a starting point for monogamous norms.
+    if (!this.traditions) this.traditions = {}
+    if (this.traditions.monogamy === undefined) this.traditions.monogamy = 0.9
+
     this.people = {}
     this.history = new History()
     this.status = { lean: false, sick: false, conflict: false }
@@ -155,6 +159,26 @@ export default class Community {
       contribution = contribution * 0.75
     }
     return help.reduce((acc, curr) => acc + curr, 0)
+  }
+
+  /**
+   * Adjust how strongly the community believes in monogamy based on its
+   * current members and the events of the past year. Each pair beyond the
+   * first decreases the standing of monogamy as an institution, while each
+   * act of adultery that involved a polygamous individual increases it.
+   * @param year {number} - The year to examine.
+   */
+
+  adjustMonogamy (year) {
+    if (this.traditions.monogamy > 0) {
+      const people = this.getPeople()
+      const polygamous = people.filter(p => p.partners.length > 1).length
+      const history = History.combine(...people.map(p => p.history))
+      const adultery = history.get({ year, tag: 'adultery' })
+      const polygamousAdultery = adultery.filter(e => e.polygamyInvolved).length
+      const delta = polygamous - polygamousAdultery
+      this.traditions.monogamy -= delta * 0.01
+    }
   }
 
   /**

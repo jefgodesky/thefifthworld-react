@@ -6,7 +6,7 @@ import Community from './community'
 import History from './history'
 import Person from './person'
 
-import { sabotage, assault } from './crime'
+import { sabotage, assault, adultery } from './crime'
 
 describe('Community', () => {
   describe('constructor', () => {
@@ -307,6 +307,51 @@ describe('Community', () => {
       const h3 = new Person(c)
       h3.skills.mastered = [ 'Medicine' ]
       expect(c.calculateHelp('Medicine', 25)).toEqual(57.8125)
+    })
+  })
+
+  describe('adjustMonogamy', () => {
+    it('sets a monogamy score', () => {
+      const community = new Community()
+      community.adjustMonogamy(2020)
+      expect(community.traditions.monogamy).not.toBeNaN()
+    })
+
+    it('reduces monogamy by each polygamous individual', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      a.takePartner(b, community)
+      a.takePartner(c, community)
+      community.adjustMonogamy(2020)
+      expect(community.traditions.monogamy).toEqual(0.89)
+    })
+
+    it('increases monogamy when polygamous individuals are involved in adultery', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      const d = new Person()
+      a.takePartner(b, community, true)
+      a.takePartner(c, community)
+      a.present = 2020; b.present = 2020; c.present = 2020; d.present = 2020
+      adultery([ a, d ], community)
+      community.adjustMonogamy(2020)
+      expect(community.traditions.monogamy).toBeGreaterThanOrEqual(0.9)
+    })
+
+    it('doesn\'t increase monogamy when the adultery doesn\'t involve any polygamous individuals', () => {
+      const community = new Community()
+      const a = new Person(community)
+      const b = new Person()
+      const c = new Person()
+      a.takePartner(b, community, true)
+      a.present = 2020; b.present = 2020; c.present = 2020
+      adultery([ a, c ], community)
+      community.adjustMonogamy(2020)
+      expect(community.traditions.monogamy).toEqual(0.9)
     })
   })
 

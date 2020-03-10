@@ -310,6 +310,51 @@ describe('Community', () => {
     })
   })
 
+  describe('adjustYield', () => {
+    it('adds 30', () => {
+      const c = new Community()
+      c.adjustYield()
+      expect(c.territory.yield).toEqual(30)
+    })
+
+    it('adds 150 if you\'re a village', () => {
+      const c = new Community({ traditions: { village: true } })
+      c.adjustYield()
+      expect(c.territory.yield).toEqual(150)
+    })
+
+    it('subtracts population', () => {
+      const c = new Community()
+      for (let i = 0; i < 20; i++) {
+        const p = new Person()
+        c.add(p)
+      }
+      c.adjustYield()
+      expect(c.territory.yield).toEqual(10)
+    })
+
+    it('can go negative', () => {
+      const c = new Community()
+      for (let i = 0; i < 40; i++) {
+        const p = new Person()
+        c.add(p)
+      }
+      c.adjustYield()
+      expect(c.territory.yield).toEqual(-10)
+    })
+
+    it('accumulates', () => {
+      const c = new Community()
+      c.adjustYield() // +30 since no one is here
+      for (let i = 0; i < 40; i++) {
+        const p = new Person()
+        c.add(p)
+      }
+      c.adjustYield() // -10 because we're 10 over carrying capacity
+      expect(c.territory.yield).toEqual(20)
+    })
+  })
+
   describe('newProblems', () => {
     it('will not add lean times if yield is positive', () => {
       const c = new Community()

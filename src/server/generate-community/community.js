@@ -158,6 +158,20 @@ export default class Community {
   }
 
   /**
+   * Adjust the yield of the community's territory. It has a natural
+   * regeneration rate equal to the community's carrying capacity, based on
+   * whether or not they're hunter-gatherers. Then, we reduce that by the
+   * number of people in the community (e.g., the community's ecological
+   * footprint).
+   */
+
+  adjustYield () {
+    const people = this.getPeople()
+    const base = get(this, 'traditions.village') ? 150 : 30
+    this.territory.yield += base - people.length
+  }
+
+  /**
    * See if new problems develop.
    */
 

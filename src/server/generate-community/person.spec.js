@@ -6,7 +6,7 @@ import Genotype from './genotype'
 import Person from './person'
 import Personality from './personality'
 
-import { allTrue, daysFromNow, formatDate, between } from '../../shared/utils'
+import { allTrue, daysFromNow, formatDate, between, dedupe } from '../../shared/utils'
 
 describe('Person', () => {
   describe('constructor', () => {
@@ -1281,6 +1281,24 @@ describe('Person', () => {
         if (a.children.length > 1) count++
       }
       expect(count).toBeGreaterThan(0)
+    })
+
+    it('gives multiple births the same birth date when they occur', () => {
+      let test = true
+      for (let i = 0; i < 2000; i++) {
+        const c = new Community()
+        const a = new Person(c)
+        const b = new Person()
+        a.conceive(b, c)
+        if (a.children.length > 1) {
+          const children = a.children.map(id => c.people[id])
+          const birthdates = dedupe(children.map(c => c.born))
+          test = test && birthdates.length === 1
+        } else {
+          test = test && true
+        }
+      }
+      expect(test).toEqual(true)
     })
 
     it('records your child\'s birth in your personal history', () => {

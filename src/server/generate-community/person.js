@@ -576,12 +576,13 @@ export default class Person {
     let check = true
     while (check) { if (random.int(1, 250) === 1) { num++ } else { check = false } }
     const children = []
-    for (let i = 0; i < num; i++) children.push(new Person(this, partner, community))
+    const born = randomDayOfYear(this.present)
+    const year = born.getFullYear()
+    for (let i = 0; i < num; i++) children.push(new Person(this, partner, community, born))
     const event = { tags: [ 'birth' ], children: children.map(p => p.id), parents: [ this.id, partner.id ] }
     if (num > 1) event.tags.push('multiple births')
     const stillborn = children.filter(p => p.died)
     if (stillborn.length > 0) event.stillborn = stillborn.map(p => p.id)
-    const year = this.present
     this.history.add(year, event)
     partner.history.add(year, event)
     children.forEach(child => { child.history.add(year, event) })

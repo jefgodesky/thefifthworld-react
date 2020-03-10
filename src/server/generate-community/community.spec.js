@@ -90,6 +90,21 @@ describe('Community', () => {
     })
   })
 
+  describe('getMasters', () => {
+    it('gets an array of the people who have mastered a given skill', () => {
+      const skill = 'Acting'
+      const community = new Community()
+      const a = new Person(community)
+      a.skills.mastered = [ skill ]
+      const b = new Person(community)
+      b.skills.mastered = [ skill ]
+      const c = new Person(community)
+      const d = new Person(community)
+      community.people = [ a, b, c, d ]
+      expect(community.getMasters(skill)).toHaveLength(2)
+    })
+  })
+
   describe('pickRandom', () => {
     it('chooses a random person from the community', () => {
       const community = new Community()

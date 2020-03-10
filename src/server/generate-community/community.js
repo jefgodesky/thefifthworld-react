@@ -51,6 +51,18 @@ export default class Community {
   }
 
   /**
+   * Returns the people who have mastered a particular skill.
+   * @param skill {string} - The name of the skill that you're interested in.
+   * @returns {Person[]} - An array of the people who have mastered the
+   *   given skill.
+   */
+
+  getMasters (skill) {
+    const everyone = this.getPeople()
+    return everyone.filter(p => p.skills.mastered.includes(skill))
+  }
+
+  /**
    * Pick a random person in the community.
    * @param except {Person} - Individuals to not pick.
    * @returns {Person|boolean} - A randomly selected person from the community,

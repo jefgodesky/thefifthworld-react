@@ -5,7 +5,7 @@ import Person from './person'
 
 import { getCrimes } from './crime'
 import { pickRandom } from './utils'
-import { clone, isPopulatedArray, between } from '../../shared/utils'
+import { get, clone, isPopulatedArray, between } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -15,8 +15,14 @@ export default class Community {
       })
     }
 
+    // At the very least, we're going to need to track the yield of the
+    // community's territory.
+    if (!this.territory) this.territory = {}
+    if (!this.territory.yield) this.territory.yield = 0
+
     this.people = {}
     this.history = new History()
+    this.status = { lean: false, sick: false, conflict: false }
   }
 
   /**
@@ -114,6 +120,26 @@ export default class Community {
         return false
       })
       .length
+  }
+
+  /**
+   * See if new problems develop.
+   */
+
+  newProblems () {
+    // If yield has dropped to negative numbers, you're facing lean times
+    const y = get(this, 'territory.yield')
+    if (typeof y === 'number' && y < 0) this.status.lean = true
+    const yf = this.status.lean ? 2 : 1
+
+    // Lean times and more people make it more likely that you suffer sickness
+    const village = get(this, 'traditions.village')
+    const capacity = village === true ? 150 : 30
+    const spf = this.getPeople().length / capacity
+    if (random.int(1, 100) < 5 * yf * spf) this.status.sick = true
+
+    // Lean times makes it more likely that you get into a conflict
+    if (random.int(1, 100) < yf) this.status.conflict = true
   }
 
   /**

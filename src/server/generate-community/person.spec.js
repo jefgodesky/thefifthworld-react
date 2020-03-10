@@ -1341,23 +1341,11 @@ describe('Person', () => {
       expect(report.tags).toContain('left')
     })
 
-    it('notes when someone leaves in exile', () => {
+    it('adds on to an existing report', () => {
       const p = new Person()
-      const report = p.leave('wasting perfectly good pickles')
-      expect(report.tags).toContain('exile')
-    })
-
-    it('notes the crime for which you were exiled', () => {
-      const crime = 'wasting perfectly good pickles'
-      const p = new Person()
-      const report = p.leave(crime)
-      expect(report.crime).toContain(crime)
-    })
-
-    it('doesn\'t report a crime if there wasn\'t one', () => {
-      const p = new Person()
-      const report = p.leave()
-      expect(report.crime).not.toBeDefined()
+      const event = { tags: [ 'before' ] }
+      const report = p.leave(event)
+      expect(report.tags).toEqual([ 'before', 'left' ])
     })
   })
 

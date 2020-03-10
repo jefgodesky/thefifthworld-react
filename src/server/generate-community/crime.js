@@ -140,7 +140,8 @@ const assault = (attacker, defender, community, lethalIntent = false, report = f
     tags: [ 'crime', 'assault' ],
     attacker: attacker.id,
     defender: defender.id,
-    succeeded: outcome
+    succeeded: outcome,
+    discovered: true
   }
 
   if (outcome && lethalIntent) {

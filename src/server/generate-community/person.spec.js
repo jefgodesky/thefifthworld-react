@@ -943,6 +943,7 @@ describe('Person', () => {
 
     it('returns true if all of your relationships are non-exclusive', () => {
       const community = new Community()
+      community.traditions.monogamy = 0
       const self = new Person(community)
       const a = new Person()
       self.takePartner(a, community, false)
@@ -953,7 +954,7 @@ describe('Person', () => {
       expect(self.isAvailable()).toEqual(true)
     })
 
-    it('returns true if any of your relationships are exclusive', () => {
+    it('returns false if any of your relationships are exclusive', () => {
       const community = new Community()
       const self = new Person(community)
       const a = new Person()
@@ -963,6 +964,39 @@ describe('Person', () => {
       const c = new Person()
       self.takePartner(c, community, true)
       expect(self.isAvailable()).toEqual(false)
+    })
+
+    it('returns true for a second relationship more than 0% of the time under starting conditions', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        const a = new Person()
+        self.takePartner(a, community, false)
+        if (self.isAvailable(community)) count++
+      }
+      expect(count).toBeGreaterThan(0)
+    })
+
+    it('returns true for a second relationship less than 20% of the time under starting conditions', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const self = new Person(community)
+        const a = new Person()
+        self.takePartner(a, community, false)
+        if (self.isAvailable(community)) count++
+      }
+      expect(count).toBeLessThan(20)
+    })
+
+    it('returns true for a second relationship if you are very disagreeable', () => {
+      const community = new Community()
+      const self = new Person(community)
+      self.personality.agreeableness = -2
+      const a = new Person()
+      self.takePartner(a, community, false)
+      expect(self.isAvailable(community)).toEqual(true)
     })
   })
 

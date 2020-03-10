@@ -327,7 +327,7 @@ export default class Person {
 
   considerRelationship (other, community) {
     if (this.isAttractedTo(other) && other.isAttractedTo(this)) {
-      const me = { available: this.isAvailable(), willingToCheat: this.willingToCheat() }
+      const me = { available: this.isAvailable(community), willingToCheat: this.willingToCheat() }
       const you = { available: other.isAvailable(), willingToCheat: other.willingToCheat() }
       if (me.available && you.available) {
         const parties = [ this, other ]
@@ -467,12 +467,19 @@ export default class Person {
   /**
    * Reports whether or not you're available to start a new relationship (i.e.,
    * you don't have any exclusive partners).
+   * @param community {Community} - The community that you belong to.
    * @returns {boolean} - `true` if you are not in an exclusive relationship
    *   right now, or `false` if you are.
    */
 
-  isAvailable () {
-    return allTrue(this.partners.map(p => !p.exclusive))
+  isAvailable (community) {
+    const open = allTrue(this.partners.map(p => !p.exclusive))
+    const attached = this.partners.length > 0
+    const monogamy = attached ? get(community, 'traditions.monogamy') || 0 : 0
+    const willing = monogamy > 0
+      ? 100 - this.personality.chance('agreeableness') > monogamy * 100
+      : true
+    return open && willing
   }
 
   /**

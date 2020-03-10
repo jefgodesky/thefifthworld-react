@@ -585,7 +585,7 @@ export default class Person {
 
   commitCrime (community) {
     const age = this.getAge()
-    if (age > 15 && this.personality.disorders.includes('antisocial')) {
+    if (community && age > 15 && this.personality.disorders.includes('antisocial')) {
       const record = getCrimes(this)
       const drive = isPopulatedArray(record)
         ? (this.present - Math.max(...record.map(e => e.year))) * 10

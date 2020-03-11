@@ -5,7 +5,7 @@ import Person from './person'
 
 import { getCrimes } from './crime'
 import { pickRandom } from './utils'
-import { get, clone, isPopulatedArray, between } from '../../shared/utils'
+import { get, clone, isPopulatedArray, between, daysFromNow } from '../../shared/utils'
 
 export default class Community {
   constructor (data) {
@@ -405,8 +405,28 @@ export default class Community {
     })
   }
 
-  run () {
-    console.log('running community...')
+  /**
+   * Runs a simulation of the community for a number of years leading up to the
+   * "present" of the Fifth World (144,000 days from the moment the simulation
+   * is started).
+   * @param years {number} - The number of years that the simulation should run
+   *   over (Default: `200`)
+   */
+
+  run (years = 200) {
+    const span = between(years, 50, 400)
+    const until = daysFromNow(144000)
+    const end = until.getFullYear()
+    const start = end - span
+
+    // The further back you go, the more likely it is that your community
+    // starts off facing sickness and war.
+
+    const chance = ((years - 100) / 300) * 100
+    if (chance < random.int(1, 100)) this.status.sick = true
+    if (chance < random.int(1, 100)) this.status.conflict = true
+
+    for (let y = start; y < end; y++) this.annual(y, y < start + 50)
   }
 
   analyze () {

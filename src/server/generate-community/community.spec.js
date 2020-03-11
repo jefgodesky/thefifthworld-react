@@ -986,4 +986,30 @@ describe('Community', () => {
       expect(typeof c.history.get({ year: 2020 })[0].sick).toEqual('boolean')
     })
   })
+
+  describe('run', () => {
+    it('runs for 200 years by default', () => {
+      const c = new Community()
+      c.run()
+      expect(Object.keys(c.history.record).length).toEqual(200)
+    })
+
+    it('runs for the number of years specified', () => {
+      const c = new Community()
+      c.run(300)
+      expect(Object.keys(c.history.record).length).toEqual(300)
+    })
+
+    it('won\'t do less than 50 years', () => {
+      const c = new Community()
+      c.run(5)
+      expect(Object.keys(c.history.record).length).toEqual(50)
+    })
+
+    it('won\'t do more than 400 years', () => {
+      const c = new Community()
+      c.run(500)
+      expect(Object.keys(c.history.record).length).toEqual(400)
+    })
+  })
 })

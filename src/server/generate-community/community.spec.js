@@ -942,4 +942,48 @@ describe('Community', () => {
       expect(Object.values(c.people).length).toBeLessThan(85)
     })
   })
+
+  describe('annual', () => {
+    it('generates some strangers', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.strangers.length).toBeGreaterThan(0)
+    })
+
+    it('records history', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.history.get({ year: 2020 }).length).toBeGreaterThan(0)
+    })
+
+    it('records the population', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.history.get({ year: 2020 })[0].population).not.toBeNaN()
+    })
+
+    it('records the yield', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(c.history.get({ year: 2020 })[0].yield).not.toBeNaN()
+    })
+
+    it('records if it was a lean year', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(typeof c.history.get({ year: 2020 })[0].lean).toEqual('boolean')
+    })
+
+    it('records if the community was sick', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(typeof c.history.get({ year: 2020 })[0].sick).toEqual('boolean')
+    })
+
+    it('records if the community was in a conflict', () => {
+      const c = new Community()
+      c.annual(2020, true)
+      expect(typeof c.history.get({ year: 2020 })[0].sick).toEqual('boolean')
+    })
+  })
 })

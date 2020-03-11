@@ -365,6 +365,46 @@ export default class Community {
     }
   }
 
+  /**
+   * Runs one year in a simulation of the community's life.
+   * @param year {number} - The year being simulated.
+   * @param founding {boolean} - A flag to indicate if this is in the "founding
+   *   period" of the community. In this period the simulation is partial,
+   *   because we're adding the founders of the community. They're probably
+   *   surrounded by other people and events that we're not modeling because
+   *   otherwise we'd end up trying to model the whole universe.
+   */
+
+  annual (year, founding = false) {
+    if (founding) { this.considerFounder(year) } else { this.adjustYield() }
+
+    // Generate some strangers to meet.
+    this.generateStrangers()
+
+    // See if you can solve some problems. Then see what new problems may arise.
+    this.solveProblems()
+    this.newProblems()
+
+    // Age everyone up one year.
+    const people = this.getPeople()
+    people.forEach(p => p.age(this, year))
+
+    // Do the community's attitudes about monogamy change?
+    this.adjustMonogamy(year)
+
+    // Record what happened.
+    const tags = []
+    const { lean, sick, conflict } = this.status
+    if (lean) tags.push('lean')
+    if (sick) tags.push('sick')
+    if (conflict) tags.push('conflict')
+    this.history.add(year, {
+      population: people.length,
+      yield: this.territory.yield,
+      lean, sick, conflict, tags
+    })
+  }
+
   run () {
     console.log('running community...')
   }

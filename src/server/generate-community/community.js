@@ -250,10 +250,10 @@ export default class Community {
 
   hadProblemsRecently (years = 5) {
     const present = this.history.getLatest()
-    const y = []
-    for (let i = present - years + 1; i <= present; i++) y.push(this.hadProblems(i))
-    const num = Math.min(years, Object.keys(this.history.record).length)
-    return num > 0 ? (y.filter(y => y === true).length / num) * 100 : 0
+    const start = present - years + 1
+    const total = Math.min(years, Object.keys(this.history.record).length)
+    const num = this.history.get({ years: [ present, start ], tags: [ 'lean', 'sick', 'conflict' ] }).length
+    return num > 0 ? (num / total) * 100 : 0
   }
 
   /**

@@ -347,6 +347,24 @@ export default class Community {
     return p
   }
 
+  /**
+   * A village should have 75 founders. A hunter-gatherer band should have 15.
+   * If the community currently has fewer founders than it should, it adds a
+   * random number of founders between 0 and 2 (for a hunter-gatherer band) or
+   * between 0 and 5 (for a village).
+   * @param year {number} - The year being considered.
+   */
+
+  considerFounder (year) {
+    const village = get(this, 'traditions.village') || false
+    const expected = village ? 75 : 15
+    const currently = Object.values(this.people).filter(p => p.founder).length
+    if (currently < expected) {
+      const add = village ? random.int(0, 5) : random.int(0, 2)
+      for (let i = 0; i < add; i++) this.addFounder(year)
+    }
+  }
+
   run () {
     console.log('running community...')
   }

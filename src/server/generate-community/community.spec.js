@@ -857,4 +857,89 @@ describe('Community', () => {
       expect(p.born.getFullYear()).toEqual(2020)
     })
   })
+
+  describe('considerFounder', () => {
+    it('adds a founder to a hunter-gatherer band with no one in it more than 40% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.considerFounder(2020)
+        if (Object.values(c.people).length > 0) count++
+      }
+      expect(count).toBeGreaterThan(40)
+    })
+
+    it('adds a founder to a hunter-gatherer band with no one in it less than 90% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.considerFounder(2020)
+        if (Object.values(c.people).length > 0) count++
+      }
+      expect(count).toBeLessThan(90)
+    })
+
+    it('doesn\'t add a founder to a hunter-gatherer band if it already has 15 founders', () => {
+      const c = new Community()
+      for (let i = 0; i < 15; i++) c.addFounder(2020)
+      c.considerFounder(2020)
+      expect(Object.values(c.people).length).toEqual(15)
+    })
+
+    it('adds at least 10 founders if run 50 times', () => {
+      const c = new Community()
+      for (let i = 2020; i < 2070; i++) c.considerFounder(i)
+      expect(Object.values(c.people).length).toBeGreaterThan(10)
+    })
+
+    it('adds not more than 20 founders if run 50 times', () => {
+      const c = new Community()
+      for (let i = 2020; i < 2070; i++) c.considerFounder(i)
+      expect(Object.values(c.people).length).toBeLessThan(20)
+    })
+
+    it('adds a founder to a village with no one in it more than 70% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.traditions = { village: true }
+        c.considerFounder(2020)
+        if (Object.values(c.people).length > 0) count++
+      }
+      expect(count).toBeGreaterThan(70)
+    })
+
+    it('adds a founder to a village with no one in it less than 99% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.traditions = { village: true }
+        c.considerFounder(2020)
+        if (Object.values(c.people).length > 0) count++
+      }
+      expect(count).toBeLessThan(99)
+    })
+
+    it('doesn\'t add a founder to a village if it already has 75 founders', () => {
+      const c = new Community()
+      c.traditions = { village: true }
+      for (let i = 0; i < 75; i++) c.addFounder(2020)
+      c.considerFounder(2020)
+      expect(Object.values(c.people).length).toEqual(75)
+    })
+
+    it('adds at least 65 founders if run 50 times', () => {
+      const c = new Community()
+      c.traditions = { village: true }
+      for (let i = 2020; i < 2070; i++) c.considerFounder(i)
+      expect(Object.values(c.people).length).toBeGreaterThan(65)
+    })
+
+    it('adds not more than 85 founders if run 50 times', () => {
+      const c = new Community()
+      c.traditions = { village: true }
+      for (let i = 2020; i < 2070; i++) c.considerFounder(i)
+      expect(Object.values(c.people).length).toBeLessThan(85)
+    })
+  })
 })

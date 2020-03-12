@@ -649,7 +649,7 @@ describe('Community', () => {
       expect(count).toBeLessThan(85)
     })
 
-    it('ends sickness if you have three healers more than 40% of the time', () => {
+    it('ends sickness if you have three healers more than 35% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const community = new Community()
@@ -663,7 +663,7 @@ describe('Community', () => {
         community.solveProblems()
         if (!community.status.sick) count++
       }
-      expect(count).toBeGreaterThan(40)
+      expect(count).toBeGreaterThan(35)
     })
 
     it('ends conflict more than 15% of the time', () => {
@@ -688,7 +688,7 @@ describe('Community', () => {
       expect(count).toBeLessThan(85)
     })
 
-    it('ends conflict if you have three peacemakers more than 40% of the time', () => {
+    it('ends conflict if you have three peacemakers more than 35% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const community = new Community()
@@ -702,7 +702,7 @@ describe('Community', () => {
         community.solveProblems()
         if (!community.status.conflict) count++
       }
-      expect(count).toBeGreaterThan(40)
+      expect(count).toBeGreaterThan(35)
     })
   })
 

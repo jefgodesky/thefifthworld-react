@@ -627,54 +627,82 @@ describe('Community', () => {
       expect(c.status.lean).toEqual(false)
     })
 
-    it('is more likely to end sickness if the community has more healers', () => {
-      let control = 0
-      let test = 0
-      const c = new Community()
-
-      // Control group
+    it('ends sickness more than 25% of the time', () => {
+      let count = 0
       for (let i = 0; i < 100; i++) {
+        const c = new Community()
         c.status.sick = true
         c.solveProblems()
-        if (!c.status.sick) control++
+        if (!c.status.sick) count++
       }
-
-      // Test group
-      const h1 = new Person(); h1.skills.mastered = [ 'Medicine' ]; c.add(h1)
-      const h2 = new Person(); h2.skills.mastered = [ 'Medicine' ]; c.add(h2)
-      const h3 = new Person(); h3.skills.mastered = [ 'Medicine' ]; c.add(h3)
-      for (let i = 0; i < 100; i++) {
-        c.status.sick = true
-        c.solveProblems()
-        if (!c.status.sick) test++
-      }
-
-      expect(test).toBeGreaterThanOrEqual(control)
+      expect(count).toBeGreaterThan(25)
     })
 
-    it('is more likely to end conflict if the community has more peacemakers', () => {
-      let control = 0
-      let test = 0
-      const c = new Community()
-
-      // Control group
+    it('ends sickness less than 75% of the time', () => {
+      let count = 0
       for (let i = 0; i < 100; i++) {
+        const c = new Community()
+        c.status.sick = true
+        c.solveProblems()
+        if (!c.status.sick) count++
+      }
+      expect(count).toBeLessThan(75)
+    })
+
+    it('ends sickness if you have three healers more than 50% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community)
+        const b = new Person(community)
+        const c = new Person(community)
+        a.skills.mastered = [ 'Medicine' ]
+        b.skills.mastered = [ 'Medicine' ]
+        c.skills.mastered = [ 'Medicine' ]
+        community.status.sick = true
+        community.solveProblems()
+        if (!community.status.sick) count++
+      }
+      expect(count).toBeGreaterThan(50)
+    })
+
+    it('ends conflict more than 25% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const c = new Community()
         c.status.conflict = true
         c.solveProblems()
-        if (!c.status.conflict) control++
+        if (!c.status.conflict) count++
       }
+      expect(count).toBeGreaterThan(25)
+    })
 
-      // Test group
-      const p1 = new Person(); p1.skills.mastered = [ 'Deescalation' ]; c.add(p1)
-      const p2 = new Person(); p2.skills.mastered = [ 'Deescalation' ]; c.add(p2)
-      const p3 = new Person(); p3.skills.mastered = [ 'Deescalation' ]; c.add(p3)
+    it('ends conflict less than 75% of the time', () => {
+      let count = 0
       for (let i = 0; i < 100; i++) {
+        const c = new Community()
         c.status.conflict = true
         c.solveProblems()
-        if (!c.status.conflict) test++
+        if (!c.status.conflict) count++
       }
+      expect(count).toBeLessThan(75)
+    })
 
-      expect(test).toBeGreaterThanOrEqual(control)
+    it('ends conflict if you have three peacemakers more than 50% of the time', () => {
+      let count = 0
+      for (let i = 0; i < 100; i++) {
+        const community = new Community()
+        const a = new Person(community)
+        const b = new Person(community)
+        const c = new Person(community)
+        a.skills.mastered = [ 'Deescalation' ]
+        b.skills.mastered = [ 'Deescalation' ]
+        c.skills.mastered = [ 'Deescalation' ]
+        community.status.conflict = true
+        community.solveProblems()
+        if (!community.status.conflict) count++
+      }
+      expect(count).toBeGreaterThan(50)
     })
   })
 
@@ -987,6 +1015,11 @@ describe('Community', () => {
     })
   })
 
+  /**
+   * These tests take quite a while to run. We want them around, but not in our
+   * regular testing suite.
+   *
+
   describe('run', () => {
     it('runs for 200 years by default', () => {
       const c = new Community()
@@ -1011,5 +1044,34 @@ describe('Community', () => {
       c.run(500)
       expect(Object.keys(c.history.record).length).toEqual(400)
     })
+
+    it('generates a hunter-gatherer band of more than 35', () => {
+      const c = new Community()
+      c.run()
+      const population = c.getPeople().length
+      expect(population).toBeGreaterThan(35)
+    })
+
+    it('generates a hunter-gatherer band of less than 65', () => {
+      const c = new Community()
+      c.run()
+      const population = c.getPeople().length
+      expect(population).toBeLessThan(65)
+    })
+
+    it('generates a village of more than 110', () => {
+      const c = new Community({ traditions: { village: true } })
+      c.run()
+      const population = c.getPeople().length
+      expect(population).toBeGreaterThan(110)
+    })
+
+    it('generates a village of less than 190', () => {
+      const c = new Community({ traditions: { village: true } })
+      c.run()
+      const population = c.getPeople().length
+      expect(population).toBeLessThan(190)
+    })
   })
+   ** */
 })

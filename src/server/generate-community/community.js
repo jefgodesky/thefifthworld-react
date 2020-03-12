@@ -14,16 +14,18 @@ export default class Community {
         this[key] = clone(data[key])
       })
     }
+    this.init()
+  }
 
-    // At the very least, we're going to need to track the yield of the
-    // community's territory.
+  /**
+   * Initialize the community.
+   */
+
+  init () {
     if (!this.territory) this.territory = {}
     if (!this.territory.yield) this.territory.yield = 0
-
-    // We'll also need a starting point for monogamous norms.
     if (!this.traditions) this.traditions = {}
     if (this.traditions.monogamy === undefined) this.traditions.monogamy = 0.9
-
     this.people = {}
     this.history = new History()
     this.status = { lean: false, sick: false, conflict: false }
@@ -191,7 +193,8 @@ export default class Community {
 
   adjustYield () {
     const people = this.getPeople()
-    const base = get(this, 'traditions.village') ? 150 : 30
+    const base = get(this, 'traditions.village') ? 150 : 50
+    this.territory.yield = this.territory.yield / 2
     this.territory.yield += base - people.length
   }
 
@@ -376,7 +379,10 @@ export default class Community {
    */
 
   annual (year, founding = false) {
-    if (founding) { this.considerFounder(year) } else { this.adjustYield() }
+    if (founding) this.considerFounder(year)
+
+    // Adjust the territory's yield.
+    this.adjustYield()
 
     // Generate some strangers to meet.
     this.generateStrangers()
@@ -401,8 +407,24 @@ export default class Community {
     this.history.add(year, {
       population: people.length,
       yield: this.territory.yield,
+      problems: this.hadProblemsRecently(),
       lean, sick, conflict, tags
     })
+  }
+
+  /**
+   * Checks if the run has generated a viable population (one that is within
+   * 75% to 125% of its carrying capacity).
+   * @returns {boolean} - `true` if the community has a viable population, or
+   *   `false` if something went wrong.
+   */
+
+  checkResults () {
+    const capacity = get(this, 'traditions.village') ? 150 : 50
+    const min = capacity * (3/4)
+    const max = capacity * (5/4)
+    const people = this.getPeople()
+    return (people.length > min) && (people.length < max)
   }
 
   /**
@@ -425,8 +447,12 @@ export default class Community {
     const chance = ((years - 100) / 300) * 100
     if (chance < random.int(1, 100)) this.status.sick = true
     if (chance < random.int(1, 100)) this.status.conflict = true
+    let good = false
 
-    for (let y = start; y < end; y++) this.annual(y, y < start + 50)
+    while (!good) {
+      for (let y = start; y < end; y++) this.annual(y, y < start + 50)
+      if (this.checkResults()) { good = true } else { this.init() }
+    }
   }
 
   analyze () {

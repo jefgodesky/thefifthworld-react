@@ -25,7 +25,7 @@ const getProps = tag => {
     for (let match of matches) {
       const pair = match.trim().split('=')
       if (Array.isArray(pair) && pair.length > 1) {
-        const key = pair[0]
+        const key = pair[0].charAt(0).toLowerCase() + pair[0].slice(1)
         const val = pair[1].substr(1, pair[1].length - 2)
         props[key] = val
       }

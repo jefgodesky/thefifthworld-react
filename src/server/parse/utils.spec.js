@@ -20,4 +20,14 @@ describe('getProps', () => {
     }
     expect(actual).toEqual(expected)
   })
+
+  it('is not case sensitive', async () => {
+    const tpl = ' Prop1="value" somethingElse="hello" then we have some bad text in here, too'
+    const actual = getProps(tpl)
+    const expected = {
+      prop1: 'value',
+      somethingElse: 'hello'
+    }
+    expect(actual).toEqual(expected)
+  })
 })

@@ -356,10 +356,10 @@ describe('Community', () => {
   })
 
   describe('adjustYield', () => {
-    it('adds 30', () => {
+    it('adds 50', () => {
       const c = new Community()
       c.adjustYield()
-      expect(c.territory.yield).toEqual(30)
+      expect(c.territory.yield).toEqual(50)
     })
 
     it('adds 150 if you\'re a village', () => {
@@ -375,12 +375,12 @@ describe('Community', () => {
         c.add(p)
       }
       c.adjustYield()
-      expect(c.territory.yield).toEqual(10)
+      expect(c.territory.yield).toEqual(30)
     })
 
     it('can go negative', () => {
       const c = new Community()
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 60; i++) {
         const p = new Person()
         c.add(p)
       }
@@ -390,13 +390,13 @@ describe('Community', () => {
 
     it('accumulates', () => {
       const c = new Community()
-      c.adjustYield() // +30 since no one is here
-      for (let i = 0; i < 40; i++) {
+      c.adjustYield() // +50 since no one is here
+      for (let i = 0; i < 60; i++) {
         const p = new Person()
         c.add(p)
       }
       c.adjustYield() // -10 because we're 10 over carrying capacity
-      expect(c.territory.yield).toEqual(20)
+      expect(c.territory.yield).toEqual(15)
     })
   })
 

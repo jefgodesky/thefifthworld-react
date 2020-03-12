@@ -1402,7 +1402,7 @@ describe('Person', () => {
       a.present = 2020
       a.age(c)
       const wasNotQuiet = !a.history.wasQuiet(2021)
-      const developedSkills = a.skills.learning.skill !== undefined
+      const developedSkills = a.skills.learning && a.skills.learning.skill !== undefined
       expect(wasNotQuiet || developedSkills).toEqual(true)
     })
   })

@@ -408,7 +408,10 @@ export default class Community {
       population: people.length,
       yield: this.territory.yield,
       problems: this.hadProblemsRecently(),
-      lean, sick, conflict, tags
+      lean,
+      sick,
+      conflict,
+      tags
     })
   }
 
@@ -421,8 +424,8 @@ export default class Community {
 
   checkResults () {
     const capacity = get(this, 'traditions.village') ? 150 : 50
-    const min = capacity * (3/4)
-    const max = capacity * (5/4)
+    const min = capacity * (3 / 4)
+    const max = capacity * (5 / 4)
     const people = this.getPeople()
     return (people.length > min) && (people.length < max)
   }

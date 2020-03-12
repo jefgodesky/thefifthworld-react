@@ -627,7 +627,7 @@ describe('Community', () => {
       expect(c.status.lean).toEqual(false)
     })
 
-    it('ends sickness more than 25% of the time', () => {
+    it('ends sickness more than 15% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const c = new Community()
@@ -635,10 +635,10 @@ describe('Community', () => {
         c.solveProblems()
         if (!c.status.sick) count++
       }
-      expect(count).toBeGreaterThan(25)
+      expect(count).toBeGreaterThan(15)
     })
 
-    it('ends sickness less than 75% of the time', () => {
+    it('ends sickness less than 85% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const c = new Community()
@@ -646,10 +646,10 @@ describe('Community', () => {
         c.solveProblems()
         if (!c.status.sick) count++
       }
-      expect(count).toBeLessThan(75)
+      expect(count).toBeLessThan(85)
     })
 
-    it('ends sickness if you have three healers more than 50% of the time', () => {
+    it('ends sickness if you have three healers more than 40% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const community = new Community()
@@ -663,10 +663,10 @@ describe('Community', () => {
         community.solveProblems()
         if (!community.status.sick) count++
       }
-      expect(count).toBeGreaterThan(50)
+      expect(count).toBeGreaterThan(40)
     })
 
-    it('ends conflict more than 25% of the time', () => {
+    it('ends conflict more than 15% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const c = new Community()
@@ -674,10 +674,10 @@ describe('Community', () => {
         c.solveProblems()
         if (!c.status.conflict) count++
       }
-      expect(count).toBeGreaterThan(25)
+      expect(count).toBeGreaterThan(15)
     })
 
-    it('ends conflict less than 75% of the time', () => {
+    it('ends conflict less than 85% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const c = new Community()
@@ -685,10 +685,10 @@ describe('Community', () => {
         c.solveProblems()
         if (!c.status.conflict) count++
       }
-      expect(count).toBeLessThan(75)
+      expect(count).toBeLessThan(85)
     })
 
-    it('ends conflict if you have three peacemakers more than 50% of the time', () => {
+    it('ends conflict if you have three peacemakers more than 40% of the time', () => {
       let count = 0
       for (let i = 0; i < 100; i++) {
         const community = new Community()
@@ -702,7 +702,7 @@ describe('Community', () => {
         community.solveProblems()
         if (!community.status.conflict) count++
       }
-      expect(count).toBeGreaterThan(50)
+      expect(count).toBeGreaterThan(40)
     })
   })
 

@@ -1,8 +1,9 @@
 import express from 'express'
 import axios from 'axios'
 import { escape as SQLEscape } from 'sqlstring'
-import { clone } from '../../shared/utils'
 import distance from '@turf/distance'
+import Community from '../generate-community/community'
+import { clone } from '../../shared/utils'
 import config from '../../../config'
 import db from '../db'
 
@@ -87,7 +88,7 @@ const saveCenter = async (req, res) => {
       },
       traditions: {},
       chronicle: [],
-      people: []
+      people: {}
     }
     const community = await db.run(`INSERT INTO communities (data) VALUES (${SQLEscape(JSON.stringify(commData))});`)
     res.redirect(`/create-community/${community.insertId}`)
@@ -239,11 +240,9 @@ const saveChoice = async (community, id, req, res) => {
  */
 
 const generate = async (community, id, req, res) => {
-  console.log({
-    community,
-    id,
-    body: req.body
-  })
+  const c = new Community(community)
+  c.run()
+  console.log(c.analyze())
   res.redirect(`/create-community/${id}`)
 }
 

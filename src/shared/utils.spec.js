@@ -3,12 +3,21 @@
 import {
   checkExists,
   isPopulatedArray,
+  intersection,
+  allTrue,
+  anyTrue,
+  avg,
   get,
   formatDate,
   dedupe,
   getFileSizeStr,
   clone,
-  alphabetize
+  alphabetize,
+  isLeapYear,
+  randomDayOfYear,
+  between,
+  randomValFromNormalDistribution,
+  probabilityInNormalDistribution
 } from './utils'
 
 describe('checkExists', () => {
@@ -46,12 +55,87 @@ describe('isPopulatedArray', () => {
   })
 })
 
+describe('intersection', () => {
+  it('returns the intersection of two arrays', () => {
+    expect(intersection([ 1, 2, 3 ], [ 2, 3, 4 ])).toEqual([ 2, 3 ])
+  })
+
+  it('returns an empty array if not given two arrays', () => {
+    expect(intersection(undefined, [ 2, 3, 4 ])).toEqual([])
+  })
+})
+
+describe('allTrue', () => {
+  it('returns false if not given an array', () => {
+    expect(allTrue(true)).toEqual(false)
+  })
+
+  it('returns true if all values in array are true', () => {
+    expect(allTrue([ true, true ])).toEqual(true)
+  })
+
+  it('returns true if all values in array are truthy', () => {
+    expect(allTrue([ true, 1, 'yes' ])).toEqual(true)
+  })
+
+  it('returns false if any value in array is false', () => {
+    expect(allTrue([ true, false, true ])).toEqual(false)
+  })
+
+  it('returns false if any value in array is falsy', () => {
+    expect(allTrue([ true, 0, true ])).toEqual(false)
+  })
+})
+
+describe('anyTrue', () => {
+  it('returns false if not given an array', () => {
+    expect(anyTrue(true)).toEqual(false)
+  })
+
+  it('returns true if any value in array is true', () => {
+    expect(anyTrue([ true, false ])).toEqual(true)
+  })
+
+  it('returns true if any value in array is truthy', () => {
+    expect(anyTrue([ false, 1, 'yes' ])).toEqual(true)
+  })
+
+  it('returns false if all values in array are false', () => {
+    expect(anyTrue([ false, false ])).toEqual(false)
+  })
+
+  it('returns false if all values in array are falsy', () => {
+    expect(anyTrue([ false, 0, null, undefined ])).toEqual(false)
+  })
+})
+
+describe('avg', () => {
+  it('returns the average of an array of numbers', () => {
+    expect(avg([ 1, 2, 3 ])).toEqual(2)
+  })
+
+  it('ignores non-numbers', () => {
+    expect(avg([ 1, 2, 3, '4' ])).toEqual(2)
+  })
+
+  it('returns 0 if there are no non-numbers in the array', () => {
+    expect(avg([ true, 'two', { val: 3 } ])).toEqual(0)
+  })
+})
+
 describe('get', () => {
   it('can return a value from a chain of properties', () => {
-    const obj = { prop: 42 }
-    const actual = [ get(obj, 'prop'), get(obj, 'prop.nope') ]
-    const expected = [ 42, undefined ]
-    expect(actual).toEqual(expected)
+    const obj = { outer: { inner: 42 } }
+    expect(get(obj, 'outer.inner')).toEqual(42)
+  })
+
+  it('returns undefined if given a path the object does not contain', () => {
+    const obj = { outer: { inner: 42 } }
+    expect(get(obj, 'outer.nope')).toEqual(undefined)
+  })
+
+  it('returns undefined if not given an object', () => {
+    expect(get(42, 'prop')).toEqual(undefined)
   })
 })
 
@@ -79,7 +163,7 @@ describe('formatDate', () => {
 })
 
 describe('dedupe', () => {
-  it('can deduplicate an arry', () => {
+  it('can deduplicate an array', () => {
     const orig = [ 1, 1, 2, 3 ]
     const actual = dedupe(orig)
     expect(actual).toEqual([ 1, 2, 3 ])
@@ -94,6 +178,11 @@ describe('dedupe', () => {
     }
     const actual = { orig, deduped }
     expect(actual).toEqual(expected)
+  })
+
+  it('can dedupe objects', () => {
+    const arr = [ { test: true }, { test: true } ]
+    expect(dedupe(arr)).toEqual([ { test: true } ])
   })
 })
 
@@ -135,5 +224,80 @@ describe('alphabetize', () => {
   it('can alphabetize an array of strings', () => {
     const actual = alphabetize([ 'banana', 'apple', 'carrot' ])
     expect(actual).toEqual([ 'apple', 'banana', 'carrot' ])
+  })
+})
+
+describe('isLeapYear', () => {
+  it('returns false if the year isn\'t divisible by 4', () => {
+    expect(isLeapYear(2313)).toEqual(false)
+  })
+
+  it('returns true if the year is divisible by 4', () => {
+    expect(isLeapYear(2312)).toEqual(true)
+  })
+
+  it('returns false if the year is divisible by 100', () => {
+    expect(isLeapYear(2300)).toEqual(false)
+  })
+
+  it('returns true if the year is divisible by 400', () => {
+    expect(isLeapYear(2400)).toEqual(true)
+  })
+})
+
+describe('randomDayOfYear', () => {
+  it('returns a date', () => {
+    const actual = randomDayOfYear(2020)
+    expect(actual instanceof Date).toEqual(true)
+  })
+
+  it('returns a date that is in the given year', () => {
+    const actual = randomDayOfYear(2020)
+    expect(actual.getFullYear()).toEqual(2020)
+  })
+})
+
+describe('between', () => {
+  it('returns the value if it is between the min and the max', () => {
+    const actual = between(50, 1, 100)
+    expect(actual).toEqual(50)
+  })
+
+  it('returns the min if the value is less than that', () => {
+    const actual = between(0, 1, 100)
+    expect(actual).toEqual(1)
+  })
+
+  it('returns the max if the value is greater than that', () => {
+    const actual = between(110, 1, 100)
+    expect(actual).toEqual(100)
+  })
+})
+
+describe('randomValFromNormalDistribution', () => {
+  it('is within one standard deviation about 68% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const val = randomValFromNormalDistribution()
+      if (val > -1 && val < 1) count++
+    }
+    const tooFew = count < 48
+    const tooMany = count > 88
+    expect(!tooFew && !tooMany).toEqual(true)
+  })
+
+  it('is within two standard deviations about 95% of the time', () => {
+    let count = 0
+    for (let i = 0; i < 100; i++) {
+      const val = randomValFromNormalDistribution()
+      if (val > -2 && val < 2) count++
+    }
+    expect(count > 75).toEqual(true)
+  })
+})
+
+describe('probabilityInNormalDistribution', () => {
+  it('returns 50 when given the mean', () => {
+    expect(probabilityInNormalDistribution(0)).toEqual(50)
   })
 })

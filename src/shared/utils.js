@@ -1,3 +1,6 @@
+import random from 'random'
+import NormalDistribution from 'normal-distribution'
+
 /**
  * This method ensures that a chain of properties exist. For example, if you
  * need to use a value like `obj.prop1.prop2.prop3`, and it's possible that any
@@ -26,8 +29,57 @@ const checkExists = (val, props) => {
  *   one item in it, or `false` if it is not.
  */
 
-const isPopulatedArray = obj => {
-  return Boolean(obj && Array.isArray(obj) && obj.length > 0)
+const isPopulatedArray = obj => Boolean(obj && Array.isArray(obj) && obj.length > 0)
+
+/**
+ * Returns the intersection of two arrays.
+ * @param a1 {Array} - An array.
+ * @param a2 {Array} - Another array.
+ * @returns {Array} - The array of elements that are present in both of the
+ *   arrays provided. This does not work with objects.
+ */
+
+const intersection = (a1, a2) => {
+  const arr1 = isPopulatedArray(a1) ? a1 : []
+  const arr2 = isPopulatedArray(a2) ? a2 : []
+  return arr1.filter(x => arr2.includes(x))
+}
+
+/**
+ * Returns `true` if each element in the given array is true.
+ * @param arr {Array} - An array to evaluate.
+ * @returns {*} - `true` if each element in `arr` is true, or `false` if it is
+ *   not.
+ */
+
+const allTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc && Boolean(curr), true)
+
+/**
+ * Returns `true` if any element in the given array is true.
+ * @param arr {Array} - An array to evaluate.
+ * @returns {*} - `true` if any element in `arr` is true, or `false` if none of
+ *   them are.
+ */
+
+const anyTrue = arr => arr && Array.isArray(arr) && arr.reduce((acc, curr) => acc || Boolean(curr), false)
+
+/**
+ * Return the average of the numbers in an array.
+ * @param arr {[number]} - An array of numbers.
+ * @returns {number} - Returns the average of the numbers in the array. If the
+ *   array contains both numbers and non-numbers, only the numbers are
+ *   considered. If there are no numbers in the array, or the argument passed
+ *   is not an array, it returns `0`.
+ */
+
+const avg = arr => {
+  if (arr && Array.isArray(arr)) {
+    const numbers = arr.filter(e => typeof e === 'number')
+    if (isPopulatedArray(numbers)) {
+      return numbers.reduce((acc, curr) => acc + curr, 0) / numbers.length
+    }
+  }
+  return 0
 }
 
 /**
@@ -77,7 +129,22 @@ const formatDate = date => {
  */
 
 const dedupe = arr => {
-  return [ ...new Set(arr) ]
+  let hasObj = false
+  arr.forEach(e => { if (typeof e === 'object') hasObj = true })
+  if (!hasObj) {
+    return [...new Set(arr)]
+  } else {
+    const index = []
+    const deduped = []
+    arr.forEach(e => {
+      const key = JSON.stringify(e)
+      if (!index.includes(key)) {
+        deduped.push(e)
+        index.push(key)
+      }
+    })
+    return deduped
+  }
 }
 
 /**
@@ -111,7 +178,7 @@ const getFileSizeStr = size => {
  */
 
 const clone = obj => {
-  const str = JSON.stringify(obj)
+  const str = obj === undefined ? '{}' : JSON.stringify(obj)
   return JSON.parse(str)
 }
 
@@ -142,14 +209,111 @@ const alphabetize = arr => {
   })
 }
 
+/**
+ * Returns a date a number of days from the present equal to the days argument
+ * provided.
+ * @param days {number} - The number of days in the future.
+ * @returns {Date|boolean} - The future date specified, or `false` if given an
+ *   invalid argument for `days`.
+ */
+
+const daysFromNow = days => {
+  const d = parseInt(days)
+  if (d) {
+    let future = new Date()
+    future.setDate(future.getDate() + d)
+    return future
+  } else {
+    return false
+  }
+}
+
+/**
+ * Is the given year a leap year?
+ * @param year {number} - The year to test.
+ * @returns {boolean} - `true` if it's a leap year, or `false` if it isn't.
+ */
+
+const isLeapYear = year => {
+  return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0
+}
+
+/**
+ * Returns a random day of the year.
+ * @param year {number} - The year to fetch a random day from.
+ * @returns {Date} - The random date.
+ */
+
+const randomDayOfYear = year => {
+  const total = isLeapYear(year) ? 366 : 365
+  let day = new Date(`December 31 ${year - 1}`)
+  day.setDate(day.getDate() + random.int(1, total))
+  return day
+}
+
+/**
+ * Returns the value only if it is between the `min` and `max`. If the value
+ * is less than the `min`, it returns the `min`, and if it is more than the
+ * `max`, it returns the `max`.
+ * @param value {number} - The value to check.
+ * @param min {number} - The lowest valid value.
+ * @param max {number} - The highest valid value.
+ * @returns {number} - A valid value.
+ */
+
+const between = (value, min, max) => {
+  return Math.max(Math.min(value, max), min)
+}
+
+/**
+ * Returns a value randomly selected from the given normal distribution.
+ * @param mean {number} - Optional. The mean of the normal distribution from
+ *   which we're to select a random value (Default: `0`).
+ * @param std {number} - Optional. The standard deviation of the normal
+ *   distribution from which we're to select a random value (Default: `1`).
+ * @returns {number} - A random value from the given normal distribution.
+ */
+
+const randomValFromNormalDistribution = (mean = 0, std = 1) => {
+  const thunk = random.normal(mean, std)
+  return thunk()
+}
+
+/**
+ * Returns the probability that a value of `value` or lower would be randomly
+ * selected from a normal distribution.
+ * @param value {number} - The value to test.
+ * @param mean {number} - Optional. The mean of the normal distribution that we
+ *   are testing against (Default: `0`).
+ * @param std {number} - Optional. The standard deviation of the normal
+ *   distribution that we are testing against (Default: `1`).
+ * @returns {number} - The probability that a number equal to or less than
+ *   `value` would be chosen from this normal distribution.
+ */
+
+const probabilityInNormalDistribution = (value = 0, mean = 0, std = 1) => {
+  const dist = new NormalDistribution(mean, std)
+  return dist.cdf(value) * 100
+}
+
 export {
   checkExists,
   isPopulatedArray,
+  intersection,
+  allTrue,
+  anyTrue,
+  avg,
   get,
   formatDate,
   dedupe,
   getFileSizeStr,
   clone,
   requestLocation,
-  alphabetize
+  alphabetize,
+  daysFromNow,
+  isLeapYear,
+  randomDayOfYear,
+  between,
+  randomValFromNormalDistribution,
+  probabilityInNormalDistribution
 }

@@ -1,0 +1,170 @@
+{
+  "overpopulatedCommunityEvents": [
+    { "chance": 5, "event": "conflict" },
+    { "chance": 20, "event": "sickness" },
+    { "chance": 50, "event": "lean" },
+    { "chance": 25, "event": "peace" }
+  ],
+  "normalCommunityEvents": [
+    { "chance": 1, "event": "conflict" },
+    { "chance": 1, "event": "sickness" },
+    { "chance": 2, "event": "lean" },
+    { "chance": 96, "event": "peace" }
+  ],
+  "illness": [
+    { "chance": 1, "event": "death" },
+    { "chance": 1, "event": "deaf" },
+    { "chance": 1, "event": "blind" },
+    { "chance": 97, "event": "recovery" }
+  ],
+  "injury": [
+    { "chance": 1, "event": "death" },
+    { "chance": 19, "event": "face" },
+    { "chance": 45, "event": "limb" },
+    { "chance": 40, "event": "torso" }
+  ],
+  "personalEventsAtPeace": [
+    { "chance": 10, "event": "+openness" },
+    { "chance": 10, "event": "-openness" },
+    { "chance": 10, "event": "+conscientiousness" },
+    { "chance": 10, "event": "-conscientiousness" },
+    { "chance": 10, "event": "+extraversion" },
+    { "chance": 10, "event": "-extraversion" },
+    { "chance": 10, "event": "+agreeableness" },
+    { "chance": 10, "event": "-agreeableness" },
+    { "chance": 5, "event": "+neuroticism" },
+    { "chance": 10, "event": "-neuroticism" },
+    { "chance": 2, "event": "sickness" },
+    { "chance": 3, "event": "injury" }
+  ],
+  "personalEventsInConflict": [
+    { "chance": 3, "event": "+openness" },
+    { "chance": 3, "event": "-openness" },
+    { "chance": 3, "event": "+conscientiousness" },
+    { "chance": 3, "event": "-conscientiousness" },
+    { "chance": 3, "event": "+extraversion" },
+    { "chance": 5, "event": "-extraversion" },
+    { "chance": 3, "event": "+agreeableness" },
+    { "chance": 5, "event": "-agreeableness" },
+    { "chance": 5, "event": "+neuroticism" },
+    { "chance": 3, "event": "-neuroticism" },
+    { "chance": 26, "event": "sickness" },
+    { "chance": 25, "event": "injury" }
+  ],
+  "personalEventsInSickness": [
+    { "chance": 4, "event": "+openness" },
+    { "chance": 4, "event": "-openness" },
+    { "chance": 4, "event": "+conscientiousness" },
+    { "chance": 4, "event": "-conscientiousness" },
+    { "chance": 4, "event": "+extraversion" },
+    { "chance": 6, "event": "-extraversion" },
+    { "chance": 4, "event": "+agreeableness" },
+    { "chance": 6, "event": "-agreeableness" },
+    { "chance": 6, "event": "+neuroticism" },
+    { "chance": 4, "event": "-neuroticism" },
+    { "chance": 40, "event": "sickness" },
+    { "chance": 11, "event": "injury" }
+  ],
+  "personalEventsInLeanTimes": [
+    { "chance": 8, "event": "+openness" },
+    { "chance": 8, "event": "-openness" },
+    { "chance": 8, "event": "+conscientiousness" },
+    { "chance": 8, "event": "-conscientiousness" },
+    { "chance": 8, "event": "+extraversion" },
+    { "chance": 10, "event": "-extraversion" },
+    { "chance": 8, "event": "+agreeableness" },
+    { "chance": 10, "event": "-agreeableness" },
+    { "chance": 10, "event": "+neuroticism" },
+    { "chance": 8, "event": "-neuroticism" },
+    { "chance": 6, "event": "sickness" },
+    { "chance": 5, "event": "injury" }
+  ],
+  "genders": {
+    "2": {
+      "gynephilic": [ "Woman" ],
+      "androphilic": [ "Man" ],
+      "skoliophilic": []
+    },
+    "3": {
+      "gynephilic": [ "Woman" ],
+      "androphilic": [ "Man" ],
+      "skoliophilic": [ "Third gender" ]
+    },
+    "4": {
+      "gynephilic": [ "Feminine woman", "Masculine woman" ],
+      "androphilic": [ "Feminine man", "Masculine man" ],
+      "skoliophilic": [ "Feminine man", "Masculine woman" ]
+    },
+    "5": {
+      "gynephilic": [ "Feminine woman", "Masculine woman" ],
+      "androphilic": [ "Feminine man", "Masculine man" ],
+      "skoliophilic": [ "Feminine man", "Masculine woman", "Fifth gender" ]
+    }
+  },
+  "encounterFactors": {
+    "Feminine woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  25, "event": "conscientiousness" },
+      { "chance":  15, "event": "extraversion" },
+      { "chance":  15, "event": "agreeableness" },
+      { "chance":  25, "event": "neuroticism" }
+    ],
+    "Woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  25, "event": "conscientiousness" },
+      { "chance":  15, "event": "extraversion" },
+      { "chance":  15, "event": "agreeableness" },
+      { "chance":  25, "event": "neuroticism" }
+    ],
+    "Masculine woman": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  22, "event": "conscientiousness" },
+      { "chance":  18, "event": "extraversion" },
+      { "chance":  18, "event": "agreeableness" },
+      { "chance":  22, "event": "neuroticism" }
+    ],
+    "Feminine man": [
+      { "chance":  17, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  13, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ],
+    "Man": [
+      { "chance":  25, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  10, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  15, "event": "neuroticism" }
+    ],
+    "Masculine man": [
+      { "chance":  25, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  10, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  15, "event": "neuroticism" }
+    ],
+    "Third gender": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  20, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ],
+    "Fifth gender": [
+      { "chance":  10, "event": "attractiveness" },
+      { "chance":  10, "event": "openness" },
+      { "chance":  20, "event": "conscientiousness" },
+      { "chance":  20, "event": "extraversion" },
+      { "chance":  20, "event": "agreeableness" },
+      { "chance":  20, "event": "neuroticism" }
+    ]
+  }
+}

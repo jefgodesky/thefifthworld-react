@@ -121,7 +121,7 @@ export class CommunityCreation extends React.Component {
       return (<CommunityCreationChoiceMagic id={id} />)
     } else if (!traditions.skill) {
       return (<CommunityCreationChoiceSkill id={id} />)
-    } else if (people.length === 0) {
+    } else if (Object.keys(people).length === 0) {
       return (<CommunityCreationGenerate id={id} />)
     } else {
       return (<CommunityCreationIntro js={js} />)
@@ -170,7 +170,7 @@ CommunityCreation.propTypes = {
   location: PropTypes.object,
   loggedInMember: PropTypes.object,
   match: PropTypes.object,
-  people: PropTypes.array,
+  people: PropTypes.object,
   territory: PropTypes.object,
   traditions: PropTypes.object
 }

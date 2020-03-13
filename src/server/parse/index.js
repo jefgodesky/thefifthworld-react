@@ -1,4 +1,5 @@
 import marked from 'marked'
+import sanitizeHtml from 'sanitize-html'
 import parseTemplates from './template'
 import parseLinks from './links'
 import {
@@ -15,11 +16,11 @@ import {
 } from './special'
 
 marked.setOptions({
-  sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'br aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
-    const inside = markup.replace(/<\/?(.*?)>/g, '$1 ').split(' ')
-    return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
+    const allowedTags = 'br aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
+    return sanitizeHtml(markup, {
+      allowedTags
+    })
   },
   smartLists: true,
   smartypants: true,
@@ -50,7 +51,9 @@ const parse = async (wikitext, db, path = null) => {
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
+    console.log(wikitext)
     wikitext = marked(wikitext.trim())
+    console.log(wikitext)
     wikitext = escapeCodeBlockMarkdown(wikitext)
     wikitext = parseForm(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)

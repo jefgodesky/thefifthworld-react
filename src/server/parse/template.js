@@ -45,6 +45,43 @@ const addTemplates = async (matches, db) => {
   return templates
 }
 
+const modifyTemplatesInBlocks = (wikitext, before, after) => {
+  const blocks = wikitext.match(/\`\`\`(\n|\r|.)*\`\`\`/gm)
+  if (blocks) {
+    for (const block of blocks) {
+      const templates = block.match(before.regex)
+      if (templates) {
+        let newBlock = block
+        for (const template of templates) {
+          const clip = template.substring(before.begin, template.length - before.end)
+          newBlock = newBlock.replace(template, `${after.begin}${clip}${after.end}`)
+        }
+        wikitext = wikitext.replace(block, newBlock)
+      }
+    }
+  }
+  return wikitext
+}
+
+/**
+ * Escape template calls that are inside code blocks.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - A copy of the wikitext with any template calls that are
+ *   inside code blocks escaped.
+ */
+
+const escapeTemplatesInCodeBlocks = wikitext => {
+  const before = { regex: /{{(\n|\r|.)*}}/gm, begin: 2, end: 2 }
+  const after = { begin: '<EscapedTemplate>', end: '</EscapedTemplate>' }
+  return modifyTemplatesInBlocks(wikitext, before, after)
+}
+
+const unescapeTemplatesInCodeBlocks = wikitext => {
+  const before = { regex: /<EscapedTemplate>(\n|\r|.)*<\/EscapedTemplate>/gm, begin: 17, end: 18 }
+  const after = { begin: '{{', end: '}}' }
+  return modifyTemplatesInBlocks(wikitext, before, after)
+}
+
 /**
  * Replaces template calls with the values of those templates. For example, if
  * there is a page called "Example Template" that is of type "Template," then
@@ -57,14 +94,15 @@ const addTemplates = async (matches, db) => {
  */
 
 const parseTemplates = async (wikitext, db) => {
-  let templates = wikitext.match(/{{((.*?)\n?)*?}}/g)
+  wikitext = escapeTemplatesInCodeBlocks(wikitext)
+  let templates = wikitext.match(/{{((.*?)\n?)*?}}/gm)
   if (templates) {
     templates = await addTemplates(templates, db)
     templates.forEach(template => {
       wikitext = wikitext.replace(template.match, template.wikitext)
     })
   }
-  return wikitext
+  return unescapeTemplatesInCodeBlocks(wikitext)
 }
 
 export default parseTemplates

@@ -46,63 +46,6 @@ const addTemplates = async (matches, db) => {
 }
 
 /**
- * Used by `escapeTemplatesInCodeBlocks` and `unescapeTemplatesInCodeBlocks`.
- * @param wikitext {string} - The wikitext being parsed.
- * @param before {Object} - An object with properties `regex` (contianing the
- *   regex used to match templates), `begin` (a number specifying the number of
- *   characters used before the template declaration), and `end` (specifying
- *   the number of characters used after the template declaration).
- * @param after {Object} - An object with properties `begin` (the string used
- *   before a template declaration) and `end` (the string used after a template
- *   declaration).
- * @returns {string} - A processed copy of the wikitext.
- */
-
-const modifyTemplatesInBlocks = (wikitext, before, after) => {
-  const blocks = wikitext.match(/\`\`\`(\n|\r|.)*\`\`\`/gm)
-  if (blocks) {
-    for (const block of blocks) {
-      const templates = block.match(before.regex)
-      if (templates) {
-        let newBlock = block
-        for (const template of templates) {
-          const clip = template.substring(before.begin, template.length - before.end)
-          newBlock = newBlock.replace(template, `${after.begin}${clip}${after.end}`)
-        }
-        wikitext = wikitext.replace(block, newBlock)
-      }
-    }
-  }
-  return wikitext
-}
-
-/**
- * Escape template calls that are inside code blocks.
- * @param wikitext {string} - Wikitext to parse.
- * @returns {string} - A copy of the wikitext with any template calls that are
- *   inside code blocks escaped.
- */
-
-const escapeTemplatesInCodeBlocks = wikitext => {
-  const before = { regex: /{{(\n|\r|.)*}}/gm, begin: 2, end: 2 }
-  const after = { begin: '<EscapedTemplate>', end: '</EscapedTemplate>' }
-  return modifyTemplatesInBlocks(wikitext, before, after)
-}
-
-/**
- * Unescape template calls that are inside code blocks.
- * @param wikitext {string} - Wikitext to parse.
- * @returns {string} - A copy of the wikitext with any template calls that are
- *   inside code blocks unescaped.
- */
-
-const unescapeTemplatesInCodeBlocks = wikitext => {
-  const before = { regex: /<EscapedTemplate>(\n|\r|.)*<\/EscapedTemplate>/gm, begin: 17, end: 18 }
-  const after = { begin: '{{', end: '}}' }
-  return modifyTemplatesInBlocks(wikitext, before, after)
-}
-
-/**
  * Replaces template calls with the values of those templates. For example, if
  * there is a page called "Example Template" that is of type "Template," then
  * {{Example Template}} in wikitext will be replaced with the contentss of that
@@ -114,7 +57,6 @@ const unescapeTemplatesInCodeBlocks = wikitext => {
  */
 
 const parseTemplates = async (wikitext, db) => {
-  wikitext = escapeTemplatesInCodeBlocks(wikitext)
   let templates = wikitext.match(/{{((.*?)\n?)*?}}/gm)
   if (templates) {
     templates = await addTemplates(templates, db)
@@ -122,7 +64,7 @@ const parseTemplates = async (wikitext, db) => {
       wikitext = wikitext.replace(template.match, template.wikitext)
     })
   }
-  return unescapeTemplatesInCodeBlocks(wikitext)
+  return wikitext
 }
 
 export default parseTemplates

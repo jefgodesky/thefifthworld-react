@@ -46,16 +46,25 @@ const parse = async (wikitext, db, path = null) => {
     // Removing stuff that shouldn't be rendered...
     wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
+    wikitext = escapeCodeBlockMarkdown(wikitext)
 
     // Render templates.
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
-    wikitext = escapeCodeBlockMarkdown(wikitext)
     wikitext = parseForm(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
+
+    // Those escaped characters in code blocks just got double-escaped, so
+    // let's fix that.
+    const blocks = wikitext.match(/<pre><code>((.|\s)*?)<\/code><\/pre>/gm)
+    if (blocks) {
+      for (const block of blocks) {
+        wikitext = wikitext.replace(block, block.replace(/&amp;/gm, '&'))
+      }
+    }
 
     // More stuff that we need to check with the database on, after Markdown
     // has been rendered.

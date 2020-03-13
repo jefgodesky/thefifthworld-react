@@ -11,12 +11,12 @@ import slugify from '../../shared/slugify'
  */
 
 const escapeCodeBlockMarkdown = wikitext => {
-  const blocks = wikitext.match(/<pre>\s*<code>((.|\s)*?)<\/code>\s*<\/pre>/gm)
+  const blocks = wikitext.match(/\`\`\`((.|\s)*?)\`\`\`/gm)
   if (isPopulatedArray(blocks)) {
     for (const block of blocks) {
-      const match = block.match(/<pre>\s*<code>((.|\s)*?)<\/code>\s*<\/pre>/m)
+      const match = block.match(/\`\`\`((.|\s)*?)\`\`\`/m)
       if (match && match.length > 1) {
-        const content = match[1].trim()
+        const content = match[1]
           .replace(/&lt;/gi, '<')
           .replace(/&gt;/gi, '>')
           .replace(/&amp;/gi, '&')
@@ -26,13 +26,13 @@ const escapeCodeBlockMarkdown = wikitext => {
           .replace(/’/gi, '\'')
         let escaped = ''
         for (let i = 0; i < content.length; i++) {
-          if (content.charCodeAt(i) === 10) {
-            escaped += '\n'
-          } else if (content.charCodeAt(i) > 31) {
+          if (content.charCodeAt(i) < 33) {
+            escaped += content.charAt(i)
+          } else if (content.charCodeAt(i) > 32) {
             escaped += `&#${content.charCodeAt(i)};`
           }
         }
-        wikitext = wikitext.replace(block, `<pre><code>${escaped}</code></pre>`)
+        wikitext = wikitext.replace(block, `\`\`\`${escaped}\`\`\``)
       }
     }
   }

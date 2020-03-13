@@ -51,9 +51,7 @@ const parse = async (wikitext, db, path = null) => {
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
-    console.log(wikitext)
     wikitext = marked(wikitext.trim())
-    console.log(wikitext)
     wikitext = escapeCodeBlockMarkdown(wikitext)
     wikitext = parseForm(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)

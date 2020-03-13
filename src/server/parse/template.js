@@ -45,6 +45,19 @@ const addTemplates = async (matches, db) => {
   return templates
 }
 
+/**
+ * Used by `escapeTemplatesInCodeBlocks` and `unescapeTemplatesInCodeBlocks`.
+ * @param wikitext {string} - The wikitext being parsed.
+ * @param before {Object} - An object with properties `regex` (contianing the
+ *   regex used to match templates), `begin` (a number specifying the number of
+ *   characters used before the template declaration), and `end` (specifying
+ *   the number of characters used after the template declaration).
+ * @param after {Object} - An object with properties `begin` (the string used
+ *   before a template declaration) and `end` (the string used after a template
+ *   declaration).
+ * @returns {string} - A processed copy of the wikitext.
+ */
+
 const modifyTemplatesInBlocks = (wikitext, before, after) => {
   const blocks = wikitext.match(/\`\`\`(\n|\r|.)*\`\`\`/gm)
   if (blocks) {
@@ -75,6 +88,13 @@ const escapeTemplatesInCodeBlocks = wikitext => {
   const after = { begin: '<EscapedTemplate>', end: '</EscapedTemplate>' }
   return modifyTemplatesInBlocks(wikitext, before, after)
 }
+
+/**
+ * Unescape template calls that are inside code blocks.
+ * @param wikitext {string} - Wikitext to parse.
+ * @returns {string} - A copy of the wikitext with any template calls that are
+ *   inside code blocks unescaped.
+ */
 
 const unescapeTemplatesInCodeBlocks = wikitext => {
   const before = { regex: /<EscapedTemplate>(\n|\r|.)*<\/EscapedTemplate>/gm, begin: 17, end: 18 }

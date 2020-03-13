@@ -1,4 +1,5 @@
 import marked from 'marked'
+import sanitizeHtml from 'sanitize-html'
 import parseTemplates from './template'
 import parseLinks from './links'
 import {
@@ -15,11 +16,11 @@ import {
 } from './special'
 
 marked.setOptions({
-  sanitize: true,
   sanitizer: markup => {
-    const allowedHTML = 'br aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
-    const inside = markup.replace(/<\/?(.*?)>/g, '$1 ').split(' ')
-    return inside.length > 0 && allowedHTML.indexOf(inside[0]) > -1 ? markup : ''
+    const allowedTags = 'br aside pre code div ins del sup sub section aside nav blockquote cite dl dt dd ul ol li span strong em'.split(' ')
+    return sanitizeHtml(markup, {
+      allowedTags
+    })
   },
   smartLists: true,
   smartypants: true,
@@ -45,16 +46,25 @@ const parse = async (wikitext, db, path = null) => {
     // Removing stuff that shouldn't be rendered...
     wikitext = wikitext.replace(/{{Template}}(.*?){{\/Template}}/g, '') // Remove templates
     wikitext = wikitext.replace(/\[\[Type:(.*?)\]\]/g, '') // Remove [[Type:X]] tags
+    wikitext = escapeCodeBlockMarkdown(wikitext)
 
     // Render templates.
     if (db) wikitext = await parseTemplates(wikitext, db)
 
     // Render Markdown...
     wikitext = marked(wikitext.trim())
-    wikitext = escapeCodeBlockMarkdown(wikitext)
     wikitext = parseForm(wikitext)
     if (db) wikitext = await listArtists(wikitext, db)
     wikitext = doNotEmail(wikitext)
+
+    // Those escaped characters in code blocks just got double-escaped, so
+    // let's fix that.
+    const blocks = wikitext.match(/<pre><code>((.|\s)*?)<\/code><\/pre>/gm)
+    if (blocks) {
+      for (const block of blocks) {
+        wikitext = wikitext.replace(block, block.replace(/&amp;/gm, '&'))
+      }
+    }
 
     // More stuff that we need to check with the database on, after Markdown
     // has been rendered.

@@ -57,7 +57,7 @@ const addTemplates = async (matches, db) => {
  */
 
 const parseTemplates = async (wikitext, db) => {
-  let templates = wikitext.match(/{{((.*?)\n?)*?}}/g)
+  let templates = wikitext.match(/{{((.*?)\n?)*?}}/gm)
   if (templates) {
     templates = await addTemplates(templates, db)
     templates.forEach(template => {

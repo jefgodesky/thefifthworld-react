@@ -257,16 +257,16 @@ describe('unwrapDivs', () => {
 
 describe('escapeCodeBlockMarkdown', () => {
   it('escapes Markdown characters inside of code blocks', () => {
-    const wikitext = '<pre><code>Inside block</code></pre> Outside block'
+    const wikitext = '```Inside block``` Outside block'
     const actual = escapeCodeBlockMarkdown(wikitext)
-    const expected = '<pre><code>&#73;&#110;&#115;&#105;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;</code></pre> Outside block'
+    const expected = '```&#73;&#110;&#115;&#105;&#100;&#101; &#98;&#108;&#111;&#99;&#107;``` Outside block'
     expect(actual).toEqual(expected)
   })
 
   it('works over multiple lines', () => {
-    const wikitext = '<pre>\r\n  <code>\r\n    Inside block\r\n  </code>\r\n</pre>\r\n\r\nOutside block'
+    const wikitext = '```\r\n    Inside block\r\n```\r\n\r\nOutside block'
     const actual = escapeCodeBlockMarkdown(wikitext)
-    const expected = '<pre><code>&#73;&#110;&#115;&#105;&#100;&#101;&#32;&#98;&#108;&#111;&#99;&#107;</code></pre>\r\n\r\nOutside block'
+    const expected = '```\r\n    &#73;&#110;&#115;&#105;&#100;&#101; &#98;&#108;&#111;&#99;&#107;\r\n```\r\n\r\nOutside block'
     expect(actual).toEqual(expected)
   })
 })

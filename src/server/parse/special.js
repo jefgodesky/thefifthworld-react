@@ -11,12 +11,12 @@ import slugify from '../../shared/slugify'
  */
 
 const escapeCodeBlockMarkdown = wikitext => {
-  const blocks = wikitext.match(/<pre>\s*<code>((.|\s)*?)<\/code>\s*<\/pre>/gm)
+  const blocks = wikitext.match(/\`\`\`((.|\s)*?)\`\`\`/gm)
   if (isPopulatedArray(blocks)) {
     for (const block of blocks) {
-      const match = block.match(/<pre>\s*<code>((.|\s)*?)<\/code>\s*<\/pre>/m)
+      const match = block.match(/\`\`\`((.|\s)*?)\`\`\`/m)
       if (match && match.length > 1) {
-        const content = match[1].trim()
+        const content = match[1]
           .replace(/&lt;/gi, '<')
           .replace(/&gt;/gi, '>')
           .replace(/&amp;/gi, '&')
@@ -26,13 +26,13 @@ const escapeCodeBlockMarkdown = wikitext => {
           .replace(/’/gi, '\'')
         let escaped = ''
         for (let i = 0; i < content.length; i++) {
-          if (content.charCodeAt(i) === 10) {
-            escaped += '\n'
-          } else if (content.charCodeAt(i) > 31) {
+          if (content.charCodeAt(i) < 33) {
+            escaped += content.charAt(i)
+          } else if (content.charCodeAt(i) > 32) {
             escaped += `&#${content.charCodeAt(i)};`
           }
         }
-        wikitext = wikitext.replace(block, `<pre><code>${escaped}</code></pre>`)
+        wikitext = wikitext.replace(block, `\`\`\`${escaped}\`\`\``)
       }
     }
   }
@@ -239,28 +239,28 @@ const parseForm = wikitext => {
     fields = fields.map(f => getProps(f))
 
     let markup = '<form action="/save-form" method="post">\n'
-    markup += `  <input type="hidden" name="form" value="${formParams.Name}" />\n`
+    markup += `  <input type="hidden" name="form" value="${formParams.name}" />\n`
     for (const field of fields) {
-      const id = slugify(`${formParams.Name} ${field.Label}`)
-      const type = field.Type || 'text'
+      const id = slugify(`${formParams.name} ${field.label}`)
+      const type = field.type || 'text'
 
-      if (field.Note) {
+      if (field.note) {
         markup += `  <label for="${id}">\n`
-        markup += `    ${field.Label}\n`
-        markup += `    <p class="note">${field.Note}</p>\n`
+        markup += `    ${field.label}\n`
+        markup += `    <p class="note">${field.note}</p>\n`
         markup += `  </label>\n`
       } else {
-        markup += `  <label for="${id}">${field.Label}</label>\n`
+        markup += `  <label for="${id}">${field.label}</label>\n`
       }
 
       if (type === 'textarea') {
-        markup += `  <textarea name="${slugify(field.Label)}" id="${id}"></textarea>\n`
+        markup += `  <textarea name="${slugify(field.label)}" id="${id}"></textarea>\n`
       } else {
-        markup += `  <input type="${type}" name="${slugify(field.Label)}" id="${id}" />\n`
+        markup += `  <input type="${type}" name="${slugify(field.label)}" id="${id}" />\n`
       }
     }
 
-    markup += `  <button>${formParams.Button || 'Send'}</button>\n`
+    markup += `  <button>${formParams.button || 'Send'}</button>\n`
     markup += '</form>'
 
     wikitext = wikitext.replace(match, markup)

@@ -25,11 +25,15 @@ import slugify from '../../shared/slugify'
 export class Form extends React.Component {
   constructor (props) {
     super(props)
+    this.lockedTypes = [ 'File', 'Art' ]
     autoBind(this)
 
     const description = get(this.props, 'page.description')
     const image = get(this.props, 'page.image') || null
     const header = get(this.props, 'page.header') || null
+    const body = get(this.props, 'page.curr.body')
+    const existingType = get(this.props, 'page.type')
+    const type = this.lockedTypes.includes(existingType) ? existingType : parseType(body)
 
     this.state = {
       isClient: false,
@@ -40,10 +44,10 @@ export class Form extends React.Component {
       file: null,
       thumbnail: null,
       parent: undefined,
-      type: get(this.props, 'page.type'),
       path: get(this.props, 'page.path') || this.props.path,
       title: get(this.props, 'page.title') || this.props.title,
-      body: get(this.props, 'page.curr.body'),
+      type,
+      body,
       message: '',
       description,
       image,
@@ -224,6 +228,12 @@ export class Form extends React.Component {
       const description = await Page.getDescription(body)
       this.setState({ body, description })
     }
+
+    if (!this.lockedTypes.includes(this.state.type)) {
+      const parsed = parseType(body)
+      if (parsed) this.setState({ type: parsed })
+    }
+
     this.checkValidTemplate({ body })
   }
 

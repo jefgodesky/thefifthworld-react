@@ -55,7 +55,7 @@
     "helmet": "^3.21.3",
     "leaflet": "^1.5.1",
     "mailgun-js": "^0.20.0",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "mysql": "^2.17.1",
     "passport": "^0.4.0",
     "passport-discord": "^0.1.3",
